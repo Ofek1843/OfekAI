@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ofek AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #chat {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      min-height: 400px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 15px;
+      background: #fafafa;
+      margin-bottom: 15px;
+    }
+
+    .msg {
+      margin: 10px 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .user {
+      background: #dbeafe;
+      text-align: right;
+    }
+
+    .bot {
+      background: #e5e7eb;
+      text-align: right;
+    }
+
+    .system {
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      text-align: right;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      height: 70px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      width: 120px;
+      border: none;
+      border-radius: 10px;
+      background: black;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .typing {
+      opacity: 0.8;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Ofek AI</h1>
+    <div id="chat"></div>
+
+    <div class="input-row">
+      <textarea id="messageInput" placeholder="כתוב הודעה..."></textarea>
+      <button id="sendBtn">שלח</button>
+    </div>
+  </div>
+
+  <script>
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    const messages = [];
+
+    function addMessage(text, sender = "bot") {
+      const div = document.createElement("div");
+      div.className = `msg ${sender}`;
+      div.textContent = text;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    async function sendMessage() {
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      messages.push({ role: "user", content: text });
+      input.value = "";
+      sendBtn.disabled = true;
+
+      const loadingMessage = addMessage("Ofek AI חושב...", "bot");
+      loadingMessage.classList.add("typing");
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ messages }),
+        });
+
+        const data = await response.json();
+
+        loadingMessage.remove();
+
+        const reply = data.reply || "לא התקבלה תשובה.";
+
+        if (!response.ok) {
+          const details = data?.error
+            ? "\n\nפרטי שגיאה:\n" + JSON.stringify(data.error, null, 2)
+            : "";
+          addMessage(reply + details, "system");
+          return;
+        }
+
+        addMessage(reply, "bot");
+        messages.push({ role: "assistant", content: reply });
+      } catch (error) {
+        loadingMessage.remove();
+        addMessage(
+          "אירעה שגיאה בשליחת ההודעה.\n\n" + error.message,
+          "system"
+        );
+      } finally {
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
