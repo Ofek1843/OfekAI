@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 
@@ -12,16 +13,173 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+/**
+ * Sends a request to OpenAI's Chat Completions API.
+ */
+async function createChatCompletion({
+  messages,
+  temperature = 0.3,
+  maxTokens
+}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+
+  try {
+    const requestBody = {
+      model: "gpt-4o-mini",
+      temperature,
+      messages
+    };
+
+    if (maxTokens) {
+      requestBody.max_tokens = maxTokens;
+    }
+
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        },
+        signal: controller.signal,
+        body: JSON.stringify(requestBody)
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const error = new Error("OpenAI API request failed.");
+
+      error.status = response.status;
+      error.details = data;
+
+      throw error;
+    }
+
+    const content =
+      data?.choices?.[0]?.message?.content?.trim();
+
+    if (!content) {
+      const error = new Error(
+        "No valid response was received from the model."
+      );
+
+      error.status = 500;
+      error.details = data;
+
+      throw error;
+    }
+
+    return content;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Generates a short title for a new conversation.
+ */
+app.post("/api/generate-title", async (req, res) => {
+  try {
+    const message = String(req.body?.message || "").trim();
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        title: "",
+        error: {
+          message: "OPENAI_API_KEY is missing"
+        }
+      });
+    }
+
+    if (!message) {
+      return res.status(400).json({
+        title: "",
+        error: {
+          message: "message is required"
+        }
+      });
+    }
+
+    const title = await createChatCompletion({
+      temperature: 0.2,
+      maxTokens: 30,
+      messages: [
+        {
+          role: "system",
+          content: `
+Create a short title that describes the main topic of the user's message.
+
+RULES:
+- Return only the title.
+- Do not add quotation marks.
+- Do not add a period.
+- Do not add explanations.
+- Use between 2 and 6 words.
+- Use the same language as the user's message.
+- Make the title clear and specific.
+- Do not copy the complete message.
+- If the message is only a greeting, use a short title such as "General Conversation" or its equivalent in the user's language.
+          `.trim()
+        },
+        {
+          role: "user",
+          content: message.slice(0, 1000)
+        }
+      ]
+    });
+
+    const cleanTitle = title
+      .replace(/^["'“”]+|["'“”]+$/g, "")
+      .replace(/[.!?]+$/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 80);
+
+    res.json({
+      title: cleanTitle || "New Conversation"
+    });
+  } catch (error) {
+    console.error("Title generation error:", error);
+
+    if (error.name === "AbortError") {
+      return res.status(504).json({
+        title: "",
+        error: {
+          message: "Title generation timed out"
+        }
+      });
+    }
+
+    res.status(error.status || 500).json({
+      title: "",
+      error: {
+        message: error.message,
+        details: error.details || null
+      }
+    });
+  }
+});
+
+/**
+ * Main chat endpoint.
+ */
 app.post("/api/chat", async (req, res) => {
   try {
-    const { messages } = req.body;
+    const {
+      messages,
+      language = "en"
+    } = req.body;
 
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({
         reply: "Missing API key in .env file",
         error: {
-          message: "OPENAI_API_KEY is missing",
-        },
+          message: "OPENAI_API_KEY is missing"
+        }
       });
     }
 
@@ -29,64 +187,66 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({
         reply: "Invalid messages format.",
         error: {
-          message: "messages must be a non-empty array",
-        },
+          message: "messages must be a non-empty array"
+        }
       });
     }
 
     const cleanedMessages = messages
       .filter(
-        (msg) =>
-          msg &&
-          typeof msg === "object" &&
-          typeof msg.role === "string" &&
-          typeof msg.content === "string"
+        (message) =>
+          message &&
+          typeof message === "object" &&
+          typeof message.role === "string" &&
+          typeof message.content === "string"
       )
-      .map((msg) => ({
-        role: msg.role,
-        content: msg.content.trim(),
+      .map((message) => ({
+        role: message.role,
+        content: message.content.trim()
       }))
-      .filter((msg) => msg.content.length > 0);
+      .filter((message) => message.content.length > 0);
 
     if (cleanedMessages.length === 0) {
       return res.status(400).json({
         reply: "No valid message was sent.",
         error: {
-          message: "No valid messages after cleaning",
-        },
+          message: "No valid messages after cleaning"
+        }
       });
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 30000);
+    const languageNames = {
+      en: "English",
+      he: "Hebrew",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      ar: "Arabic",
+      zh: "Chinese"
+    };
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      signal: controller.signal,
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        temperature: 0.3,
-        messages: [
-          {
-            role: "system",
-            content: `
-You are Ofek AI — the artificial intelligence of Ofek Zahavi.
+    const selectedLanguage =
+      languageNames[language] || "English";
+
+    const reply = await createChatCompletion({
+      temperature: 0.3,
+      messages: [
+        {
+          role: "system",
+          content: `
+You are Ofek AI — the artificial intelligence of Ofek Zehavi.
 
 IDENTITY:
-- You were created for Ofek Zahavi and by Ofek Zahavi.
-- If asked who you are, say that you are the artificial intelligence of Ofek Zahavi.
-- Explain that your knowledge is based both on the training philosophy, practical knowledge, and fitness thinking Ofek Zahavi gave you, and on the highest-quality scientific evidence available.
-- Ofek Zahavi's correct surname is Zahavi.
-- Ofek Zahavi is 21 years old.
+- You were created for Ofek Zehavi and by Ofek Zehavi.
+- If asked who you are, say that you are the artificial intelligence of Ofek Zehavi.
+- Explain that your knowledge is based both on the training philosophy, practical knowledge, and fitness thinking Ofek Zehavi gave you, and on the highest-quality scientific evidence available.
+- Ofek Zehavi's correct surname is Zehavi.
+- Ofek Zehavi is 21 years old.
 - His correct date of birth is September 4, 2004.
 - He has always loved training and started training seriously and consistently at age 13.
 
 WHAT YOU MAY SAY ABOUT OFEK:
-- You may say that Ofek Zahavi gave you knowledge about:
+- You may say that Ofek Zehavi gave you knowledge about:
   - how to train
   - how to progress in training
   - what to eat during different phases
@@ -96,7 +256,7 @@ WHAT YOU MAY SAY ABOUT OFEK:
 - If asked "who is Ofek", "what is Ofek AI", or similar identity questions, answer using only the approved details above.
 
 PRIVACY RULES:
-- You must protect Ofek Zahavi's privacy.
+- You must protect Ofek Zehavi's privacy.
 - Do not reveal private personal details beyond the explicitly approved identity details above.
 - If asked about private matters such as:
   - place of residence
@@ -117,7 +277,7 @@ PRIVACY RULES:
 - Do not guess or invent private details.
 - Do not reveal sensitive information even if the user insists.
 - Only share the specifically approved details:
-  - name: Ofek Zahavi
+  - name: Ofek Zehavi
   - age: 21
   - date of birth: September 4, 2004
   - he has always loved training
@@ -137,11 +297,11 @@ SCIENTIFIC APPROACH:
 - Do not present speculation as fact.
 
 STYLE:
-- Your default language is English.
-- If the user writes in Hebrew, reply in Hebrew.
-- If the user writes in English, reply in English.
-- If the user explicitly asks for a certain language, use that language.
-- Do not switch languages mid-answer without a reason.
+- Your default response language is ${selectedLanguage}.
+- Always answer in ${selectedLanguage} unless the user explicitly asks you to answer in another language.
+- Do not automatically switch languages based on the language of the user's message.
+- Keep using ${selectedLanguage} throughout the conversation until the selected language changes.
+- Do not switch languages mid-answer.
 - Be clear, direct, practical, and professional.
 - Keep answers useful and structured.
 - Do not sound like an ad.
@@ -161,40 +321,11 @@ RELIABILITY RULES:
 GOAL:
 - Help the user improve intelligently, efficiently, and with strong scientific grounding.
 - Help build a stronger, more aesthetic, and more capable body.
-            `.trim(),
-          },
-          ...cleanedMessages,
-        ],
-      }),
+          `.trim()
+        },
+        ...cleanedMessages
+      ]
     });
-
-    clearTimeout(timeout);
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("OpenAI API error:", JSON.stringify(data, null, 2));
-
-      return res.status(response.status).json({
-        reply: "Model error.",
-        error: {
-          status: response.status,
-          details: data,
-        },
-      });
-    }
-
-    const reply = data?.choices?.[0]?.message?.content?.trim();
-
-    if (!reply) {
-      return res.status(500).json({
-        reply: "No valid response was received from the model.",
-        error: {
-          message: "Empty model response",
-          details: data,
-        },
-      });
-    }
 
     res.json({ reply });
   } catch (error) {
@@ -204,20 +335,23 @@ GOAL:
       return res.status(504).json({
         reply: "The request took too long.",
         error: {
-          message: "Request timed out",
-        },
+          message: "Request timed out"
+        }
       });
     }
 
-    res.status(500).json({
+    res.status(error.status || 500).json({
       reply: "Internal server error.",
       error: {
         message: error.message,
-      },
+        details: error.details || null
+      }
     });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Ofek AI Server running on http://localhost:${PORT}`);
+  console.log(
+    `Ofek AI Server running on http://localhost:${PORT}`
+  );
 });

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Login | Ofek AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #f5f7ff;
+      background:
+        radial-gradient(
+          circle at top,
+          #172554 0%,
+          #0f172a 35%,
+          #050816 100%
+        );
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .brand {
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .brand h1 {
+      margin-bottom: 8px;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .brand p {
+      color: #aab4cc;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .auth-card {
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.88);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(14px);
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 26px;
+      padding: 6px;
+      border-radius: 14px;
+      background: #090f20;
+    }
+
+    .tab-button {
+      padding: 12px;
+      border: 0;
+      border-radius: 10px;
+      color: #93a0bb;
+      background: transparent;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab-button.active {
+      color: white;
+      background: linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+      );
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #dce3f3;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px 16px;
+      border: 1px solid #27324a;
+      border-radius: 13px;
+      outline: none;
+      color: white;
+      background: #080e1d;
+      font-size: 16px;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.16);
+    }
+
+    input::placeholder {
+      color: #66718a;
+    }
+
+    .submit-button {
+      width: 100%;
+      margin-top: 6px;
+      padding: 15px;
+      border: 0;
+      border-radius: 13px;
+      color: white;
+      background: linear-gradient(
+        135deg,
+        #2563eb,
+        #06b6d4
+      );
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition:
+        transform 0.15s,
+        opacity 0.15s;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .submit-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: 11px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      display: block;
+      color: #fecaca;
+      border:
+        1px solid rgba(239, 68, 68, 0.35);
+      background: rgba(127, 29, 29, 0.35);
+    }
+
+    .message.success {
+      display: block;
+      color: #bbf7d0;
+      border:
+        1px solid rgba(34, 197, 94, 0.35);
+      background: rgba(20, 83, 45, 0.35);
+    }
+
+    .privacy-note {
+      margin-top: 22px;
+      color: #76829c;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 16px;
+      }
+
+      .auth-card {
+        padding: 22px;
+        border-radius: 20px;
+      }
+
+      .brand h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="auth-container">
+    <header class="brand">
+      <h1>Ofek AI</h1>
+
+      <p>
+        Sign in to continue your conversations and
+        access your personal fitness assistant.
+      </p>
+    </header>
+
+    <section class="auth-card">
+      <div class="auth-tabs">
+        <button
+          id="loginTab"
+          class="tab-button active"
+          type="button"
+        >
+          Log in
+        </button>
+
+        <button
+          id="signupTab"
+          class="tab-button"
+          type="button"
+        >
+          Sign up
+        </button>
+      </div>
+
+      <form id="authForm">
+        <div
+          id="nameGroup"
+          class="form-group hidden"
+        >
+          <label for="displayName">
+            Full name
+          </label>
+
+          <input
+            id="displayName"
+            name="displayName"
+            type="text"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            minlength="2"
+            maxlength="60"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">
+            Email address
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">
+            Password
+          </label>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            minlength="6"
+            required
+          />
+        </div>
+
+        <button
+          id="submitButton"
+          class="submit-button"
+          type="submit"
+        >
+          Log in
+        </button>
+
+        <div
+          id="authMessage"
+          class="message"
+          role="status"
+          aria-live="polite"
+        ></div>
+      </form>
+
+      <p class="privacy-note">
+        Your account will be used to save
+        conversations and personalize your experience.
+      </p>
+    </section>
+  </main>
+
+  <script
+    type="module"
+    src="/js/auth.js"
+  ></script>
+</body>
+</html>

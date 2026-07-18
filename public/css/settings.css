@@ -1,0 +1,109 @@
+/* ===== SETTINGS MODAL ===== */
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: .25s;
+  z-index: 9999;
+}
+
+.settings-overlay.show{
+  opacity:1;
+  visibility:visible;
+}
+
+.settings-window{
+  width:min(900px,95%);
+  height:min(700px,90%);
+  background:#0f172a;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  overflow:hidden;
+  display:flex;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+
+.settings-sidebar{
+  width:240px;
+  background:#020617;
+  border-right:1px solid rgba(255,255,255,.06);
+  padding:24px;
+}
+
+.settings-sidebar h2{
+  margin:0 0 25px;
+  font-size:24px;
+}
+
+.settings-menu{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.settings-tab{
+  border:none;
+  background:none;
+  color:#cbd5e1;
+  text-align:left;
+  padding:12px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:15px;
+  transition:.2s;
+}
+
+.settings-tab:hover{
+  background:#1e293b;
+}
+
+.settings-tab.active{
+  background:#2563eb;
+  color:white;
+}
+
+.settings-content{
+  flex:1;
+  padding:30px;
+  overflow-y:auto;
+}
+
+.settings-page{
+  display:none;
+}
+
+.settings-page.active{
+  display:block;
+}
+
+.settings-footer{
+  margin-top:40px;
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+.settings-footer button{
+  padding:12px 18px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.cancel-settings{
+  background:#374151;
+  color:white;
+}
+
+.save-settings{
+  background:#22c55e;
+  color:white;
+}
