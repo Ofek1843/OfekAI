@@ -602,6 +602,37 @@ async function loadSettings(user) {
             user,
             loadedSettings
         );
+        window.dispatchEvent(
+    new CustomEvent(
+        "ofekai:settings-loaded",
+        {
+            detail: {
+                ...loadedSettings,
+                email: user.email || "",
+                displayName:
+                    loadedSettings.displayName ||
+                    user.displayName ||
+                    ""
+            }
+        }
+    )
+);
+
+        window.dispatchEvent(
+    new CustomEvent(
+        "ofekai:settings-loaded",
+        {
+            detail: {
+                ...loadedSettings,
+                email: user.email || "",
+                displayName:
+                    loadedSettings.displayName ||
+                    user.displayName ||
+                    ""
+            }
+        }
+    )
+);
     } catch (error) {
         console.error(
             "Failed to load settings:",

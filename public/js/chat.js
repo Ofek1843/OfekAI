@@ -70,6 +70,7 @@ const messages = [];
 let currentLang = "en";
 let currentConversationId = null;
 let isLoadingConversation = false;
+let currentUserSettings = {};
 
 const conversationsModulePromise =
   import("/js/conversations.js");
@@ -715,10 +716,11 @@ async function sendMessage() {
           "Content-Type":
             "application/json"
         },
-        body: JSON.stringify({
-          messages,
-          language: currentLang
-        })
+ body: JSON.stringify({
+    messages,
+    language: currentLang,
+    settings: currentUserSettings
+})
       }
     );
 
@@ -839,14 +841,29 @@ window.addEventListener(
 );
 
 window.addEventListener(
+  "ofekai:settings-loaded",
+  (event) => {
+      currentUserSettings = {
+          ...currentUserSettings,
+          ...(event.detail || {})
+      };
+  }
+);
+
+window.addEventListener(
   "ofekai:settings-saved",
   (event) => {
-    const language =
-      event.detail?.language;
+      currentUserSettings = {
+          ...currentUserSettings,
+          ...(event.detail || {})
+      };
 
-    if (language) {
-      setLanguage(language);
-    }
+      const language =
+          event.detail?.language;
+
+      if (language) {
+          setLanguage(language);
+      }
   }
 );
 

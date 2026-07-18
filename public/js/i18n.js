@@ -94,11 +94,27 @@ export const translations = {
     lightTheme: "Light",
 
     noSessions: "No saved sessions yet",
-    couldNotLoadSessions:
-      "Could not load sessions",
-    userNotAuthenticated:
-      "User not authenticated"
-  },
+couldNotLoadSessions:
+  "Could not load sessions",
+
+landingLogin: "Login",
+landingBadge: "AI CALISTHENICS/GYM COACH",
+landingTitleFirst: "Build Muscles.",
+landingTitleSecond: "Get Lean.",
+landingDescriptionFirst:
+  "Train Calisthenics, Gym or even Both.",
+landingDescriptionSecond:
+  "Get what helps Ofek progress the most.",
+landingDescriptionThird:
+  "Personalized workouts and nutrition guidance.",
+landingDescriptionFourth:
+  "Evidence-based AI coaching with all of Ofek's knowledge.",
+landingTryButton: "🚀 Try Ofek AI",
+landingScroll: "↓ Scroll to explore",
+
+userNotAuthenticated:
+  "User not authenticated"
+},
     he: {
     languageName: "עברית",
 
@@ -192,6 +208,20 @@ export const translations = {
     noSessions: "אין עדיין שיחות שמורות",
     couldNotLoadSessions:
       "לא ניתן לטעון את השיחות",
+      landingLogin: "התחברות",
+landingBadge: "מאמן AI לקליסטניקס ולחדר כושר",
+landingTitleFirst: "בנה שרירים.",
+landingTitleSecond: "התחטב.",
+landingDescriptionFirst:
+  "התאמן בקליסטניקס, בחדר כושר או בשניהם.",
+landingDescriptionSecond:
+  "קבל את מה שעוזר לאופק להתקדם בצורה הטובה ביותר.",
+landingDescriptionThird:
+  "אימונים מותאמים אישית והכוונה תזונתית.",
+landingDescriptionFourth:
+  "אימון מבוסס מחקר עם כל הידע של אופק.",
+landingTryButton: "🚀 נסה את Ofek AI",
+landingScroll: "↓ גלול כדי לגלות",
     userNotAuthenticated:
       "המשתמש אינו מחובר"
   },
@@ -288,6 +318,20 @@ export const translations = {
     noSessions: "No hay conversaciones guardadas",
     couldNotLoadSessions:
       "No se pudieron cargar las conversaciones",
+      landingLogin: "Iniciar sesión",
+landingBadge: "ENTRENADOR DE IA PARA CALISTENIA Y GIMNASIO",
+landingTitleFirst: "Desarrolla músculo.",
+landingTitleSecond: "Define tu cuerpo.",
+landingDescriptionFirst:
+  "Entrena calistenia, gimnasio o ambos.",
+landingDescriptionSecond:
+  "Obtén lo que más ayuda a Ofek a progresar.",
+landingDescriptionThird:
+  "Entrenamientos personalizados y orientación nutricional.",
+landingDescriptionFourth:
+  "Coaching de IA basado en evidencia con todo el conocimiento de Ofek.",
+landingTryButton: "🚀 Prueba Ofek AI",
+landingScroll: "↓ Desplázate para explorar",
     userNotAuthenticated:
       "Usuario no autenticado"
   },
@@ -395,6 +439,20 @@ export const translations = {
       "Aucune conversation enregistrée",
     couldNotLoadSessions:
       "Impossible de charger les conversations",
+      landingLogin: "Connexion",
+landingBadge: "COACH IA DE CALISTHÉNIE ET DE MUSCULATION",
+landingTitleFirst: "Développez vos muscles.",
+landingTitleSecond: "Affinez votre corps.",
+landingDescriptionFirst:
+  "Entraînez-vous en calisthénie, en salle ou combinez les deux.",
+landingDescriptionSecond:
+  "Profitez de ce qui aide le plus Ofek à progresser.",
+landingDescriptionThird:
+  "Entraînements personnalisés et conseils nutritionnels.",
+landingDescriptionFourth:
+  "Coaching IA fondé sur des preuves avec toutes les connaissances d'Ofek.",
+landingTryButton: "🚀 Essayer Ofek AI",
+landingScroll: "↓ Faites défiler pour explorer",
     userNotAuthenticated:
       "Utilisateur non connecté"
   },
@@ -501,6 +559,20 @@ export const translations = {
       "Keine gespeicherten Unterhaltungen",
     couldNotLoadSessions:
       "Unterhaltungen konnten nicht geladen werden",
+      landingLogin: "Anmelden",
+landingBadge: "KI-COACH FÜR CALISTHENICS UND FITNESSSTUDIO",
+landingTitleFirst: "Baue Muskeln auf.",
+landingTitleSecond: "Werde definiert.",
+landingDescriptionFirst:
+  "Trainiere Calisthenics, im Fitnessstudio oder beides.",
+landingDescriptionSecond:
+  "Nutze das, was Ofek am meisten beim Fortschritt hilft.",
+landingDescriptionThird:
+  "Personalisierte Workouts und Ernährungsberatung.",
+landingDescriptionFourth:
+  "Evidenzbasiertes KI-Coaching mit Ofeks gesamtem Wissen.",
+landingTryButton: "🚀 Ofek AI testen",
+landingScroll: "↓ Scrollen, um mehr zu entdecken",
     userNotAuthenticated:
       "Benutzer nicht angemeldet"
   },
@@ -606,7 +678,20 @@ export const translations = {
 
     couldNotLoadSessions:
       "تعذر تحميل المحادثات",
-
+landingLogin: "تسجيل الدخول",
+landingBadge: "مدرب ذكاء اصطناعي للكاليستنكس والجيم",
+landingTitleFirst: "ابنِ العضلات.",
+landingTitleSecond: "احصل على جسم مشدود.",
+landingDescriptionFirst:
+  "تدرب على الكاليستنكس أو في الجيم أو اجمع بينهما.",
+landingDescriptionSecond:
+  "احصل على ما يساعد أوفيك على التقدم بأفضل شكل.",
+landingDescriptionThird:
+  "تمارين مخصصة وإرشادات غذائية.",
+landingDescriptionFourth:
+  "تدريب بالذكاء الاصطناعي مبني على الأدلة وبكل معرفة أوفيك.",
+landingTryButton: "🚀 جرّب Ofek AI",
+landingScroll: "↓ مرر لاكتشاف المزيد",
     userNotAuthenticated:
       "المستخدم غير مسجل"
   },
@@ -712,12 +797,25 @@ export const translations = {
 
     couldNotLoadSessions:
       "无法加载聊天记录",
-
+landingLogin: "登录",
+landingBadge: "AI 街头健身与健身房教练",
+landingTitleFirst: "增长肌肉。",
+landingTitleSecond: "塑造线条。",
+landingDescriptionFirst:
+  "进行街头健身、健身房训练，或将两者结合。",
+landingDescriptionSecond:
+  "获得最能帮助 Ofek 进步的方法。",
+landingDescriptionThird:
+  "个性化训练和营养指导。",
+landingDescriptionFourth:
+  "基于科学证据，并结合 Ofek 全部知识的 AI 指导。",
+landingTryButton: "🚀 试用 Ofek AI",
+landingScroll: "↓ 向下滚动查看更多",
     userNotAuthenticated:
       "用户未登录"
   }
   };
-
+  
 const STORAGE_KEY = "ofek-ai-language";
 
 export function t(lang, key) {
