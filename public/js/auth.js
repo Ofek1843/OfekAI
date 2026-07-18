@@ -203,9 +203,9 @@ authForm.addEventListener(
         );
       }
 
-      window.setTimeout(() => {
-        window.location.href = "/";
-      }, 800);
+window.setTimeout(() => {
+  window.location.href = "/app.html";
+}, 800);
     } catch (error) {
       console.error(
         "Firebase authentication error:",
@@ -228,10 +228,8 @@ authForm.addEventListener(
 );
 
 onAuthStateChanged(auth, (user) => {
-  if (
-    user &&
-    !authenticationCompleted
-  ) {
-    window.location.href = "/";
+  if (user && !authenticationCompleted) {
+    window.location.href = "/app.html";
   }
 });
+  

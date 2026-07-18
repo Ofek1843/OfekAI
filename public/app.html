@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>TrainIQ</title>
+
+  <link rel="stylesheet" href="/css/settings.css" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #111827, #1e293b);
+      color: #f8fafc;
+    }
+
+    .container {
+      width: calc(100% - 40px);
+      max-width: 1350px;
+      margin: 24px auto;
+      padding: 22px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #38bdf8, #22c55e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      max-width: 850px;
+      margin: 0;
+      color: #cbd5e1;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .settings-btn,
+    .clear-btn {
+      width: auto;
+      min-width: 130px;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .settings-btn:hover,
+    .clear-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .clear-btn {
+      background: linear-gradient(90deg, #ef4444, #f97316);
+    }
+
+    .settings-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .settings-btn:hover {
+      background: rgba(255, 255, 255, 0.13);
+    }
+
+    .app-layout {
+      display: grid;
+      grid-template-columns: 310px minmax(0, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .conversation-history {
+      min-height: 650px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 18px;
+      background: rgba(2, 6, 23, 0.62);
+      overflow: hidden;
+    }
+
+    .conversation-history-header {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .conversation-history-header h2 {
+      margin: 0;
+      font-size: 27px;
+      line-height: 1.2;
+      color: #f8fafc;
+    }
+
+    .conversation-history-header p {
+      margin: 6px 0 0;
+      color: #94a3b8;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    #newSessionBtn {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 14px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.1);
+      color: #e0f2fe;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    #newSessionBtn:hover {
+      transform: translateY(-1px);
+      background: rgba(56, 189, 248, 0.18);
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    .session-trail {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      max-height: 505px;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+    }
+
+    .session-trail-item {
+      width: 100%;
+      max-width: none;
+      min-height: 46px;
+      padding: 12px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .session-trail-item:hover {
+      transform: translateX(2px);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .session-trail-item.active {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.45);
+      color: #dcfce7;
+    }
+
+    .session-trail-empty {
+      padding: 10px 2px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .chat-area {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat {
+      flex: 1;
+      min-height: 555px;
+      max-height: 650px;
+      overflow-y: auto;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      background: linear-gradient(
+        180deg,
+        rgba(2, 6, 23, 0.95),
+        rgba(15, 23, 42, 0.95)
+      );
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      margin: 12px 0;
+      padding: 14px 16px;
+      border-radius: 16px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 16px;
+    }
+
+    .user {
+      max-width: 85%;
+      margin-left: 0;
+      margin-right: auto;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      color: white;
+      text-align: left;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+    }
+
+    .bot {
+      max-width: 92%;
+      margin-right: 0;
+      margin-left: auto;
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+      text-align: left;
+    }
+
+    .system {
+      max-width: 100%;
+      background: rgba(120, 53, 15, 0.18);
+      border: 1px solid rgba(251, 146, 60, 0.45);
+      color: #fed7aa;
+      text-align: left;
+    }
+
+    .welcome {
+      background: linear-gradient(
+        90deg,
+        rgba(34, 197, 94, 0.15),
+        rgba(56, 189, 248, 0.12)
+      );
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      color: #e2e8f0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    textarea {
+      flex: 1;
+      min-height: 76px;
+      max-height: 180px;
+      padding: 14px;
+      resize: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      background: #020617;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+
+    textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    #sendBtn {
+      width: 145px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(90deg, #22c55e, #06b6d4);
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled,
+    textarea:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .typing {
+      opacity: 0.8;
+      font-style: italic;
+    }
+
+    .settings-sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .settings-sidebar-header h2 {
+      margin: 0;
+    }
+
+    .settings-close {
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #f8fafc;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .settings-page h3 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    .settings-description {
+      margin: 0 0 24px;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .settings-field input,
+    .settings-field select,
+    .settings-field textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 11px;
+      background: #020617;
+      color: #f8fafc;
+      font: inherit;
+      outline: none;
+    }
+
+    .settings-field textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .settings-field input:focus,
+    .settings-field select:focus,
+    .settings-field textarea:focus {
+      border-color: rgba(56, 189, 248, 0.55);
+    }
+
+    .settings-switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      color: #e2e8f0;
+      font-weight: 700;
+    }
+
+    .settings-switch-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: #22c55e;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        width: calc(100% - 24px);
+        margin: 12px auto;
+        padding: 16px;
+      }
+
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .conversation-history {
+        min-height: auto;
+      }
+
+      .session-trail {
+        max-height: 260px;
+      }
+
+      #chat {
+        min-height: 430px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      h1 {
+        font-size: 30px;
+      }
+
+      .input-row {
+        flex-direction: column;
+      }
+
+      #sendBtn,
+      .clear-btn {
+        width: 100%;
+        min-height: 50px;
+      }
+
+      .user,
+      .bot {
+        max-width: 100%;
+      }
+
+      .conversation-history-header h2 {
+        font-size: 23px;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .settings-window {
+        width: calc(100% - 20px);
+        height: calc(100% - 20px);
+        flex-direction: column;
+      }
+
+      .settings-sidebar {
+        width: 100%;
+        padding: 16px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .settings-menu {
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .settings-tab {
+        flex: 0 0 auto;
+      }
+
+      .settings-content {
+        padding: 20px;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+  </style>
+
+  <style id="ofekThemeStyles">
+  /* =========================
+     TrainIQ — DARK THEME
+     ========================= */
+
+  html[data-theme="dark"] body {
+    background:
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.10), transparent 34%),
+      linear-gradient(135deg, #0f172a, #111c33, #17213a);
+    color: #eef6ff;
+  }
+
+  html[data-theme="dark"] .container {
+    background: rgba(15, 27, 49, 0.94);
+    border-color: rgba(125, 211, 252, 0.12);
+  }
+
+  html[data-theme="dark"] .conversation-history,
+  html[data-theme="dark"] #chat {
+    background: rgba(5, 15, 34, 0.78);
+    border-color: rgba(125, 211, 252, 0.10);
+  }
+
+  html[data-theme="dark"] .bot {
+    background: #14213a;
+    color: #f1f7ff;
+  }
+
+  html[data-theme="dark"] textarea,
+  html[data-theme="dark"] .settings-field input,
+  html[data-theme="dark"] .settings-field select,
+  html[data-theme="dark"] .settings-field textarea {
+    background: #09152a;
+    color: #f1f7ff;
+    border-color: rgba(125, 211, 252, 0.15);
+  }
+
+  html[data-theme="dark"] .settings-window {
+    background: #101d35;
+    color: #eef6ff;
+  }
+
+  html[data-theme="dark"] .settings-sidebar {
+    background: #0b172b;
+  }
+
+  /* =========================
+     TrainIQ — LIGHT THEME
+     ========================= */
+
+  html[data-theme="light"] body {
+    background:
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 34%),
+      linear-gradient(135deg, #dcecf5, #e8f3f7, #d9e8f2);
+    color: #17324d;
+  }
+
+  html[data-theme="light"] .container {
+    background: rgba(232, 244, 249, 0.94);
+    border-color: rgba(23, 79, 114, 0.14);
+    box-shadow: 0 18px 50px rgba(30, 77, 105, 0.16);
+  }
+
+  html[data-theme="light"] .subtitle {
+    color: #4d6c80;
+  }
+
+  html[data-theme="light"] .conversation-history {
+    background: rgba(215, 234, 243, 0.92);
+    border-color: rgba(23, 79, 114, 0.12);
+  }
+
+  html[data-theme="light"] .conversation-history-header h2 {
+    color: #17324d;
+  }
+
+  html[data-theme="light"] .conversation-history-header p,
+  html[data-theme="light"] .session-trail-empty {
+    color: #58758a;
+  }
+
+  html[data-theme="light"] .session-trail-item {
+    background: rgba(239, 248, 251, 0.92);
+    color: #23455e;
+    border-color: rgba(23, 79, 114, 0.12);
+  }
+
+  html[data-theme="light"] .session-trail-item:hover {
+    background: #f2fbfd;
+    border-color: rgba(14, 165, 233, 0.28);
+  }
+
+  html[data-theme="light"] .session-trail-item.active {
+    background: rgba(13, 148, 136, 0.13);
+    border-color: rgba(13, 148, 136, 0.38);
+    color: #115e59;
+  }
+
+  html[data-theme="light"] #chat {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(224, 240, 247, 0.96),
+        rgba(215, 233, 242, 0.96)
+      );
+    border-color: rgba(23, 79, 114, 0.12);
+  }
+
+  html[data-theme="light"] .bot {
+    background: #edf7fa;
+    color: #17324d;
+    border-color: rgba(23, 79, 114, 0.12);
+  }
+
+  html[data-theme="light"] .welcome {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(20, 184, 166, 0.14),
+        rgba(14, 165, 233, 0.13)
+      );
+    border-color: rgba(14, 165, 233, 0.25);
+    color: #17324d;
+  }
+
+  html[data-theme="light"] textarea {
+    background: #edf7fa;
+    color: #17324d;
+    border-color: rgba(23, 79, 114, 0.18);
+  }
+
+  html[data-theme="light"] textarea::placeholder {
+    color: #718b9c;
+  }
+
+  html[data-theme="light"] .settings-btn {
+    background: rgba(224, 238, 246, 0.92);
+    color: #17324d;
+    border-color: rgba(23, 79, 114, 0.16);
+  }
+
+  html[data-theme="light"] .settings-btn:hover {
+    background: #f0f9fc;
+  }
+
+  html[data-theme="light"] .settings-overlay {
+    background: rgba(34, 65, 87, 0.35);
+  }
+
+  html[data-theme="light"] .settings-window {
+    background: #e8f4f8;
+    color: #17324d;
+    border-color: rgba(23, 79, 114, 0.14);
+  }
+
+  html[data-theme="light"] .settings-sidebar {
+    background: #d9ebf2;
+    border-color: rgba(23, 79, 114, 0.12);
+  }
+
+  html[data-theme="light"] .settings-sidebar-header h2,
+  html[data-theme="light"] .settings-page h3,
+  html[data-theme="light"] .settings-field,
+  html[data-theme="light"] .settings-switch-row {
+    color: #17324d;
+  }
+
+  html[data-theme="light"] .settings-description {
+    color: #58758a;
+  }
+
+  html[data-theme="light"] .settings-tab {
+    color: #365b73;
+  }
+
+  html[data-theme="light"] .settings-tab:hover {
+    background: rgba(255, 255, 255, 0.52);
+  }
+
+  html[data-theme="light"] .settings-tab.active {
+    background: rgba(14, 165, 233, 0.14);
+    color: #075985;
+  }
+
+  html[data-theme="light"] .settings-close {
+    background: rgba(255, 255, 255, 0.55);
+    color: #17324d;
+    border-color: rgba(23, 79, 114, 0.14);
+  }
+
+  html[data-theme="light"] .settings-field input,
+  html[data-theme="light"] .settings-field select,
+  html[data-theme="light"] .settings-field textarea {
+    background: #f2fafc;
+    color: #17324d;
+    border-color: rgba(23, 79, 114, 0.18);
+  }
+
+  html[data-theme="light"] .settings-switch-row {
+    border-color: rgba(23, 79, 114, 0.10);
+  }
+</style>
+</head>
+
+<body>
+  <main class="container">
+    <header class="top-bar">
+      <div class="brand">
+        <h1>TrainIQ</h1>
+
+        <p id="subtitle" class="subtitle">
+          The artificial intelligence of Ofek Zehavi — fitness, nutrition,
+          training progress, and high-quality evidence-based information.
+        </p>
+      </div>
+
+      <div class="top-actions">
+        <button id="settingsBtn" class="settings-btn" type="button" aria-haspopup="dialog">
+          ⚙️ Settings
+        </button>
+<button
+    class="workout-btn"
+    onclick="window.location.href='/workout-builder.html'">
+    🏋️ AI Workout Builder
+</button>
+        <button id="clearBtn" class="clear-btn" type="button">
+          Clear Chat
+        </button>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <aside class="conversation-history">
+        <div class="conversation-history-header">
+          <div>
+            <h2 id="conversationHistoryTitle">Conversation History</h2>
+            <p
+             id="conversationHistoryDescription">
+    Open one of your previous conversations or start a new session.
+</p>
+          </div>
+
+          <button id="newSessionBtn" type="button">
+            + New Session
+          </button>
+        </div>
+
+        <div id="sessionTrail" class="session-trail">
+          <span class="session-trail-empty">
+            Loading conversations...
+          </span>
+        </div>
+      </aside>
+
+      <section class="chat-area">
+        <section id="chat" aria-live="polite"></section>
+
+        <div class="input-row">
+          <textarea
+            id="messageInput"
+            placeholder="Write a message..."
+            aria-label="Message"
+          ></textarea>
+
+          <button id="sendBtn" type="button">
+            Send
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+
+  <div id="settingsOverlay" class="settings-overlay" aria-hidden="true">
+    <section class="settings-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <aside class="settings-sidebar">
+        <div class="settings-sidebar-header">
+          <h2 id="settingsTitle">Settings</h2>
+          <button id="closeSettingsBtn" class="settings-close" type="button" aria-label="Close settings">×</button>
+        </div>
+
+        <nav class="settings-menu" aria-label="Settings sections">
+          <button id="profileTab" class="settings-tab active" type="button" data-page="profileSettings">Profile</button>
+
+<button id="athleteCoreTab" class="settings-tab" type="button" data-page="athleteCoreSettings">Athlete Core</button>
+
+<button id="aiPreferencesTab" class="settings-tab" type="button" data-page="aiPreferencesSettings">AI Preferences</button>
+
+<button id="languageTab" class="settings-tab" type="button" data-page="languageSettings">Language</button>
+
+<button id="appearanceTab" class="settings-tab" type="button" data-page="appearanceSettings">Appearance</button>
+        </nav>
+      </aside>
+
+      <div class="settings-content">
+<section id="profileSettings" class="settings-page active">
+  <h3 id="profileTitle">Profile</h3>
+
+  <p
+    id="profileDescription"
+    class="settings-description"
+  >
+    Manage the identity displayed inside TrainIQ AI.
+  </p>
+
+  <label class="settings-field">
+    <span id="fullNameLabel">Full name</span>
+
+    <input
+      id="settingsFullName"
+      type="text"
+      placeholder="Ofek Zehavi"
+      autocomplete="name"
+    />
+  </label>
+
+  <label class="settings-field">
+    <span id="emailLabel">Email</span>
+
+    <input
+      id="settingsEmail"
+      type="email"
+      placeholder="name@example.com"
+      autocomplete="email"
+      disabled
+    />
+  </label>
+</section>
+
+<section
+  id="athleteCoreSettings"
+  class="settings-page"
+>
+  <h3 id="athleteCoreTitle">
+    Athlete Core
+  </h3>
+
+  <p
+    id="athleteCoreDescription"
+    class="settings-description"
+  >
+    Core training data used to personalize fitness and nutrition guidance.
+  </p>
+
+  <div class="settings-grid">
+    <label class="settings-field">
+      <span id="ageLabel">Age</span>
+
+      <input
+        id="settingsAge"
+        type="number"
+        min="13"
+        max="100"
+        placeholder="21"
+      />
+    </label>
+
+    <label class="settings-field">
+      <span id="bodyWeightLabel">
+        Body weight (kg)
+      </span>
+
+      <input
+        id="settingsWeight"
+        type="number"
+        min="30"
+        max="300"
+        step="0.1"
+        placeholder="75"
+      />
+    </label>
+
+    <label class="settings-field">
+      <span id="heightLabel">
+        Height (cm)
+      </span>
+
+      <input
+        id="settingsHeight"
+        type="number"
+        min="120"
+        max="230"
+        placeholder="180"
+      />
+    </label>
+
+    <label class="settings-field">
+      <span id="trainingExperienceLabel">
+        Training experience
+      </span>
+
+      <select id="settingsExperience">
+        <option
+          id="experienceBeginnerOption"
+          value="beginner"
+        >
+          Beginner
+        </option>
+
+        <option
+          id="experienceIntermediateOption"
+          value="intermediate"
+        >
+          Intermediate
+        </option>
+
+        <option
+          id="experienceAdvancedOption"
+          value="advanced"
+        >
+          Advanced
+        </option>
+      </select>
+    </label>
+  </div>
+
+  <label class="settings-field">
+    <span id="primaryGoalLabel">
+      Primary goal
+    </span>
+
+    <select id="settingsGoal">
+      <option
+        id="goalMuscleGainOption"
+        value="muscle-gain"
+      >
+        Build muscle
+      </option>
+
+      <option
+        id="goalFatLossOption"
+        value="fat-loss"
+      >
+        Lose fat
+      </option>
+
+      <option
+        id="goalStrengthOption"
+        value="strength"
+      >
+        Increase strength
+      </option>
+
+      <option
+        id="goalSkillsOption"
+        value="skills"
+      >
+        Improve calisthenics skills
+      </option>
+
+      <option
+        id="goalMaintenanceOption"
+        value="maintenance"
+      >
+        Maintain performance
+      </option>
+    </select>
+  </label>
+
+  <label class="settings-field">
+    <span id="limitationsLabel">
+      Injuries or limitations
+    </span>
+
+    <textarea
+      id="settingsLimitations"
+      rows="4"
+      placeholder="Describe any relevant injury, pain, or movement limitation."
+    ></textarea>
+  </label>
+</section>
+
+<section
+  id="aiPreferencesSettings"
+  class="settings-page"
+>
+  <h3 id="aiPreferencesTitle">
+    AI Preferences
+  </h3>
+
+  <p
+    id="aiPreferencesDescription"
+    class="settings-description"
+  >
+    Control how answers are structured and personalized.
+  </p>
+
+  <label class="settings-field">
+    <span id="responseDepthLabel">
+      Response depth
+    </span>
+
+    <select id="settingsResponseDepth">
+      <option
+        id="responseConciseOption"
+        value="concise"
+      >
+        Concise
+      </option>
+
+      <option
+        id="responseBalancedOption"
+        value="balanced"
+        selected
+      >
+        Balanced
+      </option>
+
+      <option
+        id="responseDetailedOption"
+        value="detailed"
+      >
+        Detailed
+      </option>
+    </select>
+  </label>
+
+  <label class="settings-field">
+    <span id="coachingStyleLabel">
+      Coaching style
+    </span>
+
+    <select id="settingsCoachingStyle">
+      <option
+        id="coachingDirectOption"
+        value="direct"
+      >
+        Direct
+      </option>
+
+      <option
+        id="coachingSupportiveOption"
+        value="supportive"
+      >
+        Supportive
+      </option>
+
+      <option
+        id="coachingTechnicalOption"
+        value="technical"
+      >
+        Technical
+      </option>
+    </select>
+  </label>
+
+  <label class="settings-switch-row">
+    <span id="useAthleteCoreLabel">
+      Use Athlete Core automatically
+    </span>
+
+    <input
+      id="settingsUseAthleteCore"
+      type="checkbox"
+      checked
+    />
+  </label>
+
+  <label class="settings-switch-row">
+    <span id="evidenceBasedLabel">
+      Prefer evidence-based explanations
+    </span>
+
+    <input
+      id="settingsEvidenceBased"
+      type="checkbox"
+      checked
+    />
+  </label>
+</section>
+
+<section
+  id="languageSettings"
+  class="settings-page"
+>
+  <h3 id="languageTitle">Language</h3>
+
+  <p
+    id="languageDescription"
+    class="settings-description"
+  >
+    Choose the default interface and response language.
+  </p>
+
+  <label class="settings-field">
+    <span id="defaultLanguageLabel">
+      Default language
+    </span>
+
+    <select id="settingsLanguage">
+      <option value="en">English</option>
+      <option value="he">Hebrew</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="ar">العربية</option>
+      <option value="zh">中文</option>
+    </select>
+  </label>
+</section>
+
+<section
+  id="appearanceSettings"
+  class="settings-page"
+>
+  <h3 id="appearanceTitle">
+    Appearance
+  </h3>
+
+  <p
+    id="appearanceDescription"
+    class="settings-description"
+  >
+    Choose how TrainIQ AI should look on this device.
+  </p>
+
+  <label class="settings-field">
+    <span id="themeLabel">Theme</span>
+
+    <select id="settingsTheme">
+      <option
+        id="themeSystemOption"
+        value="system"
+      >
+        System
+      </option>
+
+      <option
+        id="themeDarkOption"
+        value="dark"
+        selected
+      >
+        Dark
+      </option>
+
+      <option
+        id="themeLightOption"
+        value="light"
+      >
+        Light
+      </option>
+    </select>
+  </label>
+</section>
+
+<footer class="settings-footer">
+  <button
+    id="cancelSettingsBtn"
+    class="cancel-settings"
+    type="button"
+  >
+    Cancel
+  </button>
+
+  <button
+    id="saveSettingsBtn"
+    class="save-settings"
+    type="button"
+  >
+    Save Changes
+  </button>
+</footer>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="/js/chat.js"></script>
+  <script type="module" src="/js/session-trail.js"></script>
+  <script type="module" src="/js/app-auth.js"></script>
+  <script type="module" src="/js/user-profile.js"></script>
+  <script type="module" src="/js/settings.js"></script>
+</body>
+</html>

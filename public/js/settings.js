@@ -13,7 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 /*
- * Ofek AI — Settings Controller
+ * TrainIQ AI — Settings Controller
  * Firestore path: users/{uid}/settings/main
  */
 

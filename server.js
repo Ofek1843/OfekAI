@@ -10,9 +10,8 @@ app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "landing.html"));
 });
-
 /**
  * Sends a request to OpenAI's Chat Completions API.
  */
@@ -473,9 +472,255 @@ GOAL:
     });
   }
 });
+app.post("/api/workout-builder", async (req, res) => {
+  try {
+const {
+  goal,
+  experience,
+  daysPerWeek,
+  sessionDuration,
+  equipment = [],
+  trainingStyle,
+  priority,
+  limitations = "None",
+  language = "en"
+} = req.body;
+
+    if (
+      !goal ||
+      !experience ||
+      !daysPerWeek ||
+      !sessionDuration ||
+      !trainingStyle
+    ) {
+      return res.status(400).json({
+        error: "Missing required workout preferences"
+      });
+    }
+
+    const parsedDays = Number(daysPerWeek);
+    const parsedDuration = Number(sessionDuration);
+
+    if (
+      !Number.isInteger(parsedDays) ||
+      parsedDays < 1 ||
+      parsedDays > 7 ||
+      !Number.isFinite(parsedDuration) ||
+      parsedDuration < 20 ||
+      parsedDuration > 180
+    ) {
+      return res.status(400).json({
+        error: "Invalid workout preferences"
+      });
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        error: "OPENAI_API_KEY is missing"
+      });
+    }
+const outputLanguage =
+  language === "he" ? "Hebrew" : "English";
+
+    const workoutResponse = await createChatCompletion({
+      temperature: 0.3,
+      maxTokens: 3500,
+      messages: [
+        {
+          role: "system",
+          content: `
+You are TrainIQ, an evidence-based workout programming assistant.
+
+Create a safe, practical and personalized workout program.
+
+Return ONLY valid JSON.
+Do not use markdown.
+Do not use code fences.
+Do not include any text outside the JSON.
+
+The JSON must exactly follow this structure:
+
+{
+  "programName": "string",
+  "daysPerWeek": 3,
+  "durationWeeks": 8,
+  "goal": "string",
+  "sessions": [
+    {
+      "day": 1,
+      "name": "string",
+      "exercises": [
+{
+  "name": "string",
+  "muscleGroup": "string",
+  "equipment": "string",
+  "sets": 3,
+  "reps": "8-12",
+  "restSeconds": 120,
+  "rir": "1-3",
+  "notes": "string"
+}
+      ]
+    }
+  ]
+}
+
+Programming rules:
+- Match the requested number of training days exactly.
+- Fit each session within the requested session duration.
+- Use only equipment the user selected.
+- Respect all injuries, limitations and exercise requests.
+- Do not diagnose injuries.
+- Include approximately 4 to 8 exercises per session depending on duration.
+- Use evidence-based hypertrophy and strength principles.
+- Avoid excessive volume.
+- Use realistic sets, repetitions, rest periods and RIR.
+- Ensure balanced weekly muscle-group coverage unless the user requests specialization.
+- For unilateral exercises, clearly state whether reps are per side.
+- For every exercise, include its primary muscle group.
+- For every exercise, include the exact equipment required.
+- Keep muscle-group names short, such as Chest, Back, Quads, Hamstrings, Shoulders, Biceps, Triceps or Core.
+- Keep equipment names short, such as Machine, Cable, Dumbbell, Barbell, Bodyweight or Pull-up Bar.
+LANGUAGE RULES:
+
+- Output ALL user-facing values in ${outputLanguage}.
+- JSON property names MUST remain in English.
+
+If outputLanguage is Hebrew:
+
+- Translate EVERYTHING to Hebrew.
+- Never use English workout names.
+- Never use English muscle names.
+- Never use English equipment names.
+- Never use English exercise names.
+- Never use English day names.
+
+Use the common Israeli gym terminology.
+
+Examples:
+
+Upper Body Hypertrophy → היפרטרופיה - פלג גוף עליון
+Lower Body Hypertrophy → היפרטרופיה - פלג גוף תחתון
+Full Body Hypertrophy → היפרטרופיה - כל הגוף
+
+Pull-up → מתח
+Pull-up Bar → מתח
+Lat Pulldown → משיכת פולי עליון
+Seated Row → חתירה בישיבה
+Chest Press → לחיצת חזה
+Incline Chest Press → לחיצת חזה בשיפוע
+Shoulder Press → לחיצת כתפיים
+Lateral Raise → הרחקת כתפיים
+Biceps Curl → כפיפת מרפק
+Triceps Pushdown → פשיטת מרפק בפולי
+Leg Press → לחיצת רגליים
+Leg Extension → פשיטת ברך
+Leg Curl → כפיפת ברך
+Calf Raise → תאומים
+Plank → פלאנק
+Push-up → שכיבות סמיכה
+Dip → מקבילים
+
+Muscle groups:
+
+Chest → חזה
+Back → גב
+Shoulders → כתפיים
+Biceps → יד קדמית
+Triceps → יד אחורית
+Quads → ארבע ראשי
+Hamstrings → המסטרינג
+Glutes → ישבן
+Calves → תאומים
+Core → ליבה
+
+Equipment:
+
+Machine → מכונה
+Cable → כבלים
+Dumbbell → משקולות יד
+Barbell → מוט
+Bodyweight → משקל גוף
+Pull-up Bar → מתח
+Gymnastic Rings → טבעות
+
+Return ONLY Hebrew values whenever Hebrew is selected.
+Do not mix English into the workout.
+          `.trim()
+        },
+        {
+          role: "user",
+          content: `
+Create a workout program using these preferences:
+
+Goal: ${String(goal)}
+Experience: ${String(experience)}
+Training days per week: ${parsedDays}
+Session duration: ${parsedDuration} minutes
+Training style: ${String(trainingStyle)}
+Available equipment: ${
+            Array.isArray(equipment)
+              ? equipment.join(", ")
+              : String(equipment)
+          }
+Priority: ${String(priority || "General")}
+Injuries, limitations or special requests: ${String(limitations)}
+          `.trim()
+        }
+      ]
+    });
+
+    const cleanedResponse = String(workoutResponse)
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    let program;
+
+    try {
+      program = JSON.parse(cleanedResponse);
+    } catch (parseError) {
+      console.error(
+        "Workout JSON parsing failed:",
+        parseError,
+        cleanedResponse
+      );
+
+      return res.status(502).json({
+        error: "The AI returned an invalid workout format"
+      });
+    }
+
+    if (
+      !program ||
+      typeof program !== "object" ||
+      !Array.isArray(program.sessions)
+    ) {
+      return res.status(502).json({
+        error: "The AI returned an incomplete workout program"
+      });
+    }
+
+    return res.json({
+      success: true,
+      program
+    });
+  } catch (error) {
+    console.error("Workout builder error:", error);
+
+    if (error.name === "AbortError") {
+      return res.status(504).json({
+        error: "Workout generation timed out"
+      });
+    }
+
+    return res.status(error.status || 500).json({
+      error: error.message || "Could not generate workout program"
+    });
+  }
+});
 
 app.listen(PORT, () => {
-  console.log(
-    `Ofek AI Server running on http://localhost:${PORT}`
-  );
+  console.log(`TrainIQ AI Server running on http://localhost:${PORT}`);
 });

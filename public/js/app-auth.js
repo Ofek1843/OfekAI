@@ -166,13 +166,13 @@ function createUserControls(user, visibleName) {
 onAuthStateChanged(
   auth,
   async (user) => {
-    if (!user) {
-      window.location.replace(
-        "/auth.html"
-      );
+ if (!user) {
+  window.location.replace(
+    "/auth.html"
+  );
 
-      return;
-    }
+  return;
+}
 
     const visibleName =
       await getVisibleUserName(user);

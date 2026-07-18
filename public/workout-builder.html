@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>TrainIQ Workout Builder</title>
+
+<link rel="stylesheet" href="/css/workout-builder.css">
+</head>
+
+<body>
+  <main class="builder-page">
+    <section class="builder-card">
+      <div class="builder-header">
+        <span class="builder-badge">TrainIQ</span>
+
+        <h1>AI Workout Builder</h1>
+
+        <p>
+          Build a personalized workout plan based on your goals,
+          experience, schedule, equipment, and limitations.
+        </p>
+      </div>
+
+      <form id="workout-builder-form">
+        <div class="form-group">
+          <label for="goal">Primary goal</label>
+
+          <select id="goal" name="goal" required>
+            <option value="">Select a goal</option>
+            <option value="buildMuscle">Build muscle</option>
+            <option value="loseFat">Lose fat</option>
+            <option value="increaseStrength">Increase strength</option>
+            <option value="improveSkills">
+              Improve calisthenics skills
+            </option>
+            <option value="maintainPerformance">
+              Maintain performance
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="experience">Training experience</label>
+
+          <select id="experience" name="experience" required>
+            <option value="">Select your level</option>
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="daysPerWeek">Training days per week</label>
+
+            <input
+              id="daysPerWeek"
+              name="daysPerWeek"
+              type="number"
+              min="1"
+              max="7"
+              value="4"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="sessionDuration">
+              Session duration in minutes
+            </label>
+
+            <input
+              id="sessionDuration"
+              name="sessionDuration"
+              type="number"
+              min="20"
+              max="180"
+              step="5"
+              value="60"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="trainingStyle">Training style</label>
+
+          <select id="trainingStyle" name="trainingStyle" required>
+            <option value="">Select training style</option>
+            <option value="gym">Gym</option>
+            <option value="calisthenics">Calisthenics</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Available equipment</label>
+
+          <div class="checkbox-grid">
+            <label class="checkbox-option">
+              <input
+                type="checkbox"
+                name="equipment"
+                value="bodyweight"
+              />
+              <span>Bodyweight</span>
+            </label>
+
+            <label class="checkbox-option">
+              <input
+                type="checkbox"
+                name="equipment"
+                value="pullUpBar"
+              />
+              <span>Pull-up bar</span>
+            </label>
+
+            <label class="checkbox-option">
+              <input
+                type="checkbox"
+                name="equipment"
+                value="rings"
+              />
+              <span>Gymnastic rings</span>
+            </label>
+
+            <label class="checkbox-option">
+              <input
+                type="checkbox"
+                name="equipment"
+                value="dumbbells"
+              />
+              <span>Dumbbells</span>
+            </label>
+
+            <label class="checkbox-option">
+              <input
+                type="checkbox"
+                name="equipment"
+                value="barbell"
+              />
+              <span>Barbell</span>
+            </label>
+
+            <label class="checkbox-option">
+              <input
+                type="checkbox"
+                name="equipment"
+                value="machines"
+              />
+              <span>Machines</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Training priority</label>
+
+          <select id="priority" name="priority">
+            <option value="hypertrophy">Hypertrophy</option>
+            <option value="strength">Strength</option>
+            <option value="skills">Skills</option>
+            <option value="generalFitness">
+              General fitness
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="limitations">
+            Injuries or limitations
+          </label>
+
+          <textarea
+            id="limitations"
+            name="limitations"
+            rows="4"
+            placeholder="Describe any injuries, pain, or movement limitations."
+          ></textarea>
+        </div>
+
+        <button id="generate-button" type="submit">
+          Generate My Program
+        </button>
+
+        <p id="builder-status" class="builder-status"></p>
+      </form>
+    </section>
+
+    <section
+      id="program-result"
+      class="program-result hidden"
+      aria-live="polite"
+    ></section>
+  </main>
+
+<script type="module" src="/js/workout-builder.js"></script>
+</body>
+</html>

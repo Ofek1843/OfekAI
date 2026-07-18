@@ -1,0 +1,636 @@
+const form = document.querySelector("#workout-builder-form");
+const button = document.querySelector("#generate-button");
+const statusElement = document.querySelector("#builder-status");
+const resultElement = document.querySelector("#program-result");
+
+const currentLanguage =
+  localStorage.getItem("ofek-ai-language") || "en";
+
+const isHebrew = currentLanguage === "he";
+const ui = isHebrew
+  ? {
+      pageTitle: "בונה תוכניות אימון AI",
+      pageDescription:
+        "בנה תוכנית אימונים אישית לפי המטרה, הניסיון, לוח הזמנים, הציוד והמגבלות שלך.",
+
+      primaryGoal: "מטרה עיקרית",
+      trainingExperience: "ניסיון באימונים",
+      trainingDays: "מספר אימונים בשבוע",
+      sessionDuration: "משך האימון בדקות",
+      trainingStyle: "סגנון האימון",
+      availableEquipment: "ציוד זמין",
+      trainingPriority: "דגש מרכזי באימון",
+      limitations: "פציעות או מגבלות",
+      limitationsPlaceholder:
+        "תאר פציעות, כאבים או מגבלות תנועה.",
+
+      generate: "צור את התוכנית שלי",
+      generating: "יוצר תוכנית...",
+      generatingStatus: "יוצר את תוכנית האימונים שלך...",
+
+      day: "יום",
+      exercises: "תרגילים",
+      exercise: "תרגיל",
+      muscle: "שריר",
+      equipment: "ציוד",
+      sets: "סטים",
+      reps: "חזרות",
+      rest: "מנוחה",
+      print: "הדפס / שמור",
+
+      personalizedPlan: "תוכנית אישית של TrainIQ",
+      programDescription:
+        "תוכנית אימונים אישית ומבוססת מחקר שנבנתה לפי המטרה, הניסיון והציוד שלך.",
+
+      frequency: "תדירות",
+      duration: "משך התוכנית",
+      goal: "מטרה",
+      daysPerWeek: "ימים בשבוע",
+      weeks: "שבועות",
+
+      general: "כללי",
+      equipmentFallback: "ציוד"
+    }
+  : {
+      pageTitle: "AI Workout Builder",
+      pageDescription:
+        "Build a personalized workout plan based on your goals, experience, schedule, equipment, and limitations.",
+
+      primaryGoal: "Primary goal",
+      trainingExperience: "Training experience",
+      trainingDays: "Training days per week",
+      sessionDuration: "Session duration in minutes",
+      trainingStyle: "Training style",
+      availableEquipment: "Available equipment",
+      trainingPriority: "Training priority",
+      limitations: "Injuries or limitations",
+      limitationsPlaceholder:
+        "Describe any injuries, pain, or movement limitations.",
+
+      generate: "Generate My Program",
+      generating: "Generating...",
+      generatingStatus: "Generating your workout program...",
+
+      day: "Day",
+      exercises: "exercises",
+      exercise: "Exercise",
+      muscle: "Muscle",
+      equipment: "Equipment",
+      sets: "Sets",
+      reps: "Reps",
+      rest: "Rest",
+      print: "Print / Save",
+
+      personalizedPlan: "TrainIQ Personalized Plan",
+      programDescription:
+        "A personalized evidence-based training program built around your goal, experience and available equipment.",
+
+      frequency: "Frequency",
+      duration: "Duration",
+      goal: "Goal",
+      daysPerWeek: "days/week",
+      weeks: "weeks",
+
+      general: "General",
+      equipmentFallback: "Equipment"
+    };
+    function setText(selector, text) {
+  const element = document.querySelector(selector);
+
+  if (element) {
+    element.textContent = text;
+  }
+}
+
+function translateBuilderInterface() {
+  setText("h1", ui.pageTitle);
+
+  const description =
+    document.querySelector(".builder-description") ||
+    document.querySelector("header p");
+
+  if (description) {
+    description.textContent = ui.pageDescription;
+  }
+
+  setText('label[for="goal"]', ui.primaryGoal);
+  setText('label[for="experience"]', ui.trainingExperience);
+  setText('label[for="daysPerWeek"]', ui.trainingDays);
+  setText('label[for="sessionDuration"]', ui.sessionDuration);
+  setText('label[for="trainingStyle"]', ui.trainingStyle);
+  setText('label[for="priority"]', ui.trainingPriority);
+  setText('label[for="limitations"]', ui.limitations);
+
+const equipmentHeading =
+  document.querySelector(
+    [
+      ".equipment-section legend",
+      ".equipment-section-title",
+      "[data-equipment-title]",
+      ".equipment-grid-title",
+      "fieldset legend"
+    ].join(",")
+  );
+  if (equipmentHeading) {
+    equipmentHeading.textContent = ui.availableEquipment;
+  }
+
+  const limitationsInput =
+    document.querySelector(
+      '#limitations, [name="limitations"]'
+    );
+
+  if (limitationsInput) {
+    limitationsInput.placeholder =
+      ui.limitationsPlaceholder;
+  }
+
+  button.textContent = ui.generate;
+}
+
+translateBuilderInterface();
+const hebrewOptionLabels = {
+  buildMuscle: "בניית שריר",
+  loseFat: "ירידה באחוזי שומן",
+  increaseStrength: "שיפור כוח",
+  improveSkills: "שיפור מיומנויות קליסטניקס",
+  maintainPerformance: "שמירה על הביצועים",
+
+  beginner: "מתחיל",
+  intermediate: "בינוני",
+  advanced: "מתקדם",
+
+  gym: "חדר כושר",
+  calisthenics: "קליסטניקס",
+  hybrid: "משולב",
+
+  hypertrophy: "בניית שריר",
+  strength: "כוח",
+  endurance: "סיבולת",
+  skills: "מיומנויות",
+
+  bodyweight: "משקל גוף",
+  "pull-up bar": "מתח",
+  pullupbar: "מתח",
+  dumbbells: "משקולות יד",
+  dumbbell: "משקולות יד",
+  "gymnastic rings": "טבעות",
+  rings: "טבעות",
+  machines: "מכונות",
+  machine: "מכונות",
+  barbell: "מוט ומשקולות",
+  cable: "כבלים"
+};
+
+function normalizeOptionKey(value = "") {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replaceAll("-", " ");
+}
+
+function translateFormOptions() {
+  if (!isHebrew) {
+    return;
+  }
+
+  document.querySelectorAll("select option").forEach((option) => {
+    const valueKey = normalizeOptionKey(option.value);
+    const textKey = normalizeOptionKey(option.textContent);
+
+    const translation =
+      hebrewOptionLabels[option.value] ||
+      hebrewOptionLabels[valueKey] ||
+      hebrewOptionLabels[textKey];
+
+    if (translation) {
+      option.textContent = translation;
+    }
+  });
+
+  document
+    .querySelectorAll('input[type="checkbox"][name="equipment"]')
+    .forEach((input) => {
+      const label =
+        input.closest("label") ||
+        document.querySelector(`label[for="${input.id}"]`);
+
+      if (!label) {
+        return;
+      }
+
+      const valueKey = normalizeOptionKey(input.value);
+
+      const translation =
+        hebrewOptionLabels[input.value] ||
+        hebrewOptionLabels[valueKey];
+
+      if (!translation) {
+        return;
+      }
+
+      const textNode = [...label.childNodes].find(
+        (node) =>
+          node.nodeType === Node.TEXT_NODE &&
+          node.textContent.trim()
+      );
+
+      if (textNode) {
+        textNode.textContent = ` ${translation} `;
+      } else {
+        const textElement = label.querySelector(
+          "span, strong, .equipment-name"
+        );
+
+        if (textElement) {
+          textElement.textContent = translation;
+        }
+      }
+    });
+}
+
+translateFormOptions();
+document.documentElement.lang = isHebrew ? "he" : "en";
+document.documentElement.dir = isHebrew ? "rtl" : "ltr";
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  setLoading(true);
+
+  setStatus(
+    isHebrew
+      ? "יוצר את תוכנית האימונים שלך..."
+      : "Generating your workout program..."
+  );
+
+  hideResult();
+
+  const formData = new FormData(form);
+
+  const payload = {
+    goal: formData.get("goal"),
+    experience: formData.get("experience"),
+    daysPerWeek: Number(formData.get("daysPerWeek")),
+    sessionDuration: Number(
+      formData.get("sessionDuration")
+    ),
+    trainingStyle: formData.get("trainingStyle"),
+    equipment: formData.getAll("equipment"),
+    priority: formData.get("priority"),
+    limitations:
+      formData.get("limitations")?.trim() ||
+      (isHebrew ? "ללא מגבלות" : "None"),
+    language: currentLanguage
+  };
+
+  try {
+    const response = await fetch("/api/workout-builder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+          (
+            isHebrew
+              ? "לא ניתן היה ליצור את תוכנית האימונים"
+              : "Could not generate the workout program"
+          )
+      );
+    }
+
+    setStatus("");
+
+    if (data.program) {
+      renderProgram(data.program);
+      return;
+    }
+
+    resultElement.innerHTML = `
+      <h2>
+        ${
+          isHebrew
+            ? "החיבור ל־Workout Builder הצליח"
+            : "Workout Builder Connected"
+        }
+      </h2>
+
+      <p>
+        ${
+          isHebrew
+            ? "הטופס הגיע בהצלחה לשרת."
+            : "The form successfully reached the backend."
+        }
+      </p>
+    `;
+
+    resultElement.classList.remove("hidden");
+  } catch (error) {
+    console.error(
+      "Workout builder request failed:",
+      error
+    );
+
+    setStatus(error.message, true);
+  } finally {
+    setLoading(false);
+  }
+});
+function setLoading(isLoading) {
+  button.disabled = isLoading;
+  button.textContent = isLoading
+    ? ui.generating
+    : ui.generate;
+}
+function setStatus(message, isError = false) {
+  statusElement.textContent = message;
+  statusElement.classList.toggle("error", isError);
+}
+
+function hideResult() {
+  resultElement.classList.add("hidden");
+  resultElement.innerHTML = "";
+}
+const hebrewWorkoutTerms = {
+  "Hypertrophy Bulk Program": "תוכנית אימונים לבניית מסת שריר",
+  "Upper Body Push": "פלג גוף עליון – דחיפה",
+  "Upper Body Pull": "פלג גוף עליון – משיכה",
+  "Upper Body Hypertrophy": "היפרטרופיה – פלג גוף עליון",
+  "Lower Body Hypertrophy": "היפרטרופיה – פלג גוף תחתון",
+  "Full Body Hypertrophy": "היפרטרופיה – כל הגוף",
+  "Full Body": "אימון כל הגוף",
+  "Push Day": "אימון דחיפה",
+  "Pull Day": "אימון משיכה",
+  "Leg Day": "אימון רגליים",
+
+  "Dumbbell Bench Press": "לחיצת חזה עם משקולות יד",
+  "Dumbbell Shoulder Press": "לחיצת כתפיים עם משקולות יד",
+  "Cable Lateral Raise": "הרחקת כתפיים בכבל",
+  "Tricep Dips": "מקבילים ליד אחורית",
+  "Pull-up": "מתח",
+  "Pull-ups": "מתח",
+  "Lat Pulldown": "משיכת פולי עליון",
+  "Seated Row": "חתירה בישיבה",
+  "Chest Press": "לחיצת חזה",
+  "Incline Chest Press": "לחיצת חזה בשיפוע",
+  "Shoulder Press": "לחיצת כתפיים",
+  "Lateral Raise": "הרחקת כתפיים",
+  "Biceps Curl": "כפיפת מרפק",
+  "Triceps Pushdown": "פשיטת מרפק בפולי",
+  "Leg Press": "לחיצת רגליים",
+  "Leg Extension": "פשיטת ברך",
+  "Leg Curl": "כפיפת ברך",
+  "Calf Raise": "עליות תאומים",
+  "Push-up": "שכיבות סמיכה",
+  "Dips": "מקבילים",
+  "Plank": "פלאנק",
+
+  Chest: "חזה",
+  Back: "גב",
+  Shoulders: "כתפיים",
+  Biceps: "יד קדמית",
+  Triceps: "יד אחורית",
+  Quads: "ארבע ראשי",
+  Hamstrings: "המסטרינג",
+  Glutes: "ישבן",
+  Calves: "תאומים",
+  Core: "שרירי ליבה",
+
+  Dumbbell: "משקולות יד",
+  Dumbbells: "משקולות יד",
+  Machine: "מכונה",
+  Machines: "מכונות",
+  Cable: "כבלים",
+  Barbell: "מוט ומשקולות",
+  Bodyweight: "משקל גוף",
+  "Pull-up Bar": "מתח",
+  "Gymnastic Rings": "טבעות",
+
+  buildMuscle: "בניית שריר",
+  loseFat: "ירידה באחוזי שומן",
+  increaseStrength: "שיפור כוח",
+  improveSkills: "שיפור מיומנויות",
+  maintainPerformance: "שמירה על הביצועים"
+};
+
+function translateWorkoutValue(value = "") {
+  const text = String(value).trim();
+
+  if (!isHebrew || !text) {
+    return text;
+  }
+
+  if (hebrewWorkoutTerms[text]) {
+    return hebrewWorkoutTerms[text];
+  }
+
+  let translated = text;
+
+  Object.entries(hebrewWorkoutTerms)
+    .sort(([first], [second]) => second.length - first.length)
+    .forEach(([english, hebrew]) => {
+      translated = translated.replaceAll(english, hebrew);
+    });
+
+  return translated;
+}
+function renderProgram(program) {
+  const sessions = Array.isArray(program.sessions)
+    ? program.sessions
+    : [];
+
+  const sessionsHtml = sessions
+    .map((session, sessionIndex) => {
+      const exercises = Array.isArray(session.exercises)
+        ? session.exercises
+        : [];
+
+      const exerciseRows = exercises
+        .map((exercise, exerciseIndex) => {
+          return `
+            <tr>
+              <td class="exercise-number">
+                ${exerciseIndex + 1}
+              </td>
+
+              <td class="exercise-name-cell">
+                <strong>
+  ${escapeHtml(translateWorkoutValue(exercise.name))}
+</strong>
+                ${
+                  exercise.notes
+                    ? `
+                      <span class="exercise-note">
+                        ${escapeHtml(exercise.notes)}
+                      </span>
+                    `
+                    : ""
+                }
+              </td>
+
+              <td>
+                <span class="muscle-badge">
+                  ${escapeHtml(
+  translateWorkoutValue(
+    exercise.muscleGroup || ui.general
+  )
+)}
+                </span>
+              </td>
+
+              <td>
+                <span class="equipment-badge">
+                  ${escapeHtml(
+  translateWorkoutValue(
+    exercise.equipment || ui.equipmentFallback
+  )
+)}
+                </span>
+              </td>
+
+              <td class="workout-value">
+                ${escapeHtml(String(exercise.sets))}
+              </td>
+
+              <td class="workout-value">
+                ${escapeHtml(String(exercise.reps))}
+              </td>
+
+              <td class="workout-value">
+                ${escapeHtml(String(exercise.restSeconds))}s
+              </td>
+
+              <td class="workout-value">
+                ${escapeHtml(String(exercise.rir || "—"))}
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      return `
+        <section
+          class="workout-day workout-day-${(sessionIndex % 4) + 1}"
+        >
+          <div class="workout-day-header">
+            <div>
+              <span class="day-label">
+                ${ui.day} ${escapeHtml(String(session.day))}
+              </span>
+
+              <h3>
+  ${escapeHtml(translateWorkoutValue(session.name))}
+</h3>
+            </div>
+
+            <span class="exercise-count">
+              ${exercises.length} ${ui.exercises}
+            </span>
+          </div>
+
+          <div class="workout-table-wrapper">
+            <table class="workout-table">
+              <thead>
+                <tr>
+<th>#</th>
+<th>${ui.exercise}</th>
+<th>${ui.muscle}</th>
+<th>${ui.equipment}</th>
+<th>${ui.sets}</th>
+<th>${ui.reps}</th>
+<th>${ui.rest}</th>
+<th>RIR</th>                </tr>
+              </thead>
+
+              <tbody>
+                ${exerciseRows}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
+    })
+    .join("");
+
+  resultElement.innerHTML = `
+    <section class="program-card">
+      <header class="program-header">
+        <div>
+          <span class="program-eyebrow">
+            TrainIQ ${ui.personalizedPlan}
+          </span>
+
+          <h2>
+  ${escapeHtml(
+    translateWorkoutValue(program.programName)
+  )}
+</h2>
+
+          <p class="program-description">
+            ${ui.programDescription}
+            around your goal, experience and available equipment.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="print-program-button"
+          onclick="window.print()"
+        >
+          ${ui.print}
+        </button>
+      </header>
+
+      <div class="program-summary">
+        <div class="summary-item">
+          <span>${ui.frequency}</span>
+          <strong>
+            ${escapeHtml(String(program.daysPerWeek))} ${ui.daysPerWeek}
+          </strong>
+        </div>
+
+        <div class="summary-item">
+          <span>${ui.duration}</span>
+          <strong>
+            ${escapeHtml(String(program.durationWeeks))} ${ui.weeks}
+          </strong>
+        </div>
+
+        <div class="summary-item">
+          <span>${ui.goal}</span>
+          <strong>
+  ${escapeHtml(translateWorkoutValue(program.goal))}
+</strong>
+        </div>
+      </div>
+
+      <div class="program-days">
+        ${sessionsHtml}
+      </div>
+    </section>
+  `;
+
+  resultElement.classList.remove("hidden");
+
+  resultElement.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
