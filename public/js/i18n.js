@@ -99,8 +99,7 @@ export const translations = {
     userNotAuthenticated:
       "User not authenticated"
   },
-
-  he: {
+    he: {
     languageName: "עברית",
 
     subtitle:
@@ -110,7 +109,7 @@ export const translations = {
       "שלום! אני Ofek AI — הבינה המלאכותית של אופק זהבי.\nאני כאן כדי לסייע לך בכושר, תזונה, התקדמות באימונים, בחירת תרגילים והבנה טובה יותר של מה באמת מבוסס מחקר איכותי.\nאיך אפשר לעזור לך היום?",
 
     send: "שלח",
-    clearChat: "נקה צ׳אט",
+    clearChat: "נקה צ'אט",
     thinking: "Ofek AI חושב...",
     loadingConversation: "טוען שיחה...",
     writeMessage: "כתוב הודעה...",
@@ -126,7 +125,7 @@ export const translations = {
     settings: "הגדרות",
     saveChanges: "שמור שינויים",
     cancel: "ביטול",
-    settingsSaved: "ההגדרות נשמרו בהצלחה.",
+    settingsSaved: "השינויים נשמרו בהצלחה.",
 
     profile: "פרופיל",
     athleteCore: "נתוני מתאמן",
@@ -135,14 +134,14 @@ export const translations = {
     appearance: "מראה",
 
     profileDescription:
-      "נהל את הזהות המוצגת בתוך Ofek AI.",
+      "נהל את הפרטים שיוצגו בתוך Ofek AI.",
     fullName: "שם מלא",
     email: "אימייל",
 
     athleteCoreDescription:
-      "נתוני אימון בסיסיים המשמשים להתאמה אישית של הנחיות כושר ותזונה.",
+      "נתוני האימון שישמשו להתאמה אישית של המלצות כושר ותזונה.",
     age: "גיל",
-    bodyWeight: "משקל גוף (ק״ג)",
+    bodyWeight: "משקל (ק״ג)",
     height: "גובה (ס״מ)",
     trainingExperience: "ניסיון באימונים",
 
@@ -151,21 +150,21 @@ export const translations = {
     advanced: "מתקדם",
 
     primaryGoal: "מטרה עיקרית",
-    buildMuscle: "בניית מסת שריר",
-    loseFat: "ירידה בשומן",
-    increaseStrength: "שיפור כוח",
-    improveSkills: "שיפור מיומנויות קליסטניקס",
+    buildMuscle: "בניית שריר",
+    loseFat: "חיטוב וירידה בשומן",
+    increaseStrength: "עלייה בכוח",
+    improveSkills: "שיפור יכולות קליסטניקס",
     maintainPerformance: "שמירה על ביצועים",
 
     limitations: "פציעות או מגבלות",
     limitationsPlaceholder:
-      "תאר פציעה, כאב או מגבלת תנועה רלוונטיים.",
+      "תאר פציעות, כאבים או מגבלות רלוונטיות.",
 
     aiPreferencesDescription:
-      "שלוט באופן שבו התשובות בנויות ומותאמות אישית.",
+      "שלוט באופן שבו Ofek AI בונה את התשובות.",
 
-    responseDepth: "עומק התשובה",
-    concise: "תמציתי",
+    responseDepth: "רמת פירוט",
+    concise: "קצר",
     balanced: "מאוזן",
     detailed: "מפורט",
 
@@ -177,16 +176,16 @@ export const translations = {
     useAthleteCore:
       "השתמש אוטומטית בנתוני המתאמן",
     evidenceBased:
-      "העדף הסברים מבוססי ראיות",
+      "העדף הסברים מבוססי מחקר",
 
     languageDescription:
-      "בחר את שפת ברירת המחדל של הממשק והתשובות.",
+      "בחר את שפת הממשק והתשובות כברירת מחדל.",
     defaultLanguage: "שפת ברירת מחדל",
 
     appearanceDescription:
-      "בחר כיצד Ofek AI יוצג במכשיר זה.",
+      "בחר כיצד Ofek AI ייראה במכשיר זה.",
     theme: "ערכת נושא",
-    systemTheme: "מערכת",
+    systemTheme: "לפי המערכת",
     darkTheme: "כהה",
     lightTheme: "בהירה",
 
@@ -196,38 +195,33 @@ export const translations = {
     userNotAuthenticated:
       "המשתמש אינו מחובר"
   },
-
-  es: {
+    es: {
     languageName: "Español",
 
     subtitle:
-      "La inteligencia artificial de Ofek Zehavi: entrenamiento, nutrición e información basada en evidencia.",
+      "La inteligencia artificial de Ofek Zehavi: entrenamiento, nutrición y recomendaciones basadas en evidencia.",
 
     welcome:
-      "¡Hola! Soy Ofek AI, la inteligencia artificial de Ofek Zehavi.\nEstoy aquí para ayudarte con entrenamiento, nutrición, progresión, selección de ejercicios e información basada en investigaciones de calidad.\n¿Cómo puedo ayudarte hoy?",
+      "¡Hola! Soy Ofek AI.\nEstoy aquí para ayudarte con entrenamiento, nutrición, progresión, ejercicios y recomendaciones basadas en evidencia científica.\n¿Cómo puedo ayudarte hoy?",
 
     send: "Enviar",
     clearChat: "Borrar chat",
     thinking: "Ofek AI está pensando...",
-    loadingConversation:
-      "Cargando conversación...",
+    loadingConversation: "Cargando conversación...",
     writeMessage: "Escribe un mensaje...",
 
     newConversation: "Nueva conversación",
     newSession: "+ Nueva sesión",
 
-    conversationHistory:
-      "Historial de conversaciones",
+    conversationHistory: "Historial de conversaciones",
     conversationHistoryDescription:
       "Abre una conversación anterior o inicia una nueva sesión.",
-    loadingConversations:
-      "Cargando conversaciones...",
+    loadingConversations: "Cargando conversaciones...",
 
     settings: "Configuración",
     saveChanges: "Guardar cambios",
     cancel: "Cancelar",
-    settingsSaved:
-      "La configuración se guardó correctamente.",
+    settingsSaved: "Configuración guardada correctamente.",
 
     profile: "Perfil",
     athleteCore: "Datos del atleta",
@@ -236,43 +230,39 @@ export const translations = {
     appearance: "Apariencia",
 
     profileDescription:
-      "Administra la identidad mostrada dentro de Ofek AI.",
+      "Administra la información mostrada en Ofek AI.",
     fullName: "Nombre completo",
     email: "Correo electrónico",
 
     athleteCoreDescription:
-      "Datos principales de entrenamiento utilizados para personalizar las recomendaciones de fitness y nutrición.",
+      "Información utilizada para personalizar las recomendaciones.",
     age: "Edad",
-    bodyWeight: "Peso corporal (kg)",
+    bodyWeight: "Peso (kg)",
     height: "Altura (cm)",
-    trainingExperience:
-      "Experiencia de entrenamiento",
+    trainingExperience: "Experiencia de entrenamiento",
 
     beginner: "Principiante",
     intermediate: "Intermedio",
     advanced: "Avanzado",
 
     primaryGoal: "Objetivo principal",
-    buildMuscle: "Ganar masa muscular",
+    buildMuscle: "Ganar músculo",
     loseFat: "Perder grasa",
-    increaseStrength: "Aumentar la fuerza",
-    improveSkills:
-      "Mejorar habilidades de calistenia",
-    maintainPerformance:
-      "Mantener el rendimiento",
+    increaseStrength: "Aumentar fuerza",
+    improveSkills: "Mejorar habilidades de calistenia",
+    maintainPerformance: "Mantener rendimiento",
 
     limitations: "Lesiones o limitaciones",
     limitationsPlaceholder:
-      "Describe cualquier lesión, dolor o limitación de movimiento relevante.",
+      "Describe cualquier lesión, dolor o limitación.",
 
     aiPreferencesDescription:
-      "Controla cómo se estructuran y personalizan las respuestas.",
+      "Controla cómo Ofek AI genera las respuestas.",
 
-    responseDepth:
-      "Profundidad de la respuesta",
-    concise: "Concisa",
-    balanced: "Equilibrada",
-    detailed: "Detallada",
+    responseDepth: "Nivel de detalle",
+    concise: "Breve",
+    balanced: "Equilibrado",
+    detailed: "Detallado",
 
     coachingStyle: "Estilo de entrenamiento",
     direct: "Directo",
@@ -282,22 +272,20 @@ export const translations = {
     useAthleteCore:
       "Usar automáticamente los datos del atleta",
     evidenceBased:
-      "Preferir explicaciones basadas en evidencia",
+      "Priorizar explicaciones basadas en evidencia",
 
     languageDescription:
-      "Elige el idioma predeterminado de la interfaz y las respuestas.",
-    defaultLanguage:
-      "Idioma predeterminado",
+      "Selecciona el idioma predeterminado.",
+    defaultLanguage: "Idioma predeterminado",
 
     appearanceDescription:
-      "Elige cómo debe verse Ofek AI en este dispositivo.",
+      "Elige la apariencia de Ofek AI.",
     theme: "Tema",
     systemTheme: "Sistema",
     darkTheme: "Oscuro",
     lightTheme: "Claro",
 
-    noSessions:
-      "No hay conversaciones guardadas",
+    noSessions: "No hay conversaciones guardadas",
     couldNotLoadSessions:
       "No se pudieron cargar las conversaciones",
     userNotAuthenticated:
@@ -307,35 +295,31 @@ export const translations = {
     languageName: "Français",
 
     subtitle:
-      "L'intelligence artificielle d'Ofek Zehavi pour le fitness, la nutrition et les informations fondées sur des preuves.",
+      "L'intelligence artificielle d'Ofek Zehavi pour le fitness, la nutrition et les recommandations fondées sur des preuves.",
 
     welcome:
-      "Bonjour ! Je suis Ofek AI, l'intelligence artificielle d'Ofek Zehavi.\nJe suis ici pour vous aider avec l'entraînement, la nutrition, la progression, le choix des exercices et les informations fondées sur des recherches de qualité.\nComment puis-je vous aider aujourd'hui ?",
+      "Bonjour ! Je suis Ofek AI.\nJe suis là pour vous aider avec l'entraînement, la nutrition, la progression, le choix des exercices et les recommandations basées sur des preuves scientifiques.\nComment puis-je vous aider aujourd'hui ?",
 
     send: "Envoyer",
     clearChat: "Effacer le chat",
     thinking: "Ofek AI réfléchit...",
-    loadingConversation:
-      "Chargement de la conversation...",
+    loadingConversation: "Chargement de la conversation...",
     writeMessage: "Écrivez un message...",
 
-    newConversation:
-      "Nouvelle conversation",
+    newConversation: "Nouvelle conversation",
     newSession: "+ Nouvelle session",
 
-    conversationHistory:
-      "Historique des conversations",
+    conversationHistory: "Historique des conversations",
     conversationHistoryDescription:
       "Ouvrez une conversation précédente ou démarrez une nouvelle session.",
     loadingConversations:
       "Chargement des conversations...",
 
     settings: "Paramètres",
-    saveChanges:
-      "Enregistrer les modifications",
+    saveChanges: "Enregistrer",
     cancel: "Annuler",
     settingsSaved:
-      "Les paramètres ont été enregistrés avec succès.",
+      "Les paramètres ont été enregistrés.",
 
     profile: "Profil",
     athleteCore: "Profil sportif",
@@ -344,14 +328,14 @@ export const translations = {
     appearance: "Apparence",
 
     profileDescription:
-      "Gérez l'identité affichée dans Ofek AI.",
+      "Gérez les informations affichées dans Ofek AI.",
     fullName: "Nom complet",
     email: "Adresse e-mail",
 
     athleteCoreDescription:
-      "Données d'entraînement principales utilisées pour personnaliser les conseils de fitness et de nutrition.",
+      "Informations utilisées pour personnaliser les recommandations.",
     age: "Âge",
-    bodyWeight: "Poids corporel (kg)",
+    bodyWeight: "Poids (kg)",
     height: "Taille (cm)",
     trainingExperience:
       "Expérience d'entraînement",
@@ -361,34 +345,33 @@ export const translations = {
     advanced: "Avancé",
 
     primaryGoal: "Objectif principal",
-    buildMuscle:
-      "Développer la masse musculaire",
+    buildMuscle: "Prendre du muscle",
     loseFat: "Perdre de la graisse",
-    increaseStrength:
-      "Augmenter la force",
+    increaseStrength: "Augmenter la force",
     improveSkills:
-      "Améliorer les compétences en callisthénie",
+      "Améliorer les compétences en calisthénie",
     maintainPerformance:
       "Maintenir les performances",
 
     limitations:
       "Blessures ou limitations",
     limitationsPlaceholder:
-      "Décrivez toute blessure, douleur ou limitation de mouvement pertinente.",
+      "Décrivez toute blessure, douleur ou limitation.",
 
     aiPreferencesDescription:
-      "Contrôlez la structure et la personnalisation des réponses.",
+      "Contrôlez la manière dont Ofek AI répond.",
 
     responseDepth:
-      "Niveau de détail des réponses",
-    concise: "Concis",
+      "Niveau de détail",
+    concise: "Court",
     balanced: "Équilibré",
     detailed: "Détaillé",
 
     coachingStyle:
-      "Style d'accompagnement",
+      "Style de coaching",
     direct: "Direct",
-    supportive: "Encourageant",
+    supportive:
+      "Encourageant",
     technical: "Technique",
 
     useAthleteCore:
@@ -397,12 +380,12 @@ export const translations = {
       "Privilégier les explications fondées sur des preuves",
 
     languageDescription:
-      "Choisissez la langue par défaut de l'interface et des réponses.",
+      "Choisissez la langue par défaut.",
     defaultLanguage:
       "Langue par défaut",
 
     appearanceDescription:
-      "Choisissez l'apparence d'Ofek AI sur cet appareil.",
+      "Choisissez l'apparence d'Ofek AI.",
     theme: "Thème",
     systemTheme: "Système",
     darkTheme: "Sombre",
@@ -419,10 +402,10 @@ export const translations = {
     languageName: "Deutsch",
 
     subtitle:
-      "Die künstliche Intelligenz von Ofek Zehavi für Fitness, Ernährung und evidenzbasierte Informationen.",
+      "Die künstliche Intelligenz von Ofek Zehavi für Fitness, Ernährung und evidenzbasierte Empfehlungen.",
 
     welcome:
-      "Hallo! Ich bin Ofek AI, die künstliche Intelligenz von Ofek Zehavi.\nIch helfe dir bei Training, Ernährung, Trainingsfortschritt, Übungsauswahl und wissenschaftlich fundierten Informationen.\nWie kann ich dir heute helfen?",
+      "Hallo! Ich bin Ofek AI.\nIch helfe dir bei Training, Ernährung, Trainingsfortschritt, Übungsauswahl und wissenschaftlich fundierten Empfehlungen.\nWie kann ich dir heute helfen?",
 
     send: "Senden",
     clearChat: "Chat löschen",
@@ -440,10 +423,10 @@ export const translations = {
       "Unterhaltungen werden geladen...",
 
     settings: "Einstellungen",
-    saveChanges: "Änderungen speichern",
+    saveChanges: "Speichern",
     cancel: "Abbrechen",
     settingsSaved:
-      "Die Einstellungen wurden erfolgreich gespeichert.",
+      "Einstellungen erfolgreich gespeichert.",
 
     profile: "Profil",
     athleteCore: "Athletenprofil",
@@ -452,12 +435,12 @@ export const translations = {
     appearance: "Darstellung",
 
     profileDescription:
-      "Verwalte die in Ofek AI angezeigte Identität.",
+      "Verwalte die Informationen, die Ofek AI verwendet.",
     fullName: "Vollständiger Name",
     email: "E-Mail",
 
     athleteCoreDescription:
-      "Trainingsdaten zur Personalisierung von Fitness- und Ernährungsempfehlungen.",
+      "Trainingsdaten zur Personalisierung der Empfehlungen.",
     age: "Alter",
     bodyWeight: "Körpergewicht (kg)",
     height: "Größe (cm)",
@@ -480,19 +463,21 @@ export const translations = {
     limitations:
       "Verletzungen oder Einschränkungen",
     limitationsPlaceholder:
-      "Beschreibe relevante Verletzungen, Schmerzen oder Bewegungseinschränkungen.",
+      "Beschreibe Verletzungen, Schmerzen oder Einschränkungen.",
 
     aiPreferencesDescription:
-      "Lege fest, wie Antworten strukturiert und personalisiert werden.",
+      "Steuere, wie Ofek AI antwortet.",
 
-    responseDepth: "Antworttiefe",
+    responseDepth:
+      "Antworttiefe",
     concise: "Kurz",
     balanced: "Ausgewogen",
     detailed: "Detailliert",
 
-    coachingStyle: "Coaching-Stil",
+    coachingStyle:
+      "Coaching-Stil",
     direct: "Direkt",
-    supportive: "Unterstützend",
+    supportive: "Motivierend",
     technical: "Technisch",
 
     useAthleteCore:
@@ -501,12 +486,12 @@ export const translations = {
       "Evidenzbasierte Erklärungen bevorzugen",
 
     languageDescription:
-      "Wähle die Standardsprache für Oberfläche und Antworten.",
+      "Standardsprache auswählen.",
     defaultLanguage:
       "Standardsprache",
 
     appearanceDescription:
-      "Lege fest, wie Ofek AI auf diesem Gerät aussehen soll.",
+      "Wähle das Erscheinungsbild von Ofek AI.",
     theme: "Design",
     systemTheme: "System",
     darkTheme: "Dunkel",
@@ -519,3 +504,289 @@ export const translations = {
     userNotAuthenticated:
       "Benutzer nicht angemeldet"
   },
+    ar: {
+    languageName: "العربية",
+
+    subtitle:
+      "الذكاء الاصطناعي الخاص بـ Ofek Zehavi للياقة البدنية والتغذية والمعلومات المبنية على الأدلة.",
+
+    welcome:
+      "مرحبًا! أنا Ofek AI.\nأنا هنا لمساعدتك في التدريب، والتغذية، وتطوير الأداء، واختيار التمارين، وتقديم توصيات مبنية على الأدلة العلمية.\nكيف يمكنني مساعدتك اليوم؟",
+
+    send: "إرسال",
+    clearChat: "مسح المحادثة",
+    thinking: "Ofek AI يفكر...",
+    loadingConversation: "جارٍ تحميل المحادثة...",
+    writeMessage: "اكتب رسالة...",
+
+    newConversation: "محادثة جديدة",
+    newSession: "+ جلسة جديدة",
+
+    conversationHistory: "سجل المحادثات",
+    conversationHistoryDescription:
+      "افتح إحدى محادثاتك السابقة أو ابدأ جلسة جديدة.",
+    loadingConversations:
+      "جارٍ تحميل المحادثات...",
+
+    settings: "الإعدادات",
+    saveChanges: "حفظ",
+    cancel: "إلغاء",
+    settingsSaved:
+      "تم حفظ الإعدادات بنجاح.",
+
+    profile: "الملف الشخصي",
+    athleteCore: "بيانات الرياضي",
+    aiPreferences: "تفضيلات الذكاء الاصطناعي",
+    language: "اللغة",
+    appearance: "المظهر",
+
+    profileDescription:
+      "قم بإدارة المعلومات التي يستخدمها Ofek AI.",
+
+    fullName: "الاسم الكامل",
+    email: "البريد الإلكتروني",
+
+    athleteCoreDescription:
+      "بيانات التدريب المستخدمة لتخصيص التوصيات.",
+
+    age: "العمر",
+    bodyWeight: "الوزن (كجم)",
+    height: "الطول (سم)",
+    trainingExperience: "خبرة التدريب",
+
+    beginner: "مبتدئ",
+    intermediate: "متوسط",
+    advanced: "متقدم",
+
+    primaryGoal: "الهدف الرئيسي",
+    buildMuscle: "بناء العضلات",
+    loseFat: "خسارة الدهون",
+    increaseStrength: "زيادة القوة",
+    improveSkills: "تطوير مهارات الكاليستنكس",
+    maintainPerformance: "الحفاظ على الأداء",
+
+    limitations: "الإصابات أو القيود",
+    limitationsPlaceholder:
+      "صف أي إصابة أو ألم أو محدودية في الحركة.",
+
+    aiPreferencesDescription:
+      "تحكم في طريقة استجابة Ofek AI.",
+
+    responseDepth: "مستوى التفاصيل",
+    concise: "مختصر",
+    balanced: "متوازن",
+    detailed: "مفصل",
+
+    coachingStyle: "أسلوب التدريب",
+    direct: "مباشر",
+    supportive: "مشجع",
+    technical: "تقني",
+
+    useAthleteCore:
+      "استخدام بيانات الرياضي تلقائيًا",
+
+    evidenceBased:
+      "تفضيل التفسيرات المبنية على الأدلة",
+
+    languageDescription:
+      "اختر اللغة الافتراضية.",
+
+    defaultLanguage: "اللغة الافتراضية",
+
+    appearanceDescription:
+      "اختر مظهر Ofek AI.",
+
+    theme: "السمة",
+    systemTheme: "النظام",
+    darkTheme: "داكن",
+    lightTheme: "فاتح",
+
+    noSessions:
+      "لا توجد محادثات محفوظة",
+
+    couldNotLoadSessions:
+      "تعذر تحميل المحادثات",
+
+    userNotAuthenticated:
+      "المستخدم غير مسجل"
+  },
+    zh: {
+    languageName: "中文",
+
+    subtitle:
+      "Ofek Zehavi 的人工智能健身助手，提供健身、营养和循证建议。",
+
+    welcome:
+      "你好！我是 Ofek AI。\n我可以帮助你制定训练计划、营养方案、提高训练表现，并提供基于科学证据的建议。\n今天我能为你做些什么？",
+
+    send: "发送",
+    clearChat: "清除聊天",
+    thinking: "Ofek AI 正在思考...",
+    loadingConversation: "正在加载对话...",
+    writeMessage: "输入消息...",
+
+    newConversation: "新对话",
+    newSession: "+ 新会话",
+
+    conversationHistory: "聊天记录",
+    conversationHistoryDescription:
+      "打开以前的聊天或开始新的会话。",
+    loadingConversations:
+      "正在加载聊天记录...",
+
+    settings: "设置",
+    saveChanges: "保存",
+    cancel: "取消",
+    settingsSaved:
+      "设置已成功保存。",
+
+    profile: "个人资料",
+    athleteCore: "运动员资料",
+    aiPreferences: "AI 偏好",
+    language: "语言",
+    appearance: "外观",
+
+    profileDescription:
+      "管理 Ofek AI 使用的个人信息。",
+
+    fullName: "姓名",
+    email: "电子邮箱",
+
+    athleteCoreDescription:
+      "用于个性化训练和营养建议的数据。",
+
+    age: "年龄",
+    bodyWeight: "体重（公斤）",
+    height: "身高（厘米）",
+    trainingExperience: "训练经验",
+
+    beginner: "初学者",
+    intermediate: "中级",
+    advanced: "高级",
+
+    primaryGoal: "主要目标",
+    buildMuscle: "增肌",
+    loseFat: "减脂",
+    increaseStrength: "增强力量",
+    improveSkills: "提高街头健身技能",
+    maintainPerformance: "保持表现",
+
+    limitations: "伤病或限制",
+    limitationsPlaceholder:
+      "描述任何伤病、疼痛或活动限制。",
+
+    aiPreferencesDescription:
+      "控制 Ofek AI 回答的方式。",
+
+    responseDepth: "回答详细程度",
+    concise: "简洁",
+    balanced: "平衡",
+    detailed: "详细",
+
+    coachingStyle: "指导风格",
+    direct: "直接",
+    supportive: "鼓励",
+    technical: "专业",
+
+    useAthleteCore:
+      "自动使用运动员资料",
+
+    evidenceBased:
+      "优先提供循证解释",
+
+    languageDescription:
+      "选择默认语言。",
+
+    defaultLanguage: "默认语言",
+
+    appearanceDescription:
+      "选择 Ofek AI 的外观。",
+
+    theme: "主题",
+    systemTheme: "跟随系统",
+    darkTheme: "深色",
+    lightTheme: "浅色",
+
+    noSessions:
+      "暂无保存的聊天",
+
+    couldNotLoadSessions:
+      "无法加载聊天记录",
+
+    userNotAuthenticated:
+      "用户未登录"
+  }
+  };
+
+const STORAGE_KEY = "ofek-ai-language";
+
+export function t(lang, key) {
+  return (
+    translations?.[lang]?.[key] ??
+    translations.en?.[key] ??
+    key
+  );
+}
+
+export function getSupportedLanguages() {
+  return Object.keys(translations);
+}
+
+export function isRTL(lang) {
+  return ["he", "ar"].includes(lang);
+}
+
+export function detectBrowserLanguage() {
+  const supported = getSupportedLanguages();
+
+  const languages =
+    navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language || "en"];
+
+  for (const language of languages) {
+    const short = language.toLowerCase().split("-")[0];
+
+    if (supported.includes(short)) {
+      return short;
+    }
+  }
+
+  return "en";
+}
+
+export function getLanguage() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+
+  if (
+    saved &&
+    getSupportedLanguages().includes(saved)
+  ) {
+    return saved;
+  }
+
+  return detectBrowserLanguage();
+}
+
+export function setLanguage(lang) {
+  const supported = getSupportedLanguages();
+
+  const current = supported.includes(lang)
+    ? lang
+    : "en";
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    current
+  );
+
+  document.documentElement.lang = current;
+  document.documentElement.dir =
+    isRTL(current) ? "rtl" : "ltr";
+
+  return current;
+}
+
+export function initializeLanguage() {
+  return setLanguage(getLanguage());
+}

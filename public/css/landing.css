@@ -1,0 +1,448 @@
+:root {
+    --background: #07090d;
+    --background-soft: #0d1118;
+    --surface: rgba(15, 23, 42, 0.66);
+    --border: rgba(255, 255, 255, 0.1);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #9ca3af;
+
+    --accent: #3b82f6;
+    --accent-light: #60a5fa;
+    --accent-dark: #1d4ed8;
+
+    --page-padding: clamp(20px, 5vw, 72px);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    overflow-x: hidden;
+
+    font-family:
+        "Space Grotesk",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    color: var(--text-primary);
+    background:
+        radial-gradient(
+            circle at 50% 18%,
+            rgba(37, 99, 235, 0.2),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 88% 72%,
+            rgba(59, 130, 246, 0.1),
+            transparent 28%
+        ),
+        var(--background);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.025) 1px,
+            transparent 1px
+        );
+
+    background-size: 58px 58px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 84%
+        );
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    top: -180px;
+    left: 50%;
+    z-index: -1;
+
+    width: min(720px, 88vw);
+    height: 420px;
+
+    transform: translateX(-50%);
+    pointer-events: none;
+
+    background: rgba(37, 99, 235, 0.22);
+    filter: blur(130px);
+    border-radius: 50%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    min-height: 78px;
+    padding: 0 var(--page-padding);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(7, 9, 13, 0.7);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.logo {
+    position: relative;
+
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+}
+
+.logo::after {
+    content: "";
+    position: absolute;
+    right: -13px;
+    top: 3px;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: var(--accent-light);
+
+    box-shadow:
+        0 0 12px var(--accent),
+        0 0 24px rgba(59, 130, 246, 0.55);
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 42px;
+    padding: 0 20px;
+
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    font-weight: 600;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.045);
+
+    transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        background 180ms ease;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(96, 165, 250, 0.5);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.hero {
+    position: relative;
+    isolation: isolate;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 100svh;
+    padding:
+        128px
+        var(--page-padding)
+        64px;
+
+    text-align: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    z-index: -1;
+
+    width: min(560px, 80vw);
+    aspect-ratio: 1;
+
+    transform: translateX(-50%);
+    border: 1px solid rgba(96, 165, 250, 0.08);
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 80px rgba(37, 99, 235, 0.08),
+        inset 0 0 80px rgba(37, 99, 235, 0.04);
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: min(900px, 100%);
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-bottom: 28px;
+    padding: 9px 15px;
+
+    color: #bfdbfe;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+
+    border: 1px solid rgba(96, 165, 250, 0.24);
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.08);
+
+    box-shadow:
+        0 0 30px rgba(37, 99, 235, 0.1);
+
+    animation: fade-up 700ms ease both;
+}
+
+.badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: var(--accent-light);
+
+    box-shadow: 0 0 12px var(--accent-light);
+}
+
+.hero h1 {
+    max-width: 920px;
+
+    font-size: clamp(3.1rem, 8vw, 7rem);
+    line-height: 0.96;
+    letter-spacing: -0.06em;
+    text-wrap: balance;
+
+    animation:
+        fade-up 800ms 80ms ease both;
+}
+
+.hero h1::first-line {
+    color: var(--text-primary);
+}
+
+.hero p {
+    max-width: 690px;
+    margin-top: 28px;
+
+    color: var(--text-secondary);
+    font-size: clamp(1rem, 2vw, 1.22rem);
+    line-height: 1.75;
+    text-wrap: balance;
+
+    animation:
+        fade-up 800ms 160ms ease both;
+}
+
+.hero-btn {
+    position: relative;
+    isolation: isolate;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 58px;
+    margin-top: 38px;
+    padding: 0 30px;
+
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+
+    border: 1px solid rgba(147, 197, 253, 0.42);
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--accent-light),
+            var(--accent-dark)
+        );
+
+    box-shadow:
+        0 16px 44px rgba(37, 99, 235, 0.34),
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease;
+
+    animation:
+        fade-up 800ms 240ms ease both;
+}
+
+.hero-btn::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    z-index: -1;
+
+    border-radius: inherit;
+    background: rgba(59, 130, 246, 0.28);
+    filter: blur(18px);
+
+    opacity: 0.8;
+    transition: opacity 180ms ease;
+}
+
+.hero-btn:hover {
+    transform: translateY(-3px) scale(1.025);
+
+    box-shadow:
+        0 22px 54px rgba(37, 99, 235, 0.42),
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+}
+
+.hero-btn:hover::before {
+    opacity: 1;
+}
+
+.hero-btn:active {
+    transform: translateY(-1px) scale(0.99);
+}
+
+.scroll {
+    margin-top: 56px;
+
+    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+
+    animation:
+        fade-up 800ms 320ms ease both,
+        float 2.5s 1.2s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(7px);
+    }
+}
+
+@media (max-width: 700px) {
+    .navbar {
+        min-height: 68px;
+    }
+
+    .logo {
+        font-size: 0.92rem;
+    }
+
+    .nav-btn {
+        min-height: 38px;
+        padding: 0 16px;
+        font-size: 0.84rem;
+    }
+
+    .hero {
+        padding-top: 110px;
+        padding-bottom: 42px;
+    }
+
+    .badge {
+        margin-bottom: 23px;
+        padding: 8px 12px;
+        font-size: 0.62rem;
+        letter-spacing: 0.13em;
+    }
+
+    .hero h1 {
+        font-size: clamp(3rem, 15vw, 4.8rem);
+        line-height: 0.98;
+    }
+
+    .hero p {
+        margin-top: 24px;
+        font-size: 0.98rem;
+        line-height: 1.65;
+    }
+
+    .hero-btn {
+        width: min(100%, 300px);
+        min-height: 55px;
+        margin-top: 32px;
+    }
+
+    .scroll {
+        margin-top: 44px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+    }
+}
