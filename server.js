@@ -551,6 +551,17 @@ const goalAdjustment = {
 const targetCalories = Math.round(
   (maintenanceCalories + (goalAdjustment[goal] || 0)) / 50
 ) * 50;
+const targetProtein = Math.round(parsedWeight * 2);
+
+const targetFat = Math.round(
+  (targetCalories * 0.25) / 9
+);
+
+const targetCarbs = Math.round(
+  (targetCalories -
+    targetProtein * 4 -
+    targetFat * 9) / 4
+);
 const outputLanguage =
   language === "he" ? "Hebrew" : "English";
 
@@ -891,9 +902,15 @@ Nutrition rules:
 - Keep the meal target calories and macros only once at the meal level.
 - Do not include calories or macronutrients inside individual food items.
 - In Hebrew, use the meal name "ארוחת ביניים" instead of "ארוחת חטיף".
-- Estimate calorie needs us- Use the calculated daily calorie target provided by the server.
+- Use the calculated daily calorie target provided by the server.
 - Set dailyCalories exactly to that calculated target.
-- Do not independently recalculate or override the calorie target.ing age, gender, height, weight and activity.
+- Do not independently recalculate or override the calorie target.
+- Use the calculated protein, carbohydrate and fat targets provided by the server.
+- Set proteinGrams exactly to the calculated protein target.
+- Set carbsGrams exactly to the calculated carbohydrate target.
+- Set fatGrams exactly to the calculated fat target.
+- Do not independently recalculate or override these macro targets.
+- Make the combined meal targets approximately match the daily calorie and macro targets.
 - Adjust calories according to the user's goal.
 - Use realistic and sustainable calorie targets.
 - Prioritize sufficient protein.
@@ -929,6 +946,9 @@ Create a nutrition plan using these preferences:
 
 Goal: ${String(goal)}
 Calculated daily calorie target: ${targetCalories} calories
+Calculated protein target: ${targetProtein} grams
+Calculated carbohydrate target: ${targetCarbs} grams
+Calculated fat target: ${targetFat} grams
 Age: ${parsedAge}
 Gender: ${String(gender)}
 Height: ${parsedHeight} cm
