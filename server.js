@@ -519,49 +519,6 @@ const {
         error: "OPENAI_API_KEY is missing"
       });
     }
-    const genderOffset =
-  String(gender).toLowerCase() === "male" ? 5 : -161;
-
-const bmr =
-  10 * parsedWeight +
-  6.25 * parsedHeight -
-  5 * parsedAge +
-  genderOffset;
-
-const activityMultipliers = {
-  sedentary: 1.2,
-  lightlyActive: 1.375,
-  moderatelyActive: 1.55,
-  veryActive: 1.725,
-  extremelyActive: 1.9
-};
-
-const activityMultiplier =
-  activityMultipliers[activityLevel] || 1.2;
-
-const maintenanceCalories = bmr * activityMultiplier;
-
-const goalAdjustment = {
-  loseFat: -400,
-  buildMuscle: 250,
-  maintainWeight: 0,
-  improvePerformance: 150
-};
-
-const targetCalories = Math.round(
-  (maintenanceCalories + (goalAdjustment[goal] || 0)) / 50
-) * 50;
-const targetProtein = Math.round(parsedWeight * 2);
-
-const targetFat = Math.round(
-  (targetCalories * 0.25) / 9
-);
-
-const targetCarbs = Math.round(
-  (targetCalories -
-    targetProtein * 4 -
-    targetFat * 9) / 4
-);
 const outputLanguage =
   language === "he" ? "Hebrew" : "English";
 
@@ -803,6 +760,49 @@ app.post("/api/nutrition-builder", async (req, res) => {
     const parsedWeight = Number(weight);
     const parsedTrainingDays = Number(trainingDays);
     const parsedMealsPerDay = Number(mealsPerDay);
+    const genderOffset =
+  String(gender).toLowerCase() === "male" ? 5 : -161;
+
+const bmr =
+  10 * parsedWeight +
+  6.25 * parsedHeight -
+  5 * parsedAge +
+  genderOffset;
+
+const activityMultipliers = {
+  sedentary: 1.2,
+  lightlyActive: 1.375,
+  moderatelyActive: 1.55,
+  veryActive: 1.725,
+  extremelyActive: 1.9
+};
+
+const activityMultiplier =
+  activityMultipliers[activityLevel] || 1.2;
+
+const maintenanceCalories = bmr * activityMultiplier;
+
+const goalAdjustment = {
+  loseFat: -400,
+  buildMuscle: 250,
+  maintainWeight: 0,
+  improvePerformance: 150
+};
+
+const targetCalories = Math.round(
+  (maintenanceCalories + (goalAdjustment[goal] || 0)) / 50
+) * 50;
+const targetProtein = Math.round(parsedWeight * 2);
+
+const targetFat = Math.round(
+  (targetCalories * 0.25) / 9
+);
+
+const targetCarbs = Math.round(
+  (targetCalories -
+    targetProtein * 4 -
+    targetFat * 9) / 4
+);
 
     if (
       !Number.isFinite(parsedAge) ||

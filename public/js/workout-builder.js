@@ -272,6 +272,7 @@ form.addEventListener("submit", async (event) => {
   const payload = {
     goal: formData.get("goal"),
     experience: formData.get("experience"),
+    age: Number(formData.get("age")),
     daysPerWeek: Number(formData.get("daysPerWeek")),
     sessionDuration: Number(
       formData.get("sessionDuration")
