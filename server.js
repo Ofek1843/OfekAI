@@ -519,6 +519,38 @@ const {
         error: "OPENAI_API_KEY is missing"
       });
     }
+    const genderOffset =
+  String(gender).toLowerCase() === "male" ? 5 : -161;
+
+const bmr =
+  10 * parsedWeight +
+  6.25 * parsedHeight -
+  5 * parsedAge +
+  genderOffset;
+
+const activityMultipliers = {
+  sedentary: 1.2,
+  lightlyActive: 1.375,
+  moderatelyActive: 1.55,
+  veryActive: 1.725,
+  extremelyActive: 1.9
+};
+
+const activityMultiplier =
+  activityMultipliers[activityLevel] || 1.2;
+
+const maintenanceCalories = bmr * activityMultiplier;
+
+const goalAdjustment = {
+  loseFat: -400,
+  buildMuscle: 250,
+  maintainWeight: 0,
+  improvePerformance: 150
+};
+
+const targetCalories = Math.round(
+  (maintenanceCalories + (goalAdjustment[goal] || 0)) / 50
+) * 50;
 const outputLanguage =
   language === "he" ? "Hebrew" : "English";
 
@@ -720,7 +752,258 @@ Injuries, limitations or special requests: ${String(limitations)}
     });
   }
 });
+app.post("/api/nutrition-builder", async (req, res) => {
+  console.log("Nutrition Builder endpoint reached");
+  try {
+    const {
+      goal,
+      age,
+      gender,
+      height,
+      weight,
+      activityLevel,
+      trainingDays,
+      mealsPerDay,
+      dietaryPreference,
+      favoriteFoods = "No preference",
+      foodsToAvoid = "None",
+      allergies = "None",
+      additionalNotes = "No additional notes",
+      language = "en"
+    } = req.body;
 
+    if (
+      !goal ||
+      !age ||
+      !gender ||
+      !height ||
+      !weight ||
+      !activityLevel ||
+      !trainingDays ||
+      !mealsPerDay ||
+      !dietaryPreference
+    ) {
+      return res.status(400).json({
+        error: "Missing required nutrition preferences"
+      });
+    }
+        const parsedAge = Number(age);
+    const parsedHeight = Number(height);
+    const parsedWeight = Number(weight);
+    const parsedTrainingDays = Number(trainingDays);
+    const parsedMealsPerDay = Number(mealsPerDay);
+
+    if (
+      !Number.isFinite(parsedAge) ||
+      parsedAge < 10 ||
+      parsedAge > 100 ||
+      !Number.isFinite(parsedHeight) ||
+      parsedHeight < 100 ||
+      parsedHeight > 250 ||
+      !Number.isFinite(parsedWeight) ||
+      parsedWeight < 30 ||
+      parsedWeight > 300 ||
+      !Number.isInteger(parsedTrainingDays) ||
+      parsedTrainingDays < 0 ||
+      parsedTrainingDays > 7 ||
+      !Number.isInteger(parsedMealsPerDay) ||
+      parsedMealsPerDay < 2 ||
+      parsedMealsPerDay > 8
+    ) {
+      return res.status(400).json({
+        error: "Invalid nutrition preferences"
+      });
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        error: "OPENAI_API_KEY is missing"
+      });
+    }
+
+    const outputLanguage =
+      language === "he" ? "Hebrew" : "English";
+          const nutritionResponse = await createChatCompletion({
+      temperature: 0.3,
+      maxTokens: 3500,
+      messages: [
+        {
+          role: "system",
+          content: `
+You are TrainIQ, an evidence-based nutrition planning assistant.
+
+Create a practical and personalized one-day nutrition plan.
+
+Return ONLY valid JSON.
+Do not use markdown.
+Do not use code fences.
+Do not include text outside the JSON.
+
+The JSON must exactly follow this structure:
+
+{
+  "planName": "string",
+  "description": "string",
+  "goal": "string",
+  "dailyCalories": 2500,
+  "proteinGrams": 180,
+  "carbsGrams": 280,
+  "fatGrams": 75,
+  "waterLiters": 3,
+  "meals": [
+    {
+      "mealNumber": 1,
+      "name": "string",
+      "targetCalories": 600,
+      "targetProteinGrams": 40,
+      "targetCarbsGrams": 70,
+      "targetFatGrams": 18,
+      "options": [
+        {
+          "optionNumber": 1,
+          "foods": [
+            {
+              "name": "string",
+              "amount": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+        "mealCalories": 600,
+      "mealProteinGrams": 40,
+      "mealCarbsGrams": 70,
+      "mealFatGrams": 18
+    }
+  ],
+  "notes": [
+    "string"
+  ]
+}
+
+Nutrition rules:
+
+- Create exactly ${parsedMealsPerDay} meals.
+- Create exactly 3 options for every meal.
+- Every option in the same meal should be close to the same target calories and macronutrients.
+- Each option must use different food combinations.
+- Keep the meal target calories and macros only once at the meal level.
+- Do not include calories or macronutrients inside individual food items.
+- In Hebrew, use the meal name "ארוחת ביניים" instead of "ארוחת חטיף".
+- Estimate calorie needs us- Use the calculated daily calorie target provided by the server.
+- Set dailyCalories exactly to that calculated target.
+- Do not independently recalculate or override the calorie target.ing age, gender, height, weight and activity.
+- Adjust calories according to the user's goal.
+- Use realistic and sustainable calorie targets.
+- Prioritize sufficient protein.
+- Avoid extreme calorie deficits or surpluses.
+- Respect the selected dietary preference.
+- Respect allergies and dietary restrictions strictly.
+- Do not include foods the user asked to avoid.
+- Prefer foods the user listed as favorites when appropriate.
+- Use realistic household or metric serving amounts.
+- Never use the regular double-quote character inside JSON string values.
+- Write measurement abbreviations as full words.
+- In Hebrew, write "מיליליטר" instead of the abbreviation for milliliters.
+- For example, write "200 מיליליטר", not a Hebrew abbreviation containing quotation marks.
+- Make the calories and macronutrients reasonably consistent.
+- The sum of the meals should approximately match the daily totals.
+- Do not diagnose medical conditions.
+- Do not claim the calorie estimate is perfectly precise.
+- Keep food names and meal names clear and practical.
+
+Language rules:
+
+- Output all user-facing values in ${outputLanguage}.
+- JSON property names must remain in English.
+- When Hebrew is selected, write all meal names, food names,
+  descriptions and notes in Hebrew.
+- Do not mix English into Hebrew user-facing values.
+          `.trim()
+        },
+                {
+          role: "user",
+          content: `
+Create a nutrition plan using these preferences:
+
+Goal: ${String(goal)}
+Calculated daily calorie target: ${targetCalories} calories
+Age: ${parsedAge}
+Gender: ${String(gender)}
+Height: ${parsedHeight} cm
+Weight: ${parsedWeight} kg
+Daily activity: ${String(activityLevel)}
+Training days per week: ${parsedTrainingDays}
+Meals per day: ${parsedMealsPerDay}
+Dietary preference: ${String(dietaryPreference)}
+Favorite foods: ${String(favoriteFoods)}
+Foods to avoid: ${String(foodsToAvoid)}
+Allergies or dietary restrictions: ${String(allergies)}
+Additional notes: ${String(additionalNotes)}
+          `.trim()
+        }
+      ]
+    });
+const cleanedResponse = String(nutritionResponse)
+  .replace(/^```json\s*/i, "")
+  .replace(/^```\s*/i, "")
+  .replace(/\s*```$/i, "")
+  .replace(/מ"ל/g, "מיליליטר")
+  .trim();
+
+    let plan;
+
+    try {
+      plan = JSON.parse(cleanedResponse);
+    } catch (parseError) {
+      console.error(
+        "Nutrition JSON parsing failed:",
+        parseError,
+        cleanedResponse
+      );
+
+      return res.status(502).json({
+        error: "The AI returned an invalid nutrition format"
+      });
+    }
+
+if (
+  !plan ||
+  typeof plan !== "object" ||
+  !Array.isArray(plan.meals) ||
+  plan.meals.some(
+    (meal) =>
+      !meal ||
+      !Array.isArray(meal.options) ||
+      meal.options.length === 0
+  )
+) {
+        return res.status(502).json({
+        error: "The AI returned an incomplete nutrition plan"
+      });
+    }
+
+    return res.json({
+      success: true,
+      plan
+    });
+  } catch (error) {
+    console.error("Nutrition builder error:", error);
+
+    if (error.name === "AbortError") {
+      return res.status(504).json({
+        error: "Nutrition generation timed out"
+      });
+    }
+
+    return res.status(error.status || 500).json({
+      error:
+        error.message ||
+        "Could not generate nutrition plan"
+    });
+  }
+});
 app.listen(PORT, () => {
   console.log(`TrainIQ AI Server running on http://localhost:${PORT}`);
 });

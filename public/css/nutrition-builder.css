@@ -267,43 +267,7 @@ textarea:focus {
 .hidden {
   display: none;
 }
-.workout-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
 
-    min-width: 230px;
-    height: 50px;
-    padding: 0 22px;
-
-    border: none;
-    border-radius: 14px;
-
-    background: linear-gradient(135deg, #2563eb, #06b6d4);
-    color: #fff;
-
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .2px;
-
-    cursor: pointer;
-
-    transition:
-        transform .2s ease,
-        box-shadow .2s ease,
-        filter .2s ease;
-}
-
-.workout-btn:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.08);
-    box-shadow: 0 10px 24px rgba(37,99,235,.35);
-}
-
-.workout-btn:active {
-    transform: translateY(0);
-}
 @media (max-width: 640px) {
   .builder-page {
     width: min(100% - 20px, 1120px);
@@ -793,4 +757,150 @@ textarea:focus {
   .workout-table {
     min-width: 0;
   }
+}
+.meal-options-grid {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.meal-option-card {
+  background: #fafcff;
+  border: 1px solid #e5ebf3;
+  border-radius: 16px;
+  padding: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.meal-option-card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.12);
+}
+.meal-option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+.option-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.option-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+option-foods {
+  display: grid;
+  gap: 10px;
+}
+
+.meal-food {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.meal-food:last-child {
+  border-bottom: none;
+}
+
+.food-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+.food-amount {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.meal-options-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 12px;
+}
+
+.meal-options-title-main {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.meal-options-title-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+.nutrition-options h4 {
+  margin: 0 0 16px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.meal-card {
+  background: #ffffff;
+  border: 1px solid #e7eaf0;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.meal-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+}
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+.meal-macros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.meal-macros span {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f4f7fb;
+  border: 1px solid #e4eaf2;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
 }

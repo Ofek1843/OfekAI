@@ -33,14 +33,13 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
     }
 
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
+.top-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+    margin-bottom: 24px;
+}
 
     .brand {
       display: flex;
@@ -66,13 +65,20 @@
       line-height: 1.5;
     }
 
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+.top-actions {
+    display: grid;
+    grid-template-columns:
+        auto
+        minmax(210px, 280px)
+        minmax(210px, 280px)
+        auto;
 
+    align-items: stretch;
+    justify-content: end;
+    gap: 12px;
+
+    width: 100%;
+}
     .settings-btn,
     .clear-btn {
       width: auto;
@@ -454,7 +460,19 @@
         min-height: 430px;
       }
     }
+@media (max-width: 1050px) {
+    .top-actions {
+        grid-template-columns:
+            repeat(2, minmax(210px, 1fr));
+    }
 
+    .settings-btn,
+    .clear-btn,
+    .workout-btn {
+        width: 100%;
+        min-width: 0;
+    }
+}
     @media (max-width: 700px) {
       h1 {
         font-size: 30px;
@@ -516,7 +534,72 @@
     }
   </style>
 
+  <style>
+
+.workout-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+   width: 100%;
+   min-width: 0;
+   min-height: 86px;
+
+    padding: 16px 20px;
+
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,.08);
+
+    color: white;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+}
+.workout-builder-btn {
+    background: linear-gradient(135deg, #2563eb, #06b6d4);
+}
+
+.nutrition-builder-btn {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+.workout-btn:hover{
+    transform: translateY(-4px);
+    box-shadow:0 18px 40px rgba(0,0,0,.35);
+}
+
+.workout-btn:active{
+    transform:scale(.98);
+}
+
+.workout-btn .title{
+    font-size:20px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.workout-btn .subtitle{
+    color:rgba(255,255,255,.82);
+    font-size:13px;
+    line-height:1.4;
+    margin:0;
+}
+.workout-builder-btn{
+    background: linear-gradient(135deg,#2563eb,#06b6d4);
+}
+
+.nutrition-builder-btn{
+    background: linear-gradient(135deg,#16a34a,#22c55e);
+}
+</style>
+
   <style id="ofekThemeStyles">
+
   /* =========================
      TrainIQ — DARK THEME
      ========================= */
@@ -733,15 +816,36 @@
       </div>
 
       <div class="top-actions">
-        <button id="settingsBtn" class="settings-btn" type="button" aria-haspopup="dialog">
+        <button
+          id="settingsBtn"
+          class="settings-btn"
+          type="button"
+          aria-haspopup="dialog"
+        >
           ⚙️ Settings
         </button>
-<button
-    class="workout-btn"
-    onclick="window.location.href='/workout-builder.html'">
-    🏋️ AI Workout Builder
-</button>
-        <button id="clearBtn" class="clear-btn" type="button">
+
+        <button
+          class="workout-btn workout-builder-btn"
+          type="button"
+          onclick="window.location.href='/workout-builder.html'"
+        >
+          <span class="title">🏋️ AI Workout Builder</span>
+        </button>
+
+        <button
+          class="workout-btn nutrition-builder-btn"
+          type="button"
+          onclick="window.location.href='/nutrition-builder.html'"
+        >
+          <span class="title">🥗 AI Nutrition Builder</span>
+        </button>
+
+        <button
+          id="clearBtn"
+          class="clear-btn"
+          type="button"
+        >
           Clear Chat
         </button>
       </div>
@@ -751,11 +855,13 @@
       <aside class="conversation-history">
         <div class="conversation-history-header">
           <div>
-            <h2 id="conversationHistoryTitle">Conversation History</h2>
-            <p
-             id="conversationHistoryDescription">
-    Open one of your previous conversations or start a new session.
-</p>
+            <h2 id="conversationHistoryTitle">
+              Conversation History
+            </h2>
+
+            <p id="conversationHistoryDescription">
+              Open one of your previous conversations or start a new session.
+            </p>
           </div>
 
           <button id="newSessionBtn" type="button">
@@ -787,8 +893,6 @@
       </section>
     </div>
   </main>
-
-
   <div id="settingsOverlay" class="settings-overlay" aria-hidden="true">
     <section class="settings-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
       <aside class="settings-sidebar">

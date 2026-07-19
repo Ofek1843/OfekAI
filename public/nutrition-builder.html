@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>TrainIQ Nutrition Builder</title>
+
+  <link
+    rel="stylesheet"
+    href="/css/nutrition-builder.css"
+  />
+</head>
+
+<body>
+  <main class="builder-page">
+    <section class="builder-card">
+      <div class="builder-header">
+        <span class="builder-badge">TrainIQ</span>
+
+        <h1>AI Nutrition Builder</h1>
+
+        <p class="builder-description">
+          Build a personalized nutrition plan based on your goal,
+          body measurements, activity level, food preferences, and
+          dietary limitations.
+        </p>
+      </div>
+
+      <form id="nutrition-builder-form">
+        <!-- Goal -->
+        <div class="form-group">
+          <label for="goal">Primary goal</label>
+
+          <select id="goal" name="goal" required>
+            <option value="">Select a goal</option>
+            <option value="loseFat">Lose fat</option>
+            <option value="buildMuscle">Build muscle</option>
+            <option value="maintainWeight">Maintain weight</option>
+            <option value="improvePerformance">
+              Improve performance
+            </option>
+          </select>
+        </div>
+
+        <!-- Age and gender -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="age">Age</label>
+
+            <input
+              id="age"
+              name="age"
+              type="number"
+              min="14"
+              max="100"
+              value="21"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+
+            <select id="gender" name="gender" required>
+              <option value="">Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Height and weight -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="height">Height in centimeters</label>
+
+            <input
+              id="height"
+              name="height"
+              type="number"
+              min="120"
+              max="230"
+              value="175"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="weight">Weight in kilograms</label>
+
+            <input
+              id="weight"
+              name="weight"
+              type="number"
+              min="35"
+              max="300"
+              step="0.1"
+              value="75"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="form-group">
+          <label for="activityLevel">Daily activity level</label>
+
+          <select
+            id="activityLevel"
+            name="activityLevel"
+            required
+          >
+            <option value="">Select activity level</option>
+
+            <option value="sedentary">
+              Sedentary
+            </option>
+
+            <option value="lightlyActive">
+              Lightly active
+            </option>
+
+            <option value="moderatelyActive">
+              Moderately active
+            </option>
+
+            <option value="veryActive">
+              Very active
+            </option>
+
+            <option value="extremelyActive">
+              Extremely active
+            </option>
+          </select>
+        </div>
+
+        <!-- Training and meals -->
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="trainingDays">
+              Training days per week
+            </label>
+
+            <input
+              id="trainingDays"
+              name="trainingDays"
+              type="number"
+              min="0"
+              max="7"
+              value="4"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="mealsPerDay">
+              Meals per day
+            </label>
+
+            <select
+              id="mealsPerDay"
+              name="mealsPerDay"
+              required
+            >
+              <option value="3">3 meals</option>
+              <option value="4" selected>4 meals</option>
+              <option value="5">5 meals</option>
+              <option value="6">6 meals</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Diet -->
+        <div class="form-group">
+          <label for="dietaryPreference">
+            Dietary preference
+          </label>
+
+          <select
+            id="dietaryPreference"
+            name="dietaryPreference"
+            required
+          >
+            <option value="balanced">
+              Balanced
+            </option>
+
+            <option value="highProtein">
+              High protein
+            </option>
+
+            <option value="vegetarian">
+              Vegetarian
+            </option>
+
+            <option value="vegan">
+              Vegan
+            </option>
+
+            <option value="pescatarian">
+              Pescatarian
+            </option>
+
+            <option value="lowCarb">
+              Low carbohydrate
+            </option>
+
+            <option value="mediterranean">
+              Mediterranean
+            </option>
+          </select>
+        </div>
+
+        <!-- Favorite foods -->
+        <div class="form-group">
+          <label for="favoriteFoods">
+            Preferred foods
+          </label>
+
+          <textarea
+            id="favoriteFoods"
+            name="favoriteFoods"
+            rows="3"
+            placeholder="List foods you enjoy and would like included."
+          ></textarea>
+        </div>
+
+        <!-- Avoided foods -->
+        <div class="form-group">
+          <label for="foodsToAvoid">
+            Foods to avoid
+          </label>
+
+          <textarea
+            id="foodsToAvoid"
+            name="foodsToAvoid"
+            rows="3"
+            placeholder="List foods you dislike or do not want included."
+          ></textarea>
+        </div>
+
+        <!-- Allergies -->
+        <div class="form-group">
+          <label for="allergies">
+            Allergies or dietary restrictions
+          </label>
+
+          <textarea
+            id="allergies"
+            name="allergies"
+            rows="3"
+            placeholder="Describe allergies, intolerances, religious restrictions, or medical dietary limitations."
+          ></textarea>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label for="additionalNotes">
+            Additional notes
+          </label>
+
+          <textarea
+            id="additionalNotes"
+            name="additionalNotes"
+            rows="4"
+            placeholder="Add meal timing preferences, budget limitations, cooking preferences, or other relevant details."
+          ></textarea>
+        </div>
+
+        <button id="generate-button" type="submit">
+          Generate My Nutrition Plan
+        </button>
+
+        <p
+          id="builder-status"
+          class="builder-status"
+          aria-live="polite"
+        ></p>
+      </form>
+    </section>
+
+    <section
+      id="nutrition-result"
+      class="program-result hidden"
+      aria-live="polite"
+    ></section>
+  </main>
+
+  <script
+    type="module"
+    src="/js/nutrition-builder.js"
+  ></script>
+</body>
+</html>
