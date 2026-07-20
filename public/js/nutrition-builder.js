@@ -278,7 +278,7 @@ form.addEventListener("submit", async (event) => {
     });
 
     const data = await response.json();
-
+console.log(data);
     if (!response.ok) {
       throw new Error(
         data.error ||
@@ -291,6 +291,7 @@ form.addEventListener("submit", async (event) => {
 setStatus("");
 
 if (data.plan) {
+  window.currentNutritionPlan = data.plan;
   renderNutritionPlan(data.plan);
   return;
 }
@@ -342,21 +343,39 @@ const optionsHtml = options
       : [];
 
 const foodsText = foods
-  .map(
-    (food) => `
-      <div class="meal-food">
-        <span class="food-name">
-          ${escapeHtml(food.name || "")}
-        </span>
+.map(
+  (food, foodIndex) => `
+        <tr>
+<td class="food-cell">
+  <img
+    class="food-image"
+    src="${food.imageUrl || "/images/food-placeholder.png"}"
+    alt="${escapeHtml(food.name || "")}"
+    loading="lazy"
+  />
 
-        <span class="food-amount">
-          ${escapeHtml(food.amount || "")}
-        </span>
-      </div>
+  <span>
+    ${escapeHtml(food.name || "")}
+  </span>
+</td>
+<td>${escapeHtml(food.amount || "")}</td>
+
+<td>
+  <button
+    type="button"
+    class="nutrition-reroll-food-button"
+    data-meal-number="${meal.mealNumber}"
+    data-option-number="${option.optionNumber}"
+    data-food-index="${foodIndex}"
+  >
+    🔄
+  </button>
+</td>
+      </tr>
     `
   )
-  .join("");   
-return `
+  .join("");
+  return `
   <article
   class="meal-option-card"
   role="button"
@@ -374,9 +393,20 @@ return `
       </strong>
     </div>
 
-    <div class="option-foods">
+<div class="option-foods">
+  <table class="nutrition-food-table">
+    <thead>
+      <tr>
+        <th>${isHebrew ? "מזון" : "Food"}</th>
+        <th>${isHebrew ? "כמות" : "Amount"}</th>
+      </tr>
+    </thead>
+
+    <tbody>
       ${foodsText}
-    </div>
+    </tbody>
+  </table>
+</div>
   </article>
 `;
   })
@@ -522,6 +552,64 @@ return `
   `;
 
   resultElement.classList.remove("hidden");
+
+resultElement
+  .querySelectorAll(".nutrition-reroll-food-button")
+    .forEach((rerollButton) => {
+rerollButton.addEventListener("click", async () => {
+  try {
+
+  const mealNumber = Number(
+    rerollButton.dataset.mealNumber
+  );
+
+const optionNumber = Number(
+  rerollButton.dataset.optionNumber
+);
+
+const foodIndex = Number(rerollButton.dataset.foodIndex);
+
+rerollButton.disabled = true;
+rerollButton.classList.add("is-rerolling");
+
+const response = await fetch(
+    "/api/nutrition-builder/reroll-food",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+body: JSON.stringify({
+  mealNumber,
+  optionNumber,
+  foodIndex,
+  plan: window.currentNutritionPlan
+})
+    }
+  );
+
+const data = await response.json();
+
+console.log(data);
+
+const meal = window.currentNutritionPlan.meals.find(
+  (meal) => meal.mealNumber === mealNumber
+);
+
+const optionIndex = meal.options.findIndex(
+  (option) => option.optionNumber === optionNumber
+);
+
+meal.options[optionIndex].foods[foodIndex] = data.food;
+
+renderNutritionPlan(window.currentNutritionPlan);
+
+} finally {
+  rerollButton.disabled = false;
+  rerollButton.classList.remove("is-rerolling");
+}
+
+});  });
 
   resultElement.scrollIntoView({
     behavior: "smooth",

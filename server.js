@@ -77,7 +77,209 @@ async function createChatCompletion({
     clearTimeout(timeout);
   }
 }
+const localFoodImages = {
+  "chicken breast": "/images/foods/chicken-breast.jpg",
+  "chicken thigh": "/images/foods/chicken-thigh.jpg",
+  "turkey breast": "/images/foods/turkey-breast.jpg",
+  "lean ground beef": "/images/foods/lean-ground-beef.jpg",
+  "steak": "/images/foods/steak.jpg",
+  "salmon": "/images/foods/salmon.jpg",
+  "tuna": "/images/foods/tuna.jpg",
+  "tilapia": "/images/foods/tilapia.jpg",
+  "cod": "/images/foods/cod.jpg",
+  "shrimp": "/images/foods/shrimp.jpg",
+  "eggs": "/images/foods/eggs.jpg",
+  "egg whites": "/images/foods/egg-whites.jpg",
+  "cottage cheese": "/images/foods/cottage-cheese.jpg",
+  "greek yogurt": "/images/foods/greek-yogurt.jpg",
+  "skyr": "/images/foods/skyr.jpg",
+  "tofu": "/images/foods/tofu.jpg",
+  "tempeh": "/images/foods/tempeh.jpg",
+  "seitan": "/images/foods/seitan.jpg",
+  "protein powder": "/images/foods/protein-powder.jpg",
 
+  "white rice": "/images/foods/white-rice.jpg",
+  "brown rice": "/images/foods/brown-rice.jpg",
+  "jasmine rice": "/images/foods/jasmine-rice.jpg",
+  "basmati rice": "/images/foods/basmati-rice.jpg",
+  "oats": "/images/foods/oats.jpg",
+  "quinoa": "/images/foods/quinoa.jpg",
+  "couscous": "/images/foods/couscous.jpg",
+  "bulgur": "/images/foods/bulgur.jpg",
+  "whole wheat pasta": "/images/foods/whole-wheat-pasta.jpg",
+  "pasta": "/images/foods/pasta.jpg",
+  "sweet potato": "/images/foods/sweet-potato.jpg",
+  "potato": "/images/foods/potato.jpg",
+  "whole wheat bread": "/images/foods/whole-wheat-bread.jpg",
+  "bread": "/images/foods/bread.jpg",
+  "pita": "/images/foods/pita.jpg",
+  "tortilla": "/images/foods/tortilla.jpg",
+  "rice cakes": "/images/foods/rice-cakes.jpg",
+  "cornflakes": "/images/foods/cornflakes.jpg",
+  "granola": "/images/foods/granola.jpg",
+
+  "banana": "/images/foods/banana.jpg",
+  "apple": "/images/foods/apple.jpg",
+  "orange": "/images/foods/orange.jpg",
+  "pear": "/images/foods/pear.jpg",
+  "grapes": "/images/foods/grapes.jpg",
+  "strawberries": "/images/foods/strawberries.jpg",
+  "blueberries": "/images/foods/blueberries.jpg",
+  "raspberries": "/images/foods/raspberries.jpg",
+  "kiwi": "/images/foods/kiwi.jpg",
+  "pineapple": "/images/foods/pineapple.jpg",
+  "mango": "/images/foods/mango.jpg",
+  "watermelon": "/images/foods/watermelon.jpg",
+  "melon": "/images/foods/melon.jpg",
+  "peach": "/images/foods/peach.jpg",
+  "plum": "/images/foods/plum.jpg",
+  "dates": "/images/foods/dates.jpg",
+  "raisins": "/images/foods/raisins.jpg",
+
+  "broccoli": "/images/foods/broccoli.jpg",
+  "cauliflower": "/images/foods/cauliflower.jpg",
+  "carrots": "/images/foods/carrots.jpg",
+  "cucumber": "/images/foods/cucumber.jpg",
+  "tomato": "/images/foods/tomato.jpg",
+  "lettuce": "/images/foods/lettuce.jpg",
+  "spinach": "/images/foods/spinach.jpg",
+  "kale": "/images/foods/kale.jpg",
+  "zucchini": "/images/foods/zucchini.jpg",
+  "bell pepper": "/images/foods/bell-pepper.jpg",
+  "onion": "/images/foods/onion.jpg",
+  "mushrooms": "/images/foods/mushrooms.jpg",
+  "avocado": "/images/foods/avocado.jpg",
+  "cabbage": "/images/foods/cabbage.jpg",
+  "green beans": "/images/foods/green-beans.jpg",
+  "peas": "/images/foods/peas.jpg",
+  "corn": "/images/foods/corn.jpg",
+
+  "almonds": "/images/foods/almonds.jpg",
+  "walnuts": "/images/foods/walnuts.jpg",
+  "cashews": "/images/foods/cashews.jpg",
+  "pistachios": "/images/foods/pistachios.jpg",
+  "peanuts": "/images/foods/peanuts.jpg",
+  "peanut butter": "/images/foods/peanut-butter.jpg",
+  "almond butter": "/images/foods/almond-butter.jpg",
+  "tahini": "/images/foods/tahini.jpg",
+  "olive oil": "/images/foods/olive-oil.jpg",
+
+  "milk": "/images/foods/milk.jpg",
+  "lactose free milk": "/images/foods/lactose-free-milk.jpg",
+  "soy milk": "/images/foods/soy-milk.jpg",
+  "almond milk": "/images/foods/almond-milk.jpg",
+  "oat milk": "/images/foods/oat-milk.jpg",
+  "cheese": "/images/foods/cheese.jpg",
+  "mozzarella": "/images/foods/mozzarella.jpg",
+  "parmesan": "/images/foods/parmesan.jpg",
+
+  "honey": "/images/foods/honey.jpg",
+  "jam": "/images/foods/jam.jpg",
+  "dark chocolate": "/images/foods/dark-chocolate.jpg",
+  "hummus": "/images/foods/hummus.jpg",
+  "ketchup": "/images/foods/ketchup.jpg",
+  "mustard": "/images/foods/mustard.jpg",
+  "tomato sauce": "/images/foods/tomato-sauce.jpg",
+"salsa": "/images/foods/salsa.jpg",
+"hazelnuts": "/images/foods/hazelnuts.jpg",
+"chickpeas": "/images/foods/chickpeas.jpg",
+"lentils": "/images/foods/lentils.jpg",
+"red lentils": "/images/foods/red-lentils.jpg",
+"black beans": "/images/foods/black-beans.jpg",
+"kidney beans": "/images/foods/kidney-beans.jpg",
+"white beans": "/images/foods/white-beans.jpg",
+"edamame": "/images/foods/edamame.jpg",
+"kohlrabi": "/images/foods/kohlrabi.jpg",
+"beetroot": "/images/foods/beetroot.jpg",
+"celery": "/images/foods/celery.jpg",
+"pumpkin": "/images/foods/pumpkin.jpg",
+"butternut squash": "/images/foods/butternut-squash.jpg",
+"mixed greens": "/images/foods/mixed-greens.jpg",
+"dried fruit": "/images/foods/dried-fruit.jpg",
+"cranberries": "/images/foods/cranberries.jpg",
+"sunflower seeds": "/images/foods/sunflower-seeds.jpg",
+"pumpkin seeds": "/images/foods/pumpkin-seeds.jpg",
+"chia seeds": "/images/foods/chia-seeds.jpg",
+"flax seeds": "/images/foods/flax-seeds.jpg",
+"coconut": "/images/foods/coconut.jpg",
+"coconut milk": "/images/foods/coconut-milk.jpg",
+"yogurt": "/images/foods/yogurt.jpg",
+"cream cheese": "/images/foods/cream-cheese.jpg",
+"feta": "/images/foods/feta.jpg",
+"ricotta": "/images/foods/ricotta.jpg",
+"wrap": "/images/foods/wrap.jpg",
+"whole wheat wrap": "/images/foods/whole-wheat-wrap.jpg",
+"marinara sauce": "/images/foods/marinara-sauce.jpg",
+"smoothie": "/images/foods/smoothie.jpg",
+"hazelnut butter": "/images/foods/hazelnut-butter.jpg",
+"pecans": "/images/foods/pecans.jpg",
+"macadamia nuts": "/images/foods/macadamia-nuts.jpg",
+"brazil nuts": "/images/foods/brazil-nuts.jpg",
+"cashew butter": "/images/foods/cashew-butter.jpg",
+"whole egg": "/images/foods/eggs.jpg",
+"egg": "/images/foods/eggs.jpg",
+"chicken": "/images/foods/chicken-breast.jpg",
+"turkey": "/images/foods/turkey-breast.jpg",
+"beef": "/images/foods/lean-ground-beef.jpg",
+"fish": "/images/foods/salmon.jpg",
+"berries": "/images/foods/blueberries.jpg",
+"mixed berries": "/images/foods/blueberries.jpg",
+"leafy greens": "/images/foods/mixed-greens.jpg"
+};
+const foodImageCache = new Map();
+async function getFoodImage(foodName) {
+    const cacheKey = String(foodName || "")
+    .trim()
+    .toLowerCase();
+
+  if (foodImageCache.has(cacheKey)) {
+    return foodImageCache.get(cacheKey);
+  }
+  if (!process.env.SPOONACULAR_API_KEY) {
+    return "";
+  }
+const localImage = localFoodImages[cacheKey];
+
+if (localImage) {
+  return localImage;
+}
+  const url =
+    "https://api.spoonacular.com/food/ingredients/search" +
+    `?query=${encodeURIComponent(foodName)}` +
+    "&number=1" +
+    `&apiKey=${process.env.SPOONACULAR_API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error(
+        "Spoonacular image search failed:",
+        response.status
+      );
+
+      return "";
+    }
+
+    const data = await response.json();
+    const ingredient = data.results?.[0];
+
+    if (!ingredient?.image) {
+      return "";
+    }
+
+const imageUrl =
+  "https://img.spoonacular.com/ingredients_250x250/" +
+  ingredient.image;
+
+foodImageCache.set(cacheKey, imageUrl);
+
+return imageUrl;
+  } catch (error) {
+    console.error("Food image request failed:", error);
+    return "";
+  }
+}
 /**
  * Generates a short title for a new conversation.
  */
@@ -720,6 +922,212 @@ Injuries, limitations or special requests: ${String(limitations)}
     });
   }
 });
+
+app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
+  try {
+    const {
+  sessionIndex,
+  exerciseIndex,
+  program
+  } = req.body;
+
+  if (
+  !program ||
+  !Array.isArray(program.sessions)
+) {
+  return res.status(400).json({
+    error: "Workout program is required."
+  });
+}
+const session = program.sessions[sessionIndex];
+
+if (
+  !session ||
+  !Array.isArray(session.exercises)
+) {
+  return res.status(400).json({
+    error: "Invalid session."
+  });
+}
+
+const currentExercise = session.exercises[exerciseIndex];
+
+if (!currentExercise) {
+  return res.status(400).json({
+    error: "Invalid exercise."
+  });
+}
+console.log("Current exercise for reroll:", currentExercise);
+
+const rerollPrompt = `
+Replace only this exercise with another suitable exercise.
+
+Current exercise:
+${JSON.stringify(currentExercise, null, 2)}
+
+Rules:
+- Keep the same muscle group.
+- Keep the same training goal.
+- Keep similar difficulty.
+- Keep similar equipment when possible.
+- Return only one exercise.
+- Return valid JSON only.
+
+Required JSON format:
+{
+  "name": "",
+  "muscleGroup": "",
+  "equipment": "",
+  "sets": 3,
+  "reps": "",
+  "restSeconds": 120,
+  "rir": "",
+  "notes": ""
+}
+`;
+
+const aiResponse = await createChatCompletion({
+  temperature: 0.7,
+  maxTokens: 500,
+  messages: [
+    {
+      role: "system",
+      content: "You are an expert strength coach."
+    },
+    {
+      role: "user",
+      content: rerollPrompt
+    }
+  ]
+});
+const newExercise = JSON.parse(aiResponse);
+return res.json({
+  success: true,
+  exercise: newExercise
+});
+} catch (error) {
+  console.error("Re-roll error:", error);
+
+  return res.status(500).json({
+    error: error.message || "Re-roll failed."
+  });
+}
+});
+
+app.post("/api/nutrition-builder/reroll-food", async (req, res) => {
+  try {
+  const {
+    mealNumber,
+    optionNumber,
+    foodIndex,
+    plan
+  } = req.body;
+
+  const meal = plan.meals.find(
+      (meal) => meal.mealNumber === mealNumber
+);
+
+if (!meal) {
+  return res.status(404).json({
+    error: "Meal not found."
+  });
+}
+
+const option = meal.options.find(
+  (option) => option && option.optionNumber === optionNumber
+);
+
+if (!option) {
+  return res.status(404).json({
+    error: "Meal option not found."
+  });
+}
+const currentFood = option.foods[foodIndex];
+
+if (!currentFood) {
+  return res.status(404).json({
+    error: "Food not found."
+  });
+}
+console.log(option);
+
+const rerollPrompt = `
+You are a professional nutrition planner.
+
+Replace only ONE food item.
+
+Meal:
+${JSON.stringify(meal)}
+
+Current option:
+${JSON.stringify(option)}
+
+Food to replace:
+${JSON.stringify(currentFood)}
+
+Requirements:
+- Keep approximately the same calories and macros.
+- Respect the language of the existing plan.
+- Do not repeat the same foods.
+- Return only valid JSON.
+- Do not include markdown.
+- Use exactly this structure:
+
+Required JSON format:
+{
+  "name": "food name",
+  "imageKey": "one allowed image key",
+  "amount": "food amount"
+}
+  `;
+
+const aiResponse = await createChatCompletion({
+  temperature: 0.8,
+  maxTokens: 500,
+  messages: [
+    {
+      role: "system",
+      content: "You are a professional nutrition planner."
+    },
+    {
+      role: "user",
+      content: rerollPrompt
+    }
+  ]
+});
+
+const newFood = JSON.parse(aiResponse);
+if (newFood.name === "באננה") {
+  newFood.name = "בננה";
+}
+
+const imageKey = String(newFood.imageKey || "")
+  .trim()
+  .toLowerCase();
+
+newFood.imageUrl =
+  localFoodImages[imageKey] ||
+  "/images/food-placeholder.png";
+
+option.foods[foodIndex] = newFood;
+
+res.json({
+  success: true,
+  food: newFood
+});
+
+console.log({
+  mealNumber,
+  optionNumber
+});
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      error: "Failed to reroll food."
+    });
+  }
+});
 app.post("/api/nutrition-builder", async (req, res) => {
   console.log("Nutrition Builder endpoint reached");
   try {
@@ -870,14 +1278,23 @@ The JSON must exactly follow this structure:
       "targetCarbsGrams": 70,
       "targetFatGrams": 18,
       "options": [
-        {
-          "optionNumber": 1,
-          "foods": [
-            {
-              "name": "string",
-              "amount": "string"
-            }
-          ]
+{
+  "optionNumber": 1,
+  "optionCalories": 0,
+  "optionProteinGrams": 0,
+  "optionCarbsGrams": 0,
+  "optionFatGrams": 0,
+  "foods": [
+  {
+  "name": "string",
+  "imageKey": "one allowed image key",
+  "amount": "string",
+  "calories": 0,
+  "proteinGrams": 0,
+  "carbsGrams": 0,
+  "fatGrams": 0
+}
+                ]
         }
       ]
     }
@@ -897,7 +1314,13 @@ Nutrition rules:
 
 - Create exactly ${parsedMealsPerDay} meals.
 - Create exactly 3 options for every meal.
-- Every option in the same meal should be close to the same target calories and macronutrients.
+- Every option in the same meal must have nearly identical calories and macronutrients.
+- The difference between any two options in the same meal must not exceed:
+  - 5% calories
+  - 5 grams protein
+  - 10 grams carbohydrates
+  - 5 grams fat
+- If an option exceeds these limits, adjust the food amounts until all options fall within these tolerances.
 - Each option must use different food combinations.
 - Keep the meal target calories and macros only once at the meal level.
 - Do not include calories or macronutrients inside individual food items.
@@ -929,6 +1352,19 @@ Nutrition rules:
 - Do not diagnose medical conditions.
 - Do not claim the calorie estimate is perfectly precise.
 - Keep food names and meal names clear and practical.
+- For every food item, set imageKey to exactly one value from this allowed list:
+chicken breast, chicken thigh, turkey breast, lean ground beef, steak, salmon, tuna, tilapia, cod, shrimp, eggs, egg whites, cottage cheese, greek yogurt, skyr, tofu, tempeh, seitan, protein powder, white rice, brown rice, jasmine rice, basmati rice, oats, quinoa, couscous, bulgur, whole wheat pasta, pasta, sweet potato, potato, whole wheat bread, bread, pita, tortilla, rice cakes, cornflakes, granola, banana, apple, orange, pear, grapes, strawberries, blueberries, raspberries, kiwi, pineapple, mango, watermelon, melon, peach, plum, dates, raisins, broccoli, cauliflower, carrots, cucumber, tomato, lettuce, spinach, kale, zucchini, bell pepper, onion, mushrooms, avocado, cabbage, green beans, peas, corn, almonds, walnuts, cashews, pistachios, peanuts, peanut butter, almond butter, tahini, olive oil, milk, lactose free milk, soy milk, almond milk, oat milk, cheese, mozzarella, parmesan, honey, jam, dark chocolate, hummus, ketchup, mustard, tomato sauce, salsa.
+- Choose the imageKey that best represents the main ingredient of the food item.
+- Never invent a new imageKey.
+- Every food item must include accurate calories, proteinGrams, carbsGrams and fatGrams based on the specified amount.
+- Use realistic nutritional values based on reliable food composition data.
+- The sum of all food items in an option must closely match the meal target calories and macronutrients.
+- optionCalories must equal the sum of the calories of all foods in that option.
+- optionProteinGrams must equal the sum of the proteinGrams of all foods in that option.
+- optionCarbsGrams must equal the sum of the carbsGrams of all foods in that option.
+- optionFatGrams must equal the sum of the fatGrams of all foods in that option.
+- Verify every calculation before returning the final JSON.
+- Double-check all calculations before returning the JSON.
 
 Language rules:
 
@@ -937,6 +1373,7 @@ Language rules:
 - When Hebrew is selected, write all meal names, food names,
   descriptions and notes in Hebrew.
 - Do not mix English into Hebrew user-facing values.
+
           `.trim()
         },
                 {
@@ -1004,11 +1441,26 @@ if (
       });
     }
 
-    return res.json({
-      success: true,
-      plan
-    });
-  } catch (error) {
+for (const meal of plan.meals) {
+  for (const option of meal.options) {
+    for (const food of option.foods) {
+const imageKey = String(food.imageKey || "")
+  .trim()
+  .toLowerCase();
+
+food.imageUrl =
+  localFoodImages[imageKey] ||
+  "/images/food-placeholder.png";
+    }
+  }
+}
+
+return res.json({
+    success: true,
+  plan
+});
+  } 
+  catch (error) {
     console.error("Nutrition builder error:", error);
 
     if (error.name === "AbortError") {

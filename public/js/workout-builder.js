@@ -310,11 +310,11 @@ form.addEventListener("submit", async (event) => {
 
     setStatus("");
 
-    if (data.program) {
-      renderProgram(data.program);
-      return;
-    }
-
+if (data.program) {
+  window.currentWorkoutProgram = data.program;
+  renderProgram(data.program);
+  return;
+}
     resultElement.innerHTML = `
       <h2>
         ${
@@ -366,10 +366,10 @@ const hebrewWorkoutTerms = {
   "Upper Body Pull": "פלג גוף עליון – משיכה",
   "Upper Body Hypertrophy": "היפרטרופיה – פלג גוף עליון",
   "Lower Body Hypertrophy": "היפרטרופיה – פלג גוף תחתון",
-  "Full Body Hypertrophy": "היפרטרופיה – כל הגוף",
-  "Full Body": "אימון כל הגוף",
-  "Push Day": "אימון דחיפה",
-  "Pull Day": "אימון משיכה",
+  "Full Body Hypertrophy": "היפרטרופיה – פול באדי",
+  "Full Body": "אימון פול באדי",
+  "Push Day": "אימון פוש",
+  "Pull Day": "אימון פול",
   "Leg Day": "אימון רגליים",
 
   "Dumbbell Bench Press": "לחיצת חזה עם משקולות יד",
@@ -378,6 +378,8 @@ const hebrewWorkoutTerms = {
   "Tricep Dips": "מקבילים ליד אחורית",
   "Pull-up": "מתח",
   "Pull-ups": "מתח",
+  "Bodyweight Row": "חתירה במשקל גוף",
+  "Bodyweight Rows": "חתירה במשקל גוף",
   "Lat Pulldown": "משיכת פולי עליון",
   "Seated Row": "חתירה בישיבה",
   "Chest Press": "לחיצת חזה",
@@ -457,7 +459,7 @@ function renderProgram(program) {
       const exerciseRows = exercises
         .map((exercise, exerciseIndex) => {
           return `
-            <tr>
+            <tr data-session="${sessionIndex}" data-exercise="${exerciseIndex}">
               <td class="exercise-number">
                 ${exerciseIndex + 1}
               </td>
@@ -509,11 +511,22 @@ function renderProgram(program) {
                 ${escapeHtml(String(exercise.restSeconds))}s
               </td>
 
-              <td class="workout-value">
-                ${escapeHtml(String(exercise.rir || "—"))}
-              </td>
-            </tr>
-          `;
+<td class="workout-value">
+  ${escapeHtml(String(exercise.rir || "—"))}
+</td>
+
+<td class="workout-value">
+<button
+  type="button"
+  class="reroll-button"
+  title="Replace exercise"
+  data-session="${sessionIndex}"
+  data-exercise="${exerciseIndex}"
+>
+  🔄
+</button>
+</td>
+</tr>          `;
         })
         .join("");
 
@@ -548,7 +561,9 @@ function renderProgram(program) {
 <th>${ui.sets}</th>
 <th>${ui.reps}</th>
 <th>${ui.rest}</th>
-<th>RIR</th>                </tr>
+<th>RIR</th>
+<th class="reroll-column"></th>
+              </tr>
               </thead>
 
               <tbody>
@@ -620,7 +635,65 @@ function renderProgram(program) {
   `;
 
   resultElement.classList.remove("hidden");
+resultElement
+  .querySelectorAll(".reroll-button")
+  .forEach((rerollButton) => {
+    rerollButton.addEventListener("click", async () => {
+      const sessionIndex = Number(
+        rerollButton.dataset.session
+      );
 
+      const exerciseIndex = Number(
+        rerollButton.dataset.exercise
+      );
+
+rerollButton.classList.add("is-loading");
+rerollButton.disabled = true;
+
+try {
+  const response = await fetch(
+    "/api/workout-builder/reroll-exercise",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+body: JSON.stringify({
+  sessionIndex,
+  exerciseIndex,
+program: window.currentWorkoutProgram
+})
+    }
+  );
+
+  const data = await response.json();
+
+  if (data.exercise) {
+
+    window.currentWorkoutProgram.sessions[sessionIndex].exercises[exerciseIndex] =
+  data.exercise;
+
+  const row = resultElement.querySelector(
+    `tr[data-session="${sessionIndex}"][data-exercise="${exerciseIndex}"]`
+  );
+
+  if (row) {
+    row.querySelector(".exercise-name-cell strong").textContent =
+      translateWorkoutValue(data.exercise.name);
+
+    const note = row.querySelector(".exercise-note");
+
+    if (note) {
+      note.textContent = data.exercise.notes || "";
+    }
+  }
+}
+} finally {
+  rerollButton.classList.remove("is-loading");
+  rerollButton.disabled = false;
+}
+    });
+  });
   resultElement.scrollIntoView({
     behavior: "smooth",
     block: "start"

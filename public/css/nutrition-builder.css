@@ -856,6 +856,53 @@ option-foods {
   font-weight: 600;
   color: #94a3b8;
 }
+.nutrition-food-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.nutrition-food-table th {
+  padding: 14px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .03em;
+}
+
+.nutrition-food-table td {
+  padding: 14px;
+  border-bottom: 1px solid #eef2f7;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nutrition-food-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.nutrition-food-table tbody tr {
+  transition: background 0.2s ease,
+              transform 0.2s ease;
+}
+
+.nutrition-food-table tbody tr:hover {
+  background: #eff6ff;
+  transform: scale(1.01);
+}
+html[dir="rtl"] .nutrition-food-table th,
+html[dir="rtl"] .nutrition-food-table td {
+  text-align: right;
+}
+
+html[dir="ltr"] .nutrition-food-table th,
+html[dir="ltr"] .nutrition-food-table td {
+  text-align: left;
+}
 .nutrition-options h4 {
   margin: 0 0 16px;
   color: #ffffff;
@@ -903,4 +950,38 @@ option-foods {
   font-size: 13px;
   font-weight: 600;
   color: #334155;
+}
+.food-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.food-image {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #dbe3ee;
+  background: #f8fafc;
+}
+
+.food-cell span {
+  font-weight: 600;
+  color: #1e293b;
+}
+.nutrition-reroll-food-button.is-rerolling {
+  animation: nutrition-reroll-spin 0.8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes nutrition-reroll-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
