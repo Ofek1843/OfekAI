@@ -21,8 +21,7 @@ async function createChatCompletion({
   maxTokens
 }) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-
+const timeout = setTimeout(() => controller.abort(), 60000);
   try {
     const requestBody = {
       model: "gpt-4o-mini",
@@ -1242,9 +1241,10 @@ const targetCarbs = Math.round(
 
     const outputLanguage =
       language === "he" ? "Hebrew" : "English";
+      console.time("Nutrition AI");
           const nutritionResponse = await createChatCompletion({
       temperature: 0.3,
-      maxTokens: 3500,
+      maxTokens: 6000,
       messages: [
         {
           role: "system",
@@ -1402,6 +1402,7 @@ Additional notes: ${String(additionalNotes)}
         }
       ]
     });
+    console.timeEnd("Nutrition AI");
 const cleanedResponse = String(nutritionResponse)
   .replace(/^```json\s*/i, "")
   .replace(/^```\s*/i, "")
