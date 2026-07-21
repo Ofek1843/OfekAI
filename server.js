@@ -3,13 +3,65 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const crypto = require("crypto");
+const ImageKit = require("imagekit");
 const payPlusBilling = require("./lib/payplus-billing");
+const {
+  clientIp,
+  createDeduper,
+  createRateLimiter,
+  createTaskQueue,
+  createTtlCache,
+  requestId
+} = require("./lib/runtime-guards");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
+const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
+const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 60000);
+const uploadAuthTtlSeconds = Number(process.env.IMAGEKIT_UPLOAD_AUTH_TTL_SECONDS || 1800);
+const imageKitUploadCache = createTtlCache({ maxEntries: 32, ttlMs: 60 * 60 * 1000 });
+const rateLimiters = {
+  ai: createRateLimiter({ windowMs: 60_000, max: Number(process.env.AI_PER_UID_PER_MINUTE || 6), keyPrefix: "ai" }),
+  uploads: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOADS_PER_UID_PER_MINUTE || 8), keyPrefix: "upload" }),
+  auth: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOAD_AUTH_PER_UID_PER_MINUTE || 10), keyPrefix: "upload-auth" })
+};
+const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
+const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
 
-app.use(express.json({ limit: "8mb" }));
-app.use(express.static(path.join(__dirname, "public")));
+app.disable("x-powered-by");
+app.use((req, res, next) => {
+  req.requestId = requestId();
+  res.setHeader("X-Request-Id", req.requestId);
+  next();
+});
+
+app.use((req, res, next) => {
+  if (req.path.endsWith(".html")) {
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+  }
+  next();
+});
+
+app.use(express.json({ limit: "512kb" }));
+app.use(express.urlencoded({ extended: false, limit: "64kb" }));
+app.use(express.static(path.join(__dirname, "public"), {
+  maxAge: "1h",
+  setHeaders(res, filePath) {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Cache-Control", "no-store, max-age=0");
+      return;
+    }
+    const isAsset = /\.(?:css|js|png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath);
+    if (isAsset) {
+      res.setHeader("Cache-Control", "public, max-age=3600");
+    }
+  }
+}));
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true, uptime: Math.round(process.uptime()), now: new Date().toISOString() });
+});
 
 app.get("/api/billing/config", (req, res) => {
   const config = payPlusBilling.billingConfig();
@@ -41,15 +93,15 @@ app.post("/api/billing/payplus/callback", async (req, res) => {
 const FIREBASE_WEB_API_KEY = process.env.FIREBASE_WEB_API_KEY || "AIzaSyB5EAK98RQP_LNd0fgj3UtCwE17lwXTADU";
 const exerciseDemoCache = new Map();
 const TRAINI_Q_PRODUCT_CONTEXT = `
-TRAINIQ PRODUCT KNOWLEDGE:
-- You are the AI Coach embedded inside the TrainIQ fitness application, not a standalone general ChatGPT interface.
-- TrainIQ includes: a personal dashboard; an AI workout-plan builder; a manual workout-plan builder; an AI nutrition-plan builder; saved workout and nutrition plans with one active plan of each type; a live workout tracker with sets, repetitions, load, rest timers, RPE and RIR; retrospective workout logging; workout history; body-weight, measurement and progress-photo tracking; exercise-progress charts; exercise demonstrations; a verified public exercise leaderboard; Athlete Core personalization; conversation history; voice transcription; and plan sharing.
+FUELPHYSIQUE PRODUCT KNOWLEDGE:
+- You are the AI Coach embedded inside the FuelPhysique fitness application, not a standalone general ChatGPT interface.
+- FuelPhysique includes: a personal dashboard; an AI workout-plan builder; a manual workout-plan builder; an AI nutrition-plan builder; saved workout and nutrition plans with one active plan of each type; a live workout tracker with sets, repetitions, load, rest timers, RPE and RIR; retrospective workout logging; workout history; body-weight, measurement and progress-photo tracking; exercise-progress charts; exercise demonstrations; a verified public exercise leaderboard; Athlete Core personalization; conversation history; voice transcription; and plan sharing.
 - The AI Coach can read and discuss the user's selected active workout and nutrition plans when those plans are supplied in context.
 - The chat currently supports typed messages, voice-to-text recording, copying replies, editing/resending user messages and conversation history.
-- The chat currently DOES NOT accept images, meal photos, videos, PDFs or other file attachments, and it cannot visually analyze food, body-fat percentage, exercise technique, blood tests or documents. Never tell a user to upload or send an image/file in this chat. If asked, state the limitation clearly and offer a text-based alternative. Progress photos and leaderboard verification videos exist in their dedicated TrainIQ tools, but they are not analyzed by the AI Coach.
-- TrainIQ has dedicated workout and nutrition builders. Never claim that no workout-plan or meal-plan generator exists. When appropriate, direct the user to the relevant builder from the dashboard.
-- TrainIQ is currently in Early Access, and every feature is unlocked for free so users can properly test the product. Do not tell users that a current feature is locked behind payment.
-- A future TrainIQ Pro plan is planned to start from 10 ILS per month. Its planned benefits include up to five plans of each type, full analytics, advanced tracking, expanded AI use and memory, sharing/export and a Pro leaderboard badge. These features remain free during Early Access.
+- The chat currently DOES NOT accept images, meal photos, videos, PDFs or other file attachments, and it cannot visually analyze food, body-fat percentage, exercise technique, blood tests or documents. Never tell a user to upload or send an image/file in this chat. If asked, state the limitation clearly and offer a text-based alternative. Progress photos and leaderboard verification videos exist in their dedicated FuelPhysique tools, but they are not analyzed by the AI Coach.
+- FuelPhysique has dedicated workout and nutrition builders. Never claim that no workout-plan or meal-plan generator exists. When appropriate, direct the user to the relevant builder from the dashboard.
+- FuelPhysique is currently in Early Access, and every feature is unlocked for free so users can properly test the product. Do not tell users that a current feature is locked behind payment.
+- A future FuelPhysique Pro plan is planned to start from 10 ILS per month. Its planned benefits include up to five plans of each type, full analytics, advanced tracking, expanded AI use and memory, sharing/export and a Pro leaderboard badge. These features remain free during Early Access.
 - Pro payments are not live. Users can only join a no-payment wishlist; no card is requested and joining creates no obligation. Never claim that a purchase was completed or that paid access is currently available.
 - If asked whether Pro is worth upgrading to, answer yes, then explain calmly that it is worthwhile for users who train consistently, want several plans, deeper analytics or more AI coaching. Remain balanced: acknowledge that Free is sufficient for someone who only needs one plan and basic tracking. Do not use pressure, urgency, fake scarcity, exaggerated promises or sales language.
 - Describe only capabilities listed here or explicitly present in the supplied application context. If uncertain whether a feature exists, say you are not certain rather than inventing it.
@@ -164,6 +216,33 @@ function imageKitConfig() {
   return publicKey && privateKey && urlEndpoint ? { publicKey, privateKey, urlEndpoint } : null;
 }
 
+function imageKitClient() {
+  const config = imageKitConfig();
+  if (!config) return null;
+  return new ImageKit({
+    publicKey: config.publicKey,
+    privateKey: config.privateKey,
+    urlEndpoint: config.urlEndpoint
+  });
+}
+
+function aiRequestKey(req, user, scope) {
+  const body = req.body && typeof req.body === "object" ? req.body : {};
+  const stableBody = JSON.stringify(body, Object.keys(body).sort());
+  return `${scope}:${user.uid}:${crypto.createHash("sha256").update(stableBody).digest("hex")}`;
+}
+
+function rejectIfDuplicateAi(req, res, user, scope) {
+  const key = aiRequestKey(req, user, scope);
+  if (!inFlight.start(key)) {
+    res.status(409).json({
+      error: `That ${scope} request is already being processed. Please wait a moment and try again.`
+    });
+    return null;
+  }
+  return key;
+}
+
 async function requireFirebaseUser(req, res) {
   const token = req.headers.authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) {
@@ -189,6 +268,29 @@ async function requireFirebaseUser(req, res) {
   }
 }
 
+app.get("/api/imagekit/upload-auth", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  try {
+    rateLimiters.auth(req, user.uid);
+    const client = imageKitClient();
+    if (!client) return res.status(503).json({ error: "ImageKit is not fully configured." });
+    const token = crypto.randomUUID();
+    const expire = Math.floor(Date.now() / 1000) + uploadAuthTtlSeconds;
+    const auth = client.getAuthenticationParameters(token, expire);
+    res.json({
+      publicKey: client.options.publicKey,
+      token: auth.token || token,
+      expire: auth.expire || expire,
+      signature: auth.signature,
+      uploadPrefix: `/fuelphysique/users/${user.uid}`
+    });
+  } catch (error) {
+    console.error("ImageKit upload auth error:", error.message);
+    res.status(error.status || 500).json({ error: "Could not create upload credentials." });
+  }
+});
+
 function imageKitBasicAuth(privateKey) {
   return `Basic ${Buffer.from(`${privateKey}:`).toString("base64")}`;
 }
@@ -204,12 +306,12 @@ function signedImageKitUrl(sourceUrl, config, expiresInSeconds = 3600) {
 
 function userImageKitPath(uid, entryId = "") {
   const safeEntryId = String(entryId).replace(/[^a-zA-Z0-9_-]/g, "");
-  return `/trainiq/users/${uid}/progressPhotos${safeEntryId ? `/${safeEntryId}` : ""}`;
+  return `/fuelphysique/users/${uid}/progressPhotos${safeEntryId ? `/${safeEntryId}` : ""}`;
 }
 
 function userLeaderboardPath(uid, submissionId = "") {
   const safeSubmissionId = String(submissionId).replace(/[^a-zA-Z0-9_-]/g, "");
-  return `/trainiq/users/${uid}/leaderboard${safeSubmissionId ? `/${safeSubmissionId}` : ""}`;
+  return `/fuelphysique/users/${uid}/leaderboard${safeSubmissionId ? `/${safeSubmissionId}` : ""}`;
 }
 
 function isLeaderboardAdmin(user) {
@@ -219,48 +321,9 @@ function isLeaderboardAdmin(user) {
 }
 
 app.post("/api/progress-photos/upload", async (req, res) => {
-  const user = await requireFirebaseUser(req, res);
-  if (!user) return;
-  const config = imageKitConfig();
-  if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
-
-  try {
-    const { imageBase64, mimeType, angle, entryId } = req.body || {};
-    if (!imageBase64 || !["image/jpeg", "image/png", "image/webp"].includes(mimeType)) {
-      return res.status(400).json({ error: "A supported image is required." });
-    }
-    if (!["front", "side", "back"].includes(angle) || !/^[a-zA-Z0-9_-]+$/.test(String(entryId || ""))) {
-      return res.status(400).json({ error: "Invalid progress photo details." });
-    }
-    const buffer = Buffer.from(imageBase64, "base64");
-    if (!buffer.length || buffer.length > 5 * 1024 * 1024) {
-      return res.status(413).json({ error: "Image must be 5 MB or smaller." });
-    }
-
-    const extension = mimeType === "image/png" ? "png" : mimeType === "image/webp" ? "webp" : "jpg";
-    const form = new FormData();
-    form.append("file", new Blob([buffer], { type: mimeType }), `${angle}.${extension}`);
-    form.append("fileName", `${angle}.${extension}`);
-    form.append("folder", userImageKitPath(user.uid, entryId));
-    form.append("useUniqueFileName", "false");
-    form.append("isPrivateFile", "true");
-    form.append("tags", JSON.stringify(["trainiq", "progress-photo", user.uid]));
-
-    const response = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-      method: "POST",
-      headers: { Authorization: imageKitBasicAuth(config.privateKey) },
-      body: form
-    });
-    const data = await response.json();
-    if (!response.ok || !data.fileId || !data.url) {
-      console.error("ImageKit upload failed:", response.status, data?.message || data);
-      return res.status(502).json({ error: "Image upload failed." });
-    }
-    res.json({ fileId: data.fileId, path: data.filePath, url: data.url, signedUrl: signedImageKitUrl(data.url, config) });
-  } catch (error) {
-    console.error("Progress photo upload error:", error);
-    res.status(500).json({ error: "Could not upload progress photo." });
-  }
+  res.status(410).json({
+    error: "Progress photo uploads now use direct browser-to-ImageKit upload. Please refresh and try again."
+  });
 });
 
 app.post("/api/progress-photos/sign", async (req, res) => {
@@ -303,42 +366,10 @@ app.delete("/api/progress-photos/:fileId", async (req, res) => {
   }
 });
 
-app.post("/api/leaderboard/video/:submissionId", express.raw({
-  type: ["video/mp4", "video/webm", "video/quicktime"],
-  limit: "50mb"
-}), async (req, res) => {
-  const user = await requireFirebaseUser(req, res);
-  if (!user) return;
-  const config = imageKitConfig();
-  if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
-  const submissionId = String(req.params.submissionId || "");
-  const mimeType = String(req.headers["content-type"] || "").split(";")[0];
-  if (!/^[a-zA-Z0-9_-]+$/.test(submissionId) || !["video/mp4", "video/webm", "video/quicktime"].includes(mimeType)) {
-    return res.status(400).json({ error: "A supported MP4, WebM, or MOV video is required." });
-  }
-  if (!Buffer.isBuffer(req.body) || !req.body.length) return res.status(400).json({ error: "Video data is required." });
-
-  try {
-    const extension = mimeType === "video/webm" ? "webm" : mimeType === "video/quicktime" ? "mov" : "mp4";
-    const form = new FormData();
-    form.append("file", new Blob([req.body], { type: mimeType }), `proof.${extension}`);
-    form.append("fileName", `proof.${extension}`);
-    form.append("folder", userLeaderboardPath(user.uid, submissionId));
-    form.append("useUniqueFileName", "false");
-    form.append("isPrivateFile", "true");
-    form.append("tags", JSON.stringify(["trainiq", "leaderboard-proof", user.uid]));
-    const response = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-      method: "POST",
-      headers: { Authorization: imageKitBasicAuth(config.privateKey) },
-      body: form
-    });
-    const data = await response.json();
-    if (!response.ok || !data.fileId || !data.url) return res.status(502).json({ error: "Video upload failed." });
-    res.json({ fileId: data.fileId, path: data.filePath, url: data.url });
-  } catch (error) {
-    console.error("Leaderboard video upload error:", error);
-    res.status(500).json({ error: "Could not upload verification video." });
-  }
+app.post("/api/leaderboard/video/:submissionId", async (req, res) => {
+  res.status(410).json({
+    error: "Verification video uploads now use direct browser-to-ImageKit upload. Please refresh and try again."
+  });
 });
 
 app.delete("/api/leaderboard/video/:fileId", async (req, res) => {
@@ -370,7 +401,7 @@ app.post("/api/leaderboard/admin/sign-video", async (req, res) => {
   const config = imageKitConfig();
   if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
   const sourceUrl = String(req.body?.url || "");
-  const expectedPrefix = `${config.urlEndpoint}/trainiq/users/`;
+  const expectedPrefix = `${config.urlEndpoint}/fuelphysique/users/`;
   if (!sourceUrl.startsWith(expectedPrefix) || !sourceUrl.includes("/leaderboard/")) {
     return res.status(400).json({ error: "Invalid leaderboard video URL." });
   }
@@ -383,6 +414,9 @@ app.post("/api/leaderboard/admin/sign-video", async (req, res) => {
 
 app.post("/api/transcribe", async (req, res) => {
   try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({ error: "OPENAI_API_KEY is missing." });
     }
@@ -472,24 +506,72 @@ app.get("/", (req, res) => {
 async function createChatCompletion({
   messages,
   temperature = 0.3,
-  maxTokens
+  maxTokens,
+  taskName = "ai"
 }) {
-  const controller = new AbortController();
-const timeout = setTimeout(() => controller.abort(), 60000);
-  try {
-    const requestBody = {
-      model: "gpt-4o-mini",
-      temperature,
-      messages
-    };
-
-    if (maxTokens) {
-      requestBody.max_tokens = maxTokens;
+  if (mockExternalServices) {
+    const normalizedMessages = Array.isArray(messages) ? messages : [];
+    const systemPrompt = normalizedMessages[0]?.content || "";
+    const userPrompt = normalizedMessages[normalizedMessages.length - 1]?.content || "";
+    if (/Create a short title/i.test(systemPrompt)) {
+      return "Mock Title";
     }
+    if (/Return ONLY valid JSON/i.test(systemPrompt) && /programName/.test(systemPrompt)) {
+      const daysMatch = userPrompt.match(/Training days per week:\s*(\d+)/i);
+      const daysPerWeek = Math.max(1, Math.min(7, Number(daysMatch?.[1] || 3)));
+      const sessions = Array.from({ length: daysPerWeek }, (_, index) => ({
+        day: index + 1,
+        name: `Mock Session ${index + 1}`,
+        exercises: [
+          { name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
+        ]
+      }));
+      return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
+    }
+    if (/Return ONLY valid JSON/i.test(systemPrompt) && /meals/.test(systemPrompt)) {
+      const mealsMatch = userPrompt.match(/Meals per day:\s*(\d+)/i);
+      const mealsPerDay = Math.max(1, Math.min(6, Number(mealsMatch?.[1] || 3)));
+      const meals = Array.from({ length: mealsPerDay }, (_, index) => ({
+        mealNumber: index + 1,
+        mealName: `Mock Meal ${index + 1}`,
+        targetCalories: 400,
+        targetProteinGrams: 30,
+        targetCarbsGrams: 40,
+        targetFatGrams: 15,
+        options: [1, 2, 3].map(optionNumber => ({
+          optionNumber,
+          optionName: `Option ${optionNumber}`,
+          foods: [{ name: "Greek yogurt", calories: 100, proteinGrams: 10, carbsGrams: 5, fatGrams: 2, imageKey: "greek-yogurt" }],
+          optionCalories: 100,
+          optionProteinGrams: 10,
+          optionCarbsGrams: 5,
+          optionFatGrams: 2
+        }))
+      }));
+      return JSON.stringify({ dailyCalories: 2400, proteinGrams: 180, carbsGrams: 260, fatGrams: 70, meals, notes: ["Mock mode."] });
+    }
+    if (/Return ONLY valid JSON/i.test(systemPrompt)) {
+      return JSON.stringify({ ok: true, mock: true });
+    }
+    return "Mock reply for load testing.";
+  }
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  try {
+    return await aiQueue.schedule(taskName, async () => {
+      const requestBody = {
+        model: process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini",
+        temperature,
+        messages
+      };
+
+      if (maxTokens) {
+        requestBody.max_tokens = Math.min(Number(maxTokens) || 0, Number(process.env.OPENAI_MAX_TOKENS || maxTokens));
+      }
+
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -497,35 +579,32 @@ const timeout = setTimeout(() => controller.abort(), 60000);
         },
         signal: controller.signal,
         body: JSON.stringify(requestBody)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const error = new Error("OpenAI API request failed.");
+
+        error.status = response.status;
+        error.details = data;
+
+        throw error;
       }
-    );
 
-    const data = await response.json();
+      const content = data?.choices?.[0]?.message?.content?.trim();
 
-    if (!response.ok) {
-      const error = new Error("OpenAI API request failed.");
+      if (!content) {
+        const error = new Error("No valid response was received from the model.");
 
-      error.status = response.status;
-      error.details = data;
+        error.status = 500;
+        error.details = data;
 
-      throw error;
-    }
+        throw error;
+      }
 
-    const content =
-      data?.choices?.[0]?.message?.content?.trim();
-
-    if (!content) {
-      const error = new Error(
-        "No valid response was received from the model."
-      );
-
-      error.status = 500;
-      error.details = data;
-
-      throw error;
-    }
-
-    return content;
+      return content;
+    });
   } finally {
     clearTimeout(timeout);
   }
@@ -737,7 +816,13 @@ return imageUrl;
  * Generates a short title for a new conversation.
  */
 app.post("/api/generate-title", async (req, res) => {
+  let dedupeKey = null;
   try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    dedupeKey = rejectIfDuplicateAi(req, res, user, "generate-title");
+    if (!dedupeKey) return;
     const message = String(req.body?.message || "").trim();
 
     if (!process.env.OPENAI_API_KEY) {
@@ -815,6 +900,8 @@ RULES:
         details: error.details || null
       }
     });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
 
@@ -822,14 +909,20 @@ RULES:
  * Main chat endpoint.
  */
 app.post("/api/chat", async (req, res) => {
+  let dedupeKey = null;
   try {
-const {
-  messages,
-  language = "en",
-  settings = {},
-  activeWorkoutPlan = null,
-  activeNutritionPlan = null
-} = req.body;
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    dedupeKey = rejectIfDuplicateAi(req, res, user, "chat");
+    if (!dedupeKey) return;
+    const {
+      messages,
+      language = "en",
+      settings = {},
+      activeWorkoutPlan = null,
+      activeNutritionPlan = null
+    } = req.body;
 
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({
@@ -987,11 +1080,11 @@ if (activeNutritionPlan && typeof activeNutritionPlan === "object" && activeNutr
         {
           role: "system",
           content: `
-You are TrainIQ — an AI assistant specialized in evidence-based fitness, nutrition, strength training, and calisthenics.
+You are FuelPhysique — an AI assistant specialized in evidence-based fitness, nutrition, strength training, and calisthenics.
 ${TRAINI_Q_PRODUCT_CONTEXT}
 
 IDENTITY:
-- You are TrainIQ.
+- You are FuelPhysique.
 - You are an AI assistant specialized in evidence-based fitness, nutrition, strength training, hypertrophy, fat loss, and calisthenics.
 - You were created by Ofek Zehavi.
 - If asked who created you, answer that you were created by Ofek Zehavi.
@@ -1002,8 +1095,8 @@ IDENTITY:
 
 WHAT YOU MAY SAY ABOUT OFEK:
 ABOUT THE CREATOR:
-- If asked who created TrainIQ, answer:
-  "TrainIQ was created by Ofek Zehavi."
+- If asked who created FuelPhysique, answer:
+  "FuelPhysique was created by Ofek Zehavi."
 
 - You may also mention:
   - Ofek Zehavi is 21 years old.
@@ -1011,7 +1104,7 @@ ABOUT THE CREATOR:
   - He has trained consistently since age 13.
 
 - Do not imply that all knowledge comes from Ofek Zehavi.
-- Make it clear that TrainIQ is designed around evidence-based fitness principles.
+- Make it clear that FuelPhysique is designed around evidence-based fitness principles.
 
 PRIVACY RULES:
 - You must protect Ofek Zehavi's privacy.
@@ -1205,6 +1298,8 @@ GOAL:
         details: error.details || null
       }
     });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
 function workoutQualityIssues(program,{daysPerWeek,equipment,trainingStyle}){
@@ -1256,18 +1351,24 @@ function normalizeNutritionPlan(plan,{targetCalories,targetProtein,targetCarbs,t
 }
 
 app.post("/api/workout-builder", async (req, res) => {
+  let dedupeKey = null;
   try {
-const {
-  goal,
-  experience,
-  daysPerWeek,
-  sessionDuration,
-  equipment = [],
-  trainingStyle,
-  priority,
-  limitations = "None",
-  language = "en"
-} = req.body;
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    dedupeKey = rejectIfDuplicateAi(req, res, user, "workout-builder");
+    if (!dedupeKey) return;
+    const {
+      goal,
+      experience,
+      daysPerWeek,
+      sessionDuration,
+      equipment = [],
+      trainingStyle,
+      priority,
+      limitations = "None",
+      language = "en"
+    } = req.body;
 
     if (
       !goal ||
@@ -1312,7 +1413,7 @@ const outputLanguage =
         {
           role: "system",
           content: `
-You are TrainIQ, an evidence-based workout programming assistant.
+You are FuelPhysique, an evidence-based workout programming assistant.
 
 Create a safe, practical and personalized workout program.
 
@@ -1518,11 +1619,19 @@ Injuries, limitations or special requests: ${String(limitations)}
     return res.status(error.status || 500).json({
       error: error.message || "Could not generate workout program"
     });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
 
 app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
+  let dedupeKey = null;
   try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    dedupeKey = rejectIfDuplicateAi(req, res, user, "workout-builder-reroll");
+    if (!dedupeKey) return;
     const {
   sessionIndex,
   exerciseIndex,
@@ -1611,11 +1720,19 @@ return res.json({
   return res.status(500).json({
     error: error.message || "Re-roll failed."
   });
-}
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
+  }
 });
 
 app.post("/api/nutrition-builder/reroll-food", async (req, res) => {
+  let dedupeKey = null;
   try {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  rateLimiters.ai(req, user.uid);
+  dedupeKey = rejectIfDuplicateAi(req, res, user, "nutrition-builder-reroll");
+  if (!dedupeKey) return;
   const {
     mealNumber,
     optionNumber,
@@ -1726,11 +1843,16 @@ console.log({
     res.status(500).json({
       error: "Failed to reroll food."
     });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
 app.post("/api/nutrition-builder", async (req, res) => {
   console.log("Nutrition Builder endpoint reached");
   try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
     const {
       goal,
       age,
@@ -1900,7 +2022,7 @@ const targetCarbs = Math.round(
         {
           role: "system",
           content: `
-You are TrainIQ, an evidence-based nutrition planning assistant.
+You are FuelPhysique, an evidence-based nutrition planning assistant.
 
 Create a practical and personalized one-day nutrition plan.
 
@@ -2142,8 +2264,40 @@ return res.json({
         error.message ||
         "Could not generate nutrition plan"
     });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
-app.listen(PORT, () => {
-  console.log(`TrainIQ AI Server running on http://localhost:${PORT}`);
+
+app.use((error, req, res, next) => {
+  console.error(`[${req.requestId || "no-id"}]`, error.message);
+  if (res.headersSent) return next(error);
+  const status = error.status || 500;
+  res.status(status).json({
+    error: status === 500 ? "Internal server error." : error.message || "Request failed."
+  });
 });
+
+const server = app.listen(PORT, () => {
+  console.log(`FuelPhysique AI Server running on http://localhost:${PORT}`);
+});
+
+function shutdown(signal) {
+  console.log(`${signal} received. Shutting down gracefully...`);
+  server.close(() => {
+    process.exit(0);
+  });
+  setTimeout(() => process.exit(1), 10_000).unref();
+}
+
+process.on("unhandledRejection", error => {
+  console.error("Unhandled rejection:", error);
+});
+
+process.on("uncaughtException", error => {
+  console.error("Uncaught exception:", error);
+  shutdown("uncaughtException");
+});
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));

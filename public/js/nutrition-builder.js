@@ -8,6 +8,14 @@ const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#nutrition-result");
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
+async function authHeaders(contentType = "application/json") {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Authentication required.");
+  return {
+    Authorization: `Bearer ${await user.getIdToken()}`,
+    "Content-Type": contentType
+  };
+}
 const ageInput = document.querySelector("#age");
 const youthConsentField = document.querySelector("#youth-consent-field");
 const youthGuardianConsent = document.querySelector("#youthGuardianConsent");
@@ -121,8 +129,8 @@ const ui = isHebrew
 
 function translateBuilderInterface() {
   document.title = isHebrew
-    ? "TrainIQ בונה תוכניות תזונה"
-    : "TrainIQ Nutrition Builder";
+    ? "FuelPhysique בונה תוכניות תזונה"
+    : "FuelPhysique Nutrition Builder";
 
   setText("h1", ui.pageTitle);
   setText(".builder-description", ui.pageDescription);
@@ -292,9 +300,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const response = await fetch("/api/nutrition-builder", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: await authHeaders(),
       body: JSON.stringify(payload)
     });
 
@@ -510,7 +516,7 @@ const foodsText = foods
       <header class="program-header">
         <div>
           <span class="program-eyebrow">
-            TrainIQ AI Nutrition Plan
+            FuelPhysique AI Nutrition Plan
           </span>
 
           <h2>
@@ -630,9 +636,7 @@ const response = await fetch(
     "/api/nutrition-builder/reroll-food",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: await authHeaders(),
 body: JSON.stringify({
   mealNumber,
   optionNumber,
