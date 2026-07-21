@@ -794,10 +794,6 @@ renderNutritionPlan(window.currentNutritionPlan);
 
 });  });
 
-  resultElement.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
 }
 function escapeHtml(value = "") {
   return String(value)
