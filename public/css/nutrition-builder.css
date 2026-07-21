@@ -708,6 +708,51 @@ textarea:focus {
   .workout-day-header h3 {
     font-size: 19px;
   }
+
+  .nutrition-food-table {
+    display: block;
+  }
+
+  .nutrition-food-table thead {
+    display: none;
+  }
+
+  .nutrition-food-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+    align-items: center;
+    padding: 12px 12px 14px;
+    border-bottom: 1px solid #eef2f7;
+  }
+
+  .nutrition-food-table td {
+    display: block;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .nutrition-food-table td:first-child {
+    grid-column: 1 / 2;
+  }
+
+  .nutrition-food-table td:nth-child(2) {
+    grid-column: 2 / 3;
+    white-space: nowrap;
+  }
+
+  .nutrition-food-table td:last-child {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 4px;
+  }
+
+  .nutrition-reroll-food-button {
+    width: 46px;
+    height: 46px;
+    margin-inline-start: 0;
+  }
 }
 
 /* Print / PDF */
@@ -973,6 +1018,15 @@ html[dir="ltr"] .nutrition-food-table td {
   margin-bottom: 18px;
   padding-bottom: 14px;
   border-bottom: 1px solid #eef2f7;
+}
+
+.meal-header h3,
+.meal-header span {
+  color: #1e293b;
+}
+
+.meal-header h3 {
+  margin: 0;
 }
 .meal-macros {
   display: flex;
