@@ -27,7 +27,7 @@
       <div class="builder-header">
         <span class="builder-badge">FuelPhysique</span>
 
-        <h1>AI Nutrition Builder</h1>
+        <h1>Nutrition Builder</h1>
 
         <p class="builder-description">
           Build a personalized nutrition plan based on your goal,
@@ -312,6 +312,34 @@
       aria-live="polite"
     ></section>
   </main>
+
+  <div
+    id="shoppingListModal"
+    class="shopping-modal hidden"
+    aria-hidden="true"
+  >
+    <div class="shopping-modal__backdrop" data-close-shopping-modal></div>
+    <section
+      class="shopping-modal__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shoppingListTitle"
+    >
+      <header class="shopping-modal__header">
+        <div>
+          <span class="shopping-modal__eyebrow">FuelPhysique</span>
+          <h2 id="shoppingListTitle">Shopping list</h2>
+          <p id="shoppingListSubtitle">Ingredients pulled from your current nutrition plan.</p>
+        </div>
+        <button type="button" class="shopping-modal__close" data-close-shopping-modal aria-label="Close shopping list">×</button>
+      </header>
+      <div id="shoppingListBody" class="shopping-modal__body"></div>
+      <footer class="shopping-modal__footer">
+        <button type="button" id="copyShoppingListButton" class="shopping-modal__primary">Copy list</button>
+        <button type="button" class="shopping-modal__secondary" data-close-shopping-modal>Close</button>
+      </footer>
+    </section>
+  </div>
 
   <script
     type="module"

@@ -19,12 +19,14 @@ const PORT = process.env.PORT || 3000;
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 60000);
+const mockExternalServices = String(process.env.MOCK_EXTERNAL_SERVICES || "").toLowerCase() === "true";
 const uploadAuthTtlSeconds = Number(process.env.IMAGEKIT_UPLOAD_AUTH_TTL_SECONDS || 1800);
 const imageKitUploadCache = createTtlCache({ maxEntries: 32, ttlMs: 60 * 60 * 1000 });
 const rateLimiters = {
   ai: createRateLimiter({ windowMs: 60_000, max: Number(process.env.AI_PER_UID_PER_MINUTE || 6), keyPrefix: "ai" }),
   uploads: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOADS_PER_UID_PER_MINUTE || 8), keyPrefix: "upload" }),
-  auth: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOAD_AUTH_PER_UID_PER_MINUTE || 10), keyPrefix: "upload-auth" })
+  auth: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOAD_AUTH_PER_UID_PER_MINUTE || 10), keyPrefix: "upload-auth" }),
+  analytics: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ANALYTICS_PER_IP_PER_MINUTE || 180), keyPrefix: "analytics" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
 const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
@@ -61,6 +63,41 @@ app.use(express.static(path.join(__dirname, "public"), {
 
 app.get("/health", (req, res) => {
   res.json({ ok: true, uptime: Math.round(process.uptime()), now: new Date().toISOString() });
+});
+
+app.post("/api/analytics/event", (req, res) => {
+  const limitResult = rateLimiters.analytics.check(req, clientIp(req));
+  if (!limitResult.ok) {
+    return res.status(429).json({
+      error: "Analytics rate limit exceeded. Please try again shortly."
+    });
+  }
+
+  const body = req.body && typeof req.body === "object" ? req.body : {};
+  const event = String(body.event || "").trim().slice(0, 40);
+  const allowedEvents = new Set([
+    "page_view",
+    "signup",
+    "builder_open",
+    "plan_saved",
+    "pricing_click",
+    "nutrition_shopping_list"
+  ]);
+
+  if (!allowedEvents.has(event)) {
+    return res.status(400).json({ error: "Unsupported analytics event." });
+  }
+
+  const pathName = String(body.path || req.get("referer") || "").trim().slice(0, 120);
+  const title = String(body.title || "").trim().slice(0, 120);
+  const referrer = String(body.referrer || "").trim().slice(0, 180);
+  const properties = body.properties && typeof body.properties === "object" ? body.properties : {};
+
+  console.log(
+    `[analytics] ${req.requestId} ${event} path=${pathName || "-"} title=${title || "-"} ref=${referrer ? "set" : "none"} ip=${clientIp(req)}`
+  );
+
+  res.status(204).end();
 });
 
 app.get("/api/billing/config", (req, res) => {
@@ -188,7 +225,12 @@ app.get("/api/exercise-demo", async (req, res) => {
       return { item, score };
     };
     const ranked = items.map(scoreCandidate).sort((a, b) => b.score - a.score);
-    const exercise = ranked[0]?.score >= Math.max(16, wantedTokens.size * 6) ? ranked[0].item : null;
+    const bestMatch = ranked[0];
+    const exercise = bestMatch?.score >= Math.max(16, wantedTokens.size * 6)
+      ? bestMatch.item
+      : bestMatch?.score > 0
+        ? bestMatch.item
+        : null;
     const demoUrl = exercise?.gifUrl || exercise?.gif_url || exercise?.image || exercise?.media?.gif;
     if (!exercise || !demoUrl) return res.status(404).json({ error: "No sufficiently accurate demonstration was found for this exercise." });
     const result = {

@@ -109,6 +109,7 @@ const esc = (value = "") => String(value)
 
 const DRAFT_MAX_AGE_MS = 48 * 60 * 60 * 1000;
 const draftKey = () => user ? `fuelphysique-workout-draft:${user.uid}` : "fuelphysique-workout-draft";
+const timeBudgetKey = () => user ? `fuelphysique-workout-time-budget:${user.uid}` : "fuelphysique-workout-time-budget";
 const RPE_HELP = he
   ? "RPE הוא דירוג המאמץ מ-1 עד 10. RPE 10 אומר שנשארו 0 חזרות, RPE 8 אומר בערך 2 חזרות נשארו."
   : "RPE (Rate of Perceived Exertion) rates effort from 1-10. RPE 10 means no reps left; RPE 8 means about two reps remained.";
@@ -127,13 +128,21 @@ let focusTimerId = 0;
 let paused = false;
 let focus = { exerciseIndex: 0, setIndex: 0 };
 let rest = { active: false, endsAt: 0, remainingMs: 0, paused: false };
+let quickModeEnabled = localStorage.getItem("fuelphysique-quick-mode") !== "false";
+let sessionOverride = null;
+let timeBudgetMinutes = null;
+let timeFitSummary = null;
+let transitionTimerId = 0;
+let completionTimerId = 0;
 
 const read = input => input.value === "" ? null : Number(input.value);
 const setValue = (selector, value) => { const el = $(selector); if (el) el.value = value ?? ""; };
+const numberValue = (selector) => { const value = Number($(selector)?.value); return Number.isFinite(value) ? value : null; };
 
 function localize() {
   document.documentElement.lang = he ? "he" : "en";
   document.documentElement.dir = he ? "rtl" : "ltr";
+  document.body.classList.toggle("quick-mode-enabled", quickModeEnabled);
   const map = [
     ["pageTitle", "title"],
     ["pageDescription", "description"],
@@ -169,6 +178,19 @@ function localize() {
     const el = document.getElementById(id);
     if (el) el.textContent = ui[key];
   }
+  const quickButton = document.getElementById("quickModeButton");
+  if (quickButton) {
+    quickButton.textContent = quickModeEnabled ? (he ? "⚡ מצב מהיר פעיל" : "⚡ Quick mode on") : (he ? "⚡ מצב מהיר כבוי" : "⚡ Quick mode off");
+    quickButton.setAttribute("aria-pressed", String(quickModeEnabled));
+  }
+  const timeLabel = document.getElementById("timeBudgetLabel");
+  if (timeLabel) timeLabel.textContent = he ? "זמן זמין היום" : "Time available today";
+  const timeSuffix = document.getElementById("timeBudgetSuffix");
+  if (timeSuffix) timeSuffix.textContent = he ? "דקות" : "min";
+  const timeButton = document.getElementById("timeBudgetButton");
+  if (timeButton) timeButton.textContent = he ? "התאם את האימון לזמן" : "Fit workout to time";
+  const panel = document.getElementById("focusPanel");
+  if (panel) panel.classList.toggle("quick-mode", quickModeEnabled);
   $("#trackerStatus").textContent = ui.loading;
 }
 
@@ -201,11 +223,18 @@ function startRestTimer(seconds) {
   rest.paused = false;
   rest.remainingMs = Math.max(0, Number(seconds || 0)) * 1000;
   rest.endsAt = Date.now() + rest.remainingMs;
+  document.body.classList.add("rest-active");
+  $("#focusPanel").classList.add("resting");
   updateRestTimer();
   clearInterval(focusTimerId);
   focusTimerId = setInterval(updateRestTimer, 250);
-  $("#focusNextButton").disabled = true;
-  $("#focusNextButton").textContent = ui.nextSet;
+  const nextButton = $("#focusNextButton");
+  if (nextButton) {
+    nextButton.disabled = true;
+    nextButton.textContent = he ? `מנוחה ${formatTime(Math.ceil(rest.remainingMs / 1000))}` : `Rest ${formatTime(Math.ceil(rest.remainingMs / 1000))}`;
+    nextButton.classList.add("rest-button-active");
+    nextButton.setAttribute("aria-busy", "true");
+  }
 }
 
 function stopRestTimer() {
@@ -213,20 +242,16 @@ function stopRestTimer() {
   rest.paused = false;
   rest.remainingMs = 0;
   rest.endsAt = 0;
+  document.body.classList.remove("rest-active");
+  $("#focusPanel").classList.remove("resting");
   clearInterval(focusTimerId);
   $("#focusRestTimer").textContent = "00:00";
-  $("#focusNextButton").disabled = false;
-}
-
-function updateRestTimer() {
-  if (!rest.active || rest.paused) return;
-  const remaining = Math.max(0, Math.ceil((rest.endsAt - Date.now()) / 1000));
-  $("#focusRestTimer").textContent = formatTime(remaining);
-  if (remaining <= 0) {
-    clearInterval(focusTimerId);
-    rest.active = false;
-    $("#focusNextButton").disabled = false;
-    $("#focusNextButton").textContent = ui.nextSet;
+  const nextButton = $("#focusNextButton");
+  if (nextButton) {
+    nextButton.disabled = false;
+    nextButton.textContent = ui.nextSet;
+    nextButton.classList.remove("rest-button-active");
+    nextButton.removeAttribute("aria-busy");
   }
 }
 
@@ -264,11 +289,163 @@ function renderSetup() {
   if (!sessions.length) {
     $("#trackerStatus").textContent = ui.noSessions;
     $("#trackerStatus").classList.add("error");
+    const summary = $("#timeFitSummary");
+    if (summary) summary.innerHTML = "";
     return show("#emptyPanel");
   }
   $("#sessionSelect").innerHTML = sessions.map((session, index) => `<option value="${index}">${esc(session.name || `${ui.exercise} ${index + 1}`)}</option>`).join("");
-  $("#trackerStatus").textContent = "";
+  const currentIndex = Number($("#sessionSelect")?.value || 0);
+  const currentSession = sessions[currentIndex] || sessions[0];
+  $("#trackerStatus").textContent = sessionOverride && Number.isFinite(timeBudgetMinutes)
+    ? (he ? `??? ????? ???? ????: ???? ${timeBudgetMinutes} ????.` : `Time-fit mode active: about ${timeBudgetMinutes} minutes.`)
+    : "";
+  $("#trackerStatus").classList.toggle("error", false);
+  renderTimeFitSummary(currentSession, timeBudgetMinutes);
   show("#setupPanel");
+}
+
+function cloneExercise(exercise = {}) {
+  return {
+    ...exercise,
+    sets: Math.max(1, Math.min(20, parseInt(exercise.sets, 10) || 1)),
+    restSeconds: Math.max(0, Math.min(600, parseInt(exercise.restSeconds, 10) || 0))
+  };
+}
+
+function cloneSession(session = {}) {
+  return {
+    ...session,
+    exercises: Array.isArray(session.exercises) ? session.exercises.map(cloneExercise) : []
+  };
+}
+
+function estimateExerciseMinutes(exercise) {
+  const sets = Math.max(1, Math.min(20, parseInt(exercise?.sets, 10) || 1));
+  const restSeconds = Math.max(0, Math.min(600, parseInt(exercise?.restSeconds, 10) || 0));
+  const workSeconds = 45;
+  return sets * ((restSeconds + workSeconds) / 60) + 0.25;
+}
+
+function estimateSessionMinutes(session) {
+  return (session?.exercises || []).reduce((sum, exercise) => sum + estimateExerciseMinutes(exercise), 0);
+}
+
+function formatBudgetMinutes(value) {
+  const minutes = Math.max(0, Number(value) || 0);
+  return `${Math.round(minutes)} min`;
+}
+
+function buildTimeFitSummary(originalSession, adaptedSession, budgetMinutes) {
+  const originalMinutes = estimateSessionMinutes(originalSession);
+  const adaptedMinutes = estimateSessionMinutes(adaptedSession);
+  const originalExercises = originalSession?.exercises || [];
+  const adaptedExercises = adaptedSession?.exercises || [];
+  const changes = [];
+  let trimmedSets = 0;
+  let trimmedExercises = 0;
+
+  const max = Math.max(originalExercises.length, adaptedExercises.length);
+  for (let i = 0; i < max; i += 1) {
+    const before = originalExercises[i];
+    const after = adaptedExercises[i];
+    if (before && !after) {
+      trimmedExercises += 1;
+      changes.push(`${before.name || `Exercise ${i + 1}`} removed`);
+      continue;
+    }
+    if (!before || !after) continue;
+    const beforeSets = Math.max(1, Math.min(20, parseInt(before.sets, 10) || 1));
+    const afterSets = Math.max(1, Math.min(20, parseInt(after.sets, 10) || 1));
+    if (afterSets < beforeSets) {
+      const diff = beforeSets - afterSets;
+      trimmedSets += diff;
+      changes.push(`${after.name || `Exercise ${i + 1}`}: -${diff} set${diff > 1 ? "s" : ""}`);
+    }
+  }
+
+  const fits = adaptedMinutes <= Math.max(10, Number(budgetMinutes) || 0);
+  return {
+    fits,
+    originalMinutes,
+    adaptedMinutes,
+    trimmedSets,
+    trimmedExercises,
+    changes: changes.slice(0, 3)
+  };
+}
+
+function renderTimeFitSummary(session, budgetMinutes) {
+  const box = $("#timeFitSummary");
+  if (!box || !session) return;
+  const parsedBudget = Number(budgetMinutes);
+  if (!Number.isFinite(parsedBudget)) {
+    const estimatedMinutes = estimateSessionMinutes(session);
+    box.innerHTML = he
+      ? `<strong>????? ??? ??????</strong><p>?????? ??? ???? ???? ???? ${formatBudgetMinutes(estimatedMinutes)}. ?? ?? ?? ???? ???, ???? ???? ???? ?????? ???.</p>`
+      : `<strong>Estimated workout length</strong><p>This workout should take about ${formatBudgetMinutes(estimatedMinutes)}. If you have less time, trim it with one click.</p>`;
+    return;
+  }
+  const budget = Math.max(10, Math.round(parsedBudget));
+  const adapted = sessionOverride && Number(sessionOverride.sessionIndex) === Number($("#sessionSelect")?.value)
+    ? sessionOverride.session
+    : shortenSessionToBudget(session, budget);
+  const summary = buildTimeFitSummary(session, adapted, budget);
+  if (summary.fits && summary.trimmedSets === 0 && summary.trimmedExercises === 0) {
+    box.innerHTML = he
+      ? `<strong>?????? ??? ????? ????</strong><p>?????? ???? ???? ???${formatBudgetMinutes(summary.adaptedMinutes)}. ???? ?????? ???.</p>`
+      : `<strong>Workout already fits</strong><p>The full session fits in about ${formatBudgetMinutes(summary.adaptedMinutes)}. You can start right away.</p>`;
+    return;
+  }
+  const changeList = summary.changes.length ? `<ul>${summary.changes.map(change => `<li>${esc(change)}</li>`).join("")}</ul>` : "";
+  box.innerHTML = he
+    ? `<strong>?????? ????? ????</strong><p>??${formatBudgetMinutes(summary.originalMinutes)} ??${formatBudgetMinutes(summary.adaptedMinutes)}. ????? ${summary.trimmedSets} ????${summary.trimmedExercises ? ` ??${summary.trimmedExercises} ???????` : ""} ??? ?????? ???? ${budget} ????.</p>${changeList}`
+    : `<strong>Workout trimmed to time</strong><p>From about ${formatBudgetMinutes(summary.originalMinutes)} down to ${formatBudgetMinutes(summary.adaptedMinutes)}. We trimmed ${summary.trimmedSets} set${summary.trimmedSets === 1 ? "" : "s"}${summary.trimmedExercises ? ` and ${summary.trimmedExercises} exercise${summary.trimmedExercises === 1 ? "" : "s"}` : ""} to stay within ${budget} minutes.</p>${changeList}`;
+}
+
+function shortenSessionToBudget(session, budgetMinutes) {
+  const next = cloneSession(session);
+  const budget = Math.max(10, Number(budgetMinutes) || 0);
+  if (!Number.isFinite(budget) || budget <= 0 || estimateSessionMinutes(next) <= budget) return next;
+  const importantLimit = Math.min(2, next.exercises.length);
+  let total = estimateSessionMinutes(next);
+
+  const reduceOneSet = index => {
+    const exercise = next.exercises[index];
+    if (!exercise || exercise.sets <= 1) return false;
+    exercise.sets -= 1;
+    total = estimateSessionMinutes(next);
+    return true;
+  };
+
+  while (total > budget) {
+    let changed = false;
+    for (let index = next.exercises.length - 1; index >= importantLimit; index -= 1) {
+      if (reduceOneSet(index)) {
+        changed = true;
+        break;
+      }
+    }
+    if (!changed) break;
+  }
+
+  while (total > budget && next.exercises.length > 1) {
+    const last = next.exercises[next.exercises.length - 1];
+    if (last.sets > 1) {
+      last.sets -= 1;
+    } else {
+      next.exercises.pop();
+    }
+    total = estimateSessionMinutes(next);
+  }
+
+  return next;
+}
+
+function activeSessionForIndex(index) {
+  const base = savedPlan.plan.sessions[index];
+  if (!base) return null;
+  if (sessionOverride && Number(sessionOverride.sessionIndex) === Number(index)) return sessionOverride.session;
+  return base;
 }
 
 function renderExercise(exercise, index) {
@@ -323,20 +500,109 @@ function setHighlightedRow(exerciseIndex, setIndex) {
   });
 }
 
+function animateSetTransition(direction = "forward") {
+  const panel = $("#focusPanel");
+  if (!panel) return;
+  clearTimeout(transitionTimerId);
+  panel.classList.remove("transition-forward", "transition-back", "transition-exercise");
+  panel.classList.add(direction === "back" ? "transition-back" : direction === "exercise" ? "transition-exercise" : "transition-forward");
+  transitionTimerId = setTimeout(() => {
+    panel.classList.remove("transition-forward", "transition-back", "transition-exercise");
+  }, 320);
+}
+
+function renderNextSetPreview() {
+  const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
+  const session = activeSessionForIndex(sessionIndex);
+  const preview = $("#nextSetPreview");
+  if (!preview || !session) return;
+  const currentExercise = session.exercises?.[focus.exerciseIndex];
+  const currentTotal = Math.max(1, Math.min(20, parseInt(currentExercise?.sets, 10) || 1));
+  const nextSetNumber = focus.setIndex + 2;
+  const nextExercise = session.exercises?.[focus.exerciseIndex + 1];
+  if (nextSetNumber <= currentTotal) {
+    preview.innerHTML = `
+      <strong>${he ? "הסט הבא" : "Next set"}</strong>
+      <span>${esc(currentExercise?.name || `${ui.exercise} ${focus.exerciseIndex + 1}`)} · ${he ? "סט" : "set"} ${nextSetNumber} · ${esc(currentExercise?.reps || "-")} ${ui.reps} · ${esc(currentExercise?.restSeconds || 0)}s ${ui.rest}</span>
+    `;
+    return;
+  }
+  if (nextExercise) {
+    const total = Math.max(1, Math.min(20, parseInt(nextExercise.sets, 10) || 1));
+    preview.innerHTML = `
+      <strong>${he ? "התרגיל הבא" : "Next exercise"}</strong>
+      <span>${esc(nextExercise.name || `${ui.exercise} ${focus.exerciseIndex + 2}`)} · ${total} ${ui.sets} · ${esc(nextExercise.reps || "-")} ${ui.reps}</span>
+    `;
+    return;
+  }
+  preview.innerHTML = `<strong>${he ? "סיום האימון קרוב" : "Workout nearly done"}</strong><span>${he ? "אין עוד סטים אחרי זה." : "There are no more sets after this one."}</span>`;
+}
+
+function getPreviousSetData() {
+  const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
+  const session = activeSessionForIndex(sessionIndex);
+  if (!session) return null;
+  let exerciseIndex = focus.exerciseIndex;
+  let setIndex = focus.setIndex - 1;
+  while (exerciseIndex >= 0) {
+    if (setIndex >= 0) {
+      const row = document.querySelector(`.set-row[data-exercise-index="${exerciseIndex}"][data-set-index="${setIndex}"]`);
+      if (row) {
+        return {
+          weight: row.querySelector(".weight-input")?.value || null,
+          reps: row.querySelector(".reps-input")?.value || null,
+          rpe: row.querySelector(".rpe-input")?.value || null,
+          warmup: row.classList.contains("warmup-set")
+        };
+      }
+      setIndex -= 1;
+    } else {
+      exerciseIndex -= 1;
+      if (exerciseIndex < 0) break;
+      const total = Math.max(1, Math.min(20, parseInt(session.exercises?.[exerciseIndex]?.sets, 10) || 1));
+      setIndex = total - 1;
+    }
+  }
+  return null;
+}
+
+function copyPreviousSetIntoFocus() {
+  const previous = getPreviousSetData();
+  if (!previous) return false;
+  if (previous.weight !== null) $("#focusWeight").value = previous.weight;
+  if (previous.reps !== null) $("#focusReps").value = previous.reps;
+  if (previous.rpe !== null) $("#focusRpe").value = previous.rpe;
+  if (previous.warmup !== null) $("#focusWarmup").checked = previous.warmup;
+  writeFocusToRow(false);
+  saveCurrentDraft();
+  return true;
+}
+
+function adjustFocusNumber(selector, delta, min, max, step = 1) {
+  const current = numberValue(selector);
+  const next = Math.min(max, Math.max(min, (current ?? 0) + delta * step));
+  $(selector).value = String(next);
+  writeFocusToRow(false);
+  saveCurrentDraft();
+}
+
 function syncFocusFromRow() {
   const row = document.querySelector(`.set-row[data-exercise-index="${focus.exerciseIndex}"][data-set-index="${focus.setIndex}"]`);
   if (!row) return;
   document.querySelectorAll(".exercise-card").forEach(card => {
     card.classList.toggle("active-card", Number(card.dataset.exerciseIndex) === focus.exerciseIndex);
   });
-  setValue("#focusWeight", row.querySelector(".weight-input")?.value);
-  setValue("#focusReps", row.querySelector(".reps-input")?.value);
-  setValue("#focusRpe", row.querySelector(".rpe-input")?.value);
+  const previous = quickModeEnabled ? getPreviousSetData() : null;
+  setValue("#focusWeight", row.querySelector(".weight-input")?.value || previous?.weight);
+  setValue("#focusReps", row.querySelector(".reps-input")?.value || previous?.reps);
+  setValue("#focusRpe", row.querySelector(".rpe-input")?.value || previous?.rpe);
   $("#focusWarmup").checked = row.classList.contains("warmup-set");
   $("#focusModeBadge").textContent = row.classList.contains("warmup-set") ? ui.warmupSet : ui.workingSet;
   $("#focusExerciseName").textContent = $("#exerciseList").querySelectorAll(".exercise-card")[focus.exerciseIndex]?.querySelector("h3")?.childNodes?.[0]?.textContent?.trim() || `${ui.exercise} ${focus.exerciseIndex + 1}`;
   $("#focusSetMeta").textContent = `${ui.exercise} ${focus.exerciseIndex + 1} • ${focus.setIndex + 1}`;
   setHighlightedRow(focus.exerciseIndex, focus.setIndex);
+  animateSetTransition("forward");
+  renderNextSetPreview();
 }
 
 function writeFocusToRow(markComplete) {
@@ -348,12 +614,19 @@ function writeFocusToRow(markComplete) {
   row.querySelector(".set-complete").checked = Boolean(markComplete);
   row.classList.toggle("completed", Boolean(markComplete));
   row.classList.toggle("warmup-set", $("#focusWarmup").checked);
+  if (markComplete) {
+    row.classList.remove("complete-pulse");
+    void row.offsetWidth;
+    row.classList.add("complete-pulse");
+    clearTimeout(completionTimerId);
+    completionTimerId = setTimeout(() => row.classList.remove("complete-pulse"), 700);
+  }
 }
 
 function saveCurrentDraft() {
   if (!user || !savedPlan || $("#workoutPanel").classList.contains("hidden")) return;
   const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
-  const session = savedPlan.plan.sessions[sessionIndex];
+  const session = activeSessionForIndex(sessionIndex);
   if (!session) return;
   localStorage.setItem(draftKey(), JSON.stringify({
     version: 2,
@@ -397,7 +670,7 @@ function collect(session) {
 
 function restSecondsForCurrentSet() {
   const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
-  const session = savedPlan.plan.sessions[sessionIndex];
+  const session = activeSessionForIndex(sessionIndex);
   return Number(session?.exercises?.[focus.exerciseIndex]?.restSeconds || 0);
 }
 
@@ -414,8 +687,9 @@ function applyCurrentFocus(rowAdvance = false) {
 
 function moveFocus(delta) {
   const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
-  const session = savedPlan.plan.sessions[sessionIndex];
+  const session = activeSessionForIndex(sessionIndex);
   const exercises = session.exercises || [];
+  const previousExerciseIndex = focus.exerciseIndex;
   let exerciseIndex = focus.exerciseIndex;
   let setIndex = focus.setIndex + delta;
   while (exerciseIndex >= 0 && exerciseIndex < exercises.length) {
@@ -433,6 +707,7 @@ function moveFocus(delta) {
   }
   if (exerciseIndex < 0 || exerciseIndex >= exercises.length) return false;
   focus = { exerciseIndex, setIndex };
+  if (focus.exerciseIndex !== previousExerciseIndex) animateSetTransition("exercise");
   syncFocusFromRow();
   saveCurrentDraft();
   return true;
@@ -455,7 +730,10 @@ function startNextSet() {
 
 function backOneSet() {
   stopRestTimer();
-  if (moveFocus(-1)) saveCurrentDraft();
+  if (moveFocus(-1)) {
+    animateSetTransition("back");
+    saveCurrentDraft();
+  }
 }
 
 function togglePause() {
@@ -484,7 +762,7 @@ function bindFocusInputs() {
 }
 
 function openWorkout(index, startTime = Date.now()) {
-  const session = savedPlan.plan.sessions[index];
+  const session = activeSessionForIndex(index);
   workoutStartedAt = startTime;
   workoutElapsedBaseMs = 0;
   workoutRunningSince = Date.now();
@@ -513,6 +791,9 @@ function discardDraft() {
   clearInterval(workoutTimerId);
   clearInterval(focusTimerId);
   clearDraft();
+  localStorage.removeItem(timeBudgetKey());
+  sessionOverride = null;
+  timeBudgetMinutes = null;
   $("#workoutNotes").value = "";
   renderSetup();
 }
@@ -567,7 +848,7 @@ function restoreDraft() {
 async function finishWorkout() {
   const button = $("#finishWorkoutButton");
   const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
-  const session = savedPlan.plan.sessions[sessionIndex];
+  const session = activeSessionForIndex(sessionIndex);
   const exercises = collect(session);
   const sets = exercises.flatMap(item => item.sets);
   const workingSets = sets.filter(set => !set.warmup);
@@ -604,6 +885,69 @@ async function finishWorkout() {
   }
 }
 
+function updateRestTimer() {
+  if (!rest.active || rest.paused) return;
+  const remaining = Math.max(0, Math.ceil((rest.endsAt - Date.now()) / 1000));
+  const total = Math.max(1, Math.ceil(rest.remainingMs / 1000));
+  const progress = Math.max(0, Math.min(100, (remaining / total) * 100));
+  $("#focusRestTimer").textContent = formatTime(remaining);
+  const nextButton = $("#focusNextButton");
+  if (nextButton) {
+    nextButton.textContent = he ? `????? ${formatTime(remaining)}` : `Rest ${formatTime(remaining)}`;
+    nextButton.classList.add("rest-button-active");
+    nextButton.setAttribute("aria-busy", "true");
+  }
+  $("#restHint").textContent = remaining > 0
+    ? (he ? "??/? ?????? ??????? ??? ???/? ??? ???." : "Let the timer finish, then move to the next set.")
+    : (he ? "???? ????? ??? ???." : "You can move to the next set.");
+  const progressBar = $("#restProgress");
+  if (progressBar) progressBar.style.setProperty("--rest-progress", `${progress}%`);
+  if (remaining <= 0) {
+    clearInterval(focusTimerId);
+    rest.active = false;
+    document.body.classList.remove("rest-active");
+    $("#focusPanel").classList.remove("resting");
+    if (nextButton) {
+      nextButton.disabled = false;
+      nextButton.textContent = ui.nextSet;
+      nextButton.classList.remove("rest-button-active");
+      nextButton.removeAttribute("aria-busy");
+    }
+  }
+}
+
+function applyTimeBudget() {
+  const sessionIndex = Number($("#sessionSelect").value);
+  const session = savedPlan.plan.sessions[sessionIndex];
+  const budget = numberValue("#timeBudgetMinutes");
+  if (!session || !budget) {
+    $("#trackerStatus").textContent = he ? "???/? ??? ???? ??? ???? ?? ??????." : "Choose a valid time budget to trim the workout.";
+    $("#trackerStatus").classList.add("error");
+    return;
+  }
+  sessionOverride = {
+    sessionIndex,
+    session: shortenSessionToBudget(session, budget)
+  };
+  timeBudgetMinutes = Math.max(10, Math.round(budget));
+  localStorage.setItem(timeBudgetKey(), JSON.stringify({
+    activePlanId,
+    sessionIndex,
+    timeBudgetMinutes
+  }));
+  $("#trackerStatus").classList.remove("error");
+  renderSetup();
+}
+
+function refreshTimeFitPreview() {
+  if (!savedPlan?.plan?.sessions?.length) return;
+  const sessionIndex = Number($("#sessionSelect").value || 0);
+  const session = savedPlan.plan.sessions[sessionIndex];
+  if (!session) return;
+  const budget = numberValue("#timeBudgetMinutes");
+  renderTimeFitSummary(session, budget);
+}
+
 async function load() {
   const userSnap = await getDoc(doc(db, "users", user.uid));
   activePlanId = userSnap.exists() ? userSnap.data().activeWorkoutPlanId : null;
@@ -614,6 +958,20 @@ async function load() {
   const planSnap = await getDoc(doc(db, "users", user.uid, "workoutPlans", activePlanId));
   if (!planSnap.exists()) return show("#emptyPanel");
   savedPlan = { id: planSnap.id, ...planSnap.data() };
+  try {
+    const savedBudget = JSON.parse(localStorage.getItem(timeBudgetKey()) || "null");
+    const savedSessionIndex = Number(savedBudget?.sessionIndex);
+    const savedMinutes = Number(savedBudget?.timeBudgetMinutes);
+    if (savedBudget && savedBudget.activePlanId === activePlanId && Number.isFinite(savedSessionIndex) && savedPlan.plan?.sessions?.[savedSessionIndex] && Number.isFinite(savedMinutes)) {
+      sessionOverride = {
+        sessionIndex: savedSessionIndex,
+        session: shortenSessionToBudget(savedPlan.plan.sessions[savedSessionIndex], savedMinutes)
+      };
+      timeBudgetMinutes = Math.max(10, Math.round(savedMinutes));
+    }
+  } catch {
+    localStorage.removeItem(timeBudgetKey());
+  }
   renderSetup();
   restoreDraft();
 }
@@ -622,10 +980,41 @@ localize();
 bindFocusInputs();
 
 $("#startWorkoutButton").addEventListener("click", beginWorkout);
+$("#timeBudgetButton").addEventListener("click", applyTimeBudget);
+$("#timeBudgetMinutes").addEventListener("input", refreshTimeFitPreview);
+document.querySelectorAll("[data-time-preset]").forEach(button => {
+  button.addEventListener("click", () => {
+    const preset = button.dataset.timePreset;
+    if (!preset) return;
+    $("#timeBudgetMinutes").value = preset;
+    refreshTimeFitPreview();
+  });
+});
+$("#sessionSelect").addEventListener("change", () => {
+  if (!sessionOverride) return;
+  const selectedIndex = Number($("#sessionSelect").value);
+  if (Number(sessionOverride.sessionIndex) !== selectedIndex) {
+    sessionOverride = null;
+    timeBudgetMinutes = null;
+    $("#trackerStatus").textContent = "";
+  }
+  refreshTimeFitPreview();
+});
 $("#focusDoneButton").addEventListener("click", finishOrAdvanceSet);
 $("#focusNextButton").addEventListener("click", startNextSet);
 $("#focusBackButton").addEventListener("click", backOneSet);
 $("#focusPauseButton").addEventListener("click", togglePause);
+$("#quickModeButton").addEventListener("click", () => {
+  quickModeEnabled = !quickModeEnabled;
+  localStorage.setItem("fuelphysique-quick-mode", String(quickModeEnabled));
+  localize();
+  syncFocusFromRow();
+});
+$("#copyPreviousButton").addEventListener("click", copyPreviousSetIntoFocus);
+$("#weightMinusButton").addEventListener("click", () => adjustFocusNumber("#focusWeight", -1, 0, 1000, 2.5));
+$("#weightPlusButton").addEventListener("click", () => adjustFocusNumber("#focusWeight", 1, 0, 1000, 2.5));
+$("#repsMinusButton").addEventListener("click", () => adjustFocusNumber("#focusReps", -1, 0, 999, 1));
+$("#repsPlusButton").addEventListener("click", () => adjustFocusNumber("#focusReps", 1, 0, 999, 1));
 $("#exerciseList").addEventListener("input", saveCurrentDraft);
 $("#exerciseList").addEventListener("change", event => {
   if (event.target.classList.contains("set-complete")) {
@@ -641,6 +1030,9 @@ document.addEventListener("visibilitychange", () => {
 $("#finishWorkoutButton").addEventListener("click", finishWorkout);
 $("#anotherWorkoutButton").addEventListener("click", () => {
   clearDraft();
+  localStorage.removeItem(timeBudgetKey());
+  sessionOverride = null;
+  timeBudgetMinutes = null;
   $("#workoutNotes").value = "";
   renderSetup();
 });

@@ -1,5 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { normalizeSubscription } from "./subscription-plans.js";
+import { trackPageView } from "./analytics.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
@@ -15,6 +16,7 @@ const ui = isHebrew ? {
 
 document.documentElement.lang = isHebrew ? "he" : "en";
 document.documentElement.dir = isHebrew ? "rtl" : "ltr";
+trackPageView({ page: "my-nutrition-plans" });
 document.querySelector("#pageTitle").textContent = ui.title;
 document.querySelector("#pageDescription").textContent = ui.description;
 document.querySelector("#backLink").textContent = ui.back;

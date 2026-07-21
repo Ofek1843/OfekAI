@@ -1,5 +1,5 @@
 // ======================================
-// FuelPhysique AI - Internationalization Engine
+// FuelPhysique - Internationalization Engine
 // ======================================
 
 export const translations = {
@@ -33,7 +33,7 @@ en: {
 
   profile: "Profile",
   athleteCore: "Athlete Core",
-  aiPreferences: "AI Preferences",
+  aiPreferences: "Coach Preferences",
   language: "Language",
   appearance: "Appearance",
 
@@ -98,7 +98,7 @@ en: {
     "Could not load sessions",
 
   landingLogin: "Login",
-  landingBadge: "AI CALISTHENICS / GYM COACH",
+  landingBadge: "TRCoachNING / NUTRITION COACH",
   landingTitleFirst: "Build Muscle.",
   landingTitleSecond: "Get Lean.",
   landingDescriptionFirst:
@@ -108,7 +108,7 @@ en: {
   landingDescriptionThird:
     "Get personalized workout plans and nutrition guidance built around your goals.",
   landingDescriptionFourth:
-    "Evidence-based AI coaching built to help you train with precision.",
+    "Evidence-based coaching built to help you train with precision.",
   landingTryButton: "🚀 Try FuelPhysique",
   landingScroll: "↓ Scroll to explore",
 
@@ -145,7 +145,7 @@ he: {
 
   profile: "פרופיל",
   athleteCore: "Athlete Core",
-  aiPreferences: "העדפות AI",
+  aiPreferences: "העדפות Coach",
   language: "שפה",
   appearance: "מראה",
 
@@ -210,7 +210,7 @@ he: {
     "לא ניתן לטעון את השיחות",
 
   landingLogin: "התחברות",
-  landingBadge: "מאמן AI לקליסטניקס ולחדר כושר",
+  landingBadge: "מאמן Coach לקליסטניקס ולחדר כושר",
   landingTitleFirst: "בנה שרירים.",
   landingTitleSecond: "התחטב.",
   landingDescriptionFirst:
@@ -220,7 +220,7 @@ he: {
   landingDescriptionThird:
     "קבל תוכניות אימון והכוונה תזונתית המותאמות למטרות שלך.",
   landingDescriptionFourth:
-    "מאמן AI מבוסס מחקרים שיעזור לך להתאמן בצורה מדויקת יותר.",
+    "מאמן Coach מבוסס מחקרים שיעזור לך להתאמן בצורה מדויקת יותר.",
   landingTryButton: "🚀 נסה את FuelPhysique",
   landingScroll: "↓ גלול כדי לגלות",
 
@@ -737,7 +737,7 @@ zh: {
 
   profile: "个人资料",
   athleteCore: "Athlete Core",
-  aiPreferences: "AI 偏好",
+  aiPreferences: "Coach 偏好",
   language: "语言",
   appearance: "外观",
 
@@ -809,7 +809,7 @@ zh: {
     "无法加载聊天记录",
 
   landingLogin: "登录",
-  landingBadge: "AI 街头健身与健身房教练",
+  landingBadge: "Coach 街头健身与健身房教练",
   landingTitleFirst: "增长肌肉。",
   landingTitleSecond: "塑造线条。",
   landingDescriptionFirst:
@@ -819,7 +819,7 @@ zh: {
   landingDescriptionThird:
     "获取根据你的目标定制的训练计划和营养指导。",
   landingDescriptionFourth:
-    "基于科学证据的 AI 教练，帮助你更精准地训练。",
+    "基于科学证据的 Coach 教练，帮助你更精准地训练。",
   landingTryButton: "🚀 试用 FuelPhysique",
   landingScroll: "↓ 向下滚动查看更多",
 
