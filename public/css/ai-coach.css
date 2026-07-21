@@ -89,7 +89,7 @@ body::after { right: -140px; bottom: -220px; background: #22c55e; animation-dela
 }
 
 .brand::after {
-  content: "TRAINIQ";
+  content: "FUELPHYSIQUE";
   display: block;
   position: absolute;
   left: 64px;

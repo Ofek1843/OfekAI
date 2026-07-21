@@ -13,7 +13,7 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
   }),
   pro: Object.freeze({
     id: "pro",
-    name: "TrainIQ Pro",
+    name: "FuelPhysique Pro",
     monthlyPriceIls: 10,
     limits: Object.freeze({ workoutPlans: 5, nutritionPlans: 5, aiGenerationsMonthly: 100 }),
     features: Object.freeze([

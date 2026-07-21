@@ -8,9 +8,9 @@ const status = document.querySelector("#plansStatus");
 const count = document.querySelector("#planCount");
 const isHebrew = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 const ui = isHebrew ? {
-  title: "תוכניות התזונה שלי", description: "בחר את תוכנית התזונה הנוכחית שלך. התוכנית הפעילה מסומנת בירוק.", back: "חזרה ל־TrainIQ ←", create: "+ יצירת תוכנית תזונה", count: " מתוך 5 תוכניות שמורות", loading: "טוען את התוכניות שלך...", empty: "עדיין אין תוכניות תזונה שמורות.", active: "● תוכנית פעילה", use: "השתמש בתוכנית הזאת", current: "התוכנית הנוכחית", rename: "שינוי שם", remove: "מחיקה", prompt: "הזן שם חדש לתוכנית:", confirm: "למחוק את תוכנית התזונה? לא ניתן לבטל פעולה זו.", calories: "קלוריות", protein: "גרם חלבון", error: "לא ניתן היה להשלים את הפעולה. נסה שוב."
+  title: "תוכניות התזונה שלי", description: "בחר את תוכנית התזונה הנוכחית שלך. התוכנית הפעילה מסומנת בירוק.", back: "חזרה ל־FuelPhysique ←", create: "+ יצירת תוכנית תזונה", count: " מתוך 5 תוכניות שמורות", loading: "טוען את התוכניות שלך...", empty: "עדיין אין תוכניות תזונה שמורות.", active: "● תוכנית פעילה", use: "השתמש בתוכנית הזאת", current: "התוכנית הנוכחית", rename: "שינוי שם", remove: "מחיקה", prompt: "הזן שם חדש לתוכנית:", confirm: "למחוק את תוכנית התזונה? לא ניתן לבטל פעולה זו.", calories: "קלוריות", protein: "גרם חלבון", error: "לא ניתן היה להשלים את הפעולה. נסה שוב."
 } : {
-  title: "My Nutrition Plans", description: "Choose your current nutrition plan. The active plan is highlighted in green.", back: "← Back to TrainIQ", create: "+ Create nutrition plan", count: " of 5 saved plans", loading: "Loading your plans...", empty: "No saved nutrition plans yet.", active: "● Active plan", use: "Use this plan", current: "Current plan", rename: "Rename", remove: "Delete", prompt: "Enter a new name for this plan:", confirm: "Delete this nutrition plan? This cannot be undone.", calories: "calories", protein: "g protein", error: "Could not complete the action. Please try again."
+  title: "My Nutrition Plans", description: "Choose your current nutrition plan. The active plan is highlighted in green.", back: "← Back to FuelPhysique", create: "+ Create nutrition plan", count: " of 5 saved plans", loading: "Loading your plans...", empty: "No saved nutrition plans yet.", active: "● Active plan", use: "Use this plan", current: "Current plan", rename: "Rename", remove: "Delete", prompt: "Enter a new name for this plan:", confirm: "Delete this nutrition plan? This cannot be undone.", calories: "calories", protein: "g protein", error: "Could not complete the action. Please try again."
 };
 
 document.documentElement.lang = isHebrew ? "he" : "en";
@@ -35,7 +35,7 @@ function lockedSlotsMarkup() {
   return Array.from({ length: Math.max(0, 6 - firstLockedSlot) }, (_, index) => {
     const slot = firstLockedSlot + index;
     const title = isHebrew ? `תוכנית תזונה ${slot}` : `Nutrition plan ${slot}`;
-    const copy = isHebrew ? "זמין במסלול TrainIQ Pro" : "Available with TrainIQ Pro";
+    const copy = isHebrew ? "זמין במסלול FuelPhysique Pro" : "Available with FuelPhysique Pro";
     const action = isHebrew ? "פתיחת Pro" : "Unlock with Pro";
     return `<a class="plan-card locked-plan" href="/pricing.html" aria-label="${esc(action)}"><span class="lock-animation" aria-hidden="true"><span class="lock-shackle"></span><span class="lock-body">●</span></span><span class="pro-slot">PRO</span><h2>${esc(title)}</h2><p>${esc(copy)}</p><span class="unlock-action">${esc(action)} →</span></a>`;
   }).join("");

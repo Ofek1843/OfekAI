@@ -13,7 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 /*
- * TrainIQ AI — Settings Controller
+ * FuelPhysique AI — Settings Controller
  * Firestore path: users/{uid}/settings/main
  */
 

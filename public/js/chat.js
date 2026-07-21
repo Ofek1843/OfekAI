@@ -83,6 +83,15 @@ let currentUserSettings = {};
 const conversationsModulePromise =
   import("/js/conversations.js");
 
+async function authHeaders(contentType = "application/json") {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Authentication required.");
+  return {
+    Authorization: `Bearer ${await user.getIdToken()}`,
+    "Content-Type": contentType
+  };
+}
+
 async function getActiveWorkoutPlan() {
   const user = auth.currentUser;
 
@@ -638,10 +647,7 @@ async function generateConversationTitle(
     "/api/generate-title",
     {
       method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
+      headers: await authHeaders(),
       body: JSON.stringify({
         message
       })
@@ -893,17 +899,14 @@ async function sendMessage() {
       "/api/chat",
       {
         method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
- body: JSON.stringify({
-    messages,
-    language: currentLang,
-    settings: currentUserSettings,
-    activeWorkoutPlan,
-    activeNutritionPlan
-})
+        headers: await authHeaders(),
+        body: JSON.stringify({
+          messages,
+          language: currentLang,
+          settings: currentUserSettings,
+          activeWorkoutPlan,
+          activeNutritionPlan
+        })
       }
     );
 
@@ -1018,7 +1021,7 @@ async function transcribeRecording(blob) {
   try {
     const response = await fetch("/api/transcribe", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await authHeaders(),
       body: JSON.stringify({
         audioBase64: await audioToBase64(blob),
         mimeType: blob.type || "audio/webm",

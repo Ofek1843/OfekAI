@@ -12,7 +12,7 @@ function submissionOwner(item){return item.ref.parent.parent?.id||"";}
 function render(){
   $("#pendingCount").textContent=submissions.length;
   $("#reviewedCount").textContent="—";
-  $("#reviewList").innerHTML=submissions.length?submissions.map(item=>{const ex=exercise(item.exerciseId);return `<article class="review-card" data-id="${esc(item.id)}"><div class="card-top"><div><span class="pending">PENDING</span><h2>${esc(item.displayName||"Athlete")}</h2><p>${esc(ex[0])} · <strong>${esc(item.score)} ${esc(item.unit||ex[1])}</strong></p></div><div class="meta"><span>${esc(item.category||"open")}</span><span>${item.bodyWeight?`${esc(item.bodyWeight)} kg body weight`:"Body weight not supplied"}</span></div></div><div class="video-box" data-video-box><button class="load-video" type="button">▶ Load private video</button></div><label>Moderator note<textarea placeholder="Optional reason or review note"></textarea></label><div class="actions"><button class="reject" type="button">Reject</button><button class="approve" type="button">✓ Approve and publish</button></div></article>`}).join(""):`<div class="empty"><strong>Queue cleared 🎉</strong><span>There are no pending results to review.</span></div>`;
+  $("#reviewList").innerHTML=submissions.length?submissions.map(item=>{const ex=exercise(item.exerciseId);return `<article class="review-card" data-id="${esc(item.id)}"><div class="card-top"><div><span class="pending">PENDING</span><h2>${esc(item.displayName||"Athlete")}</h2><p>${esc(ex[0])} · <strong>${esc(item.score)} ${esc(item.unit||ex[1])}</strong></p></div><div class="meta"><span>${esc(item.category||"open")}</span><span>${item.bodyWeight?`${esc(item.bodyWeight)} kg body weight`:"Body weight not supplied"}</span></div></div><div class="video-box" data-video-box><button class="load-video" type="button">▶ Open proof link</button></div><label>Moderator note<textarea placeholder="Optional reason or review note"></textarea></label><div class="actions"><button class="reject" type="button">Reject</button><button class="approve" type="button">✓ Approve and publish</button></div></article>`}).join(""):`<div class="empty"><strong>Queue cleared 🎉</strong><span>There are no pending results to review.</span></div>`;
   $("#adminStatus").textContent="";
 }
 async function load(){
@@ -22,7 +22,7 @@ async function load(){
 }
 async function loadVideo(card,item){
   const box=card.querySelector("[data-video-box]");box.innerHTML="<span>Creating secure review link…</span>";
-  try{const response=await fetch("/api/leaderboard/admin/sign-video",{method:"POST",headers:await headers(),body:JSON.stringify({url:item.video?.url})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Could not load video.");box.innerHTML=`<video controls playsinline preload="metadata" src="${esc(data.signedUrl)}"></video><small>Private link expires after 15 minutes.</small>`;}
+  try{const proofUrl=item.proof?.url||item.video?.url||"";if(!proofUrl)throw new Error("No proof link available.");box.innerHTML=`<a class="proof-link" href="${esc(proofUrl)}" target="_blank" rel="noreferrer">Open proof link</a><small>Check the TikTok or Instagram submission directly.</small>`;}
   catch(error){box.innerHTML=`<span class="error">${esc(error.message)}</span>`;}
 }
 async function review(card,item,status){

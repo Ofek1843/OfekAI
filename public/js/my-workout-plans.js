@@ -29,7 +29,7 @@ const ui = isHebrew
   ? {
       title: "תוכניות האימון שלי",
       description: "בחר את התוכנית שבה אתה משתמש כרגע. התוכנית הפעילה מסומנת בירוק.",
-      back: "חזרה ל־TrainIQ ←",
+      back: "חזרה ל־FuelPhysique ←",
       create: "+ יצירת תוכנית אימון",
       count: " מתוך 5 תוכניות שמורות",
       loading: "טוען את התוכניות שלך...",
@@ -56,7 +56,7 @@ const ui = isHebrew
   : {
       title: "My Workout Plans",
       description: "Choose the plan you are currently following. Your active plan is highlighted in green.",
-      back: "← Back to TrainIQ",
+      back: "← Back to FuelPhysique",
       create: "+ Create workout plan",
       count: " of 5 saved plans",
       loading: "Loading your plans...",
@@ -102,7 +102,7 @@ function lockedSlotsMarkup() {
   return Array.from({ length: Math.max(0, 6 - firstLockedSlot) }, (_, index) => {
     const slot = firstLockedSlot + index;
     const title = isHebrew ? `תוכנית אימון ${slot}` : `Workout plan ${slot}`;
-    const copy = isHebrew ? "זמין במסלול TrainIQ Pro" : "Available with TrainIQ Pro";
+    const copy = isHebrew ? "זמין במסלול FuelPhysique Pro" : "Available with FuelPhysique Pro";
     const action = isHebrew ? "פתיחת Pro" : "Unlock with Pro";
     return `<a class="plan-card locked-plan" href="/pricing.html" aria-label="${escapeHtml(action)}">
       <span class="lock-animation" aria-hidden="true"><span class="lock-shackle"></span><span class="lock-body">●</span></span>

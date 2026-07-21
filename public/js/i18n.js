@@ -1,5 +1,5 @@
 // ======================================
-// TrainIQ AI - Internationalization Engine
+// FuelPhysique AI - Internationalization Engine
 // ======================================
 
 export const translations = {
@@ -7,14 +7,14 @@ en: {
   languageName: "English",
 
   subtitle:
-    "TrainIQ — evidence-based fitness, nutrition, training progress, and personalized coaching.",
+    "FuelPhysique — evidence-based fitness, nutrition, training progress, and personalized coaching.",
 
   welcome:
-    "Hello! I'm TrainIQ — your evidence-based fitness and nutrition assistant.\nI'm here to help with training, nutrition, exercise selection, progress tracking, and understanding what is truly supported by high-quality research.\nHow can I help you today?",
+    "Hello! I'm FuelPhysique — your evidence-based fitness and nutrition assistant.\nI'm here to help with training, nutrition, exercise selection, progress tracking, and understanding what is truly supported by high-quality research.\nHow can I help you today?",
 
   send: "Send",
   clearChat: "Clear Chat",
-  thinking: "TrainIQ is thinking...",
+  thinking: "FuelPhysique is thinking...",
   loadingConversation: "Loading conversation...",
   writeMessage: "Write a message...",
 
@@ -38,7 +38,7 @@ en: {
   appearance: "Appearance",
 
   profileDescription:
-    "Manage the identity displayed inside TrainIQ.",
+    "Manage the identity displayed inside FuelPhysique.",
   fullName: "Full name",
   email: "Email",
 
@@ -87,7 +87,7 @@ en: {
   defaultLanguage: "Default language",
 
   appearanceDescription:
-    "Choose how TrainIQ should look on this device.",
+    "Choose how FuelPhysique should look on this device.",
   theme: "Theme",
   systemTheme: "System",
   darkTheme: "Dark",
@@ -109,7 +109,7 @@ en: {
     "Get personalized workout plans and nutrition guidance built around your goals.",
   landingDescriptionFourth:
     "Evidence-based AI coaching built to help you train with precision.",
-  landingTryButton: "🚀 Try TrainIQ",
+  landingTryButton: "🚀 Try FuelPhysique",
   landingScroll: "↓ Scroll to explore",
 
   userNotAuthenticated:
@@ -119,14 +119,14 @@ he: {
   languageName: "עברית",
 
   subtitle:
-    "TrainIQ — מאמן הכושר האישי שלך המבוסס על מחקרים, תזונה והתאמה אישית.",
+    "FuelPhysique — מאמן הכושר האישי שלך המבוסס על מחקרים, תזונה והתאמה אישית.",
 
   welcome:
-    "שלום! אני TrainIQ.\nאני כאן כדי לעזור לך בכושר, תזונה, בניית תוכניות אימון, בחירת תרגילים והבנה של מה באמת נתמך על ידי מחקרים איכותיים.\nאיך אפשר לעזור לך היום?",
+    "שלום! אני FuelPhysique.\nאני כאן כדי לעזור לך בכושר, תזונה, בניית תוכניות אימון, בחירת תרגילים והבנה של מה באמת נתמך על ידי מחקרים איכותיים.\nאיך אפשר לעזור לך היום?",
 
   send: "שלח",
   clearChat: "נקה צ'אט",
-  thinking: "TrainIQ חושב...",
+  thinking: "FuelPhysique חושב...",
   loadingConversation: "טוען שיחה...",
   writeMessage: "כתוב הודעה...",
 
@@ -150,7 +150,7 @@ he: {
   appearance: "מראה",
 
   profileDescription:
-    "נהל את הפרטים שיוצגו בתוך TrainIQ.",
+    "נהל את הפרטים שיוצגו בתוך FuelPhysique.",
   fullName: "שם מלא",
   email: "אימייל",
 
@@ -177,7 +177,7 @@ he: {
     "תאר פציעות, כאבים או מגבלות רלוונטיות.",
 
   aiPreferencesDescription:
-    "שלוט באופן שבו TrainIQ בונה ומתאים את התשובות עבורך.",
+    "שלוט באופן שבו FuelPhysique בונה ומתאים את התשובות עבורך.",
 
   responseDepth: "רמת פירוט",
   concise: "קצר",
@@ -199,7 +199,7 @@ he: {
   defaultLanguage: "שפת ברירת מחדל",
 
   appearanceDescription:
-    "בחר כיצד TrainIQ ייראה במכשיר זה.",
+    "בחר כיצד FuelPhysique ייראה במכשיר זה.",
   theme: "ערכת נושא",
   systemTheme: "לפי המערכת",
   darkTheme: "כהה",
@@ -221,7 +221,7 @@ he: {
     "קבל תוכניות אימון והכוונה תזונתית המותאמות למטרות שלך.",
   landingDescriptionFourth:
     "מאמן AI מבוסס מחקרים שיעזור לך להתאמן בצורה מדויקת יותר.",
-  landingTryButton: "🚀 נסה את TrainIQ",
+  landingTryButton: "🚀 נסה את FuelPhysique",
   landingScroll: "↓ גלול כדי לגלות",
 
   userNotAuthenticated:
@@ -231,14 +231,14 @@ es: {
   languageName: "Español",
 
   subtitle:
-    "TrainIQ: entrenamiento, nutrición y asesoramiento personalizado basado en evidencia.",
+    "FuelPhysique: entrenamiento, nutrición y asesoramiento personalizado basado en evidencia.",
 
   welcome:
-    "¡Hola! Soy TrainIQ.\nEstoy aquí para ayudarte con entrenamiento, nutrición, selección de ejercicios, seguimiento de tu progreso y recomendaciones respaldadas por evidencia científica.\n¿Cómo puedo ayudarte hoy?",
+    "¡Hola! Soy FuelPhysique.\nEstoy aquí para ayudarte con entrenamiento, nutrición, selección de ejercicios, seguimiento de tu progreso y recomendaciones respaldadas por evidencia científica.\n¿Cómo puedo ayudarte hoy?",
 
   send: "Enviar",
   clearChat: "Borrar chat",
-  thinking: "TrainIQ está pensando...",
+  thinking: "FuelPhysique está pensando...",
   loadingConversation: "Cargando conversación...",
   writeMessage: "Escribe un mensaje...",
 
@@ -262,7 +262,7 @@ es: {
   appearance: "Apariencia",
 
   profileDescription:
-    "Administra la información mostrada en TrainIQ.",
+    "Administra la información mostrada en FuelPhysique.",
   fullName: "Nombre completo",
   email: "Correo electrónico",
 
@@ -289,7 +289,7 @@ es: {
     "Describe cualquier lesión, dolor o limitación.",
 
   aiPreferencesDescription:
-    "Controla cómo TrainIQ estructura y personaliza las respuestas.",
+    "Controla cómo FuelPhysique estructura y personaliza las respuestas.",
 
   responseDepth: "Nivel de detalle",
   concise: "Breve",
@@ -311,7 +311,7 @@ es: {
   defaultLanguage: "Idioma predeterminado",
 
   appearanceDescription:
-    "Elige la apariencia de TrainIQ.",
+    "Elige la apariencia de FuelPhysique.",
   theme: "Tema",
   systemTheme: "Sistema",
   darkTheme: "Oscuro",
@@ -333,7 +333,7 @@ es: {
     "Recibe planes de entrenamiento y orientación nutricional adaptados a tus objetivos.",
   landingDescriptionFourth:
     "Entrenador con IA basado en evidencia para ayudarte a entrenar con precisión.",
-  landingTryButton: "🚀 Prueba TrainIQ",
+  landingTryButton: "🚀 Prueba FuelPhysique",
   landingScroll: "↓ Desplázate para explorar",
 
   userNotAuthenticated:
@@ -343,14 +343,14 @@ fr: {
   languageName: "Français",
 
   subtitle:
-    "TrainIQ : entraînement, nutrition et coaching personnalisé fondés sur des preuves scientifiques.",
+    "FuelPhysique : entraînement, nutrition et coaching personnalisé fondés sur des preuves scientifiques.",
 
   welcome:
-    "Bonjour ! Je suis TrainIQ.\nJe suis là pour vous aider avec l'entraînement, la nutrition, le choix des exercices, le suivi de votre progression et des recommandations fondées sur des preuves scientifiques.\nComment puis-je vous aider aujourd'hui ?",
+    "Bonjour ! Je suis FuelPhysique.\nJe suis là pour vous aider avec l'entraînement, la nutrition, le choix des exercices, le suivi de votre progression et des recommandations fondées sur des preuves scientifiques.\nComment puis-je vous aider aujourd'hui ?",
 
   send: "Envoyer",
   clearChat: "Effacer le chat",
-  thinking: "TrainIQ réfléchit...",
+  thinking: "FuelPhysique réfléchit...",
   loadingConversation: "Chargement de la conversation...",
   writeMessage: "Écrivez un message...",
 
@@ -376,7 +376,7 @@ fr: {
   appearance: "Apparence",
 
   profileDescription:
-    "Gérez les informations affichées dans TrainIQ.",
+    "Gérez les informations affichées dans FuelPhysique.",
   fullName: "Nom complet",
   email: "Adresse e-mail",
 
@@ -407,7 +407,7 @@ fr: {
     "Décrivez toute blessure, douleur ou limitation.",
 
   aiPreferencesDescription:
-    "Contrôlez la manière dont TrainIQ structure et personnalise ses réponses.",
+    "Contrôlez la manière dont FuelPhysique structure et personnalise ses réponses.",
 
   responseDepth:
     "Niveau de détail",
@@ -433,7 +433,7 @@ fr: {
     "Langue par défaut",
 
   appearanceDescription:
-    "Choisissez l'apparence de TrainIQ.",
+    "Choisissez l'apparence de FuelPhysique.",
   theme: "Thème",
   systemTheme: "Système",
   darkTheme: "Sombre",
@@ -456,7 +456,7 @@ fr: {
     "Recevez des programmes d'entraînement et des conseils nutritionnels adaptés à vos objectifs.",
   landingDescriptionFourth:
     "Un coach IA fondé sur des preuves scientifiques pour vous aider à vous entraîner avec précision.",
-  landingTryButton: "🚀 Essayer TrainIQ",
+  landingTryButton: "🚀 Essayer FuelPhysique",
   landingScroll: "↓ Faites défiler pour explorer",
 
   userNotAuthenticated:
@@ -466,14 +466,14 @@ de: {
   languageName: "Deutsch",
 
   subtitle:
-    "TrainIQ – evidenzbasiertes Fitness-, Ernährungs- und personalisiertes Coaching.",
+    "FuelPhysique – evidenzbasiertes Fitness-, Ernährungs- und personalisiertes Coaching.",
 
   welcome:
-    "Hallo! Ich bin TrainIQ.\nIch unterstütze dich bei Training, Ernährung, Übungsauswahl, Trainingsfortschritt und wissenschaftlich fundierten Empfehlungen.\nWie kann ich dir heute helfen?",
+    "Hallo! Ich bin FuelPhysique.\nIch unterstütze dich bei Training, Ernährung, Übungsauswahl, Trainingsfortschritt und wissenschaftlich fundierten Empfehlungen.\nWie kann ich dir heute helfen?",
 
   send: "Senden",
   clearChat: "Chat löschen",
-  thinking: "TrainIQ denkt nach...",
+  thinking: "FuelPhysique denkt nach...",
   loadingConversation: "Unterhaltung wird geladen...",
   writeMessage: "Nachricht schreiben...",
 
@@ -499,7 +499,7 @@ de: {
   appearance: "Darstellung",
 
   profileDescription:
-    "Verwalte die Informationen, die in TrainIQ angezeigt werden.",
+    "Verwalte die Informationen, die in FuelPhysique angezeigt werden.",
   fullName: "Vollständiger Name",
   email: "E-Mail",
 
@@ -530,7 +530,7 @@ de: {
     "Beschreibe Verletzungen, Schmerzen oder Einschränkungen.",
 
   aiPreferencesDescription:
-    "Lege fest, wie TrainIQ Antworten strukturiert und personalisiert.",
+    "Lege fest, wie FuelPhysique Antworten strukturiert und personalisiert.",
 
   responseDepth:
     "Antworttiefe",
@@ -555,7 +555,7 @@ de: {
     "Standardsprache",
 
   appearanceDescription:
-    "Wähle das Erscheinungsbild von TrainIQ.",
+    "Wähle das Erscheinungsbild von FuelPhysique.",
   theme: "Design",
   systemTheme: "System",
   darkTheme: "Dunkel",
@@ -578,7 +578,7 @@ de: {
     "Erhalte personalisierte Trainingspläne und Ernährungsempfehlungen für deine Ziele.",
   landingDescriptionFourth:
     "Evidenzbasiertes KI-Coaching für präziseres und effektiveres Training.",
-  landingTryButton: "🚀 TrainIQ ausprobieren",
+  landingTryButton: "🚀 FuelPhysique ausprobieren",
   landingScroll: "↓ Scrollen, um mehr zu entdecken",
 
   userNotAuthenticated:
@@ -588,14 +588,14 @@ ar: {
   languageName: "العربية",
 
   subtitle:
-    "TrainIQ — تدريب ولياقة وتغذية وإرشادات مخصصة مبنية على الأدلة العلمية.",
+    "FuelPhysique — تدريب ولياقة وتغذية وإرشادات مخصصة مبنية على الأدلة العلمية.",
 
   welcome:
-    "مرحبًا! أنا TrainIQ.\nأنا هنا لمساعدتك في التدريب، والتغذية، واختيار التمارين، ومتابعة تقدمك، وتقديم توصيات مبنية على الأدلة العلمية.\nكيف يمكنني مساعدتك اليوم؟",
+    "مرحبًا! أنا FuelPhysique.\nأنا هنا لمساعدتك في التدريب، والتغذية، واختيار التمارين، ومتابعة تقدمك، وتقديم توصيات مبنية على الأدلة العلمية.\nكيف يمكنني مساعدتك اليوم؟",
 
   send: "إرسال",
   clearChat: "مسح المحادثة",
-  thinking: "TrainIQ يفكر...",
+  thinking: "FuelPhysique يفكر...",
   loadingConversation: "جارٍ تحميل المحادثة...",
   writeMessage: "اكتب رسالة...",
 
@@ -621,7 +621,7 @@ ar: {
   appearance: "المظهر",
 
   profileDescription:
-    "أدر المعلومات المعروضة داخل TrainIQ.",
+    "أدر المعلومات المعروضة داخل FuelPhysique.",
 
   fullName: "الاسم الكامل",
   email: "البريد الإلكتروني",
@@ -650,7 +650,7 @@ ar: {
     "صف أي إصابة أو ألم أو محدودية في الحركة.",
 
   aiPreferencesDescription:
-    "تحكم في كيفية تنظيم TrainIQ للإجابات وتخصيصها.",
+    "تحكم في كيفية تنظيم FuelPhysique للإجابات وتخصيصها.",
 
   responseDepth: "مستوى التفاصيل",
   concise: "مختصر",
@@ -674,7 +674,7 @@ ar: {
   defaultLanguage: "اللغة الافتراضية",
 
   appearanceDescription:
-    "اختر مظهر TrainIQ.",
+    "اختر مظهر FuelPhysique.",
 
   theme: "السمة",
   systemTheme: "النظام",
@@ -699,7 +699,7 @@ ar: {
     "احصل على خطط تدريب وإرشادات غذائية مخصصة لأهدافك.",
   landingDescriptionFourth:
     "مدرب ذكاء اصطناعي مبني على الأدلة العلمية لمساعدتك على التدريب بدقة.",
-  landingTryButton: "🚀 جرّب TrainIQ",
+  landingTryButton: "🚀 جرّب FuelPhysique",
   landingScroll: "↓ مرر لاكتشاف المزيد",
 
   userNotAuthenticated:
@@ -709,14 +709,14 @@ zh: {
   languageName: "中文",
 
   subtitle:
-    "TrainIQ —— 基于科学证据的健身、营养与个性化训练助手。",
+    "FuelPhysique —— 基于科学证据的健身、营养与个性化训练助手。",
 
   welcome:
-    "你好！我是 TrainIQ。\n我可以帮助你制定训练计划、营养方案、选择训练动作、跟踪训练进度，并提供基于科学证据的建议。\n今天我能为你做些什么？",
+    "你好！我是 FuelPhysique。\n我可以帮助你制定训练计划、营养方案、选择训练动作、跟踪训练进度，并提供基于科学证据的建议。\n今天我能为你做些什么？",
 
   send: "发送",
   clearChat: "清除聊天",
-  thinking: "TrainIQ 正在思考...",
+  thinking: "FuelPhysique 正在思考...",
   loadingConversation: "正在加载对话...",
   writeMessage: "输入消息...",
 
@@ -742,7 +742,7 @@ zh: {
   appearance: "外观",
 
   profileDescription:
-    "管理 TrainIQ 中显示的个人信息。",
+    "管理 FuelPhysique 中显示的个人信息。",
 
   fullName: "姓名",
   email: "电子邮箱",
@@ -771,7 +771,7 @@ zh: {
     "描述任何伤病、疼痛或活动限制。",
 
   aiPreferencesDescription:
-    "控制 TrainIQ 如何组织和个性化回答。",
+    "控制 FuelPhysique 如何组织和个性化回答。",
 
   responseDepth: "回答详细程度",
   concise: "简洁",
@@ -795,7 +795,7 @@ zh: {
   defaultLanguage: "默认语言",
 
   appearanceDescription:
-    "选择 TrainIQ 的外观。",
+    "选择 FuelPhysique 的外观。",
 
   theme: "主题",
   systemTheme: "跟随系统",
@@ -820,7 +820,7 @@ zh: {
     "获取根据你的目标定制的训练计划和营养指导。",
   landingDescriptionFourth:
     "基于科学证据的 AI 教练，帮助你更精准地训练。",
-  landingTryButton: "🚀 试用 TrainIQ",
+  landingTryButton: "🚀 试用 FuelPhysique",
   landingScroll: "↓ 向下滚动查看更多",
 
   userNotAuthenticated:

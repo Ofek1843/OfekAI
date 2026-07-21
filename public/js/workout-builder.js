@@ -16,6 +16,14 @@ const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#program-result");
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
+async function authHeaders(contentType = "application/json") {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Authentication required.");
+  return {
+    Authorization: `Bearer ${await user.getIdToken()}`,
+    "Content-Type": contentType
+  };
+}
 
 const isHebrew = currentLanguage === "he";
 const ui = isHebrew
@@ -49,7 +57,7 @@ const ui = isHebrew
       rest: "מנוחה",
       print: "הדפס / שמור",
 
-      personalizedPlan: "תוכנית אישית של TrainIQ",
+      personalizedPlan: "תוכנית אישית של FuelPhysique",
       programDescription:
         "תוכנית אימונים אישית ומבוססת מחקר שנבנתה לפי המטרה, הניסיון והציוד שלך.",
 
@@ -92,7 +100,7 @@ const ui = isHebrew
       rest: "Rest",
       print: "Print / Save",
 
-      personalizedPlan: "TrainIQ Personalized Plan",
+      personalizedPlan: "FuelPhysique Personalized Plan",
       programDescription:
         "A personalized evidence-based training program built around your goal, experience and available equipment.",
 
@@ -300,9 +308,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const response = await fetch("/api/workout-builder", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: await authHeaders(),
       body: JSON.stringify(payload)
     });
 
@@ -630,7 +636,7 @@ function renderProgram(program) {
       <header class="program-header">
         <div>
           <span class="program-eyebrow">
-            TrainIQ ${ui.personalizedPlan}
+            FuelPhysique ${ui.personalizedPlan}
           </span>
 
           <h2>
@@ -760,9 +766,7 @@ try {
     "/api/workout-builder/reroll-exercise",
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: await authHeaders(),
 body: JSON.stringify({
   sessionIndex,
   exerciseIndex,
