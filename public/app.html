@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>TrainIQ</title>
+  <title>TrainIQ AI Coach</title>
 
   <link rel="stylesheet" href="/css/settings.css" />
 
@@ -171,6 +171,13 @@
       border-color: rgba(56, 189, 248, 0.5);
     }
 
+    #deleteAllSessionsBtn { width: 100%; min-height: 40px; padding: 9px 12px; border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 11px; color: #fda4af; background: rgba(244, 63, 94, 0.08); font-weight: 750; cursor: pointer; }
+    #deleteAllSessionsBtn:hover { background: rgba(244, 63, 94, 0.16); }
+    .session-trail-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-items: center; }
+    .session-trail-actions { display: flex; gap: 4px; }
+    .session-rename-button, .session-delete-button { width: 34px; height: 34px; padding: 0; border: 1px solid rgba(255,255,255,.1); border-radius: 9px; color: #e2e8f0; background: rgba(255,255,255,.05); cursor: pointer; }
+    .session-delete-button { color: #fda4af; }
+
     .session-trail {
       display: flex;
       flex-direction: column;
@@ -332,6 +339,24 @@
       font-weight: 700;
       cursor: pointer;
     }
+
+    #voiceInputBtn { width:56px; border:1px solid rgba(56,189,248,.3); border-radius:14px; color:white; background:rgba(56,189,248,.12); font-size:22px; cursor:pointer; }
+    #voiceInputBtn.listening { border-color:#fb7185; background:rgba(244,63,94,.2); animation:voicePulse 1.2s infinite; }
+    @keyframes voicePulse { 50% { box-shadow:0 0 0 7px rgba(244,63,94,.12); } }
+    .message-text { white-space:pre-wrap; }
+    .message-actions { display:flex; gap:7px; margin-top:9px; opacity:.7; }
+    .msg:hover .message-actions { opacity:1; }
+    .message-action { padding:5px 8px; border:1px solid rgba(255,255,255,.12); border-radius:8px; color:#cbd5e1; background:rgba(255,255,255,.06); font-size:12px; cursor:pointer; }
+    .message-action:hover { background:rgba(255,255,255,.12); color:white; }
+    .evidence-badge { position:relative; display:inline-flex; align-items:center; margin-top:12px; padding:6px 10px; border:1px solid; border-radius:999px; font-size:12px; font-weight:850; cursor:help; }
+    .evidence-badge::before { content:""; width:7px; height:7px; margin-inline-end:7px; border-radius:50%; background:currentColor; box-shadow:0 0 10px currentColor; }
+    .evidence-strong { color:#86efac; border-color:rgba(34,197,94,.38); background:rgba(34,197,94,.11); }
+    .evidence-moderate { color:#fdba74; border-color:rgba(249,115,22,.4); background:rgba(249,115,22,.11); }
+    .evidence-limited { color:#fda4af; border-color:rgba(244,63,94,.4); background:rgba(244,63,94,.11); }
+    .evidence-badge::after { content:attr(data-tooltip); position:absolute; z-index:20; inset-inline-start:0; bottom:calc(100% + 9px); width:min(300px,70vw); padding:10px 12px; border:1px solid rgba(255,255,255,.13); border-radius:10px; color:#e5e7eb; background:#111827; box-shadow:0 14px 35px rgba(0,0,0,.35); font-weight:500; line-height:1.45; opacity:0; pointer-events:none; transform:translateY(4px); transition:.16s ease; }
+    .evidence-badge:hover::after,.evidence-badge:focus::after { opacity:1; transform:none; }
+    .voice-status { min-height:18px; margin:7px 4px 0; color:#94a3b8; font-size:13px; }
+    .voice-status.error { color:#fda4af; }
 
     button:disabled,
     textarea:disabled {
@@ -617,6 +642,11 @@
 .nutrition-builder-btn {
     background: linear-gradient(135deg, #16a34a, #22c55e);
 }
+.saved-nutrition-btn { background: linear-gradient(135deg, #15803d, #0f766e); }
+.progress-btn { background: linear-gradient(135deg, #0369a1, #0891b2); }
+.saved-workouts-btn {
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+}
 .workout-btn:hover{
     transform: translateY(-4px);
     box-shadow:0 18px 40px rgba(0,0,0,.35);
@@ -850,13 +880,14 @@
     border-color: rgba(23, 79, 114, 0.10);
   }
 </style>
+  <link rel="stylesheet" href="/css/ai-coach.css" />
 </head>
 
 <body>
   <main class="container">
     <header class="top-bar">
       <div class="brand">
-        <h1>TrainIQ</h1>
+        <h1>AI Coach</h1>
 
         <p id="subtitle" class="subtitle">
           The artificial intelligence of Ofek Zehavi — fitness, nutrition,
@@ -874,6 +905,10 @@
           ⚙️ Settings
         </button>
 
+        <button class="workout-btn dashboard-btn" type="button" onclick="window.location.href='/dashboard.html'">
+          <span class="title">🏠 Dashboard</span>
+        </button>
+
         <button
           class="workout-btn workout-builder-btn"
           type="button"
@@ -888,6 +923,34 @@
           onclick="window.location.href='/nutrition-builder.html'"
         >
           <span class="title">🥗 AI Nutrition Builder</span>
+        </button>
+
+        <button
+          class="workout-btn saved-workouts-btn"
+          type="button"
+          onclick="window.location.href='/my-workout-plans.html'"
+        >
+          <span class="title">📂 My Workout Plans</span>
+        </button>
+
+        <button class="workout-btn saved-nutrition-btn" type="button" onclick="window.location.href='/my-nutrition-plans.html'">
+          <span class="title">📂 My Nutrition Plans</span>
+        </button>
+
+        <button class="workout-btn progress-btn" type="button" onclick="window.location.href='/progress.html'">
+          <span class="title">📈 Progress Tracking</span>
+        </button>
+
+        <button class="workout-btn workout-tracker-btn" type="button" onclick="window.location.href='/workout-tracker.html'">
+          <span class="title">🏋️ Workout Tracker</span>
+        </button>
+
+        <button class="workout-btn workout-history-btn" type="button" onclick="window.location.href='/workout-history.html'">
+          <span class="title">📋 Workout History</span>
+        </button>
+
+        <button class="workout-btn exercise-progress-btn" type="button" onclick="window.location.href='/exercise-progress.html'">
+          <span class="title">📈 Exercise Progress</span>
         </button>
 
         <button
@@ -923,6 +986,9 @@
           <button id="newSessionBtn" type="button">
             + New Session
           </button>
+          <button id="deleteAllSessionsBtn" type="button">
+            Delete All
+          </button>
         </div>
 
         <div id="sessionTrail" class="session-trail">
@@ -942,10 +1008,13 @@
             aria-label="Message"
           ></textarea>
 
+          <button id="voiceInputBtn" type="button" aria-label="Voice input" title="Voice input">🎤</button>
+
           <button id="sendBtn" type="button">
             Send
           </button>
         </div>
+        <p id="voiceStatus" class="voice-status" role="status" aria-live="polite"></p>
       </section>
     </div>
   </main>
@@ -1145,6 +1214,52 @@
       rows="4"
       placeholder="Describe any relevant injury, pain, or movement limitation."
     ></textarea>
+  </label>
+
+  <div class="settings-grid">
+    <label class="settings-field">
+      <span id="memoryTrainingDaysLabel">Training days per week</span>
+      <input id="settingsTrainingDays" type="number" min="0" max="7" step="1" placeholder="4" />
+    </label>
+
+    <label class="settings-field">
+      <span id="memoryTrainingStyleLabel">Preferred training style</span>
+      <select id="settingsTrainingStyle">
+        <option id="styleNoneOption" value="">Not specified</option>
+        <option id="styleGymOption" value="gym">Gym / weights</option>
+        <option id="styleCalisthenicsOption" value="calisthenics">Calisthenics</option>
+        <option id="styleHybridOption" value="hybrid">Hybrid</option>
+        <option id="styleHomeOption" value="home">Home workouts</option>
+        <option id="styleSportOption" value="sport">Sport performance</option>
+      </select>
+    </label>
+  </div>
+
+  <label class="settings-field">
+    <span id="memoryEquipmentLabel">Available equipment</span>
+    <textarea id="settingsEquipment" rows="3" maxlength="500" placeholder="For example: gym, dumbbells, pull-up bar, resistance bands..."></textarea>
+  </label>
+
+  <div class="settings-grid">
+    <label class="settings-field">
+      <span id="memoryFavoriteFoodsLabel">Favorite foods</span>
+      <textarea id="settingsFavoriteFoods" rows="3" maxlength="500" placeholder="Foods you enjoy and want included"></textarea>
+    </label>
+
+    <label class="settings-field">
+      <span id="memoryDislikedFoodsLabel">Foods you dislike</span>
+      <textarea id="settingsDislikedFoods" rows="3" maxlength="500" placeholder="Foods you prefer to avoid"></textarea>
+    </label>
+  </div>
+
+  <label class="settings-field">
+    <span id="memoryDietLabel">Allergies or dietary restrictions</span>
+    <textarea id="settingsDietaryRestrictions" rows="3" maxlength="500" placeholder="Allergies, vegetarian, vegan, kosher, intolerances..."></textarea>
+  </label>
+
+  <label class="settings-field">
+    <span id="memoryNotesLabel">Anything else your AI coach should remember</span>
+    <textarea id="settingsPersonalNotes" rows="4" maxlength="1000" placeholder="Schedule, preferences, exercises you enjoy, personal context..."></textarea>
   </label>
 </section>
 

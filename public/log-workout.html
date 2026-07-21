@@ -1,0 +1,8 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Log a past workout · TrainIQ</title><link rel="stylesheet" href="/css/log-workout.css"></head><body><main class="log-page">
+<nav><a href="/dashboard.html">← TrainIQ</a><a href="/workout-history.html">Workout history</a></nav>
+<header><span class="badge">TrainIQ</span><h1 id="title">Log a past workout</h1><p id="intro">Missed live tracking? Add the workout now so your history and progress charts stay complete.</p></header>
+<p id="status" role="status" aria-live="polite"></p>
+<form id="pastWorkoutForm" class="panel hidden">
+<div class="form-grid"><label><span id="sessionLabel">Workout</span><select id="sessionSelect" required></select></label><label><span id="dateLabel">Date and time</span><input id="completedAt" type="datetime-local" required></label><label><span id="durationLabel">Duration (minutes)</span><input id="durationMinutes" type="number" min="1" max="360" value="60" required></label></div>
+<div id="exerciseList"></div><label class="notes"><span id="notesLabel">Notes (optional)</span><textarea id="notes" rows="3" maxlength="1000"></textarea></label><button id="saveButton" type="submit">Save workout</button>
+</form></main><script type="module" src="/js/log-workout.js"></script></body></html>

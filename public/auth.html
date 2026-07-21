@@ -198,6 +198,9 @@
       font-size: 12px;
       line-height: 1.6;
     }
+    .terms-consent { display:flex; gap:9px; align-items:flex-start; margin:15px 0; color:#aeb9ce; font-size:12px; line-height:1.5; }
+    .terms-consent input { width:auto; margin-top:3px; accent-color:#7c5cff; }
+    .terms-consent a,.privacy-note a { color:#a99bff; }
 
     @media (max-width: 520px) {
       body {
@@ -266,6 +269,11 @@
           />
         </div>
 
+        <label id="termsGroup" class="terms-consent hidden">
+          <input id="termsAccepted" type="checkbox">
+          <span>I have read and agree to the <a href="/terms.html" target="_blank">Terms, Health Disclaimer and Privacy Notice</a>. If I am under 18, my parent or legal guardian has approved my use of TrainIQ.</span>
+        </label>
+
         <div class="form-group">
           <label for="email">
             Email address
@@ -315,7 +323,7 @@
 
       <p class="privacy-note">
         Your account will be used to save
-        conversations and personalize your experience.
+        conversations and personalize your experience. <a href="/terms.html">Terms &amp; Health Disclaimer</a>
       </p>
     </section>
   </main>

@@ -518,7 +518,7 @@ textarea:focus {
 
 .workout-table {
   width: 100%;
-  min-width: 1050px;
+  min-width: 0;
   table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
@@ -561,19 +561,19 @@ textarea:focus {
 /* Exercise */
 .workout-table th:nth-child(2),
 .workout-table td:nth-child(2) {
-  width: 31%;
+  width: 29%;
 }
 
 /* Muscle */
 .workout-table th:nth-child(3),
 .workout-table td:nth-child(3) {
-  width: 13%;
+  width: 11%;
 }
 
 /* Equipment */
 .workout-table th:nth-child(4),
 .workout-table td:nth-child(4) {
-  width: 14%;
+  width: 12%;
 }
 
 /* Sets */
@@ -595,10 +595,26 @@ textarea:focus {
 }
 
 /* RIR */
+.intensity-help {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: help;
+  text-decoration: underline dotted rgba(255, 255, 255, 0.45);
+  text-underline-offset: 3px;
+}
+
+.intensity-help:focus-visible {
+  border-radius: 5px;
+  outline: 2px solid #60a5fa;
+  outline-offset: 3px;
+}
 .workout-table th:nth-child(8),
 .workout-table td:nth-child(8) {
-  width: 9%;
+  width: 7%;
 }
+.workout-table th:nth-child(9),.workout-table td:nth-child(9){width:7%}
+.workout-table-wrapper{overflow-x:visible}
 .workout-table tbody tr {
   transition:
     background 0.18s ease,
@@ -758,6 +774,22 @@ textarea:focus {
   .workout-day-header h3 {
     font-size: 19px;
   }
+
+  .program-actions{display:grid;width:100%;grid-template-columns:1fr 1fr;gap:10px}
+  .program-actions button{width:100%;min-height:48px}
+  .workout-table-wrapper{overflow:visible}
+  .workout-table,.workout-table tbody{display:block;width:100%}
+  .workout-table thead{display:none}
+  .workout-table tr{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:12px;border:1px solid rgba(255,255,255,.1);border-radius:15px;overflow:hidden;background:rgba(10,17,30,.58)}
+  .workout-table td,.workout-table td:nth-child(n){display:grid;width:auto;min-width:0;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:11px 13px;border:0;border-bottom:1px solid rgba(255,255,255,.07);text-align:end!important}
+  .workout-table td::before{content:attr(data-label);color:#7f8da3;font-size:10px;font-weight:850;letter-spacing:.06em;text-align:start;text-transform:uppercase}
+  .workout-table .exercise-number{display:none}
+  .workout-table .exercise-name-cell{grid-column:1/-1;display:block;padding:16px;text-align:start!important}
+  .workout-table .exercise-name-cell::before{display:none}
+  .workout-table .exercise-note{max-width:none}
+  .workout-table .reroll-cell{grid-column:1/-1;border-bottom:0}
+  .workout-table .reroll-button{width:46px;height:40px}
+  .muscle-badge,.equipment-badge{white-space:normal;text-align:center}
 }
 
 /* Print / PDF */
@@ -848,4 +880,18 @@ textarea:focus {
   .workout-table {
     min-width: 0;
   }
+}
+
+.builder-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 980px;
+  margin: 0 auto 20px;
+}
+
+.builder-navigation a {
+  color: #c9bcff;
+  font-weight: 750;
+  text-decoration: none;
 }

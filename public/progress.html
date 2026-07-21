@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrainIQ Progress</title>
+  <link rel="stylesheet" href="/css/progress.css" />
+</head>
+<body>
+  <main class="progress-page">
+    <nav class="page-nav"><a id="backLink" href="/dashboard.html">← Back to TrainIQ</a></nav>
+    <header class="page-header"><span class="badge">TrainIQ</span><h1 id="pageTitle">Progress Tracking</h1><p id="pageDescription">Track your body weight and focus on the trend, not a single measurement.</p></header>
+
+    <section class="entry-card">
+      <form id="weightForm">
+        <label><span id="dateLabel">Date</span><input id="weightDate" type="date" required /></label>
+        <label><span id="weightLabel">Body weight (kg)</span><input id="weightValue" type="number" min="30" max="300" step="0.1" required /></label>
+        <button id="saveWeightButton" type="submit">Save measurement</button>
+      </form>
+      <p id="progressStatus" class="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card"><span id="latestLabel">Latest weight</span><strong id="latestWeight">—</strong></article>
+      <article class="stat-card"><span id="averageLabel">7-day average</span><strong id="weeklyAverage">—</strong></article>
+      <article class="stat-card"><span id="changeLabel">Change vs previous 7 days</span><strong id="weeklyChange">—</strong></article>
+    </section>
+
+    <section class="chart-card">
+      <div class="section-heading"><div><h2 id="chartTitle">Weight trend</h2><p id="chartDescription">Your most recent 30 measurements.</p></div></div>
+      <div id="weightChart" class="chart" aria-label="Body weight chart"></div>
+    </section>
+
+    <section class="history-card">
+      <div class="section-heading"><h2 id="historyTitle">Measurement history</h2></div>
+      <div id="weightHistory" class="weight-history"></div>
+    </section>
+
+    <section class="measurements-card">
+      <div class="section-heading"><div><h2 id="measurementsTitle">Body measurements</h2><p id="measurementsDescription">Record measurements consistently, under similar conditions.</p></div></div>
+      <form id="measurementsForm" class="measurements-form">
+        <label><span id="measurementDateLabel">Date</span><input id="measurementDate" type="date" required /></label>
+        <label><span id="waistLabel">Waist (cm)</span><input id="waistValue" type="number" min="10" max="300" step="0.1" /></label>
+        <label><span id="chestLabel">Chest (cm)</span><input id="chestValue" type="number" min="10" max="300" step="0.1" /></label>
+        <label><span id="armLabel">Arm (cm)</span><input id="armValue" type="number" min="10" max="100" step="0.1" /></label>
+        <label><span id="thighLabel">Thigh (cm)</span><input id="thighValue" type="number" min="10" max="150" step="0.1" /></label>
+        <button id="saveMeasurementsButton" type="submit">Save measurements</button>
+      </form>
+      <p id="measurementsStatus" class="status" role="status" aria-live="polite"></p>
+      <div id="measurementSummary" class="measurement-summary"></div>
+      <div id="measurementHistory" class="measurement-history"></div>
+    </section>
+
+    <section class="photos-card">
+      <div class="section-heading"><div><h2 id="photosTitle">Progress photos</h2><p id="photosDescription">Upload front, side, and back photos taken under similar conditions.</p></div></div>
+      <form id="photosForm" class="photos-form">
+        <label><span id="photoDateLabel">Date</span><input id="photoDate" type="date" required /></label>
+        <label class="file-field"><span id="frontPhotoLabel">Front</span><input id="frontPhoto" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+        <label class="file-field"><span id="sidePhotoLabel">Side</span><input id="sidePhoto" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+        <label class="file-field"><span id="backPhotoLabel">Back</span><input id="backPhoto" type="file" accept="image/jpeg,image/png,image/webp" /></label>
+        <button id="uploadPhotosButton" type="submit">Upload photos</button>
+      </form>
+      <p id="photosStatus" class="status" role="status" aria-live="polite"></p>
+
+      <div class="comparison-controls">
+        <label><span id="compareFromLabel">Compare from</span><select id="compareFrom"></select></label>
+        <label><span id="compareToLabel">Compare to</span><select id="compareTo"></select></label>
+      </div>
+      <div id="photoComparison" class="photo-comparison"></div>
+      <div id="photoGallery" class="photo-gallery"></div>
+    </section>
+  </main>
+  <script type="module" src="/js/progress.js"></script>
+</body>
+</html>

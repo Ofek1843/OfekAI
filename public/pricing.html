@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TrainIQ Plans</title>
+  <script>try{const t=localStorage.getItem("ofek-ai-theme")||"dark";document.documentElement.dataset.theme=t==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):t}catch{}</script>
+  <link rel="stylesheet" href="/css/pricing.css">
+</head>
+<body>
+  <main class="pricing-shell">
+    <nav class="pricing-nav">
+      <a class="brand" href="/dashboard.html">TrainIQ</a>
+      <div><span id="currentPlanBadge" class="plan-badge">Free</span><a id="dashboardLink" href="/dashboard.html">Dashboard</a></div>
+    </nav>
+
+    <header class="pricing-hero">
+      <span class="eyebrow" id="eyebrow">TRAIN SMARTER</span>
+      <h1 id="pricingTitle">Your training. Your progress. One plan.</h1>
+      <p id="pricingIntro">Start free and upgrade when you want more plans, deeper analytics and a coach that remembers your journey.</p>
+      <div class="billing-note"><span></span><span id="testModeText">Early Access — everything is currently free</span></div>
+    </header>
+
+    <section class="plans" aria-label="Subscription plans">
+      <article class="plan-card free-card">
+        <div class="plan-heading"><div><span class="plan-label">STARTER</span><h2>Free</h2></div><span id="freeCurrent" class="current-chip" hidden>Current plan</span></div>
+        <p class="plan-copy" id="freeCopy">Everything you need to begin building and tracking your routine.</p>
+        <div class="price"><strong>₪0</strong><span id="foreverText">during Early Access</span></div>
+        <ul id="freeFeatures"></ul>
+        <button id="freeButton" class="plan-action secondary" type="button" disabled>Current plan</button>
+      </article>
+
+      <article class="plan-card pro-card">
+        <div class="popular-ribbon" id="popularText">MOST POPULAR</div>
+        <div class="plan-heading"><div><span class="plan-label">FOR SERIOUS PROGRESS</span><h2>TrainIQ <em>Pro</em></h2></div><span id="proCurrent" class="current-chip" hidden>Current plan</span></div>
+        <p class="plan-copy" id="proCopy">Unlock the complete training, nutrition and AI coaching experience.</p>
+        <div class="price"><strong>From ₪10</strong><span id="monthText">per month after launch</span></div>
+        <ul id="proFeatures"></ul>
+        <button id="upgradeButton" class="plan-action primary" type="button">Join the Pro wishlist</button>
+        <small id="upgradeHint">No card and no charge. We will let you know before Pro launches.</small>
+      </article>
+    </section>
+
+    <section class="trust-row">
+      <div><span>🎁</span><strong id="secureTitle">Everything unlocked now</strong><small id="secureText">Try every TrainIQ feature free during Early Access.</small></div>
+      <div><span>💳</span><strong id="cancelTitle">No payment details</strong><small id="cancelText">The wishlist does not ask for a card or charge you.</small></div>
+      <div><span>🔔</span><strong id="instantTitle">Launch notification</strong><small id="instantText">We will notify interested users before Pro becomes paid.</small></div>
+    </section>
+
+    <p id="pricingStatus" class="status" role="status" aria-live="polite"></p>
+  </main>
+  <script type="module" src="/js/pricing.js"></script>
+</body>
+</html>

@@ -446,3 +446,22 @@ a {
         transition-duration: 1ms !important;
     }
 }
+
+:root { --workout:#22c55e; --nutrition:#f59e0b; --progress:#38bdf8; --coach:#8b5cf6; }
+body { background:radial-gradient(circle at 16% 23%,rgba(34,197,94,.13),transparent 25%),radial-gradient(circle at 83% 24%,rgba(139,92,246,.17),transparent 28%),radial-gradient(circle at 74% 84%,rgba(245,158,11,.1),transparent 24%),radial-gradient(circle at 50% 18%,rgba(56,189,248,.14),transparent 34%),var(--background); }
+.logo { background:linear-gradient(90deg,#f8fafc,#7dd3fc 45%,#86efac);background-clip:text;-webkit-background-clip:text;color:transparent; }
+.hero::after { content:"";position:absolute;z-index:-1;width:min(720px,90vw);height:min(720px,90vw);border-radius:50%;background:conic-gradient(from 0deg,rgba(34,197,94,.18),rgba(56,189,248,.15),rgba(139,92,246,.18),rgba(245,158,11,.13),rgba(34,197,94,.18));mask:radial-gradient(circle,transparent 64%,#000 65%,transparent 67%);opacity:.65;animation:spectrumSpin 24s linear infinite; }
+.hero h1 span:first-child { background:linear-gradient(90deg,#f8fafc 5%,#86efac 72%,#22c55e);background-clip:text;-webkit-background-clip:text;color:transparent; }
+.hero h1 span:last-child { background:linear-gradient(90deg,#7dd3fc,#c4b5fd 70%,#f0abfc);background-clip:text;-webkit-background-clip:text;color:transparent; }
+.badge { color:#ddd6fe;border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.1); }
+.badge::before { background:var(--workout);box-shadow:0 0 14px var(--workout); }
+.hero-btn { border-color:rgba(167,243,208,.4);background:linear-gradient(120deg,#16a34a,#0891b2 52%,#7c3aed);background-size:180% 100%;animation:fade-up 800ms 240ms ease both,buttonSpectrum 5s 1s ease-in-out infinite alternate; }
+.feature-pills { display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:24px;animation:fade-up 800ms 290ms ease both; }
+.feature-pill { position:relative;padding:8px 13px 8px 25px;border:1px solid color-mix(in srgb,var(--pill-color),transparent 68%);border-radius:999px;color:color-mix(in srgb,var(--pill-color),white 35%);background:color-mix(in srgb,var(--pill-color),transparent 91%);font-size:.75rem;font-weight:700;transition:transform .2s ease,background .2s ease; }
+.feature-pill::before { content:"";position:absolute;left:11px;top:50%;width:6px;height:6px;border-radius:50%;background:var(--pill-color);box-shadow:0 0 10px var(--pill-color);transform:translateY(-50%); }
+.feature-pill:hover { transform:translateY(-3px);background:color-mix(in srgb,var(--pill-color),transparent 85%); }
+.workout-pill{--pill-color:var(--workout)}.nutrition-pill{--pill-color:var(--nutrition)}.progress-pill{--pill-color:var(--progress)}.coach-pill{--pill-color:var(--coach)}
+@keyframes spectrumSpin { to { transform:rotate(360deg); } }
+@keyframes buttonSpectrum { to { background-position:100% 0;box-shadow:0 20px 56px rgba(124,58,237,.34); } }
+
+html[data-theme="light"] body{color:#15233a;background:radial-gradient(circle at 16% 23%,rgba(34,197,94,.16),transparent 25%),radial-gradient(circle at 83% 24%,rgba(139,92,246,.18),transparent 28%),radial-gradient(circle at 50% 18%,rgba(56,189,248,.2),transparent 34%),linear-gradient(145deg,#e9f8fb,#eef1ff 55%,#eaf8f2)}html[data-theme="light"] .navbar{background:rgba(241,249,252,.72);border-color:rgba(51,65,85,.1)}html[data-theme="light"] .logo{background:linear-gradient(90deg,#172554,#0284c7,#15803d);background-clip:text;-webkit-background-clip:text;color:transparent}html[data-theme="light"] .nav-btn{color:#334155;background:rgba(255,255,255,.55);border-color:rgba(71,85,105,.16)}html[data-theme="light"] .hero p{color:#52637a}html[data-theme="light"] .hero h1 span:first-child{background:linear-gradient(90deg,#172554,#15803d 76%);background-clip:text;-webkit-background-clip:text;color:transparent}html[data-theme="light"] .badge{color:#6d28d9;background:rgba(139,92,246,.09)}html[data-theme="light"] .scroll{color:#64748b}

@@ -1,8 +1,20 @@
 import { auth } from "./firebase-config.js";
-import { getRecentConversations } from "./conversations.js";
+import {
+  deleteAllConversations,
+  deleteConversation,
+  getRecentConversations,
+  updateConversationTitle
+} from "./conversations.js";
 
 const sessionTrail = document.getElementById("sessionTrail");
 const newSessionBtn = document.getElementById("newSessionBtn");
+const deleteAllSessionsBtn = document.getElementById("deleteAllSessionsBtn");
+const isHebrew = (localStorage.getItem("ofek-ai-language") || "en") === "he";
+const labels = isHebrew
+  ? { empty: "אין שיחות שמורות", rename: "שינוי שם", remove: "מחיקה", deleteAll: "מחיקת כל השיחות", renamePrompt: "הזן שם חדש לשיחה:", deleteConfirm: "למחוק את השיחה הזאת?", deleteAllConfirm: "למחוק את כל היסטוריית השיחות? לא ניתן לבטל פעולה זו.", loadError: "לא ניתן לטעון את השיחות" }
+  : { empty: "No saved sessions yet", rename: "Rename", remove: "Delete", deleteAll: "Delete All", renamePrompt: "Enter a new conversation name:", deleteConfirm: "Delete this conversation?", deleteAllConfirm: "Delete all conversation history? This cannot be undone.", loadError: "Could not load sessions" };
+
+if (deleteAllSessionsBtn) deleteAllSessionsBtn.textContent = labels.deleteAll;
 
 async function waitForAuthenticatedUser() {
   for (let attempt = 0; attempt < 40; attempt += 1) {
@@ -42,7 +54,7 @@ function renderConversations(conversations) {
   if (!conversations.length) {
     sessionTrail.innerHTML = `
       <span class="session-trail-empty">
-        No saved sessions yet
+        ${labels.empty}
       </span>
     `;
 
@@ -57,8 +69,9 @@ function renderConversations(conversations) {
       return;
     }
 
+    const row = document.createElement("div");
+    row.className = "session-trail-row";
     const button = document.createElement("button");
-
     button.type = "button";
     button.className = "session-trail-item";
     button.textContent = getConversationTitle(conversation);
@@ -80,7 +93,33 @@ function renderConversations(conversations) {
       );
     });
 
-    sessionTrail.appendChild(button);
+    const actions = document.createElement("div");
+    actions.className = "session-trail-actions";
+    const renameButton = document.createElement("button");
+    renameButton.type = "button";
+    renameButton.className = "session-rename-button";
+    renameButton.title = labels.rename;
+    renameButton.textContent = "✏️";
+    renameButton.addEventListener("click", async () => {
+      const nextTitle = window.prompt(labels.renamePrompt, getConversationTitle(conversation));
+      if (nextTitle === null || !nextTitle.trim()) return;
+      await updateConversationTitle({ conversationId, title: nextTitle });
+      await refreshSessionTrail();
+    });
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "session-delete-button";
+    deleteButton.title = labels.remove;
+    deleteButton.textContent = "🗑️";
+    deleteButton.addEventListener("click", async () => {
+      if (!window.confirm(labels.deleteConfirm)) return;
+      await deleteConversation(conversationId);
+      window.dispatchEvent(new CustomEvent("conversation-deleted", { detail: { conversationId } }));
+      await refreshSessionTrail();
+    });
+    actions.append(renameButton, deleteButton);
+    row.append(button, actions);
+    sessionTrail.appendChild(row);
   });
 }
 
@@ -106,7 +145,7 @@ export async function refreshSessionTrail() {
 
     sessionTrail.innerHTML = `
       <span class="session-trail-empty">
-        Could not load sessions
+        ${labels.loadError}
       </span>
     `;
   }
@@ -118,6 +157,18 @@ newSessionBtn?.addEventListener("click", () => {
   document
     .querySelectorAll(".session-trail-item")
     .forEach((item) => item.classList.remove("active"));
+});
+
+deleteAllSessionsBtn?.addEventListener("click", async () => {
+  if (!window.confirm(labels.deleteAllConfirm)) return;
+  deleteAllSessionsBtn.disabled = true;
+  try {
+    await deleteAllConversations();
+    window.dispatchEvent(new Event("all-conversations-deleted"));
+    await refreshSessionTrail();
+  } finally {
+    deleteAllSessionsBtn.disabled = false;
+  }
 });
 
 window.addEventListener("conversation-updated", refreshSessionTrail);

@@ -1,8 +1,19 @@
+import { auth, db } from "./firebase-config.js";
+import { setupExerciseDemos } from "./exercise-demos.js";
+import { setupPlanSharing } from "./plan-sharing.js";
+
+import {
+  collection,
+  addDoc,
+  getDocs,
+  limit,
+  query,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 const form = document.querySelector("#workout-builder-form");
 const button = document.querySelector("#generate-button");
 const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#program-result");
-
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
 
@@ -312,6 +323,7 @@ form.addEventListener("submit", async (event) => {
 
 if (data.program) {
   window.currentWorkoutProgram = data.program;
+
   renderProgram(data.program);
   return;
 }
@@ -332,7 +344,6 @@ if (data.program) {
         }
       </p>
     `;
-
     resultElement.classList.remove("hidden");
   } catch (error) {
     console.error(
@@ -350,6 +361,33 @@ function setLoading(isLoading) {
   button.textContent = isLoading
     ? ui.generating
     : ui.generate;
+}
+async function saveWorkoutPlan(plan) {
+  const user = auth.currentUser;
+
+  if (!user) {
+    throw new Error("User is not signed in.");
+  }
+
+  const workoutPlansRef = collection(
+    db,
+    "users",
+    user.uid,
+    "workoutPlans"
+  );
+  const existingPlans = await getDocs(query(workoutPlansRef, limit(5)));
+
+  if (existingPlans.size >= 5) {
+    throw new Error("WORKOUT_PLAN_LIMIT_REACHED");
+  }
+
+  return addDoc(workoutPlansRef, {
+    name: plan.programName || "Workout Plan",
+    active: false,
+    plan,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
 }
 function setStatus(message, isError = false) {
   statusElement.textContent = message;
@@ -460,14 +498,15 @@ function renderProgram(program) {
         .map((exercise, exerciseIndex) => {
           return `
             <tr data-session="${sessionIndex}" data-exercise="${exerciseIndex}">
-              <td class="exercise-number">
+              <td class="exercise-number" data-label="#">
                 ${exerciseIndex + 1}
               </td>
 
-              <td class="exercise-name-cell">
-                <strong>
+              <td class="exercise-name-cell" data-label="${ui.exercise}">
+<strong>
   ${escapeHtml(translateWorkoutValue(exercise.name))}
 </strong>
+                <button type="button" class="exercise-demo-button" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">▶ Demo</button>
                 ${
                   exercise.notes
                     ? `
@@ -479,7 +518,7 @@ function renderProgram(program) {
                 }
               </td>
 
-              <td>
+              <td data-label="${ui.muscle}">
                 <span class="muscle-badge">
                   ${escapeHtml(
   translateWorkoutValue(
@@ -489,7 +528,7 @@ function renderProgram(program) {
                 </span>
               </td>
 
-              <td>
+              <td data-label="${ui.equipment}">
                 <span class="equipment-badge">
                   ${escapeHtml(
   translateWorkoutValue(
@@ -499,23 +538,27 @@ function renderProgram(program) {
                 </span>
               </td>
 
-              <td class="workout-value">
+              <td class="workout-value" data-label="${ui.sets}">
                 ${escapeHtml(String(exercise.sets))}
               </td>
 
-              <td class="workout-value">
+              <td class="workout-value" data-label="${ui.reps}">
                 ${escapeHtml(String(exercise.reps))}
               </td>
 
-              <td class="workout-value">
+              <td class="workout-value" data-label="${ui.rest}">
                 ${escapeHtml(String(exercise.restSeconds))}s
               </td>
 
-<td class="workout-value">
+<td
+  class="workout-value"
+  data-label="RIR"
+  title="${isHebrew ? "RIR — כמה חזרות נוספות נשארו לך לפני כשל. לדוגמה, RIR 2 פירושו שיכולת לבצע עוד כשתי חזרות." : "RIR (Reps In Reserve) — how many more reps you could complete before failure. RIR 2 means about two reps remained."}"
+>
   ${escapeHtml(String(exercise.rir || "—"))}
 </td>
 
-<td class="workout-value">
+<td class="workout-value reroll-cell" data-label="${isHebrew ? "החלפה" : "Replace"}">
 <button
   type="button"
   class="reroll-button"
@@ -561,7 +604,13 @@ function renderProgram(program) {
 <th>${ui.sets}</th>
 <th>${ui.reps}</th>
 <th>${ui.rest}</th>
-<th>RIR</th>
+<th>
+  <span
+    class="intensity-help"
+    tabindex="0"
+    title="${isHebrew ? "RIR — מספר החזרות שנותרו לפני כשל. RIR 0 = כשל; RIR 2 = נשארו בערך שתי חזרות." : "RIR (Reps In Reserve) — reps left before failure. RIR 0 = failure; RIR 2 = about two reps left."}"
+  >RIR <span aria-hidden="true">ⓘ</span></span>
+</th>
 <th class="reroll-column"></th>
               </tr>
               </thead>
@@ -596,13 +645,17 @@ function renderProgram(program) {
           </p>
         </div>
 
-        <button
-          type="button"
-          class="print-program-button"
-          onclick="window.print()"
-        >
-          ${ui.print}
-        </button>
+<div class="program-actions">
+  <button type="button" class="share-program-button" id="share-workout-button">↗ ${isHebrew ? "שיתוף" : "Share"}</button>
+
+  <button
+    type="button"
+    class="save-program-button"
+    id="save-workout-button"
+  >
+    💾 ${isHebrew ? "שמירת תוכנית" : "Save Workout"}
+  </button>
+</div>
       </header>
 
       <div class="program-summary">
@@ -633,6 +686,58 @@ function renderProgram(program) {
       </div>
     </section>
   `;
+
+  const saveWorkoutButton = resultElement.querySelector(
+    "#save-workout-button"
+  );
+  setupPlanSharing(resultElement.querySelector("#share-workout-button"), { type: "workout", getPlan: () => window.currentWorkoutProgram });
+
+  saveWorkoutButton?.addEventListener("click", async () => {
+    if (!window.currentWorkoutProgram) {
+      setStatus(
+        isHebrew
+          ? "אין תוכנית אימון לשמירה."
+          : "There is no workout plan to save.",
+        true
+      );
+      return;
+    }
+
+    saveWorkoutButton.disabled = true;
+    saveWorkoutButton.textContent = isHebrew ? "שומר..." : "Saving...";
+
+    try {
+      await saveWorkoutPlan(window.currentWorkoutProgram);
+
+      saveWorkoutButton.textContent = isHebrew
+        ? "✓ התוכנית נשמרה"
+        : "✓ Workout Saved";
+      setStatus(
+        isHebrew
+          ? "תוכנית האימון נשמרה בהצלחה."
+          : "Workout plan saved successfully."
+      );
+    } catch (error) {
+      console.error("Could not save workout plan:", error);
+
+      saveWorkoutButton.disabled = false;
+      saveWorkoutButton.textContent = isHebrew
+        ? "💾 שמירת תוכנית"
+        : "💾 Save Workout";
+
+      const limitReached = error.message === "WORKOUT_PLAN_LIMIT_REACHED";
+      setStatus(
+        limitReached
+          ? isHebrew
+            ? "ניתן לשמור עד 5 תוכניות אימון. מחק תוכנית כדי לשמור חדשה."
+            : "You can save up to 5 workout plans. Delete one to save a new plan."
+          : isHebrew
+            ? "לא ניתן היה לשמור את התוכנית. ודא שאתה מחובר."
+            : "Could not save the plan. Make sure you are signed in.",
+        true
+      );
+    }
+  });
 
   resultElement.classList.remove("hidden");
 resultElement
@@ -681,6 +786,11 @@ program: window.currentWorkoutProgram
     row.querySelector(".exercise-name-cell strong").textContent =
       translateWorkoutValue(data.exercise.name);
 
+    const demoButton = row.querySelector("[data-exercise-demo]");
+    if (demoButton) {
+      demoButton.dataset.exerciseDemo = data.exercise.demoName || data.exercise.name;
+    }
+
     const note = row.querySelector(".exercise-note");
 
     if (note) {
@@ -708,3 +818,5 @@ function escapeHtml(value = "") {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+
+setupExerciseDemos(document);

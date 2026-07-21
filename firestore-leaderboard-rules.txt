@@ -1,0 +1,26 @@
+// Add these match blocks INSIDE `match /databases/{database}/documents` in Firestore Rules.
+// Keep all your existing rules as well.
+
+function isLeaderboardAdmin() {
+  return request.auth != null
+    && request.auth.token.email in ["ofek1845@gmail.com"];
+}
+
+match /users/{userId}/leaderboardSubmissions/{submissionId} {
+  allow create: if request.auth != null
+    && request.auth.uid == userId
+    && request.resource.data.status == "pending";
+  allow read: if request.auth != null
+    && (request.auth.uid == userId || isLeaderboardAdmin());
+  allow update, delete: if isLeaderboardAdmin();
+}
+
+// Required for the administrator's collection-group moderation query.
+match /{path=**}/leaderboardSubmissions/{submissionId} {
+  allow read, update, delete: if isLeaderboardAdmin();
+}
+
+match /leaderboardEntries/{entryId} {
+  allow read: if request.auth != null;
+  allow create, update, delete: if isLeaderboardAdmin();
+}

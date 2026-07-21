@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TrainIQ Leaderboard</title>
+  <script>try{const t=localStorage.getItem("ofek-ai-theme")||"dark";document.documentElement.dataset.theme=t==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):t}catch{}</script>
+  <link rel="stylesheet" href="/css/leaderboard.css">
+</head>
+<body>
+<main class="leaderboard-page">
+  <nav class="top-nav"><a class="brand" href="/dashboard.html">TrainIQ</a><div><a href="/dashboard.html">Dashboard</a><a class="active" href="/leaderboard.html">🏆 Leaderboard</a><a href="/app.html">AI Coach</a></div></nav>
+
+  <header class="hero">
+    <div><span class="eyebrow">TRAINIQ COMMUNITY</span><h1>Earn your place.</h1><p>Verified lifts. Real athletes. Every result requires private video proof before it reaches the board.</p></div>
+    <button id="openSubmission" class="gold-button" type="button">Submit a result</button>
+  </header>
+
+  <section class="board-card">
+    <div class="filters">
+      <label>Exercise<select id="exerciseFilter"></select></label>
+      <label>Category<select id="categoryFilter"><option value="all">All</option><option value="men">Men</option><option value="women">Women</option><option value="open">Open</option></select></label>
+    </div>
+    <div id="podium" class="podium" aria-live="polite"></div>
+    <div class="ranking-wrap"><table><thead><tr><th>Rank</th><th>Athlete</th><th>Result</th><th>Category</th><th>Verified</th></tr></thead><tbody id="rankingBody"></tbody></table></div>
+    <p id="boardStatus" class="status">Loading verified results…</p>
+  </section>
+
+  <section class="trust-strip"><div>🔒<strong>Private proof</strong><span>Videos are never public by default.</span></div><div>🛡️<strong>Human review</strong><span>Pending submissions cannot rank.</span></div><div>⚖️<strong>Fair competition</strong><span>One standard for every athlete.</span></div></section>
+
+  <section class="my-submissions"><div><span class="eyebrow">YOUR ACTIVITY</span><h2>My submissions</h2></div><div id="submissionList" class="submission-list"></div></section>
+</main>
+
+<dialog id="submissionDialog">
+  <form id="submissionForm">
+    <div class="dialog-head"><div><span class="eyebrow">VERIFICATION REQUEST</span><h2>Submit your result</h2></div><button id="closeSubmission" type="button" aria-label="Close">×</button></div>
+    <p class="form-note">Show the complete attempt, athlete, and equipment clearly in one continuous video.</p>
+    <div class="form-grid">
+      <label>Display name<input id="displayName" maxlength="40" required placeholder="Name shown on the board"></label>
+      <label>Category<select id="submissionCategory" required><option value="men">Men</option><option value="women">Women</option><option value="open">Open</option></select></label>
+      <label>Exercise<select id="submissionExercise" required></select></label>
+      <label>Result<div class="result-input"><input id="score" type="number" min="0.1" max="1000" step="0.1" required><span id="scoreUnit">reps</span></div></label>
+      <label>Body weight (optional)<div class="result-input"><input id="bodyWeight" type="number" min="20" max="400" step="0.1"><span>kg</span></div></label>
+      <label class="video-field">Verification video<input id="proofVideo" type="file" accept="video/mp4,video/webm,video/quicktime" required><small>MP4, WebM or MOV · maximum 50 MB · stored privately</small></label>
+    </div>
+    <label class="consent"><input id="consent" type="checkbox" required><span>I confirm this is my unedited performance and agree to a private review.</span></label>
+    <p id="formStatus" class="status" role="status" aria-live="polite"></p>
+    <button id="submitResult" class="gold-button full" type="submit">Send for verification</button>
+  </form>
+</dialog>
+<script type="module" src="/js/leaderboard.js"></script>
+</body></html>

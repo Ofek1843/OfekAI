@@ -1,4 +1,5 @@
-import { auth } from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
+import { doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
   createUserWithEmailAndPassword,
@@ -33,6 +34,8 @@ const authForm =
 
 const authMessage =
   document.getElementById("authMessage");
+const termsGroup = document.getElementById("termsGroup");
+const termsAccepted = document.getElementById("termsAccepted");
 
 let currentMode = "login";
 let authenticationCompleted = false;
@@ -68,6 +71,11 @@ function changeMode(mode) {
   );
 
   displayNameInput.required = !isLogin;
+  termsGroup?.classList.toggle("hidden", isLogin);
+  if (termsAccepted) {
+    termsAccepted.required = !isLogin;
+    if (isLogin) termsAccepted.checked = false;
+  }
 
   submitButton.textContent = isLogin
     ? "Log in"
@@ -111,11 +119,9 @@ function getFriendlyError(errorCode) {
 loginTab.addEventListener("click", () => {
   changeMode("login");
 });
-
 signupTab.addEventListener("click", () => {
   changeMode("signup");
 });
-
 authForm.addEventListener(
   "submit",
   async (event) => {
@@ -147,6 +153,11 @@ authForm.addEventListener(
         "error"
       );
 
+      return;
+    }
+
+    if (currentMode === "signup" && !termsAccepted?.checked) {
+      showMessage("You must accept the Terms and Health Disclaimer to create an account.", "error");
       return;
     }
 
@@ -182,6 +193,12 @@ authForm.addEventListener(
           }
         );
 
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+          termsAccepted: true,
+          termsVersion: "2026-07-21",
+          termsAcceptedAt: serverTimestamp()
+        }, { merge: true });
+
         authenticationCompleted = true;
 
         showMessage(
@@ -204,7 +221,7 @@ authForm.addEventListener(
       }
 
 window.setTimeout(() => {
-  window.location.href = "/app.html";
+  window.location.href = "/dashboard.html";
 }, 800);
     } catch (error) {
       console.error(
@@ -229,7 +246,7 @@ window.setTimeout(() => {
 
 onAuthStateChanged(auth, (user) => {
   if (user && !authenticationCompleted) {
-    window.location.href = "/app.html";
+    window.location.href = "/dashboard.html";
   }
 });
-  
+// Signed-in users enter the product through the dashboard.

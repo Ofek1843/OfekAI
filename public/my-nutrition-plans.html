@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrainIQ My Nutrition Plans</title>
+  <link rel="stylesheet" href="/css/my-workout-plans.css" />
+</head>
+<body>
+  <main class="plans-page">
+    <nav class="page-nav"><a id="backLink" href="/dashboard.html">← Back to TrainIQ</a><a id="builderLink" class="primary-link" href="/nutrition-builder.html">+ Create nutrition plan</a></nav>
+    <header class="plans-header">
+      <span class="plans-badge">TrainIQ</span>
+      <h1 id="pageTitle">My Nutrition Plans</h1>
+      <p id="pageDescription">Choose your current nutrition plan. The active plan is highlighted in green.</p>
+      <div class="plans-counter"><strong id="planCount">0</strong><span id="planCountLabel"> of 5 saved plans</span></div>
+    </header>
+    <aside id="earlyAccessNote" class="early-access-note"><strong>Early Access:</strong> All five nutrition-plan slots are free right now. Slots 2–5 are planned for Pro later.</aside>
+    <p id="plansStatus" class="plans-status" role="status" aria-live="polite">Loading your plans...</p>
+    <section id="plansGrid" class="plans-grid"></section>
+  </main>
+  <script type="module" src="/js/my-nutrition-plans.js"></script>
+</body>
+</html>

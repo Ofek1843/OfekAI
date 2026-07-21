@@ -10,6 +10,10 @@ import {
   getFirestore
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
+import {
+  getStorage
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyB5EAK98RQP_LNd0fgj3UtCwE17lwXTADU",
   authDomain: "ofek-ai-55f1d.firebaseapp.com",
@@ -24,6 +28,7 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 try {
   await setPersistence(auth, browserLocalPersistence);
@@ -31,4 +36,4 @@ try {
   console.error("Firebase persistence error:", error);
 }
 
-export { auth, db };
+export { auth, db, storage };

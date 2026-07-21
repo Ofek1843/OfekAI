@@ -1,0 +1,20 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Running · TrainIQ</title><link rel="stylesheet" href="/css/running.css"></head><body>
+<nav><a href="/dashboard.html" class="brand">TrainIQ</a><a href="/dashboard.html" id="backLink">← Dashboard</a></nav>
+<main>
+  <header class="hero"><span class="eyebrow">GPS RUNNING</span><h1 id="pageTitle">Track your run</h1><p id="pageIntro">Record your route, distance, pace, speed and time. Your location is saved only in your private account.</p></header>
+  <section class="notice" id="secureNotice">📍 Location works on localhost or HTTPS. Keep this page open while running; mobile browsers may pause tracking when the page is closed.</section>
+  <section class="tracker">
+    <div class="run-top"><label><span id="nameLabel">Run name</span><input id="runName" maxlength="60" placeholder="Morning run"></label><span id="gpsStatus" class="gps idle">GPS ready</span></div>
+    <div class="stats">
+      <article><span id="timeLabel">Time</span><strong id="elapsed">00:00:00</strong></article>
+      <article><span id="distanceLabel">Distance</span><strong><b id="distance">0.00</b> km</strong></article>
+      <article><span id="paceLabel">Average pace</span><strong id="pace">—</strong></article>
+      <article><span id="speedLabel">Average speed</span><strong><b id="speed">0.0</b> km/h</strong></article>
+    </div>
+    <div class="route-card"><svg id="routeMap" viewBox="0 0 1000 520" role="img" aria-label="Recorded GPS route"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="currentColor" stroke-width="1"/></pattern><linearGradient id="routeGradient"><stop stop-color="#22c55e"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs><rect width="1000" height="520" fill="url(#grid)"/><polyline id="routeLine" fill="none" stroke="url(#routeGradient)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><circle id="startMarker" r="13" fill="#22c55e"/><circle id="endMarker" r="13" fill="#38bdf8"/></svg><div id="routeEmpty"><span>🏃</span><strong id="routeEmptyTitle">Your route will appear here</strong><small id="routeEmptyText">Press Start run and allow location access.</small></div></div>
+    <div class="locations"><div><span id="fromLabel">From</span><strong id="startLocation">—</strong></div><div><span id="toLabel">To</span><strong id="endLocation">—</strong></div><div><span id="accuracyLabel">GPS accuracy</span><strong id="accuracy">—</strong></div></div>
+    <div class="actions"><button id="startButton" class="start">▶ <span>Start run</span></button><button id="pauseButton" class="pause" disabled>Ⅱ <span>Pause</span></button><button id="finishButton" class="finish" disabled>■ <span>Finish & save</span></button><button id="discardButton" class="discard" disabled><span>Discard</span></button></div>
+    <p id="message" class="message" aria-live="polite"></p>
+  </section>
+  <section class="history"><header><div><span class="eyebrow" id="historyKicker">HISTORY</span><h2 id="historyTitle">Recent runs</h2></div></header><div id="runsList" class="runs-list"><p id="historyLoading">Loading…</p></div></section>
+</main><script type="module" src="/js/running.js"></script></body></html>

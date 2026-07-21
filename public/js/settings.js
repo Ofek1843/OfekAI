@@ -21,6 +21,7 @@ const SETTINGS_DOC_PATH = (uid) =>
     doc(db, "users", uid, "settings", "main");
 
 const THEME_STORAGE_KEY = "ofek-ai-theme";
+const settingsOpenedAsPage = new URLSearchParams(window.location.search).get("settings") === "open";
 
 const elements = {
     overlay: document.getElementById("settingsOverlay"),
@@ -37,6 +38,13 @@ const elements = {
     experience: document.getElementById("settingsExperience"),
     goal: document.getElementById("settingsGoal"),
     limitations: document.getElementById("settingsLimitations"),
+    trainingDays: document.getElementById("settingsTrainingDays"),
+    trainingStyle: document.getElementById("settingsTrainingStyle"),
+    equipment: document.getElementById("settingsEquipment"),
+    favoriteFoods: document.getElementById("settingsFavoriteFoods"),
+    dislikedFoods: document.getElementById("settingsDislikedFoods"),
+    dietaryRestrictions: document.getElementById("settingsDietaryRestrictions"),
+    personalNotes: document.getElementById("settingsPersonalNotes"),
 
     responseDepth: document.getElementById("settingsResponseDepth"),
     coachingStyle: document.getElementById("settingsCoachingStyle"),
@@ -192,7 +200,7 @@ function applyStoredThemeImmediately() {
     const storedTheme =
         localStorage.getItem(
             THEME_STORAGE_KEY
-        ) || "system";
+        ) || "dark";
 
     applyTheme(storedTheme, false);
 }
@@ -228,6 +236,10 @@ function closeSettings() {
     document.body.style.overflow = "";
 
     clearStatus();
+
+    if (settingsOpenedAsPage) {
+        window.location.href = "/dashboard.html";
+    }
 }
 
 function activateTab(tab) {
@@ -397,6 +409,33 @@ function collectSettings() {
 
             limitations: normalizeText(
                 elements.limitations?.value
+            ),
+
+            trainingDays: numberOrNull(
+                elements.trainingDays?.value
+            ),
+
+            trainingStyle:
+                elements.trainingStyle?.value || "",
+
+            equipment: normalizeText(
+                elements.equipment?.value
+            ),
+
+            favoriteFoods: normalizeText(
+                elements.favoriteFoods?.value
+            ),
+
+            dislikedFoods: normalizeText(
+                elements.dislikedFoods?.value
+            ),
+
+            dietaryRestrictions: normalizeText(
+                elements.dietaryRestrictions?.value
+            ),
+
+            personalNotes: normalizeText(
+                elements.personalNotes?.value
             )
         },
 
@@ -430,7 +469,7 @@ function collectSettings() {
 
         theme:
             elements.theme?.value ||
-            "system"
+            "dark"
     };
 }
 
@@ -496,6 +535,14 @@ function populateSettings(
         elements.limitations,
         athleteCore.limitations
     );
+
+    setInputValue(elements.trainingDays, athleteCore.trainingDays);
+    setInputValue(elements.trainingStyle, athleteCore.trainingStyle);
+    setInputValue(elements.equipment, athleteCore.equipment);
+    setInputValue(elements.favoriteFoods, athleteCore.favoriteFoods);
+    setInputValue(elements.dislikedFoods, athleteCore.dislikedFoods);
+    setInputValue(elements.dietaryRestrictions, athleteCore.dietaryRestrictions);
+    setInputValue(elements.personalNotes, athleteCore.personalNotes);
 
     setInputValue(
         elements.responseDepth,
@@ -867,6 +914,12 @@ bindSystemThemeListener();
 
 bindEvents();
 
+if (settingsOpenedAsPage) {
+    document.body.classList.add("settings-page-mode");
+    openSettings();
+    window.history.replaceState({}, "", window.location.pathname);
+}
+
 onAuthStateChanged(
     auth,
     async (user) => {
@@ -882,7 +935,7 @@ onAuthStateChanged(
                         localStorage.getItem(
                             THEME_STORAGE_KEY
                         ) ||
-                        "system"
+                        "dark"
                 }
             );
 

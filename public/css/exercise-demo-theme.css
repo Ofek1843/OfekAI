@@ -1,0 +1,6 @@
+@keyframes demoSpin{to{transform:rotate(360deg)}}
+.exercise-demo-button{min-height:34px;padding:7px 11px;border-color:rgba(34,197,94,.45);color:#bbf7d0;background:linear-gradient(135deg,rgba(34,197,94,.23),rgba(16,185,129,.14));font-size:12px}.exercise-demo-button:hover{color:#ecfdf5;background:rgba(34,197,94,.3);box-shadow:0 8px 22px rgba(34,197,94,.16)}
+html[data-theme=light] .exercise-demo-dialog{color:#172033;background:#f8fbff;box-shadow:0 30px 90px rgba(30,41,59,.25)}
+html[data-theme=light] .demo-media{background:#edf4f8}
+html[data-theme=light] .demo-cues li{color:#334155}
+@media(max-width:600px){.demo-shell{padding:19px}.demo-media{min-height:220px}.demo-heading h2{font-size:23px}}

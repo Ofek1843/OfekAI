@@ -1,0 +1,25 @@
+const SITE_URL="https://TrainIQ.com";
+const esc=(value="")=>String(value).replace(/[&<>'"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
+const foodName=item=>typeof item==="string"?item:(item?.name||item?.food||item?.item||"Food");
+
+function planText(plan,type){
+  if(type==="workout"){
+    const title=plan.programName||"My TrainIQ Workout Plan";
+    const days=(plan.sessions||[]).map((session,index)=>{const exercises=(session.exercises||[]).map(item=>`• ${item.name||"Exercise"} — ${item.sets||"-"} sets × ${item.reps||"-"}${item.restSeconds?` · ${item.restSeconds}s rest`:""}`).join("\n");return `\nDAY ${session.day||index+1}: ${session.name||"Workout"}\n${exercises}`;}).join("\n");
+    return `I created a workout plan with TrainIQ 💪\n\n${title}${days}\n\nCreate your own plan with TrainIQ:\n${SITE_URL}`;
+  }
+  const title=plan.planName||"My TrainIQ Nutrition Plan",summary=[plan.dailyCalories?`${plan.dailyCalories} calories`:"",plan.proteinGrams?`${plan.proteinGrams}g protein`:""].filter(Boolean).join(" · ");
+  const meals=(plan.meals||[]).map((meal,index)=>{const foods=(meal.items||meal.foods||[]).map(item=>`• ${foodName(item)}`).join("\n");return `\nMEAL ${index+1}: ${meal.name||meal.meal||"Meal"}\n${foods}`;}).join("\n");
+  return `I created a nutrition plan with TrainIQ 🥗\n\n${title}${summary?`\n${summary}`:""}${meals}\n\nCreate your own plan with TrainIQ:\n${SITE_URL}`;
+}
+
+function planDocument(plan,type){
+  const workout=type==="workout",title=workout?(plan.programName||"TrainIQ Workout Plan"):(plan.planName||"TrainIQ Nutrition Plan");
+  const sections=workout?(plan.sessions||[]).map(session=>`<section><h2>${esc(session.name||"Workout")}</h2><table><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>${(session.exercises||[]).map(item=>`<tr><td>${esc(item.name)}</td><td>${esc(item.sets)}</td><td>${esc(item.reps)}</td><td>${esc(item.restSeconds)}s</td></tr>`).join("")}</table></section>`).join(""):(plan.meals||[]).map(meal=>`<section><h2>${esc(meal.name||meal.meal||"Meal")}</h2><ul>${(meal.items||meal.foods||[]).map(item=>`<li>${esc(foodName(item))}</li>`).join("")}</ul></section>`).join("");
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font:16px Arial;max-width:900px;margin:40px auto;color:#172033}h1{color:#5b21b6}table{width:100%;border-collapse:collapse}th,td{padding:10px;border:1px solid #dbe2ea;text-align:left}section{margin:28px 0}.credit{margin-top:35px;color:#64748b}</style></head><body><h1>${esc(title)}</h1>${sections}<p class="credit">Created with TrainIQ · ${SITE_URL}</p></body></html>`;
+}
+
+function ensureDialog(){let dialog=document.querySelector("#planShareDialog");if(dialog)return dialog;dialog=document.createElement("dialog");dialog.id="planShareDialog";dialog.className="plan-share-dialog";dialog.innerHTML=`<button class="share-close" type="button" aria-label="Close">×</button><span>SHARE YOUR PLAN</span><h2>Share with a friend</h2><p>Your complete plan and the TrainIQ link are included in the message.</p><div class="share-options"><button data-share="native">↗ Share plan & file</button><button data-share="whatsapp">WhatsApp</button><button data-share="gmail">Gmail</button><button data-share="copy">Copy plan & link</button><button data-share="pdf">Save as PDF</button></div><p class="share-feedback" role="status"></p>`;document.body.append(dialog);dialog.querySelector(".share-close").addEventListener("click",()=>dialog.close());return dialog;}
+
+export function setupPlanSharing(button,{type,getPlan}){button?.addEventListener("click",()=>{const dialog=ensureDialog(),plan=getPlan();dialog.showModal();dialog.onclick=async event=>{const action=event.target.closest("[data-share]")?.dataset.share;if(!action)return;const workout=type==="workout",message=planText(plan,type),subject=workout?`My TrainIQ workout plan — ${plan.programName||"Workout"}`:`My TrainIQ nutrition plan — ${plan.planName||"Nutrition"}`,html=planDocument(plan,type),file=new File([html],`TrainIQ-${type}-plan.html`,{type:"text/html"}),feedback=dialog.querySelector(".share-feedback");try{if(action==="native"){if(navigator.canShare?.({files:[file]}))await navigator.share({title:subject,text:message,files:[file]});else if(navigator.share)await navigator.share({title:subject,text:message});else download(file);}else if(action==="whatsapp")window.open(`https://wa.me/?text=${encodeURIComponent(message)}`,"_blank","noopener");else if(action==="gmail")window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`,"_blank","noopener");else if(action==="copy"){await navigator.clipboard.writeText(message);feedback.textContent="Plan and link copied ✓";}else if(action==="pdf")window.print();}catch(error){if(error?.name!=="AbortError")feedback.textContent="Sharing was not available. Try Copy plan & link.";}};});}
+function download(file){const url=URL.createObjectURL(file),link=document.createElement("a");link.href=url;link.download=file.name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}

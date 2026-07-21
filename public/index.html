@@ -6,6 +6,15 @@
 
     <title>TrainIQ AI</title>
 
+    <script>
+        try {
+            const theme = localStorage.getItem("ofek-ai-theme") || "dark";
+            document.documentElement.dataset.theme = theme === "system"
+                ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
+                : theme;
+        } catch {}
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -89,6 +98,13 @@
         >
             🚀 Try TrainIQ AI
         </a>
+
+        <div class="feature-pills" aria-label="TrainIQ features">
+            <span class="feature-pill workout-pill">Workout plans</span>
+            <span class="feature-pill nutrition-pill">Nutrition</span>
+            <span class="feature-pill progress-pill">Progress</span>
+            <span class="feature-pill coach-pill">AI Coach</span>
+        </div>
 
         <div
             class="scroll"

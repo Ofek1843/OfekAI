@@ -1,9 +1,28 @@
+import { auth, db } from "./firebase-config.js";
+import { setupPlanSharing } from "./plan-sharing.js";
+import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
 const form = document.querySelector("#nutrition-builder-form");
 const button = document.querySelector("#generate-button");
 const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#nutrition-result");
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
+const ageInput = document.querySelector("#age");
+const youthConsentField = document.querySelector("#youth-consent-field");
+const youthGuardianConsent = document.querySelector("#youthGuardianConsent");
+
+function updateYouthMode() {
+  const isYouth = Number(ageInput?.value) >= 15 && Number(ageInput?.value) < 18;
+  youthConsentField?.classList.toggle("hidden", !isYouth);
+  if (youthGuardianConsent) {
+    youthGuardianConsent.required = isYouth;
+    if (!isYouth) youthGuardianConsent.checked = false;
+  }
+}
+
+ageInput?.addEventListener("input", updateYouthMode);
+updateYouthMode();
 
 const isHebrew = currentLanguage === "he";
 const ui = isHebrew
@@ -248,6 +267,8 @@ form.addEventListener("submit", async (event) => {
     trainingDays: Number(formData.get("trainingDays")),
     mealsPerDay: Number(formData.get("mealsPerDay")),
     dietaryPreference: formData.get("dietaryPreference"),
+    diagnosedConditions: formData.getAll("diagnosedConditions"),
+    youthGuardianConsent: formData.get("youthGuardianConsent") === "on",
 
     favoriteFoods:
       formData.get("favoriteFoods")?.trim() ||
@@ -315,6 +336,20 @@ function setLoading(isLoading) {
 function setStatus(message, isError = false) {
   statusElement.textContent = message;
   statusElement.classList.toggle("error", isError);
+}
+
+async function saveNutritionPlan(plan) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("USER_NOT_SIGNED_IN");
+  const plansRef = collection(db, "users", user.uid, "nutritionPlans");
+  const existingPlans = await getDocs(query(plansRef, limit(5)));
+  if (existingPlans.size >= 5) throw new Error("NUTRITION_PLAN_LIMIT_REACHED");
+  return addDoc(plansRef, {
+    name: plan.planName || "Nutrition Plan",
+    plan,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  });
 }
 
 function hideResult() {
@@ -497,13 +532,12 @@ const foodsText = foods
           </p>
         </div>
 
-        <button
-          type="button"
-          class="print-program-button"
-          onclick="window.print()"
-        >
-          ${ui.print}
-        </button>
+        <div class="program-actions">
+          <button type="button" class="share-program-button" id="share-nutrition-button">↗ ${isHebrew ? "שיתוף" : "Share"}</button>
+          <button type="button" class="save-program-button" id="save-nutrition-button">
+            💾 ${isHebrew ? "שמירת תפריט" : "Save Nutrition Plan"}
+          </button>
+        </div>
       </header>
 
       <section class="nutrition-summary">
@@ -550,6 +584,26 @@ const foodsText = foods
       ${notesHtml}
     </section>
   `;
+
+  const saveButton = resultElement.querySelector("#save-nutrition-button");
+  setupPlanSharing(resultElement.querySelector("#share-nutrition-button"), { type: "nutrition", getPlan: () => window.currentNutritionPlan });
+  saveButton?.addEventListener("click", async () => {
+    saveButton.disabled = true;
+    saveButton.textContent = isHebrew ? "שומר..." : "Saving...";
+    try {
+      await saveNutritionPlan(window.currentNutritionPlan);
+      saveButton.textContent = isHebrew ? "✓ התפריט נשמר" : "✓ Nutrition Plan Saved";
+      setStatus(isHebrew ? "תוכנית התזונה נשמרה בהצלחה." : "Nutrition plan saved successfully.");
+    } catch (error) {
+      console.error("Could not save nutrition plan:", error);
+      saveButton.disabled = false;
+      saveButton.textContent = isHebrew ? "💾 שמירת תפריט" : "💾 Save Nutrition Plan";
+      const atLimit = error.message === "NUTRITION_PLAN_LIMIT_REACHED";
+      setStatus(atLimit
+        ? (isHebrew ? "ניתן לשמור עד 5 תוכניות תזונה. מחק אחת כדי לשמור חדשה." : "You can save up to 5 nutrition plans. Delete one to save a new plan.")
+        : (isHebrew ? "לא ניתן היה לשמור את תוכנית התזונה. ודא שאתה מחובר." : "Could not save the nutrition plan. Make sure you are signed in."), true);
+    }
+  });
 
   resultElement.classList.remove("hidden");
 

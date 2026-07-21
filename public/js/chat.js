@@ -1,8 +1,16 @@
 import { t } from "./i18n.js";
+import { auth, db } from "./firebase-config.js";
+
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
+const voiceInputBtn = document.getElementById("voiceInputBtn");
+const voiceStatus = document.getElementById("voiceStatus");
 const clearBtn = document.getElementById("clearBtn");
 const subtitle = document.getElementById("subtitle");
 
@@ -74,6 +82,62 @@ let currentUserSettings = {};
 
 const conversationsModulePromise =
   import("/js/conversations.js");
+
+async function getActiveWorkoutPlan() {
+  const user = auth.currentUser;
+
+  if (!user) {
+    return null;
+  }
+
+  const userSnapshot = await getDoc(
+    doc(db, "users", user.uid)
+  );
+  const activeWorkoutPlanId = userSnapshot.exists()
+    ? userSnapshot.data().activeWorkoutPlanId
+    : null;
+
+  if (
+    typeof activeWorkoutPlanId !== "string" ||
+    !activeWorkoutPlanId.trim()
+  ) {
+    return null;
+  }
+
+  const planSnapshot = await getDoc(
+    doc(
+      db,
+      "users",
+      user.uid,
+      "workoutPlans",
+      activeWorkoutPlanId
+    )
+  );
+
+  if (!planSnapshot.exists()) {
+    return null;
+  }
+
+  const savedPlan = planSnapshot.data();
+
+  return {
+    id: planSnapshot.id,
+    name: savedPlan.name || "Workout Plan",
+    plan: savedPlan.plan || null
+  };
+}
+
+async function getActiveNutritionPlan() {
+  const user = auth.currentUser;
+  if (!user) return null;
+  const userSnapshot = await getDoc(doc(db, "users", user.uid));
+  const id = userSnapshot.exists() ? userSnapshot.data().activeNutritionPlanId : null;
+  if (typeof id !== "string" || !id.trim()) return null;
+  const planSnapshot = await getDoc(doc(db, "users", user.uid, "nutritionPlans", id));
+  if (!planSnapshot.exists()) return null;
+  const saved = planSnapshot.data();
+  return { id: planSnapshot.id, name: saved.name || "Nutrition Plan", plan: saved.plan || null };
+}
 
 function isHebrew(text) {
   return /[\u0590-\u05FF]/.test(text);
@@ -159,6 +223,12 @@ function setLanguage(lang) {
 
   if (input) {
     input.placeholder = t(currentLang, "writeMessage");
+  }
+
+  if (voiceInputBtn && !isListening) {
+    const voiceLabel = currentLang === "he" ? "הכתבה קולית" : "Voice input";
+    voiceInputBtn.title = voiceLabel;
+    voiceInputBtn.setAttribute("aria-label", voiceLabel);
   }
 
   // ===== Profile =====
@@ -247,6 +317,35 @@ function setLanguage(lang) {
       "limitationsPlaceholder"
     );
   }
+
+  const memoryText = currentLang === "he" ? {
+    trainingDays: "מספר אימונים בשבוע",
+    trainingStyle: "סגנון אימון מועדף",
+    none: "לא צוין",
+    gym: "חדר כושר / משקולות",
+    calisthenics: "סטריט וורקאוט",
+    hybrid: "משולב",
+    home: "אימונים בבית",
+    sport: "ביצועים ספורטיביים",
+    equipment: "ציוד זמין",
+    favoriteFoods: "מאכלים אהובים",
+    dislikedFoods: "מאכלים שלא אוהבים",
+    diet: "אלרגיות או הגבלות תזונתיות",
+    notes: "דברים נוספים שמאמן ה־AI צריך לזכור"
+  } : {
+    trainingDays: "Training days per week", trainingStyle: "Preferred training style",
+    none: "Not specified", gym: "Gym / weights", calisthenics: "Calisthenics",
+    hybrid: "Hybrid", home: "Home workouts", sport: "Sport performance",
+    equipment: "Available equipment", favoriteFoods: "Favorite foods",
+    dislikedFoods: "Foods you dislike", diet: "Allergies or dietary restrictions",
+    notes: "Anything else your AI coach should remember"
+  };
+  [["memoryTrainingDaysLabel","trainingDays"],["memoryTrainingStyleLabel","trainingStyle"],
+   ["styleNoneOption","none"],["styleGymOption","gym"],["styleCalisthenicsOption","calisthenics"],
+   ["styleHybridOption","hybrid"],["styleHomeOption","home"],["styleSportOption","sport"],
+   ["memoryEquipmentLabel","equipment"],["memoryFavoriteFoodsLabel","favoriteFoods"],
+   ["memoryDislikedFoodsLabel","dislikedFoods"],["memoryDietLabel","diet"],["memoryNotesLabel","notes"]]
+    .forEach(([id,key]) => setElementText(document.getElementById(id), memoryText[key]));
 
   // ===== AI Preferences =====
   setElementText(
@@ -342,6 +441,12 @@ function addMessage(
   sender = "bot",
   extraClass = ""
 ) {
+  const evidenceMatch = sender === "bot"
+    ? String(text).match(/(?:^|\n)\s*(🟢 Strong Evidence|🟡 Moderate Evidence|🔴 Limited Evidence)\s*$/i)
+    : null;
+  const visibleText = evidenceMatch
+    ? String(text).slice(0, evidenceMatch.index).trimEnd()
+    : text;
   const div =
     document.createElement("div");
 
@@ -353,7 +458,70 @@ function addMessage(
       ? "right"
       : "left";
 
-  div.textContent = text;
+  const textElement = document.createElement("div");
+  textElement.className = "message-text";
+  textElement.textContent = visibleText;
+  div.appendChild(textElement);
+
+  if (evidenceMatch) {
+    const label = evidenceMatch[1];
+    const level = label.includes("Strong")
+      ? "strong"
+      : label.includes("Moderate")
+        ? "moderate"
+        : "limited";
+    const explanations = {
+      strong: currentLang === "he"
+        ? "ראיות חזקות: נתמכות בדרך כלל בסקירות שיטתיות, מטא־אנליזות או קונצנזוס מקצועי עקבי."
+        : "Strong evidence: generally supported by systematic reviews, meta-analyses, or consistent professional consensus.",
+      moderate: currentLang === "he"
+        ? "ראיות בינוניות: קיימים מחקרים טובים, אך יש מגבלות או חוסר עקביות מסוים."
+        : "Moderate evidence: good studies exist, with some limitations or inconsistency.",
+      limited: currentLang === "he"
+        ? "ראיות מוגבלות: המידע מצומצם, לא עקבי או נשען בעיקר על מחקרים מוקדמים."
+        : "Limited evidence: findings are sparse, inconsistent, or mainly preliminary."
+    };
+    const badge = document.createElement("span");
+    badge.className = `evidence-badge evidence-${level}`;
+    badge.tabIndex = 0;
+    badge.textContent = currentLang === "he"
+      ? ({ strong: "ראיות חזקות", moderate: "ראיות בינוניות", limited: "ראיות מוגבלות" })[level]
+      : label.replace(/^[^\s]+\s*/, "");
+    badge.setAttribute("role", "note");
+    badge.setAttribute("aria-label", explanations[level]);
+    badge.dataset.tooltip = explanations[level];
+    div.appendChild(badge);
+  }
+
+  if (!extraClass.includes("typing") && !extraClass.includes("welcome") && ["user", "bot"].includes(sender)) {
+    const actions = document.createElement("div");
+    actions.className = "message-actions";
+    const action = document.createElement("button");
+    action.type = "button";
+    action.className = "message-action";
+    action.textContent = sender === "user"
+      ? (currentLang === "he" ? "✏️ עריכה ושליחה מחדש" : "✏️ Edit & resend")
+      : (currentLang === "he" ? "📋 העתקה" : "📋 Copy");
+    action.addEventListener("click", async () => {
+      if (sender === "user") {
+        input.value = text;
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        action.textContent = currentLang === "he" ? "✓ הועתק" : "✓ Copied";
+        window.setTimeout(() => {
+          action.textContent = currentLang === "he" ? "📋 העתקה" : "📋 Copy";
+        }, 1600);
+      } catch (error) {
+        console.error("Could not copy message:", error);
+      }
+    });
+    actions.appendChild(action);
+    div.appendChild(actions);
+  }
 
   chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
@@ -708,6 +876,19 @@ async function sendMessage() {
       }
     }
 
+    let activeWorkoutPlan = null;
+    let activeNutritionPlan = null;
+
+    try {
+      activeWorkoutPlan = await getActiveWorkoutPlan();
+      activeNutritionPlan = await getActiveNutritionPlan();
+    } catch (activePlanError) {
+      console.error(
+        "Could not load the active workout plan:",
+        activePlanError
+      );
+    }
+
     const response = await fetch(
       "/api/chat",
       {
@@ -719,7 +900,9 @@ async function sendMessage() {
  body: JSON.stringify({
     messages,
     language: currentLang,
-    settings: currentUserSettings
+    settings: currentUserSettings,
+    activeWorkoutPlan,
+    activeNutritionPlan
 })
       }
     );
@@ -804,6 +987,119 @@ sendBtn.addEventListener(
   sendMessage
 );
 
+let mediaRecorder = null;
+let mediaStream = null;
+let audioChunks = [];
+let recordingTimeout = null;
+let isListening = false;
+let isTranscribing = false;
+
+function setVoiceStatus(message = "", isError = false) {
+  if (!voiceStatus) return;
+  voiceStatus.textContent = message;
+  voiceStatus.classList.toggle("error", isError);
+}
+
+function audioToBase64(blob) {
+  return blob.arrayBuffer().then((buffer) => {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 8192) {
+      binary += String.fromCharCode(...bytes.subarray(offset, offset + 8192));
+    }
+    return btoa(binary);
+  });
+}
+
+async function transcribeRecording(blob) {
+  isTranscribing = true;
+  voiceInputBtn.disabled = true;
+  setVoiceStatus(currentLang === "he" ? "מתמלל את ההקלטה..." : "Transcribing recording...");
+  try {
+    const response = await fetch("/api/transcribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        audioBase64: await audioToBase64(blob),
+        mimeType: blob.type || "audio/webm",
+        language: currentLang
+      })
+    });
+    const data = await response.json();
+    if (!response.ok || !data.text) throw new Error(data.error || "Transcription failed");
+    input.value = [input.value.trim(), data.text.trim()].filter(Boolean).join(" ");
+    setVoiceStatus(currentLang === "he" ? "התמלול נוסף להודעה." : "Transcript added to your message.");
+    input.focus();
+  } catch (error) {
+    console.error("Audio transcription failed:", error);
+    setVoiceStatus(
+      currentLang === "he"
+        ? "לא ניתן היה לתמלל את ההקלטה. ודא שהשרת הופעל מחדש ונסה שוב."
+        : "Could not transcribe the recording. Restart the server and try again.",
+      true
+    );
+  } finally {
+    isTranscribing = false;
+    voiceInputBtn.disabled = false;
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder?.state === "recording") mediaRecorder.stop();
+}
+
+async function startRecording() {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    setVoiceStatus(currentLang === "he" ? "הדפדפן אינו תומך בהקלטת שמע." : "Audio recording is not supported.", true);
+    return;
+  }
+  try {
+    mediaStream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+    });
+    const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus", "audio/mp4"];
+    const mimeType = candidates.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+    audioChunks = [];
+    mediaRecorder = mimeType ? new MediaRecorder(mediaStream, { mimeType }) : new MediaRecorder(mediaStream);
+    mediaRecorder.addEventListener("dataavailable", (event) => {
+      if (event.data.size) audioChunks.push(event.data);
+    });
+    mediaRecorder.addEventListener("stop", async () => {
+      clearTimeout(recordingTimeout);
+      isListening = false;
+      voiceInputBtn.classList.remove("listening");
+      voiceInputBtn.textContent = "🎤";
+      mediaStream?.getTracks().forEach((track) => track.stop());
+      const blob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+      audioChunks = [];
+      if (blob.size < 1000) {
+        setVoiceStatus(currentLang === "he" ? "ההקלטה הייתה קצרה מדי." : "The recording was too short.", true);
+        return;
+      }
+      await transcribeRecording(blob);
+    }, { once: true });
+    mediaRecorder.start(250);
+    isListening = true;
+    voiceInputBtn.classList.add("listening");
+    voiceInputBtn.textContent = "⏹️";
+    setVoiceStatus(currentLang === "he" ? "מקליט — לחץ על עצירה כשתסיים לדבר." : "Recording — click stop when you finish speaking.");
+    recordingTimeout = window.setTimeout(stopRecording, 90000);
+  } catch (error) {
+    console.error("Microphone recording failed:", error);
+    mediaStream?.getTracks().forEach((track) => track.stop());
+    setVoiceStatus(
+      currentLang === "he" ? "לא ניתן לגשת למיקרופון. בדוק את ההרשאה לאתר." : "Could not access the microphone. Check site permission.",
+      true
+    );
+  }
+}
+
+voiceInputBtn?.addEventListener("click", () => {
+  if (isTranscribing) return;
+  if (isListening) stopRecording();
+  else startRecording();
+});
+
 clearBtn.addEventListener(
   "click",
   clearChat
@@ -839,6 +1135,14 @@ window.addEventListener(
     });
   }
 );
+
+window.addEventListener("conversation-deleted", (event) => {
+  if (event.detail?.conversationId === currentConversationId) resetChat({ showWelcome: true });
+});
+
+window.addEventListener("all-conversations-deleted", () => {
+  resetChat({ showWelcome: true });
+});
 
 window.addEventListener(
   "ofekai:settings-loaded",

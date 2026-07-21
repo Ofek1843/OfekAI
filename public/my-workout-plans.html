@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TrainIQ My Workout Plans</title>
+  <link rel="stylesheet" href="/css/my-workout-plans.css" /><link rel="stylesheet" href="/css/my-workout-plans-enhancements.css" />
+</head>
+<body>
+  <main class="plans-page">
+    <nav class="page-nav" aria-label="Page navigation">
+      <a id="backLink" href="/dashboard.html">← Back to TrainIQ</a>
+      <span class="builder-links"><a id="manualBuilderLink" href="/manual-workout-builder.html">Build my own</a><a id="builderLink" class="primary-link" href="/workout-builder.html">+ AI workout plan</a></span>
+    </nav>
+
+    <header class="plans-header">
+      <span class="plans-badge">TrainIQ</span>
+      <h1 id="pageTitle">My Workout Plans</h1>
+      <p id="pageDescription">Choose the plan you are currently following. Your active plan is highlighted in green.</p>
+      <div class="plans-counter"><strong id="planCount">0</strong><span id="planCountLabel"> of 5 saved plans</span></div>
+    </header>
+    <aside id="earlyAccessNote" class="early-access-note"><strong>Early Access:</strong> All five workout-plan slots are free right now. Slots 2–5 are planned for Pro later.</aside>
+
+    <p id="plansStatus" class="plans-status" role="status" aria-live="polite">Loading your plans...</p>
+    <section id="plansGrid" class="plans-grid" aria-label="Saved workout plans"></section>
+  </main>
+
+  <script>if((localStorage.getItem("ofek-ai-language")||"en")==="he")document.getElementById("manualBuilderLink").textContent="בניית תוכנית בעצמי";</script><script type="module" src="/js/my-workout-plans.js"></script>
+</body>
+</html>

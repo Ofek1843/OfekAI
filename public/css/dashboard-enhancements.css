@@ -1,0 +1,4 @@
+.missed-card{--card-glow:#38bdf8;--card-border:rgba(56,189,248,.42)}.manual-card{--card-glow:#f59e0b;--card-border:rgba(245,158,11,.42)}.missed-card .card-icon{background:rgba(56,189,248,.14)}.manual-card .card-icon{background:rgba(245,158,11,.14)}
+
+#nextLabel,#nutritionLabel,#recentLabel,#progressLabel{font-size:14px;line-height:1.25;letter-spacing:.08em;font-weight:900}
+@media(max-width:480px){#nextLabel,#nutritionLabel,#recentLabel,#progressLabel{font-size:13px}}

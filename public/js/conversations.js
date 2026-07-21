@@ -9,7 +9,8 @@ import {
   query,
   orderBy,
   limit,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 /**
@@ -199,4 +200,34 @@ export async function getConversationMessages(conversationId) {
     id: messageDocument.id,
     ...messageDocument.data()
   }));
+}
+
+export async function deleteConversation(conversationId) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("User must be signed in.");
+  if (!conversationId) throw new Error("conversationId is required.");
+
+  const conversationRef = doc(db, "users", user.uid, "conversations", conversationId);
+  const messagesSnapshot = await getDocs(collection(conversationRef, "messages"));
+  const messageDocs = messagesSnapshot.docs;
+
+  for (let index = 0; index < messageDocs.length; index += 400) {
+    const batch = writeBatch(db);
+    messageDocs.slice(index, index + 400).forEach((message) => batch.delete(message.ref));
+    await batch.commit();
+  }
+
+  const finalBatch = writeBatch(db);
+  finalBatch.delete(conversationRef);
+  await finalBatch.commit();
+}
+
+export async function deleteAllConversations() {
+  let conversations = await getRecentConversations(100);
+  while (conversations.length) {
+    for (const conversation of conversations) {
+      await deleteConversation(conversation.id);
+    }
+    conversations = await getRecentConversations(100);
+  }
 }
