@@ -35,11 +35,28 @@
       <span id="activeLabel" class="eyebrow">ACTIVE PLAN</span>
       <h2 id="planName"></h2>
     </div>
-    <label>
-      <span id="sessionLabel">Choose today's workout</span>
-      <select id="sessionSelect"></select>
-    </label>
-    <button id="startWorkoutButton" class="primary-button" type="button">Start Workout</button>
+    <div class="setup-actions">
+      <label>
+        <span id="sessionLabel">Choose today's workout</span>
+        <select id="sessionSelect"></select>
+      </label>
+      <label>
+        <span id="timeBudgetLabel">Time available today</span>
+        <div class="time-budget-input">
+          <input id="timeBudgetMinutes" type="number" min="10" max="240" step="5" inputmode="numeric" placeholder="35">
+          <span id="timeBudgetSuffix">min</span>
+        </div>
+      </label>
+      <div class="time-presets" aria-label="Quick time presets">
+        <button type="button" class="ghost-button time-preset-button" data-time-preset="20">20m</button>
+        <button type="button" class="ghost-button time-preset-button" data-time-preset="30">30m</button>
+        <button type="button" class="ghost-button time-preset-button" data-time-preset="45">45m</button>
+        <button type="button" class="ghost-button time-preset-button" data-time-preset="60">60m</button>
+      </div>
+      <button id="timeBudgetButton" class="ghost-button time-budget-button" type="button">Fit workout to time</button>
+      <button id="startWorkoutButton" class="primary-button" type="button">Start Workout</button>
+    </div>
+    <div id="timeFitSummary" class="time-fit-summary" aria-live="polite"></div>
   </section>
 
   <section id="emptyPanel" class="panel empty hidden">
@@ -55,13 +72,16 @@
         <h2 id="sessionName"></h2>
         <p id="workoutMeta"></p>
       </div>
-      <div class="timer">
-        <span id="durationLabel">Duration</span>
-        <strong id="workoutTimer">00:00</strong>
+      <div class="toolbar-actions">
+        <button id="quickModeButton" class="ghost-button quick-mode-button" type="button" aria-pressed="true">? Quick mode</button>
+        <div class="timer">
+          <span id="durationLabel">Duration</span>
+          <strong id="workoutTimer">00:00</strong>
+        </div>
       </div>
     </header>
 
-    <section id="focusPanel" class="focus-panel panel">
+    <section id="focusPanel" class="focus-panel panel quick-mode">
       <div class="focus-topline">
         <span id="focusLabel" class="focus-label">Focused set</span>
         <span id="focusModeBadge" class="focus-badge">Working set</span>
@@ -78,6 +98,14 @@
         </div>
         <label class="focus-warmup"><input id="focusWarmup" type="checkbox"> <span id="focusWarmupLabel">Warm-up set</span></label>
       </div>
+      <div class="quick-actions" aria-label="Quick workout controls">
+        <button id="copyPreviousButton" type="button" class="quick-action">? Copy previous set</button>
+        <button id="weightMinusButton" type="button" class="quick-action">?2.5 kg</button>
+        <button id="weightPlusButton" type="button" class="quick-action">+2.5 kg</button>
+        <button id="repsMinusButton" type="button" class="quick-action">?1 rep</button>
+        <button id="repsPlusButton" type="button" class="quick-action">+1 rep</button>
+      </div>
+      <div id="nextSetPreview" class="next-set-preview" aria-live="polite"></div>
       <div class="focus-actions">
         <button id="focusBackButton" type="button" class="ghost-button">Back</button>
         <button id="focusPauseButton" type="button" class="ghost-button">Pause workout</button>
@@ -87,6 +115,7 @@
       <div class="rest-strip">
         <span id="restLabel">Rest timer</span>
         <strong id="focusRestTimer">00:00</strong>
+        <div id="restProgress" class="rest-progress" aria-hidden="true"></div>
         <p id="restHint">Finish the set, wait for the rest timer to end, then start the next set.</p>
       </div>
     </section>

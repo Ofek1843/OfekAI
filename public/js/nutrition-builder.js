@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
@@ -19,6 +20,12 @@ async function authHeaders(contentType = "application/json") {
 const ageInput = document.querySelector("#age");
 const youthConsentField = document.querySelector("#youth-consent-field");
 const youthGuardianConsent = document.querySelector("#youthGuardianConsent");
+const shoppingListModal = document.querySelector("#shoppingListModal");
+const shoppingListBody = document.querySelector("#shoppingListBody");
+const shoppingListTitle = document.querySelector("#shoppingListTitle");
+const shoppingListSubtitle = document.querySelector("#shoppingListSubtitle");
+const copyShoppingListButton = document.querySelector("#copyShoppingListButton");
+const shoppingListCloseButtons = document.querySelectorAll("[data-close-shopping-modal]");
 
 function updateYouthMode() {
   const isYouth = Number(ageInput?.value) >= 15 && Number(ageInput?.value) < 18;
@@ -253,6 +260,8 @@ function translateFormOptions() {
 }
 
 translateFormOptions();
+trackPageView({ page: "nutrition-builder" });
+trackEvent("builder_open", { builder: "nutrition" });
 
 document.documentElement.lang = isHebrew ? "he" : "en";
 document.documentElement.dir = isHebrew ? "rtl" : "ltr";
@@ -357,6 +366,116 @@ async function saveNutritionPlan(plan) {
     updatedAt: serverTimestamp()
   });
 }
+
+function normaliseFoodName(name = "") {
+  return String(name)
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function categorizeFood(name = "") {
+  const value = String(name).toLowerCase();
+  if (/(chicken|beef|turkey|fish|salmon|tuna|egg|eggs|yogurt|yoghurt|cottage cheese|protein|whey|tofu|lentil|beans|meat)/.test(value)) return "Protein";
+  if (/(rice|pasta|bread|oat|potato|sweet potato|quinoa|cereal|wrap|pita|bagel|granola|corn|noodle)/.test(value)) return "Carbs";
+  if (/(avocado|nuts|peanut|almond|olive oil|oil|butter|seeds|chia|flax|salmon|tahini)/.test(value)) return "Fats";
+  if (/(apple|banana|orange|berries|berry|grape|tomato|cucumber|lettuce|spinach|broccoli|carrot|pepper|onion|fruit|vegetable)/.test(value)) return "Produce";
+  if (/(milk|cheese|cottage|cream|kefir|lassi)/.test(value)) return "Dairy";
+  return "Other";
+}
+
+function buildShoppingList(plan = {}) {
+  const items = new Map();
+  const meals = Array.isArray(plan.meals) ? plan.meals : [];
+
+  for (const meal of meals) {
+    const options = Array.isArray(meal.options) ? meal.options : [];
+    for (const option of options) {
+      const foods = Array.isArray(option.foods) ? option.foods : [];
+      for (const food of foods) {
+        const rawName = normaliseFoodName(food?.name || "");
+        if (!rawName) continue;
+        const amount = normaliseFoodName(food?.amount || "");
+        const key = `${rawName.toLowerCase()}|${amount.toLowerCase()}`;
+        if (items.has(key)) continue;
+        items.set(key, {
+          name: rawName,
+          amount,
+          category: categorizeFood(rawName)
+        });
+      }
+    }
+  }
+
+  const grouped = new Map([
+    ["Protein", []],
+    ["Carbs", []],
+    ["Produce", []],
+    ["Fats", []],
+    ["Dairy", []],
+    ["Other", []]
+  ]);
+
+  for (const item of items.values()) {
+    grouped.get(item.category)?.push(item);
+  }
+
+  return grouped;
+}
+
+function renderShoppingList(plan = {}) {
+  const grouped = buildShoppingList(plan);
+  const planName = plan.planName || (isHebrew ? "׳×׳•׳›׳ ׳™׳× ׳×׳–׳•׳ ׳”" : "Nutrition Plan");
+  shoppingListTitle.textContent = isHebrew ? "׳¨׳©׳™׳׳× ׳§׳ ׳™׳•׳×" : "Shopping list";
+  shoppingListSubtitle.textContent = isHebrew
+    ? `׳׳•׳¦׳¨׳™׳ ׳׳×׳•׳ ${planName}`
+    : `Ingredients pulled from ${planName}`;
+
+  const sections = [...grouped.entries()]
+    .filter(([, items]) => items.length)
+    .map(([category, items]) => `
+      <section class="shopping-section">
+        <h3>${escapeHtml(category)}</h3>
+        <ul>
+          ${items
+            .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#94a3b8">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
+            .join("")}
+        </ul>
+      </section>
+    `)
+    .join("");
+
+  shoppingListBody.innerHTML = sections || `<p class="shopping-empty">${isHebrew ? "׳׳™׳ ׳‘׳™׳׳•׳™ ׳׳–׳•׳ ׳‘׳×׳•׳›׳ ׳™׳× ׳”׳–׳•." : "No food items were found in this plan."}</p>`;
+  shoppingListModal.classList.remove("hidden");
+  shoppingListModal.setAttribute("aria-hidden", "false");
+  trackEvent("nutrition_shopping_list", { plan: planName });
+}
+
+function closeShoppingList() {
+  shoppingListModal.classList.add("hidden");
+  shoppingListModal.setAttribute("aria-hidden", "true");
+}
+
+copyShoppingListButton?.addEventListener("click", async () => {
+  const lines = [...shoppingListBody.querySelectorAll("li")].map((item) => item.textContent?.trim()).filter(Boolean);
+  if (!lines.length) return;
+  try {
+    await navigator.clipboard.writeText(lines.join("\n"));
+    copyShoppingListButton.textContent = isHebrew ? "׳—׳•׳¤׳©׳” ׳׳׳•׳—׳‘׳" : "Copied";
+    window.setTimeout(() => {
+      copyShoppingListButton.textContent = isHebrew ? "׳¡׳¤׳¨ ׳׳× ׳”׳¨׳©׳™׳׳”" : "Copy list";
+    }, 1200);
+  } catch (error) {
+    console.error("Could not copy shopping list:", error);
+  }
+});
+
+shoppingListCloseButtons.forEach((button) => button.addEventListener("click", closeShoppingList));
+shoppingListModal?.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeShoppingList();
+});
+shoppingListModal?.addEventListener("click", (event) => {
+  if (event.target === shoppingListModal || event.target?.dataset?.closeShoppingModal !== undefined) closeShoppingList();
+});
 
 function hideResult() {
   resultElement.classList.add("hidden");
@@ -540,6 +659,9 @@ const foodsText = foods
 
         <div class="program-actions">
           <button type="button" class="share-program-button" id="share-nutrition-button">↗ ${isHebrew ? "שיתוף" : "Share"}</button>
+          <button type="button" class="shopping-list-button" id="shopping-list-button">
+            ${isHebrew ? "Shopping list" : "Shopping list"}
+          </button>
           <button type="button" class="save-program-button" id="save-nutrition-button">
             💾 ${isHebrew ? "שמירת תפריט" : "Save Nutrition Plan"}
           </button>
@@ -592,12 +714,15 @@ const foodsText = foods
   `;
 
   const saveButton = resultElement.querySelector("#save-nutrition-button");
+  const shoppingListButton = resultElement.querySelector("#shopping-list-button");
   setupPlanSharing(resultElement.querySelector("#share-nutrition-button"), { type: "nutrition", getPlan: () => window.currentNutritionPlan });
+  shoppingListButton?.addEventListener("click", () => renderShoppingList(window.currentNutritionPlan));
   saveButton?.addEventListener("click", async () => {
     saveButton.disabled = true;
     saveButton.textContent = isHebrew ? "שומר..." : "Saving...";
     try {
       await saveNutritionPlan(window.currentNutritionPlan);
+      trackEvent("plan_saved", { type: "nutrition" });
       saveButton.textContent = isHebrew ? "✓ התפריט נשמר" : "✓ Nutrition Plan Saved";
       setStatus(isHebrew ? "תוכנית התזונה נשמרה בהצלחה." : "Nutrition plan saved successfully.");
     } catch (error) {

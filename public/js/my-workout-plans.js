@@ -1,5 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { normalizeSubscription } from "./subscription-plans.js";
+import { trackPageView } from "./analytics.js";
 
 import {
   collection,
@@ -83,6 +84,7 @@ const ui = isHebrew
 
 document.documentElement.lang = isHebrew ? "he" : "en";
 document.documentElement.dir = isHebrew ? "rtl" : "ltr";
+trackPageView({ page: "my-workout-plans" });
 document.querySelector("#pageTitle").textContent = ui.title;
 document.querySelector("#pageDescription").textContent = ui.description;
 document.querySelector("#backLink").textContent = ui.back;

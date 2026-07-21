@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { trackEvent, trackPageView } from "./analytics.js";
 import { doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
@@ -39,6 +40,7 @@ const termsAccepted = document.getElementById("termsAccepted");
 
 let currentMode = "login";
 let authenticationCompleted = false;
+trackPageView({ page: "auth" });
 
 function showMessage(text, type) {
   authMessage.textContent = text;
@@ -200,6 +202,7 @@ authForm.addEventListener(
         }, { merge: true });
 
         authenticationCompleted = true;
+        trackEvent("signup", { method: "email_password" });
 
         showMessage(
           "Account created successfully. Redirecting...",

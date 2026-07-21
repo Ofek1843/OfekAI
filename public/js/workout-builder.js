@@ -1,5 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { setupExerciseDemos } from "./exercise-demos.js";
+import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 
 import {
@@ -16,6 +17,8 @@ const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#program-result");
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
+trackPageView({ page: "workout-builder" });
+trackEvent("builder_open", { builder: "workout" });
 async function authHeaders(contentType = "application/json") {
   const user = auth.currentUser;
   if (!user) throw new Error("Authentication required.");
@@ -714,6 +717,7 @@ function renderProgram(program) {
 
     try {
       await saveWorkoutPlan(window.currentWorkoutProgram);
+      trackEvent("plan_saved", { type: "workout" });
 
       saveWorkoutButton.textContent = isHebrew
         ? "✓ התוכנית נשמרה"
