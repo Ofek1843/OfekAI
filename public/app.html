@@ -65,7 +65,7 @@
       line-height: 1.5;
     }
 
-.top-actions {
+    .top-actions {
     display: grid;
     grid-template-columns:
         auto
@@ -109,6 +109,59 @@
 
     .settings-btn:hover {
       background: rgba(255, 255, 255, 0.13);
+    }
+
+    .mobile-nav-accordion {
+      display: none;
+      margin-top: 14px;
+      gap: 10px;
+    }
+
+    .mobile-nav-group {
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .mobile-nav-group summary {
+      list-style: none;
+      padding: 14px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mobile-nav-group summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .mobile-nav-group summary::after {
+      content: "⌄";
+      color: #93c5fd;
+      transition: transform 0.2s ease;
+    }
+
+    .mobile-nav-group[open] summary::after {
+      transform: rotate(180deg);
+    }
+
+    .mobile-nav-links {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .mobile-nav-links .workout-btn,
+    .mobile-nav-links .settings-btn,
+    .mobile-nav-links .clear-btn {
+      width: 100%;
+      min-height: 58px;
     }
 
     .app-layout {
@@ -502,6 +555,14 @@
     display: none;
 }
     @media (max-width: 700px) {
+      .top-actions {
+        display: none;
+      }
+
+      .mobile-nav-accordion {
+        display: grid;
+      }
+
       .mobile-history-toggle {
     display: block;
     width: 100%;
@@ -516,7 +577,7 @@
     cursor: pointer;
 }
 
-.conversation-history {
+      .conversation-history {
     display: none;
 }
 
@@ -546,34 +607,7 @@
         font-size: 23px;
       }
 
-      .top-actions {
-        width: 100%;
-      }
-.top-actions {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-.settings-btn,
-.workout-btn,
-.nutrition-builder-btn {
-    min-height: 72px;
-    padding: 12px 8px;
-}
-
-.clear-btn {
-    grid-column: 1 / -1;
-    min-height: 56px;
-}
-.workout-btn,
-.settings-btn,
-.clear-btn {
-    width: 100%;
-    min-height: 64px;
-}
-
-.workout-btn .title {
-    font-size: 18px;
-}
+      .top-actions { width: 100%; }
       .settings-window {
         width: calc(100% - 20px);
         height: calc(100% - 20px);
@@ -960,6 +994,45 @@
         >
           Clear Chat
         </button>
+      </div>
+
+      <div class="mobile-nav-accordion" aria-label="Mobile navigation">
+        <details class="mobile-nav-group">
+          <summary>Planning</summary>
+          <div class="mobile-nav-links">
+            <button class="workout-btn dashboard-btn" type="button" onclick="window.location.href='/dashboard.html'"><span class="title">🏠 Dashboard</span></button>
+            <button class="workout-btn workout-builder-btn" type="button" onclick="window.location.href='/workout-builder.html'"><span class="title">🏋️ Workout Builder</span></button>
+            <button class="workout-btn nutrition-builder-btn" type="button" onclick="window.location.href='/nutrition-builder.html'"><span class="title">🥗 Nutrition Builder</span></button>
+            <button class="workout-btn manual-card-btn" type="button" onclick="window.location.href='/manual-workout-builder.html'"><span class="title">🧩 Manual Builder</span></button>
+          </div>
+        </details>
+
+        <details class="mobile-nav-group">
+          <summary>Tracking</summary>
+          <div class="mobile-nav-links">
+            <button class="workout-btn workout-tracker-btn" type="button" onclick="window.location.href='/workout-tracker.html'"><span class="title">🏋️ Workout Tracker</span></button>
+            <button class="workout-btn saved-workouts-btn" type="button" onclick="window.location.href='/my-workout-plans.html'"><span class="title">📂 My Workout Plans</span></button>
+            <button class="workout-btn saved-nutrition-btn" type="button" onclick="window.location.href='/my-nutrition-plans.html'"><span class="title">📂 My Nutrition Plans</span></button>
+            <button class="workout-btn progress-btn" type="button" onclick="window.location.href='/progress.html'"><span class="title">📈 Progress Tracking</span></button>
+          </div>
+        </details>
+
+        <details class="mobile-nav-group">
+          <summary>History & runs</summary>
+          <div class="mobile-nav-links">
+            <button class="workout-btn workout-history-btn" type="button" onclick="window.location.href='/workout-history.html'"><span class="title">📋 Workout History</span></button>
+            <button class="workout-btn exercise-progress-btn" type="button" onclick="window.location.href='/exercise-progress.html'"><span class="title">📈 Exercise Progress</span></button>
+            <button class="workout-btn running-btn" type="button" onclick="window.location.href='/running.html'"><span class="title">🏃 Run Tracking</span></button>
+          </div>
+        </details>
+
+        <details class="mobile-nav-group">
+          <summary>Settings & chat</summary>
+          <div class="mobile-nav-links">
+            <button id="mobileSettingsBtn" class="settings-btn" type="button">⚙️ Settings</button>
+            <button id="mobileClearBtn" class="clear-btn" type="button">Clear Chat</button>
+          </div>
+        </details>
       </div>
     </header>
 
@@ -1462,13 +1535,20 @@
   <script type="module" src="/js/app-auth.js"></script>
   <script type="module" src="/js/user-profile.js"></script>
   <script type="module" src="/js/settings.js"></script>
-  <script>
+<script>
   const mobileHistoryToggle = document.getElementById("mobileHistoryToggle");
   const conversationHistory = document.querySelector(".conversation-history");
+  const mobileSettingsBtn = document.getElementById("mobileSettingsBtn");
+  const mobileClearBtn = document.getElementById("mobileClearBtn");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const clearBtn = document.getElementById("clearBtn");
 
   mobileHistoryToggle.addEventListener("click", () => {
     conversationHistory.classList.toggle("mobile-open");
   });
+
+  mobileSettingsBtn?.addEventListener("click", () => settingsBtn?.click());
+  mobileClearBtn?.addEventListener("click", () => clearBtn?.click());
 </script>
 </body>
 </html>

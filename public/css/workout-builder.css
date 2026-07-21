@@ -690,6 +690,15 @@ textarea:focus {
   font-weight: 800;
   white-space: nowrap;
 }
+.reroll-cell {
+  padding-inline-start: 2px;
+  padding-inline-end: 4px;
+  text-align: start !important;
+}
+.workout-table th.reroll-column,
+.workout-table td.reroll-cell {
+  width: 5.5%;
+}
 .reroll-button {
   width: 42px;
   height: 42px;
@@ -699,6 +708,7 @@ textarea:focus {
   color: #ffffff;
   font-size: 20px;
   cursor: pointer;
+  margin-inline-start: -4px;
   transition:
     transform 0.25s ease,
     background-color 0.25s ease,
@@ -788,7 +798,7 @@ textarea:focus {
   .workout-table .exercise-name-cell::before{display:none}
   .workout-table .exercise-note{max-width:none}
   .workout-table .reroll-cell{grid-column:1/-1;border-bottom:0}
-  .workout-table .reroll-button{width:46px;height:40px}
+  .workout-table .reroll-button{width:46px;height:40px;margin-inline-start:0}
   .muscle-badge,.equipment-badge{white-space:normal;text-align:center}
 }
 

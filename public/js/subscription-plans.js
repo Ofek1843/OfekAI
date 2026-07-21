@@ -14,7 +14,7 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
   pro: Object.freeze({
     id: "pro",
     name: "FuelPhysique Pro",
-    monthlyPriceIls: 10,
+    monthlyPriceIls: 25,
     limits: Object.freeze({ workoutPlans: 5, nutritionPlans: 5, aiGenerationsMonthly: 100 }),
     features: Object.freeze([
       "Up to five workout plans",

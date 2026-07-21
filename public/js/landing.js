@@ -23,7 +23,7 @@ function translateLandingPage() {
       landingTitleSecond: "One Powerful Home.",
       landingDescriptionFirst: "Build workout and nutrition plans around your goals.",
       landingDescriptionSecond: "Track every workout, outdoor run, body metric and personal record.",
-      landingDescriptionThird: "See your progress in clear charts and stay motivated with challenges and leaderboards.",
+      landingDescriptionThird: "See your progress in clear charts and stay motivated with challenges and guided tracking.",
       landingDescriptionFourth: "Get evidence-based guidance from an coach that understands your journey."
     },
     he: {
