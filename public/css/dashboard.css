@@ -31,10 +31,16 @@ html[data-theme="light"] {
   --shadow: 0 22px 52px rgba(71, 85, 105, 0.12);
 }
 
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--text);
   background:
@@ -144,11 +150,48 @@ a { color: inherit; }
   gap: 16px;
 }
 
+#dashboardContent {
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+}
+
+#dashboardContent > *,
+.dashboard-grid,
+.stats-grid,
+.card,
+.schedule-card,
+.weekly-schedule-board,
+.exercise-preview {
+  min-width: 0;
+}
+
 .mobile-brand {
   text-decoration: none;
   color: var(--text);
   font-weight: 900;
   letter-spacing: -0.03em;
+}
+
+.sidebar-search {
+  display: none;
+}
+
+.sidebar-search input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+.sidebar-search input:focus {
+  border-color: rgba(96, 165, 250, 0.38);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
 }
 
 .hero-row {
@@ -932,6 +975,7 @@ a { color: inherit; }
   .dashboard-main {
     gap: 14px;
     padding: max(10px, env(safe-area-inset-top)) 10px 0;
+    overflow-x: hidden;
   }
 
   .mobile-topbar {
@@ -948,8 +992,8 @@ a { color: inherit; }
   }
 
   .mobile-menu-button,
+  .mobile-search-button,
   .mobile-profile-button {
-    width: 44px;
     height: 44px;
     display: inline-grid;
     place-items: center;
@@ -961,6 +1005,12 @@ a { color: inherit; }
     box-shadow: 0 16px 34px rgba(0, 0, 0, 0.24);
   }
 
+  .mobile-menu-button,
+  .mobile-profile-button {
+    height: 44px;
+    width: 44px;
+  }
+
   .mobile-menu-button {
     cursor: pointer;
     padding: 0;
@@ -970,26 +1020,42 @@ a { color: inherit; }
     display: block;
     width: 18px;
     height: 2px;
-    margin: 2px 0;
+    margin: 1px 0;
     border-radius: 999px;
     background: currentColor;
   }
 
-  .mobile-brand {
-    justify-self: center;
-    font-size: 26px;
+  .mobile-search-button {
+    width: 100%;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    justify-content: start;
+    padding: 0 14px;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .mobile-search-icon {
+    font-size: 16px;
     line-height: 1;
+    opacity: 0.88;
+  }
+
+  .mobile-search-label {
+    display: block;
+    overflow: hidden;
+    color: #c9d6ea;
+    font-size: 14px;
+    font-weight: 700;
+    text-overflow: ellipsis;
     white-space: nowrap;
-    background: linear-gradient(90deg, #f8fafc 5%, #93c5fd 48%, #22d3ee 92%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
   }
 
   .hero-row {
     padding: 8px 4px 0;
     gap: 12px;
     border-radius: 22px;
+    margin-top: 2px;
   }
 
   .hero-row > div {
@@ -1010,8 +1076,10 @@ a { color: inherit; }
   .chat-link {
     width: 100%;
     margin-top: 2px;
-    min-height: 50px;
-    border-radius: 16px;
+    min-height: 56px;
+    border-radius: 18px;
+    font-size: 16px;
+    box-shadow: 0 18px 42px rgba(37, 99, 235, 0.26);
   }
 
   .card,
@@ -1026,24 +1094,31 @@ a { color: inherit; }
     letter-spacing: 0.11em;
   }
 
+  .schedule-card,
+  .card,
+  .chart-card,
+  .stats-grid article { padding: 15px; }
+
   .schedule-header {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
 
-  .schedule-card,
-  .card,
-  .chart-card,
-  .stats-grid article { padding: 15px; }
-
   .schedule-shift {
     margin-left: 0;
     width: 100%;
   }
 
+  #scheduleHint {
+    display: none;
+  }
+
   .weekly-schedule-board {
-    grid-template-columns: repeat(7, minmax(138px, 1fr));
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(142px, 72vw);
+    grid-template-columns: none;
     gap: 10px;
     overflow-x: auto;
     overflow-y: hidden;
@@ -1053,7 +1128,7 @@ a { color: inherit; }
   }
 
   .schedule-day {
-    min-width: 0;
+    min-width: 142px;
     min-height: 126px;
     scroll-snap-align: start;
   }
@@ -1064,6 +1139,17 @@ a { color: inherit; }
   .dashboard-grid {
     gap: 12px;
     grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(168px, 78vw);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
   }
 
   .card {
@@ -1081,21 +1167,13 @@ a { color: inherit; }
     line-height: 1.45;
   }
 
-  .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
   .stats-grid strong {
     font-size: 34px;
   }
 
   .stats-grid article {
     min-height: 112px;
-  }
-
-  .schedule-card {
-    order: 2;
+    scroll-snap-align: start;
   }
 
   .next-workout-card {
@@ -1103,15 +1181,19 @@ a { color: inherit; }
   }
 
   .nutrition-card {
+    order: 2;
+  }
+
+  .stats-grid {
     order: 3;
+  }
+
+  .schedule-card {
+    order: 4;
   }
 
   .recent-card {
     order: 5;
-  }
-
-  .manual-card {
-    order: 6;
   }
 
   .activity-chart {
@@ -1128,11 +1210,17 @@ a { color: inherit; }
   }
 
   .exercise-preview {
+    flex-wrap: nowrap;
     gap: 6px;
     margin: 12px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
   }
 
   .exercise-preview span {
+    flex: 0 0 auto;
     padding: 6px 9px;
     font-size: 11px;
   }
@@ -1160,12 +1248,16 @@ a { color: inherit; }
   }
 
   .quick-food-card {
-    order: 4;
+    order: 6;
   }
 
   .recent-card,
   .manual-card {
     min-height: auto;
+  }
+
+  .manual-card {
+    order: 7;
   }
 
   .quick-food-input {
@@ -1201,7 +1293,9 @@ a { color: inherit; }
   }
 
   .weekly-schedule-board::-webkit-scrollbar,
-  .activity-chart::-webkit-scrollbar {
+  .activity-chart::-webkit-scrollbar,
+  .stats-grid::-webkit-scrollbar,
+  .exercise-preview::-webkit-scrollbar {
     height: 6px;
   }
 }

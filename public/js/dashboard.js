@@ -60,6 +60,17 @@ const navLabels = he ? {
   plans: "Plans",
   history: "History"
 };
+const drawerSearchCopy = he
+  ? {
+      topbar: "חיפוש מהיר",
+      placeholder: "חפש עמוד או כלי...",
+      open: "פתח חיפוש"
+    }
+  : {
+      topbar: "Search dashboard",
+      placeholder: "Search pages or tools...",
+      open: "Open search"
+    };
 const repairText = value => {
   if (typeof value !== "string" || !/[׳³׳’]/.test(value)) return value;
   try {
@@ -108,28 +119,48 @@ function localize() {
   $("#mobileMenuButton")?.setAttribute("aria-label", menuOpenLabel);
   $("#sidebarClose")?.setAttribute("aria-label", menuCloseLabel);
   $("#mobileProfileButton")?.setAttribute("aria-label", he ? "פתח הגדרות" : "Open settings");
+  $("#mobileSearchButton")?.setAttribute("aria-label", drawerSearchCopy.open);
+  const searchLabel = $("#mobileSearchButton .mobile-search-label");
+  if (searchLabel) searchLabel.textContent = drawerSearchCopy.topbar;
+  const drawerSearch = $("#drawerSearchInput");
+  if (drawerSearch) drawerSearch.placeholder = drawerSearchCopy.placeholder;
 }
 
 function initMobileDrawer() {
   const body = document.body;
   const menuButton = $("#mobileMenuButton");
+  const searchButton = $("#mobileSearchButton");
   const closeButton = $("#sidebarClose");
   const backdrop = $("#mobileBackdrop");
   const sidebar = $("#mobileDrawerPanel");
+  const searchInput = $("#drawerSearchInput");
   if (!menuButton || !closeButton || !backdrop || !sidebar) return;
 
   const setOpen = open => {
     body.classList.toggle("drawer-open", open);
     menuButton.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open && searchInput) {
+      requestAnimationFrame(() => searchInput.focus());
+    }
   };
 
   menuButton.addEventListener("click", () => {
     setOpen(!body.classList.contains("drawer-open"));
   });
+  searchButton?.addEventListener("click", () => {
+    setOpen(true);
+  });
   closeButton.addEventListener("click", () => setOpen(false));
   backdrop.addEventListener("click", () => setOpen(false));
   sidebar.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", () => setOpen(false));
+  });
+  searchInput?.addEventListener("input", () => {
+    const query = searchInput.value.trim().toLowerCase();
+    sidebar.querySelectorAll("[data-nav-key]").forEach(link => {
+      const text = (link.textContent || "").trim().toLowerCase();
+      link.hidden = query ? !text.includes(query) : false;
+    });
   });
   window.addEventListener("resize", () => {
     if (window.innerWidth > 520) setOpen(false);
