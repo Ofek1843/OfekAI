@@ -89,8 +89,19 @@ function injectFeedbackStyles() {
     .site-feedback-close { color: #dbeafe; background: rgba(255, 255, 255, 0.06); }
     .site-feedback-error { min-height: 18px; margin-top: 8px; color: #fda4af; font-size: 13px; font-weight: 800; }
     @media (max-width: 620px) {
-      .site-feedback-widget { right: 12px; bottom: 12px; }
-      .site-feedback-trigger { min-height: 40px; padding: 9px 12px; font-size: 13px; }
+      .site-feedback-widget { right: 10px; bottom: 78px; }
+      .site-feedback-trigger {
+        min-height: 40px;
+        max-width: 142px;
+        padding: 8px 12px;
+        font-size: 12px;
+        line-height: 1.1;
+      }
+      .site-feedback-panel {
+        right: 0;
+        bottom: 56px;
+        width: min(320px, calc(100vw - 20px));
+      }
     }
   `;
   document.head.append(style);

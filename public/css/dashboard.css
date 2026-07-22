@@ -798,77 +798,83 @@ a { color: inherit; }
 @media (max-width: 520px) {
   .dashboard-shell {
     width: 100%;
-    padding: 10px 10px 24px;
-    gap: 12px;
+    padding: 8px 8px 18px;
+    gap: 10px;
   }
 
   .sidebar {
     position: static;
     display: grid;
-    gap: 12px;
-    padding: 14px 12px;
-    border-radius: 20px;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 18px;
   }
 
   .brand {
     display: block;
-    margin-bottom: 2px;
-    font-size: 24px;
+    margin-bottom: 0;
+    font-size: 21px;
   }
 
   .sidebar-nav {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scroll-snap-type: x proximity;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
+    padding-bottom: 0;
   }
 
   .sidebar-nav a,
   .sidebar-footer a {
-    flex: 0 0 auto;
+    flex: initial;
     min-height: 42px;
     justify-content: center;
-    padding: 10px 14px;
+    padding: 10px 8px;
     text-align: center;
-    font-size: 13px;
-    white-space: nowrap;
-    scroll-snap-align: start;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: normal;
   }
 
   .sidebar-footer {
-    display: flex;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
-    overflow-x: auto;
+    overflow: visible;
     margin-top: 0;
-    padding-top: 2px;
-    -webkit-overflow-scrolling: touch;
+    padding-top: 0;
   }
 
   .sidebar-footer span {
-    flex: 0 0 auto;
-    display: inline-grid;
+    flex: initial;
+    display: grid;
     place-items: center;
     min-height: 34px;
-    padding: 6px 10px;
-    white-space: nowrap;
+    padding: 6px 8px;
+    white-space: normal;
+    text-align: center;
+    font-size: 11px;
   }
 
   .hero-row {
-    padding: 8px 2px 2px;
+    padding: 4px 2px 0;
+    gap: 10px;
   }
 
   .hero-row h1 {
-    font-size: clamp(30px, 9vw, 40px);
+    margin: 6px 0 4px;
+    font-size: clamp(28px, 8vw, 34px);
   }
 
-  .hero-row p { line-height: 1.55; }
+  .hero-row p {
+    font-size: 15px;
+    line-height: 1.45;
+  }
 
   .chat-link {
     width: 100%;
-    margin-top: 6px;
+    margin-top: 2px;
+    min-height: 46px;
   }
 
   .card,
@@ -877,17 +883,26 @@ a { color: inherit; }
     border-radius: 18px;
   }
 
+  .eyebrow,
+  .card-kicker {
+    font-size: 10px;
+    letter-spacing: 0.11em;
+  }
+
   .schedule-header {
     flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
   .schedule-card,
   .card,
   .chart-card,
-  .stats-grid article { padding: 15px; }
+    .stats-grid article { padding: 15px; }
 
   .schedule-shift {
     margin-left: 0;
+    width: 100%;
   }
 
   .weekly-schedule-board {
@@ -911,6 +926,21 @@ a { color: inherit; }
 
   .dashboard-grid { gap: 12px; }
 
+  .card {
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .card h2 {
+    font-size: 18px;
+  }
+
+  .card p,
+  .muted {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
@@ -918,6 +948,10 @@ a { color: inherit; }
 
   .stats-grid strong {
     font-size: 34px;
+  }
+
+  .stats-grid article {
+    min-height: 112px;
   }
 
   .activity-chart {
@@ -933,9 +967,59 @@ a { color: inherit; }
     scroll-snap-align: start;
   }
 
+  .exercise-preview {
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .exercise-preview span {
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+
+  .primary-action,
+  .secondary-action,
+  .text-action {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 14px;
+    margin-top: 12px;
+  }
+
+  .macro-grid {
+    gap: 10px;
+    margin: 14px 0 12px;
+  }
+
+  .macro-grid div {
+    padding: 12px;
+  }
+
+  .macro-grid strong {
+    font-size: 22px;
+  }
+
+  .quick-food-card {
+    order: 4;
+  }
+
+  .recent-card,
+  .manual-card {
+    min-height: auto;
+  }
+
+  .quick-food-input {
+    min-height: 88px;
+    margin-top: 10px;
+    padding: 12px 13px;
+    font-size: 15px;
+  }
+
   .quick-food-actions {
     flex-direction: column;
     align-items: stretch;
+    gap: 8px;
+    margin-top: 10px;
   }
 
   .quick-food-actions .secondary-action,
@@ -944,8 +1028,18 @@ a { color: inherit; }
     width: 100%;
   }
 
-  .sidebar-nav::-webkit-scrollbar,
-  .sidebar-footer::-webkit-scrollbar,
+  .quick-food-result {
+    padding: 12px 13px;
+  }
+
+  .quick-food-result strong {
+    font-size: 19px;
+  }
+
+  #dashboardStatus {
+    font-size: 14px;
+  }
+
   .weekly-schedule-board::-webkit-scrollbar,
   .activity-chart::-webkit-scrollbar {
     height: 6px;
