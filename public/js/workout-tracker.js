@@ -8,7 +8,7 @@ setupExerciseDemos(document);
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 
-const ui = he ? {
+const rawUi = he ? {
   title: "מעקב אימון",
   description: "תעד כל סט מתוכנית האימון הפעילה שלך.",
   back: "← חזרה ל-FuelPhysique",
@@ -99,6 +99,25 @@ const ui = he ? {
   warmup: "Warm-up set",
   warmupHint: "Warm-up sets are logged, but they do not count toward hypertrophy stats."
 };
+
+const repairText = value => {
+  if (typeof value !== "string" || !/[׳³׳’]/.test(value)) return value;
+  try {
+    return decodeURIComponent(escape(value));
+  } catch {
+    return value;
+  }
+};
+
+const ui = new Proxy(rawUi, {
+  get(target, property) {
+    const value = target[property];
+    if (typeof value === "function") {
+      return (...args) => repairText(value(...args));
+    }
+    return repairText(value);
+  }
+});
 
 const esc = (value = "") => String(value)
   .replaceAll("&", "&amp;")
@@ -297,7 +316,7 @@ function renderSetup() {
   const currentIndex = Number($("#sessionSelect")?.value || 0);
   const currentSession = sessions[currentIndex] || sessions[0];
   $("#trackerStatus").textContent = sessionOverride && Number.isFinite(timeBudgetMinutes)
-    ? (he ? `??? ????? ???? ????: ???? ${timeBudgetMinutes} ????.` : `Time-fit mode active: about ${timeBudgetMinutes} minutes.`)
+    ? (he ? `מצב התאמת זמן פעיל: בערך ${timeBudgetMinutes} דקות.` : `Time-fit mode active: about ${timeBudgetMinutes} minutes.`)
     : "";
   $("#trackerStatus").classList.toggle("error", false);
   renderTimeFitSummary(currentSession, timeBudgetMinutes);
@@ -381,7 +400,7 @@ function renderTimeFitSummary(session, budgetMinutes) {
   if (!Number.isFinite(parsedBudget)) {
     const estimatedMinutes = estimateSessionMinutes(session);
     box.innerHTML = he
-      ? `<strong>????? ??? ??????</strong><p>?????? ??? ???? ???? ???? ${formatBudgetMinutes(estimatedMinutes)}. ?? ?? ?? ???? ???, ???? ???? ???? ?????? ???.</p>`
+      ? `<strong>אורך אימון משוער</strong><p>האימון הזה אמור לקחת בערך ${formatBudgetMinutes(estimatedMinutes)}. אם יש לך פחות זמן היום, אפשר לקצר בלחיצה.</p>`
       : `<strong>Estimated workout length</strong><p>This workout should take about ${formatBudgetMinutes(estimatedMinutes)}. If you have less time, trim it with one click.</p>`;
     return;
   }
@@ -392,13 +411,13 @@ function renderTimeFitSummary(session, budgetMinutes) {
   const summary = buildTimeFitSummary(session, adapted, budget);
   if (summary.fits && summary.trimmedSets === 0 && summary.trimmedExercises === 0) {
     box.innerHTML = he
-      ? `<strong>?????? ??? ????? ????</strong><p>?????? ???? ???? ???${formatBudgetMinutes(summary.adaptedMinutes)}. ???? ?????? ???.</p>`
+      ? `<strong>האימון כבר מתאים לזמן</strong><p>כל האימון נכנס בערך בתוך ${formatBudgetMinutes(summary.adaptedMinutes)}. אפשר להתחיל כמו שהוא.</p>`
       : `<strong>Workout already fits</strong><p>The full session fits in about ${formatBudgetMinutes(summary.adaptedMinutes)}. You can start right away.</p>`;
     return;
   }
   const changeList = summary.changes.length ? `<ul>${summary.changes.map(change => `<li>${esc(change)}</li>`).join("")}</ul>` : "";
   box.innerHTML = he
-    ? `<strong>?????? ????? ????</strong><p>??${formatBudgetMinutes(summary.originalMinutes)} ??${formatBudgetMinutes(summary.adaptedMinutes)}. ????? ${summary.trimmedSets} ????${summary.trimmedExercises ? ` ??${summary.trimmedExercises} ???????` : ""} ??? ?????? ???? ${budget} ????.</p>${changeList}`
+    ? `<strong>האימון קוצר לזמן שלך</strong><p>מ־${formatBudgetMinutes(summary.originalMinutes)} ל־${formatBudgetMinutes(summary.adaptedMinutes)}. קיצרנו ${summary.trimmedSets} סטים${summary.trimmedExercises ? ` ו-${summary.trimmedExercises} תרגילים` : ""} כדי להתאים לתקציב של ${budget} דקות.</p>${changeList}`
     : `<strong>Workout trimmed to time</strong><p>From about ${formatBudgetMinutes(summary.originalMinutes)} down to ${formatBudgetMinutes(summary.adaptedMinutes)}. We trimmed ${summary.trimmedSets} set${summary.trimmedSets === 1 ? "" : "s"}${summary.trimmedExercises ? ` and ${summary.trimmedExercises} exercise${summary.trimmedExercises === 1 ? "" : "s"}` : ""} to stay within ${budget} minutes.</p>${changeList}`;
 }
 
@@ -893,13 +912,13 @@ function updateRestTimer() {
   $("#focusRestTimer").textContent = formatTime(remaining);
   const nextButton = $("#focusNextButton");
   if (nextButton) {
-    nextButton.textContent = he ? `????? ${formatTime(remaining)}` : `Rest ${formatTime(remaining)}`;
+    nextButton.textContent = he ? `מנוחה ${formatTime(remaining)}` : `Rest ${formatTime(remaining)}`;
     nextButton.classList.add("rest-button-active");
     nextButton.setAttribute("aria-busy", "true");
   }
   $("#restHint").textContent = remaining > 0
-    ? (he ? "??/? ?????? ??????? ??? ???/? ??? ???." : "Let the timer finish, then move to the next set.")
-    : (he ? "???? ????? ??? ???." : "You can move to the next set.");
+    ? (he ? "תן לטיימר להסתיים ואז עבור לסט הבא." : "Let the timer finish, then move to the next set.")
+    : (he ? "אפשר לעבור לסט הבא." : "You can move to the next set.");
   const progressBar = $("#restProgress");
   if (progressBar) progressBar.style.setProperty("--rest-progress", `${progress}%`);
   if (remaining <= 0) {
@@ -921,7 +940,7 @@ function applyTimeBudget() {
   const session = savedPlan.plan.sessions[sessionIndex];
   const budget = numberValue("#timeBudgetMinutes");
   if (!session || !budget) {
-    $("#trackerStatus").textContent = he ? "???/? ??? ???? ??? ???? ?? ??????." : "Choose a valid time budget to trim the workout.";
+    $("#trackerStatus").textContent = he ? "בחר זמן זמין תקין כדי לקצר את האימון." : "Choose a valid time budget to trim the workout.";
     $("#trackerStatus").classList.add("error");
     return;
   }
