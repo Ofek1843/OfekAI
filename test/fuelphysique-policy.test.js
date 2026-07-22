@@ -78,6 +78,8 @@ test("public stats summary counts only meaningful records", () => {
 
   assert.deepEqual(stats, {
     registeredUsers: 1,
+    activeProSubscribers: 0,
+    estimatedMonthlyRevenueIls: 0,
     savedWorkoutPlans: 1,
     savedNutritionPlans: 1,
     savedPlansTotal: 2,

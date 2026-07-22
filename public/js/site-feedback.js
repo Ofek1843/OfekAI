@@ -135,14 +135,36 @@ function initSiteFeedback() {
       error.textContent = feedbackCopy.empty;
       return;
     }
-    const subject = encodeURIComponent("FuelPhysique bug report");
-    const body = encodeURIComponent([
+    error.textContent = "";
+    const payload = {
       message,
-      "",
-      `Page: ${location.href}`,
-      `Browser: ${navigator.userAgent}`
-    ].join("\n"));
-    location.href = `mailto:ofek1843@gmail.com?subject=${subject}&body=${body}`;
+      page: location.href,
+      category: "bug"
+    };
+    fetch("/api/site-feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      credentials: "same-origin"
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("feedback_failed");
+        textarea.value = "";
+        panel.hidden = true;
+        error.textContent = feedbackLanguage === "he"
+          ? "הדיווח נשלח לצוות. תודה שעזרת לשפר את האתר."
+          : "Your report was sent to the team. Thanks for helping improve the site.";
+      })
+      .catch(() => {
+        const subject = encodeURIComponent("FuelPhysique bug report");
+        const body = encodeURIComponent([
+          message,
+          "",
+          `Page: ${location.href}`,
+          `Browser: ${navigator.userAgent}`
+        ].join("\n"));
+        location.href = `mailto:ofek1843@gmail.com?subject=${subject}&body=${body}`;
+      });
   });
 }
 

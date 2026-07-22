@@ -19,6 +19,7 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   font-family:
     Inter,
     system-ui,
@@ -683,6 +684,24 @@ textarea:focus {
 /* Mobile */
 
 @media (max-width: 760px) {
+  .builder-page {
+    width: 100%;
+    padding: 20px 10px 56px;
+  }
+
+  .builder-navigation {
+    width: 100%;
+    padding: 0 4px;
+  }
+
+  .builder-card,
+  .program-result {
+    width: 100%;
+    border-radius: 18px;
+  }
+
+  .builder-card { padding: 20px 14px; }
+
   .program-card {
     padding: 21px 14px;
     border-radius: 20px;
@@ -719,8 +738,8 @@ textarea:focus {
 
   .nutrition-food-table tbody tr {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr) auto;
-    gap: 10px 10px;
+    grid-template-columns: 42px minmax(0, 1fr) auto 44px;
+    gap: 8px;
     align-items: center;
     padding: 10px 10px 10px 8px;
     border-bottom: 1px solid #eef2f7;
@@ -741,7 +760,7 @@ textarea:focus {
   }
 
   .nutrition-food-table td:nth-child(2) {
-    grid-column: 2 / 3;
+    grid-column: 3 / 4;
     justify-self: end;
     white-space: nowrap;
     font-size: 13px;
@@ -749,7 +768,7 @@ textarea:focus {
   }
 
   .nutrition-food-table td:last-child {
-    grid-column: 3 / 4;
+    grid-column: 4 / 5;
     display: flex;
     justify-content: flex-end;
   }

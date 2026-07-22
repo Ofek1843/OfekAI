@@ -15,6 +15,7 @@
 body{
   margin:0;
   min-height:100vh;
+  overflow-x:hidden;
   font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
   color:var(--text);
   background:radial-gradient(circle at top,rgba(124,92,255,.18),transparent 34%),linear-gradient(180deg,#060913 0%,#09111e 100%);
@@ -575,6 +576,9 @@ body.rest-active .finish-button.rest-button-active{
   60%,100%{transform:translateX(100%)}
 }
 @media(max-width:720px){
+  .tracker-page{width:100%;padding:18px 10px 60px}
+  .page-nav{gap:12px;margin-bottom:28px}
+  .panel{padding:16px;border-radius:18px}
   .tracker-page{width:calc(100% - 16px);padding-top:18px}
   #setupPanel,.finish-bar,.focus-grid{grid-template-columns:1fr}
   .setup-actions{grid-template-columns:1fr}

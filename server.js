@@ -7,6 +7,7 @@ const ImageKit = require("imagekit");
 const payPlusBilling = require("./lib/payplus-billing");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
+const { createTelemetryAgent } = require("./lib/telemetry-agent");
 const {
   clientIp,
   createDeduper,
@@ -28,15 +29,29 @@ const rateLimiters = {
   ai: createRateLimiter({ windowMs: 60_000, max: Number(process.env.AI_PER_UID_PER_MINUTE || 6), keyPrefix: "ai" }),
   uploads: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOADS_PER_UID_PER_MINUTE || 8), keyPrefix: "upload" }),
   auth: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOAD_AUTH_PER_UID_PER_MINUTE || 10), keyPrefix: "upload-auth" }),
-  analytics: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ANALYTICS_PER_IP_PER_MINUTE || 180), keyPrefix: "analytics" })
+  analytics: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ANALYTICS_PER_IP_PER_MINUTE || 180), keyPrefix: "analytics" }),
+  feedback: createRateLimiter({ windowMs: 60_000, max: Number(process.env.FEEDBACK_PER_IP_PER_MINUTE || 6), keyPrefix: "feedback" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
 const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
+const telemetry = createTelemetryAgent({
+  brandName: "FuelPhysique",
+  getPublicStats
+});
 
 app.disable("x-powered-by");
 app.use((req, res, next) => {
   req.requestId = requestId();
   res.setHeader("X-Request-Id", req.requestId);
+  const startedAt = process.hrtime.bigint();
+  res.on("finish", () => {
+    telemetry.recordRequest({
+      method: req.method,
+      path: req.originalUrl.split("?")[0],
+      status: res.statusCode,
+      durationMs: Number((process.hrtime.bigint() - startedAt) / 1000000n)
+    });
+  });
   next();
 });
 
@@ -78,6 +93,12 @@ app.post("/api/analytics/event", (req, res) => {
     if (!sanitized) {
       return res.status(204).end();
     }
+    telemetry.recordAnalytics(sanitized.event, {
+      path: sanitized.path,
+      userAgent: req.headers["user-agent"] || "",
+      ip: clientIp(req),
+      type: sanitized.properties?.type || ""
+    });
 
     console.log(
       `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"} ip=${clientIp(req)}`
@@ -87,6 +108,33 @@ app.post("/api/analytics/event", (req, res) => {
   } catch (error) {
     console.error("Analytics event error:", error.message);
     return res.status(204).end();
+  }
+});
+
+app.post("/api/site-feedback", (req, res) => {
+  try {
+    rateLimiters.feedback(req, clientIp(req));
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const message = String(body.message || "").trim().slice(0, 1200);
+    if (!message) return res.status(400).json({ error: "Feedback message is required." });
+
+    telemetry.recordFeedback({
+      message,
+      page: String(body.page || req.headers.referer || req.headers.origin || "").trim().slice(0, 160),
+      category: String(body.category || "bug").trim().slice(0, 40)
+    });
+
+    const severity = /crash|down|broken|cannot log in|can't log in|failed|urgent|critical/i.test(message) ? "high" : "medium";
+    telemetry.maybeAlert(
+      `feedback:${severity}:${clientIp(req)}`,
+      `${severity === "high" ? "Critical" : "New"} user feedback`,
+      `${message.slice(0, 300)}`
+    );
+
+    res.status(201).json({ ok: true });
+  } catch (error) {
+    console.error("Site feedback error:", error.message);
+    res.status(500).json({ error: "Could not submit feedback." });
   }
 });
 
@@ -110,6 +158,8 @@ app.get("/api/public-stats", async (req, res) => {
     res.setHeader("X-FuelPhysique-Stats-Source", statsSource);
     res.json({
       registeredUsers: stats.registeredUsers,
+      activeProSubscribers: stats.activeProSubscribers || 0,
+      estimatedMonthlyRevenueIls: stats.estimatedMonthlyRevenueIls || 0,
       savedPlansTotal: stats.savedPlansTotal,
       savedWorkoutPlans: stats.savedWorkoutPlans,
       savedNutritionPlans: stats.savedNutritionPlans,
@@ -2651,10 +2701,12 @@ app.use((error, req, res, next) => {
 
 const server = app.listen(PORT, () => {
   console.log(`FuelPhysique AI Server running on http://localhost:${PORT}`);
+  telemetry.start();
 });
 
 function shutdown(signal) {
   console.log(`${signal} received. Shutting down gracefully...`);
+  telemetry.stop();
   server.close(() => {
     process.exit(0);
   });

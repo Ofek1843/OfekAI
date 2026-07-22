@@ -29,3 +29,12 @@ This checklist is a practical prep list, not legal advice.
 - [ ] Log output confirmed to avoid tokens, private keys, or medical content.
 - [ ] Graceful shutdown tested.
 
+## Telegram monitoring agent
+
+- [ ] `TELEGRAM_BOT_TOKEN` added to Render.
+- [ ] `TELEGRAM_CHAT_ID` added to Render.
+- [ ] `TELEGRAM_MONITOR_ENABLED` left on by default, or set to `false` only if you want to pause alerts.
+- [ ] Optional tuning vars reviewed: `TELEGRAM_ALERT_COOLDOWN_MS`, `TELEGRAM_HEALTH_INTERVAL_MS`, `TELEGRAM_REPORT_INTERVAL_MS`, `TELEGRAM_DAILY_REPORT_HOUR`.
+- [ ] Confirm the bot can send a startup message, a startup digest, and a daily digest.
+- [ ] Confirm the site-feedback widget sends reports to `/api/site-feedback` and falls back to email only if the API is unavailable.
+
