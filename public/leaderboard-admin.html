@@ -1,8 +1,10 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FuelPhysique · Leaderboard Review</title><script>try{const t=localStorage.getItem("ofek-ai-theme")||"dark";document.documentElement.dataset.theme=t==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):t}catch{}</script><link rel="stylesheet" href="/css/leaderboard-admin.css"></head>
+﻿<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FuelPhysique · Leaderboard Review</title><script>try{const t=localStorage.getItem("ofek-ai-theme")||"dark";document.documentElement.dataset.theme=t==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):t}catch{}</script><link rel="stylesheet" href="/css/leaderboard-admin.css"></head>
 <body><main class="admin-page">
   <nav><a class="brand" href="/dashboard.html">FuelPhysique</a><div><a href="/leaderboard.html">Public leaderboard</a><a href="/dashboard.html">Dashboard</a></div></nav>
   <header><div><span>PRIVATE MODERATION</span><h1>Verification queue</h1><p>Review the complete attempt before publishing a result.</p></div><button id="refreshButton" type="button">↻ Refresh</button></header>
   <section class="summary"><article><span>Pending</span><strong id="pendingCount">—</strong></article><article><span>Reviewed today</span><strong id="reviewedCount">—</strong></article></section>
   <p id="adminStatus" class="status" role="status">Checking administrator access…</p>
   <section id="reviewList" class="review-list"></section><style>.empty{color:var(--muted);background:var(--card)}</style>
-</main><script type="module" src="/js/leaderboard-admin.js"></script></body></html>
+</main><script type="module" src="/js/leaderboard-admin.js"></script>
+  <script type="module" src="/js/site-feedback.js"></script>
+</body></html>

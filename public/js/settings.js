@@ -21,7 +21,9 @@ const SETTINGS_DOC_PATH = (uid) =>
     doc(db, "users", uid, "settings", "main");
 
 const THEME_STORAGE_KEY = "ofek-ai-theme";
-const settingsOpenedAsPage = new URLSearchParams(window.location.search).get("settings") === "open";
+const settingsParams = new URLSearchParams(window.location.search);
+const settingsOpenedAsPage = settingsParams.get("settings") === "open";
+const settingsInitialSection = settingsParams.get("section") || "";
 
 const elements = {
     overlay: document.getElementById("settingsOverlay"),
@@ -917,6 +919,12 @@ bindEvents();
 if (settingsOpenedAsPage) {
     document.body.classList.add("settings-page-mode");
     openSettings();
+    const initialTab = tabs.find(
+        (tab) => tab.dataset.page === `${settingsInitialSection}Settings`
+    );
+    if (initialTab) {
+        activateTab(initialTab);
+    }
     window.history.replaceState({}, "", window.location.pathname);
 }
 

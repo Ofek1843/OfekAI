@@ -8,7 +8,7 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
       "One saved workout plan",
       "One saved nutrition plan",
       "Basic workout tracking",
-      "Five AI generations each month"
+      "Five smart generations each month"
     ])
   }),
   pro: Object.freeze({
@@ -21,7 +21,7 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
       "Up to five nutrition plans",
       "Full progress charts and analytics",
       "Advanced workout tracking",
-      "AI coach memory and expanded usage",
+      "Coach memory and expanded usage",
       "Plan sharing and export",
       "Pro leaderboard badge"
     ])

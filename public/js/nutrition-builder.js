@@ -42,7 +42,7 @@ updateYouthMode();
 const isHebrew = currentLanguage === "he";
 const ui = isHebrew
   ? {
-      pageTitle: "בונה תוכניות תזונה AI",
+      pageTitle: "בונה תוכניות תזונה",
       pageDescription:
         "בנה תוכנית תזונה אישית לפי המטרה, הנתונים שלך, רמת הפעילות והעדפות האכילה.",
 
@@ -84,7 +84,7 @@ const ui = isHebrew
       print: "הדפס / שמור"
     }
   : {
-      pageTitle: "AI Nutrition Builder",
+      pageTitle: "Nutrition Builder",
       pageDescription:
         "Build a personalized nutrition plan based on your goal, body measurements, activity level, food preferences, and dietary limitations.",
 
@@ -635,7 +635,7 @@ const foodsText = foods
       <header class="program-header">
         <div>
           <span class="program-eyebrow">
-            FuelPhysique AI Nutrition Plan
+            FuelPhysique Nutrition Plan
           </span>
 
           <h2>

@@ -1,62 +1,174 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FuelPhysique Dashboard</title><script>try{const t=localStorage.getItem("ofek-ai-theme")||"dark";document.documentElement.dataset.theme=t==="system"?(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"):t}catch{}</script><link rel="stylesheet" href="/css/dashboard.css"><link rel="stylesheet" href="/css/dashboard-enhancements.css"></head>
-<body><main class="dashboard-page">
-  <nav class="top-nav"><a href="/dashboard.html">FuelPhysique</a><div><a class="plan-link" href="/pricing.html"><span id="dashboardPlanBadge">Free</span> Plans</a><a href="/workout-history.html">History</a><a href="/progress.html">Progress</a><a class="settings-link" href="/app.html?settings=open">⚙ Settings</a></div></nav>
-  <header class="welcome"><div><span class="eyebrow" id="todayLabel">TODAY</span><h1 id="welcomeTitle">Welcome back</h1><p id="welcomeText">Here is your training and nutrition overview.</p></div><a class="chat-link" id="chatLink" href="/app.html">Ask your coach →</a></header>
-  <p id="dashboardStatus" class="status" role="status" aria-live="polite">Loading your dashboard...</p>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FuelPhysique Dashboard</title>
+  <script>
+    try {
+      const t = localStorage.getItem("ofek-ai-theme") || "dark";
+      document.documentElement.dataset.theme = t === "system"
+        ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
+        : t;
+    } catch {}
+  </script>
+  <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+  <main class="dashboard-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/dashboard.html">FuelPhysique</a>
+      <nav class="sidebar-nav" aria-label="Dashboard sections">
+        <a class="active" href="/dashboard.html">Dashboard</a>
+        <a href="/workout-builder.html">Programs</a>
+        <a href="/workout-tracker.html">Workouts</a>
+        <a href="/nutrition-builder.html">Nutrition</a>
+        <a href="/progress.html">Progress</a>
+        <a href="/app.html?settings=open">Settings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <span id="dashboardPlanBadge">Free</span>
+        <a href="/pricing.html">Plans</a>
+        <a href="/workout-history.html">History</a>
+      </div>
+    </aside>
 
-  <section id="dashboardContent" class="hidden">
-    <div class="stats-grid">
-      <article><span id="weekLabel">Workouts this week</span><strong id="weeklyWorkouts">0</strong><small id="weekGoal"></small></article>
-      <article><span id="streakLabel">Current streak</span><strong id="currentStreak">0 🔥</strong><small id="streakHint"></small></article>
-      <article><span id="weightLabel">Latest weight</span><strong id="latestWeight">—</strong><small><a id="weightLink" href="/progress.html">Update progress</a></small></article>
-      <article><span id="setsLabel">Sets completed</span><strong id="completedSets">0</strong><small id="setsHint"></small></article>
-    </div>
-
-    <div class="dashboard-grid">
-      <article class="card next-workout-card">
-        <header><span class="card-icon">🏋️</span><div><span class="card-kicker" id="nextLabel">NEXT WORKOUT</span><h2 id="nextWorkoutName">No active plan</h2></div></header>
-        <p id="workoutPlanName" class="muted"></p><div id="exercisePreview" class="exercise-preview"></div>
-        <a id="startWorkoutLink" class="primary-action" href="/workout-tracker.html">Start Workout</a>
-      </article>
-
-      <article class="card nutrition-card">
-        <header><span class="card-icon">🥗</span><div><span class="card-kicker" id="nutritionLabel">ACTIVE NUTRITION</span><h2 id="nutritionPlanName">No active plan</h2></div></header>
-        <div class="macro-grid"><div><strong id="caloriesValue">—</strong><span id="caloriesLabel">Calories</span></div><div><strong id="proteinValue">—</strong><span id="proteinLabel">Protein</span></div></div>
-        <a id="nutritionLink" class="secondary-action" href="/my-nutrition-plans.html">Manage nutrition plans</a>
-      </article>
-
-      <article class="card quick-food-card">
-        <header><span class="card-icon">🍽️</span><div><span class="card-kicker" id="quickFoodLabel">QUICK CHECK-IN</span><h2 id="quickFoodTitle">Did you stray from the plan today?</h2></div></header>
-        <p id="quickFoodText" class="muted">Write roughly what you ate today, and don't forget drinks. This is only an estimate.</p>
-        <textarea id="quickFoodInput" class="quick-food-input" rows="5" placeholder="Example: 2 eggs, chicken breast, rice, salad, milk, coffee"></textarea>
-        <div class="quick-food-actions">
-          <button id="quickFoodEstimate" class="secondary-action" type="button">Estimate calories</button>
-          <button id="quickFoodClear" class="text-action" type="button">Clear</button>
+    <section class="dashboard-main">
+      <header class="hero-row">
+        <div>
+          <span class="eyebrow" id="todayLabel">TODAY</span>
+          <h1 id="welcomeTitle">Welcome back</h1>
+          <p id="welcomeText">Here is your training and nutrition overview.</p>
         </div>
-        <div id="quickFoodResult" class="quick-food-result muted">Approximate calories and macros will appear here.</div>
-      </article>
+        <a class="chat-link" id="chatLink" href="/app.html">Ask your coach →</a>
+      </header>
 
-      <article class="card recent-card">
-        <header><span class="card-icon">📋</span><div><span class="card-kicker" id="recentLabel">LAST WORKOUT</span><h2 id="lastWorkoutName">No workouts yet</h2></div></header>
-        <div id="lastWorkoutDetails" class="recent-details"></div><a id="historyAction" class="secondary-action" href="/workout-history.html">View workout history</a>
-      </article>
+      <p id="dashboardStatus" class="status" role="status" aria-live="polite">Loading your dashboard...</p>
 
-      <article class="card progress-card">
-        <header><span class="card-icon">📈</span><div><span class="card-kicker" id="progressLabel">PROGRESS</span><h2 id="progressTitle">Keep building momentum</h2></div></header>
-        <p id="progressMessage" class="muted"></p><a id="analyticsAction" class="secondary-action" href="/exercise-progress.html">Exercise analytics</a>
-      </article>
+      <section id="dashboardContent" class="hidden">
+        <section class="stats-grid">
+          <article>
+            <span id="weekLabel">Workouts this week</span>
+            <strong id="weeklyWorkouts">0</strong>
+            <small id="weekGoal"></small>
+          </article>
+          <article>
+            <span id="streakLabel">Current streak</span>
+            <strong id="currentStreak">0 🔥</strong>
+            <small id="streakHint"></small>
+          </article>
+          <article>
+            <span id="weightLabel">Latest weight</span>
+            <strong id="latestWeight">—</strong>
+            <small><a id="weightLink" href="/progress.html">Update progress</a></small>
+          </article>
+          <article>
+            <span id="setsLabel">Sets completed</span>
+            <strong id="completedSets">0</strong>
+            <small id="setsHint"></small>
+          </article>
+        </section>
 
-      <article class="card missed-card">
-        <header><span class="card-icon">⏱️</span><div><span class="card-kicker" id="missedLabel">MISSED TRACKING?</span><h2 id="missedTitle">Log your last workout</h2></div></header>
-        <p id="missedText" class="muted">Add duration, weights, repetitions and RPE after the workout. It will appear in your history and progress charts.</p><a id="missedAction" class="secondary-action" href="/log-workout.html">Log a past workout</a>
-      </article>
+        <article class="card schedule-card">
+          <header class="schedule-header">
+            <span class="card-icon">📅</span>
+            <div>
+              <span class="card-kicker" id="scheduleLabel">WEEKLY PLAN</span>
+              <h2 id="scheduleTitle">Training days this week</h2>
+            </div>
+            <button id="shiftScheduleButton" class="text-action schedule-shift" type="button">Shift +1 day</button>
+          </header>
+          <p id="scheduleHint" class="muted">Drag a workout card to another day and the whole plan will slide forward together.</p>
+          <div id="weeklyScheduleBoard" class="weekly-schedule-board" aria-label="Weekly workout schedule"></div>
+        </article>
 
-      <article class="card manual-card">
-        <header><span class="card-icon">🧩</span><div><span class="card-kicker" id="manualLabel">YOUR OWN PROGRAM</span><h2 id="manualTitle">Build a plan manually</h2></div></header>
-        <p id="manualText" class="muted">Search exercises, set your sets and rest times, add days or duplicate a workout.</p><a id="manualAction" class="secondary-action" href="/manual-workout-builder.html">Create my plan</a>
-      </article>
+        <section class="dashboard-grid">
+          <article class="card next-workout-card">
+            <header>
+              <span class="card-icon">🏋️</span>
+              <div>
+                <span class="card-kicker" id="nextLabel">NEXT WORKOUT</span>
+                <h2 id="nextWorkoutName">No active plan</h2>
+              </div>
+            </header>
+            <p id="workoutPlanName" class="muted"></p>
+            <div id="exercisePreview" class="exercise-preview"></div>
+            <a id="startWorkoutLink" class="primary-action" href="/workout-tracker.html">Start Workout</a>
+          </article>
+
+          <article class="card nutrition-card">
+            <header>
+              <span class="card-icon">🥗</span>
+              <div>
+                <span class="card-kicker" id="nutritionLabel">ACTIVE NUTRITION</span>
+                <h2 id="nutritionPlanName">No active plan</h2>
+              </div>
+            </header>
+            <div class="macro-grid">
+              <div><strong id="caloriesValue">—</strong><span id="caloriesLabel">Calories</span></div>
+              <div><strong id="proteinValue">—</strong><span id="proteinLabel">Protein</span></div>
+            </div>
+            <a id="nutritionLink" class="secondary-action" href="/my-nutrition-plans.html">Manage nutrition plans</a>
+          </article>
+
+          <article class="card quick-food-card">
+            <header>
+              <span class="card-icon">🍽️</span>
+              <div>
+                <span class="card-kicker" id="quickFoodLabel">QUICK CHECK-IN</span>
+                <h2 id="quickFoodTitle">Did you stray from the plan today?</h2>
+              </div>
+            </header>
+            <p id="quickFoodText" class="muted">Write roughly what you ate today, and don't forget drinks. This is only an estimate.</p>
+            <textarea id="quickFoodInput" class="quick-food-input" rows="5" placeholder="Example: 2 eggs, chicken breast, rice, salad, milk, coffee"></textarea>
+            <div class="quick-food-actions">
+              <button id="quickFoodEstimate" class="secondary-action" type="button">Estimate calories</button>
+              <button id="quickFoodClear" class="text-action" type="button">Clear</button>
+            </div>
+            <div id="quickFoodResult" class="quick-food-result muted">Approximate calories and macros will appear here.</div>
+          </article>
+
+          <article class="card recent-card">
+            <header>
+              <span class="card-icon">📋</span>
+              <div>
+                <span class="card-kicker" id="recentLabel">LAST WORKOUT</span>
+                <h2 id="lastWorkoutName">No workouts yet</h2>
+              </div>
+            </header>
+            <div id="lastWorkoutDetails" class="recent-details"></div>
+            <a id="historyAction" class="secondary-action" href="/workout-history.html">View workout history</a>
+          </article>
+
+          <article class="card manual-card">
+            <header>
+              <span class="card-icon">🧩</span>
+              <div>
+                <span class="card-kicker" id="manualLabel">YOUR OWN PROGRAM</span>
+                <h2 id="manualTitle">Build a plan manually</h2>
+              </div>
+            </header>
+            <p id="manualText" class="muted">Search exercises, set your sets and rest times, add days or duplicate a workout.</p>
+            <a id="manualAction" class="secondary-action" href="/manual-workout-builder.html">Create my plan</a>
+          </article>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div id="athleteCorePrompt" class="athlete-core-prompt hidden" role="dialog" aria-modal="true" aria-labelledby="athleteCorePromptTitle">
+    <div class="athlete-core-prompt-card">
+      <span class="athlete-core-prompt-icon">🎯</span>
+      <h2 id="athleteCorePromptTitle">Complete your Athlete Core</h2>
+      <p id="athleteCorePromptText">Please fill in your Athlete Core. This helps FuelPhysique make the site more useful, accurate and personalized for you.</p>
+      <div class="athlete-core-prompt-actions">
+        <a id="athleteCorePromptAction" class="primary-action" href="/app.html?settings=open&section=athleteCore">Fill Athlete Core</a>
+        <button id="athleteCorePromptLater" class="text-action" type="button">Later</button>
+      </div>
     </div>
-  </section>
-</main><script type="module" src="/js/dashboard.js?v=20260722-6"></script></body></html>
+  </div>
+
+  <script type="module" src="/js/site-feedback.js"></script>
+  <script type="module" src="/js/dashboard.js?v=20260722-7"></script>
+</body>
+</html>

@@ -340,14 +340,14 @@ function setLanguage(lang) {
     favoriteFoods: "מאכלים אהובים",
     dislikedFoods: "מאכלים שלא אוהבים",
     diet: "אלרגיות או הגבלות תזונתיות",
-    notes: "דברים נוספים שמאמן ה־AI צריך לזכור"
+    notes: "דברים נוספים שהמאמן צריך לזכור"
   } : {
     trainingDays: "Training days per week", trainingStyle: "Preferred training style",
     none: "Not specified", gym: "Gym / weights", calisthenics: "Calisthenics",
     hybrid: "Hybrid", home: "Home workouts", sport: "Sport performance",
     equipment: "Available equipment", favoriteFoods: "Favorite foods",
     dislikedFoods: "Foods you dislike", diet: "Allergies or dietary restrictions",
-    notes: "Anything else your AI coach should remember"
+    notes: "Anything else your coach should remember"
   };
   [["memoryTrainingDaysLabel","trainingDays"],["memoryTrainingStyleLabel","trainingStyle"],
    ["styleNoneOption","none"],["styleGymOption","gym"],["styleCalisthenicsOption","calisthenics"],
@@ -1103,7 +1103,7 @@ voiceInputBtn?.addEventListener("click", () => {
   else startRecording();
 });
 
-clearBtn.addEventListener(
+clearBtn?.addEventListener(
   "click",
   clearChat
 );

@@ -2,6 +2,7 @@ import { auth, db } from "./firebase-config.js";
 import { setupExerciseDemos } from "./exercise-demos.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
+import { createWeeklyScheduleDays } from "./schedule-utils.js";
 
 import {
   collection,
@@ -28,7 +29,7 @@ async function authHeaders(contentType = "application/json") {
 const isHebrew = currentLanguage === "he";
 const ui = isHebrew
   ? {
-      pageTitle: "בונה תוכניות אימון AI",
+      pageTitle: "בונה תוכניות אימון",
       pageDescription:
         "בנה תוכנית אימונים אישית לפי המטרה, הניסיון, לוח הזמנים, הציוד והמגבלות שלך.",
 
@@ -71,7 +72,7 @@ const ui = isHebrew
       equipmentFallback: "ציוד"
     }
   : {
-      pageTitle: "AI Workout Builder",
+      pageTitle: "Workout Builder",
       pageDescription:
         "Build a personalized workout plan based on your goals, experience, schedule, equipment, and limitations.",
 
@@ -328,7 +329,17 @@ form.addEventListener("submit", async (event) => {
     setStatus("");
 
 if (data.program) {
-  window.currentWorkoutProgram = data.program;
+  const sessionCount = Array.isArray(data.program.sessions)
+    ? data.program.sessions.length
+    : Number(data.program.daysPerWeek) || 0;
+  window.currentWorkoutProgram = {
+    ...data.program,
+    weeklyScheduleDays:
+      Array.isArray(data.program.weeklyScheduleDays) &&
+      data.program.weeklyScheduleDays.length === sessionCount
+        ? data.program.weeklyScheduleDays
+        : createWeeklyScheduleDays(sessionCount)
+  };
 
   trackEvent("workout_generated", {
     source: "ai_workout_builder"
@@ -389,7 +400,17 @@ async function saveWorkoutPlan(plan) {
   return addDoc(workoutPlansRef, {
     name: plan.programName || "Workout Plan",
     active: false,
-    plan,
+    plan: {
+      ...plan,
+      weeklyScheduleDays:
+        Array.isArray(plan.weeklyScheduleDays) &&
+        plan.weeklyScheduleDays.length ===
+          (Array.isArray(plan.sessions) ? plan.sessions.length : 0)
+          ? plan.weeklyScheduleDays
+          : createWeeklyScheduleDays(
+              Array.isArray(plan.sessions) ? plan.sessions.length : 0
+            )
+    },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
@@ -949,136 +949,8 @@
 
 <body>
   <main class="container">
-    <header class="top-bar">
-      <div class="brand">
-        <h1>Coach</h1>
-
-        <p id="subtitle" class="subtitle">
-          FuelPhysique AI coach — fitness, nutrition, training progress, and
-          high-quality evidence-based information.
-        </p>
-      </div>
-
-      <div class="top-actions">
-        <section class="nav-section">
-          <div class="nav-section-header">Core</div>
-          <div class="nav-section-actions">
-            <button
-              id="settingsBtn"
-              class="settings-btn"
-              type="button"
-              aria-haspopup="dialog"
-            >
-              ⚙️ Settings
-            </button>
-            <button class="workout-btn dashboard-btn" type="button" onclick="window.location.href='/dashboard.html'">
-              <span class="title">🏠 Dashboard</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="nav-section">
-          <div class="nav-section-header">Training</div>
-          <div class="nav-section-actions">
-            <button
-              class="workout-btn workout-builder-btn"
-              type="button"
-              onclick="window.location.href='/workout-builder.html'"
-            >
-              <span class="title">🏋️ Workout Builder</span>
-            </button>
-            <button
-              class="workout-btn manual-card-btn"
-              type="button"
-              onclick="window.location.href='/manual-workout-builder.html'"
-            >
-              <span class="title">🧩 Manual Builder</span>
-            </button>
-            <button class="workout-btn workout-tracker-btn" type="button" onclick="window.location.href='/workout-tracker.html'">
-              <span class="title">🏋️ Workout Tracker</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="nav-section">
-          <div class="nav-section-header">Nutrition</div>
-          <div class="nav-section-actions">
-            <button
-              class="workout-btn nutrition-builder-btn"
-              type="button"
-              onclick="window.location.href='/nutrition-builder.html'"
-            >
-              <span class="title">🥗 Nutrition Builder</span>
-            </button>
-            <button class="workout-btn saved-nutrition-btn" type="button" onclick="window.location.href='/my-nutrition-plans.html'">
-              <span class="title">📂 My Nutrition Plans</span>
-            </button>
-          </div>
-        </section>
-
-        <section class="nav-section">
-          <div class="nav-section-header">Tracking</div>
-          <div class="nav-section-actions">
-            <button class="workout-btn saved-workouts-btn" type="button" onclick="window.location.href='/my-workout-plans.html'">
-              <span class="title">📂 My Workout Plans</span>
-            </button>
-            <button class="workout-btn progress-btn" type="button" onclick="window.location.href='/progress.html'">
-              <span class="title">📈 Progress Tracking</span>
-            </button>
-            <button class="workout-btn workout-history-btn" type="button" onclick="window.location.href='/workout-history.html'">
-              <span class="title">📋 Workout History</span>
-            </button>
-            <button class="workout-btn exercise-progress-btn" type="button" onclick="window.location.href='/exercise-progress.html'">
-              <span class="title">📈 Exercise Progress</span>
-            </button>
-            <button
-              id="clearBtn"
-              class="clear-btn"
-              type="button"
-            >
-              Clear Chat
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <div class="mobile-nav-accordion" aria-label="Mobile navigation">
-        <details class="mobile-nav-group">
-          <summary>Planning</summary>
-          <div class="mobile-nav-links">
-            <button class="workout-btn dashboard-btn" type="button" onclick="window.location.href='/dashboard.html'"><span class="title">🏠 Dashboard</span></button>
-            <button class="workout-btn workout-builder-btn" type="button" onclick="window.location.href='/workout-builder.html'"><span class="title">🏋️ Workout Builder</span></button>
-            <button class="workout-btn nutrition-builder-btn" type="button" onclick="window.location.href='/nutrition-builder.html'"><span class="title">🥗 Nutrition Builder</span></button>
-            <button class="workout-btn manual-card-btn" type="button" onclick="window.location.href='/manual-workout-builder.html'"><span class="title">🧩 Manual Builder</span></button>
-          </div>
-        </details>
-
-        <details class="mobile-nav-group">
-          <summary>Tracking</summary>
-          <div class="mobile-nav-links">
-            <button class="workout-btn workout-tracker-btn" type="button" onclick="window.location.href='/workout-tracker.html'"><span class="title">🏋️ Workout Tracker</span></button>
-            <button class="workout-btn saved-workouts-btn" type="button" onclick="window.location.href='/my-workout-plans.html'"><span class="title">📂 My Workout Plans</span></button>
-            <button class="workout-btn saved-nutrition-btn" type="button" onclick="window.location.href='/my-nutrition-plans.html'"><span class="title">📂 My Nutrition Plans</span></button>
-            <button class="workout-btn progress-btn" type="button" onclick="window.location.href='/progress.html'"><span class="title">📈 Progress Tracking</span></button>
-          </div>
-        </details>
-
-        <details class="mobile-nav-group">
-          <summary>History & runs</summary>
-          <div class="mobile-nav-links">
-            <button class="workout-btn workout-history-btn" type="button" onclick="window.location.href='/workout-history.html'"><span class="title">📋 Workout History</span></button>
-            <button class="workout-btn exercise-progress-btn" type="button" onclick="window.location.href='/exercise-progress.html'"><span class="title">📈 Exercise Progress</span></button>
-          </div>
-        </details>
-
-        <details class="mobile-nav-group">
-          <summary>Settings & chat</summary>
-          <div class="mobile-nav-links">
-            <button id="mobileSettingsBtn" class="settings-btn" type="button">⚙️ Settings</button>
-            <button id="mobileClearBtn" class="clear-btn" type="button">Clear Chat</button>
-          </div>
-        </details>
-      </div>
+    <header class="top-bar coach-minimal-header">
+      <a class="coach-back-link" href="/dashboard.html">← Dashboard</a>
     </header>
 
     <div class="app-layout">
@@ -1595,5 +1467,6 @@
   mobileSettingsBtn?.addEventListener("click", () => settingsBtn?.click());
   mobileClearBtn?.addEventListener("click", () => clearBtn?.click());
 </script>
+  <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

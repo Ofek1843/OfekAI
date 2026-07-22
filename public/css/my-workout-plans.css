@@ -123,11 +123,12 @@ button, a { font: inherit; }
 
 .manage-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
 
 .rename-button,
+.edit-button,
 .delete-button {
   padding: 10px 12px;
   border: 1px solid var(--border);
@@ -143,6 +144,11 @@ button, a { font: inherit; }
   background: rgba(124, 92, 255, 0.14);
 }
 
+.edit-button:hover {
+  border-color: rgba(34, 211, 238, 0.55);
+  background: rgba(34, 211, 238, 0.12);
+}
+
 .delete-button {
   color: #fda4af;
 }
@@ -153,9 +159,141 @@ button, a { font: inherit; }
 }
 
 .rename-button:disabled,
+.edit-button:disabled,
 .delete-button:disabled {
   cursor: wait;
   opacity: 0.65;
+}
+
+.plan-card.is-editing {
+  grid-column: 1 / -1;
+}
+
+.plan-editor-form {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid rgba(34, 211, 238, 0.24);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.12), transparent 32%),
+    rgba(3, 10, 22, 0.45);
+}
+
+.plan-editor-header h3 {
+  margin: 0 0 6px;
+  font-size: 21px;
+}
+
+.plan-editor-header p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.editor-session-list {
+  display: grid;
+  gap: 16px;
+}
+
+.editor-session {
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.editor-session-head {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) minmax(160px, 0.8fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.editor-exercise-list {
+  display: grid;
+  gap: 10px;
+}
+
+.editor-exercise-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.6fr) minmax(82px, 0.45fr) minmax(96px, 0.65fr) minmax(110px, 0.65fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.plan-editor-form label {
+  display: grid;
+  gap: 6px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+
+.plan-editor-form input,
+.plan-editor-form select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  color: var(--text);
+  background: rgba(15, 23, 42, 0.8);
+  outline: none;
+}
+
+.plan-editor-form input:focus,
+.plan-editor-form select:focus {
+  border-color: rgba(34, 211, 238, 0.65);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+}
+
+.add-exercise-button,
+.add-session-button,
+.remove-exercise-button,
+.remove-session-button,
+.save-plan-edit-button,
+.cancel-edit-button {
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.055);
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.add-exercise-button,
+.add-session-button {
+  margin-top: 12px;
+  border-color: rgba(34, 211, 238, 0.34);
+  color: #a5f3fc;
+  background: rgba(8, 145, 178, 0.12);
+}
+
+.remove-exercise-button,
+.remove-session-button {
+  color: #fecdd3;
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.save-plan-edit-button {
+  min-width: 170px;
+  color: #052e16;
+  border-color: transparent;
+  background: linear-gradient(135deg, #4ade80, #22d3ee);
+}
+
+.cancel-edit-button {
+  min-width: 120px;
 }
 
 .empty-state {
@@ -176,4 +314,11 @@ button, a { font: inherit; }
   .page-nav { align-items: stretch; flex-direction: column; margin-bottom: 36px; }
   .page-nav a { text-align: center; }
   .plans-grid { grid-template-columns: 1fr; }
+  .manage-actions { grid-template-columns: 1fr; }
+  .plan-editor-form { padding: 14px; }
+  .editor-session-head,
+  .editor-exercise-row {
+    grid-template-columns: 1fr;
+  }
+  .editor-actions { display: grid; }
 }

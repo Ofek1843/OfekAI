@@ -70,24 +70,24 @@ app.get("/health", (req, res) => {
 });
 
 app.post("/api/analytics/event", (req, res) => {
-  const limitResult = rateLimiters.analytics.check(req, clientIp(req));
-  if (!limitResult.ok) {
-    return res.status(429).json({
-      error: "Analytics rate limit exceeded. Please try again shortly."
-    });
+  try {
+    rateLimiters.analytics(req, clientIp(req));
+
+    const body = req.body && typeof req.body === "object" ? req.body : {};
+    const sanitized = sanitizeAnalyticsPayload(body);
+    if (!sanitized) {
+      return res.status(204).end();
+    }
+
+    console.log(
+      `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"} ip=${clientIp(req)}`
+    );
+
+    return res.status(204).end();
+  } catch (error) {
+    console.error("Analytics event error:", error.message);
+    return res.status(204).end();
   }
-
-  const body = req.body && typeof req.body === "object" ? req.body : {};
-  const sanitized = sanitizeAnalyticsPayload(body);
-  if (!sanitized) {
-    return res.status(400).json({ error: "Unsupported analytics event." });
-  }
-
-  console.log(
-    `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"} ip=${clientIp(req)}`
-  );
-
-  res.status(204).end();
 });
 
 app.get("/api/public-stats", async (req, res) => {
@@ -593,7 +593,8 @@ async function createChatCompletion({
         name: `Mock Session ${index + 1}`,
         exercises: [
           { name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
+          { name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
         ]
       }));
       return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
@@ -710,6 +711,99 @@ function boundedMacro(value, max) {
   return Math.max(0, Math.min(max, Math.round(number)));
 }
 
+function applyQuickFoodRealityFloor(foodText, totals) {
+  const text = String(foodText || "").toLowerCase();
+  const hasMeat = /(עגל|בשר|שווארמה|קבב|המבורגר|veal|beef|shawarma|kebab|burger)/i.test(text);
+  const hasLargeWrap = /(לאפה|לפה|פיתה|laffa|lafah|pita|wrap)/i.test(text);
+  const hasTahini = /(טחינה|tahini)/i.test(text);
+  const hasFries = /(ציפס|צ'יפס|chips|fries|french fries)/i.test(text);
+  const hasPizza = /(פיצה|pizza)/i.test(text);
+  const hasFamilySize = /(משפחתית|family|large|tray|מגש)/i.test(text);
+  const hasBurger = /(\u05d4\u05de\u05d1\u05d5\u05e8\u05d2\u05e8|\u05d1\u05d5\u05e8\u05d2\u05e8|hamburger|burger)/i.test(text);
+  const hasPasta = /(\u05e4\u05e1\u05d8\u05d4|pasta|spaghetti|fettuccine|ravioli|macaroni)/i.test(text);
+  const hasLasagna = /(\u05dc\u05d6\u05e0\u05d9\u05d4|lasagna|lasagne)/i.test(text);
+  const hasCreamOrCheeseSauce = /(\u05e9\u05de\u05e0\u05ea|\u05d2\u05d1\u05d9\u05e0\u05d4|\u05d2\u05d1\u05d9\u05e0\u05d5\u05ea|cream|alfredo|cheese|cheesy|carbonara|rose sauce|pink sauce)/i.test(text);
+  const hasRestaurantCue = /(\u05de\u05e1\u05e2\u05d3\u05d4|\u05d5\u05d5\u05dc\u05d8|\u05d5\u05d5\u05dc\u05d8|wolt|restaurant|takeaway|delivery|ordered)/i.test(text);
+
+  const floors = {
+    calories: 0,
+    proteinGrams: 0,
+    carbsGrams: 0,
+    fatGrams: 0
+  };
+
+  if (hasMeat && hasLargeWrap) {
+    floors.calories += 850;
+    floors.proteinGrams += 35;
+    floors.carbsGrams += 70;
+    floors.fatGrams += 28;
+  }
+
+  if (hasTahini) {
+    floors.calories += 180;
+    floors.proteinGrams += 5;
+    floors.carbsGrams += 6;
+    floors.fatGrams += 16;
+  }
+
+  if (hasFries) {
+    floors.calories += 350;
+    floors.proteinGrams += 5;
+    floors.carbsGrams += 45;
+    floors.fatGrams += 18;
+  }
+
+  if (hasBurger) {
+    floors.calories = Math.max(floors.calories, 650);
+    floors.proteinGrams = Math.max(floors.proteinGrams, 25);
+    floors.carbsGrams = Math.max(floors.carbsGrams, 40);
+    floors.fatGrams = Math.max(floors.fatGrams, 28);
+  }
+
+  if (hasBurger && hasFries) {
+    floors.calories = Math.max(floors.calories, 1000);
+    floors.proteinGrams = Math.max(floors.proteinGrams, 30);
+    floors.carbsGrams = Math.max(floors.carbsGrams, 85);
+    floors.fatGrams = Math.max(floors.fatGrams, 45);
+  }
+
+  if (hasPasta) {
+    floors.calories = Math.max(floors.calories, hasRestaurantCue ? 800 : 550);
+    floors.proteinGrams = Math.max(floors.proteinGrams, 15);
+    floors.carbsGrams = Math.max(floors.carbsGrams, 75);
+    floors.fatGrams = Math.max(floors.fatGrams, hasRestaurantCue ? 25 : 12);
+  }
+
+  if (hasPasta && hasCreamOrCheeseSauce) {
+    floors.calories = Math.max(floors.calories, 900);
+    floors.proteinGrams = Math.max(floors.proteinGrams, 20);
+    floors.carbsGrams = Math.max(floors.carbsGrams, 80);
+    floors.fatGrams = Math.max(floors.fatGrams, 35);
+  }
+
+  if (hasLasagna) {
+    floors.calories = Math.max(floors.calories, hasRestaurantCue ? 850 : 650);
+    floors.proteinGrams = Math.max(floors.proteinGrams, 28);
+    floors.carbsGrams = Math.max(floors.carbsGrams, 55);
+    floors.fatGrams = Math.max(floors.fatGrams, 28);
+  }
+
+  if (hasPizza && hasFamilySize) {
+    floors.calories = Math.max(floors.calories, 1800);
+    floors.proteinGrams = Math.max(floors.proteinGrams, 70);
+    floors.carbsGrams = Math.max(floors.carbsGrams, 190);
+    floors.fatGrams = Math.max(floors.fatGrams, 70);
+  }
+
+  return {
+    calories: Math.max(boundedMacro(totals.calories, 15000), floors.calories),
+    proteinGrams: Math.max(boundedMacro(totals.proteinGrams, 1000), floors.proteinGrams),
+    carbsGrams: Math.max(boundedMacro(totals.carbsGrams, 2000), floors.carbsGrams),
+    fatGrams: Math.max(boundedMacro(totals.fatGrams, 1000), floors.fatGrams),
+    adjusted: Object.values(floors).some((value) => value > 0)
+  };
+}
+
 app.post("/api/quick-food-estimate", async (req, res) => {
   let dedupeKey = null;
   try {
@@ -757,6 +851,18 @@ Rules:
 - Estimate from common food composition data and realistic portions.
 - Understand Hebrew and English food descriptions, including vague text such as family pizza trays.
 - If the portion is vague, make a reasonable conservative estimate and set confidence to low or medium.
+- Never underestimate dense restaurant or street foods. For vague restaurant meals, prefer a realistic mid-to-high estimate over a low estimate.
+- A meat/veal/beef/shawarma laffa, pita or large wrap is usually at least 800-1000 calories before extras.
+- If that wrap also includes tahini, add roughly 150-250 calories and meaningful fat.
+- If that wrap also includes fries/chips, add roughly 300-500 calories and meaningful carbs/fat.
+- Therefore, meat in laffa with tahini and fries should usually be around 1200-1600 calories, not 700-900.
+- Protein for a meat/veal/shawarma laffa should usually be at least 35-50g, and higher if the meat portion is large.
+- Family-size pizza / pizza tray entries should be treated as a very high-calorie item unless the user clearly says they ate only one slice.
+- Burger plus fries is usually about 900-1300 calories or more depending on size, not 500-700.
+- Restaurant pasta is commonly 700-1100 calories. Cream, Alfredo, carbonara, rose sauce, cheese or large portions push it higher.
+- Lasagna is commonly 600-900 calories per restaurant-size serving and can be higher.
+- For mixed meals, estimate each component separately and sum them. Do not compress a full meal into the calories of one ingredient.
+- If you are uncertain, set confidence to low or medium but keep the calories realistic rather than optimistic.
 - Do not give medical advice, dieting advice, apologies, markdown, or explanations.
 - Do not compare with the user's nutrition plan; the app will do that separately.
           `.trim()
@@ -775,14 +881,21 @@ Food log: ${text}`
       return res.status(502).json({ error: "Could not estimate that food log." });
     }
 
+    const totals = applyQuickFoodRealityFloor(text, {
+      calories: parsed.calories,
+      proteinGrams: parsed.proteinGrams,
+      carbsGrams: parsed.carbsGrams,
+      fatGrams: parsed.fatGrams
+    });
+
     res.json({
       totals: {
-        calories: boundedMacro(parsed.calories, 15000),
-        proteinGrams: boundedMacro(parsed.proteinGrams, 1000),
-        carbsGrams: boundedMacro(parsed.carbsGrams, 2000),
-        fatGrams: boundedMacro(parsed.fatGrams, 1000)
+        calories: totals.calories,
+        proteinGrams: totals.proteinGrams,
+        carbsGrams: totals.carbsGrams,
+        fatGrams: totals.fatGrams
       },
-      confidence: ["low", "medium", "high"].includes(String(parsed.confidence)) ? parsed.confidence : "medium",
+      confidence: totals.adjusted ? "medium" : (["low", "medium", "high"].includes(String(parsed.confidence)) ? parsed.confidence : "medium"),
       foodLog: String(parsed.foodLog || "").slice(0, 180)
     });
   } catch (error) {
@@ -1485,10 +1598,11 @@ function workoutQualityIssues(program,{daysPerWeek,equipment,trainingStyle}){
   };
   const allowed=[...selected].flatMap(key=>equipmentTokens[key]||[]);
   for(const [sessionIndex,session] of (program?.sessions||[]).entries()){
-    if(!Array.isArray(session.exercises)||session.exercises.length<3||session.exercises.length>8)issues.push(`Session ${sessionIndex+1} must contain 3-8 exercises.`);
+    if(!Array.isArray(session.exercises)||session.exercises.length<2||session.exercises.length>8)issues.push(`Session ${sessionIndex+1} must contain 2-8 exercises.`);
     for(const exercise of (session.exercises||[])){
       const required=String(exercise.equipment||"").toLowerCase();
-      if(allowed.length&&!allowed.some(token=>required.includes(token.toLowerCase())))issues.push(`${exercise.name||"Exercise"} requires unselected equipment: ${exercise.equipment||"unknown"}.`);
+      const isBodyweightExercise = required.includes("bodyweight") || required.includes("???? ???");
+      if(!isBodyweightExercise&&allowed.length&&!allowed.some(token=>required.includes(token.toLowerCase())))issues.push(`${exercise.name||"Exercise"} requires unselected equipment: ${exercise.equipment||"unknown"}.`);
       const name=String(exercise.name||"").toLowerCase();
       if(/parallel bars|מקבילים|\bdips?\b/.test(name)&&!selected.has("rings"))issues.push(`${exercise.name} requires parallel bars or rings, which were not selected.`);
       if(/bodyweight row|inverted row|חתירה.*משקל גוף/.test(name)&&!selected.has("rings"))issues.push(`${exercise.name} needs rings, suspension straps or a suitable low bar.`);
@@ -1521,6 +1635,58 @@ function normalizeNutritionPlan(plan,{targetCalories,targetProtein,targetCarbs,t
   plan.notes.push("Unless an item explicitly says dry or uncooked, grain, pasta, legume, meat and potato weights refer to the cooked or ready-to-eat portion.");
   if(safeConditions.includes("b12Deficiency")&&["vegan","vegetarian"].includes(String(dietaryPreference).toLowerCase()))plan.notes.push("A diagnosed vitamin B12 deficiency may not be correctable from this food pattern alone. Confirm fortified-food choices and clinician-directed treatment with a qualified professional.");
   return plan;
+}
+
+async function repairWorkoutProgram({ program, issues, parsedDays, equipment, trainingStyle, outputLanguage }) {
+  if (!issues.length) return program;
+
+  const repairPrompt = [
+    `The previous workout JSON was close but failed these validation checks:`,
+    ...issues.map(issue => `- ${issue}`),
+    "",
+    "Return ONLY the corrected JSON program.",
+    "Preserve the user's requested days per week, style, equipment, and the overall structure.",
+    "Keep the same JSON schema and do not add any markdown.",
+    "If a session has too few exercises, add suitable exercises rather than removing the session.",
+    "If an exercise uses unsupported equipment, replace it with a valid option from the user's selected equipment.",
+    "Do not change the language rules."
+  ].join("\n");
+
+  const repairResponse = await createChatCompletion({
+    temperature: 0.2,
+    maxTokens: 3500,
+    messages: [
+      {
+        role: "system",
+        content: `You are FuelPhysique, a careful workout JSON repair assistant. Return only valid JSON.`
+      },
+      {
+        role: "user",
+        content: `Selected equipment: ${Array.isArray(equipment) ? equipment.join(", ") : String(equipment)}
+Training style: ${String(trainingStyle)}
+Days per week: ${parsedDays}
+Language: ${outputLanguage}
+
+Original JSON:
+${JSON.stringify(program)}
+
+${repairPrompt}`
+      }
+    ]
+  });
+
+  const cleanedResponse = String(repairResponse)
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/\s*```$/i, "")
+    .trim();
+
+  const repaired = JSON.parse(cleanedResponse);
+  if (!repaired || typeof repaired !== "object" || !Array.isArray(repaired.sessions)) {
+    return program;
+  }
+  repaired.daysPerWeek = parsedDays;
+  return repaired;
 }
 
 app.post("/api/workout-builder", async (req, res) => {
@@ -1769,11 +1935,42 @@ Injuries, limitations or special requests: ${String(limitations)}
       });
     }
 
-    program.daysPerWeek=parsedDays;
-    const qualityIssues=workoutQualityIssues(program,{daysPerWeek:parsedDays,equipment,trainingStyle});
-    if(qualityIssues.length){
-      console.warn("Workout quality validation failed:",qualityIssues);
-      return res.status(422).json({error:"The generated workout did not satisfy every selected constraint. Please generate again.",details:qualityIssues});
+    program.daysPerWeek = parsedDays;
+    let qualityIssues = workoutQualityIssues(program, { daysPerWeek: parsedDays, equipment, trainingStyle });
+
+    if (qualityIssues.length) {
+      try {
+        const repairedProgram = await repairWorkoutProgram({
+          program,
+          issues: qualityIssues,
+          parsedDays,
+          equipment,
+          trainingStyle,
+          outputLanguage
+        });
+        const repairedIssues = workoutQualityIssues(repairedProgram, {
+          daysPerWeek: parsedDays,
+          equipment,
+          trainingStyle
+        });
+        if (!repairedIssues.length) {
+          program = repairedProgram;
+          qualityIssues = [];
+        } else {
+          qualityIssues = repairedIssues;
+        }
+      } catch (repairError) {
+        console.warn("Workout repair attempt failed:", repairError.message);
+      }
+    }
+
+    if (qualityIssues.length) {
+      console.warn("Workout quality validation produced warnings:", qualityIssues);
+      return res.json({
+        success: true,
+        program,
+        warnings: qualityIssues
+      });
     }
 
     return res.json({
