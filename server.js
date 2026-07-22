@@ -620,6 +620,16 @@ async function createChatCompletion({
       }));
       return JSON.stringify({ dailyCalories: 2400, proteinGrams: 180, carbsGrams: 260, fatGrams: 70, meals, notes: ["Mock mode."] });
     }
+    if (/Return ONLY valid JSON/i.test(systemPrompt) && /foodLog/i.test(systemPrompt)) {
+      return JSON.stringify({
+        foodLog: "Mock food estimate",
+        calories: 1500,
+        proteinGrams: 60,
+        carbsGrams: 180,
+        fatGrams: 55,
+        confidence: "medium"
+      });
+    }
     if (/Return ONLY valid JSON/i.test(systemPrompt)) {
       return JSON.stringify({ ok: true, mock: true });
     }
@@ -678,6 +688,113 @@ async function createChatCompletion({
     clearTimeout(timeout);
   }
 }
+
+function extractJsonObject(text) {
+  const raw = String(text || "").trim();
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    try {
+      return JSON.parse(match[0]);
+    } catch {
+      return null;
+    }
+  }
+}
+
+function boundedMacro(value, max) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 0;
+  return Math.max(0, Math.min(max, Math.round(number)));
+}
+
+app.post("/api/quick-food-estimate", async (req, res) => {
+  let dedupeKey = null;
+  try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    dedupeKey = rejectIfDuplicateAi(req, res, user, "quick-food-estimate");
+    if (!dedupeKey) return;
+
+    const text = String(req.body?.text || "").replace(/\s+/g, " ").trim().slice(0, 1500);
+    const language = String(req.body?.language || "en").toLowerCase() === "he" ? "Hebrew" : "English";
+    const activePlan = req.body?.activeNutritionPlan && typeof req.body.activeNutritionPlan === "object"
+      ? {
+          dailyCalories: boundedMacro(req.body.activeNutritionPlan.dailyCalories, 10000),
+          proteinGrams: boundedMacro(req.body.activeNutritionPlan.proteinGrams, 1000),
+          carbsGrams: boundedMacro(req.body.activeNutritionPlan.carbsGrams, 1500),
+          fatGrams: boundedMacro(req.body.activeNutritionPlan.fatGrams, 700)
+        }
+      : null;
+
+    if (text.length < 2) {
+      return res.status(400).json({ error: "Food text is required." });
+    }
+
+    const reply = await createChatCompletion({
+      taskName: "quick-food-estimate",
+      temperature: 0.1,
+      maxTokens: 220,
+      messages: [
+        {
+          role: "system",
+          content: `
+You estimate calories and macronutrients from a rough text food log.
+Return ONLY valid JSON with this exact shape:
+{
+  "foodLog": "short cleaned summary",
+  "calories": 0,
+  "proteinGrams": 0,
+  "carbsGrams": 0,
+  "fatGrams": 0,
+  "confidence": "low|medium|high"
+}
+
+Rules:
+- Estimate from common food composition data and realistic portions.
+- Understand Hebrew and English food descriptions, including vague text such as family pizza trays.
+- If the portion is vague, make a reasonable conservative estimate and set confidence to low or medium.
+- Do not give medical advice, dieting advice, apologies, markdown, or explanations.
+- Do not compare with the user's nutrition plan; the app will do that separately.
+          `.trim()
+        },
+        {
+          role: "user",
+          content: `Language: ${language}
+Active nutrition plan targets, if any: ${activePlan ? JSON.stringify(activePlan) : "none"}
+Food log: ${text}`
+        }
+      ]
+    });
+
+    const parsed = extractJsonObject(reply);
+    if (!parsed) {
+      return res.status(502).json({ error: "Could not estimate that food log." });
+    }
+
+    res.json({
+      totals: {
+        calories: boundedMacro(parsed.calories, 15000),
+        proteinGrams: boundedMacro(parsed.proteinGrams, 1000),
+        carbsGrams: boundedMacro(parsed.carbsGrams, 2000),
+        fatGrams: boundedMacro(parsed.fatGrams, 1000)
+      },
+      confidence: ["low", "medium", "high"].includes(String(parsed.confidence)) ? parsed.confidence : "medium",
+      foodLog: String(parsed.foodLog || "").slice(0, 180)
+    });
+  } catch (error) {
+    console.error("Quick food estimate failed:", error.message);
+    res.status(error.status || (error.name === "AbortError" ? 504 : 500)).json({
+      error: error.status === 429 ? "Too many nutrition estimates. Please try again shortly." : "Could not estimate that food log."
+    });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
+  }
+});
+
 const localFoodImages = {
   "chicken breast": "/images/foods/chicken-breast.jpg",
   "chicken thigh": "/images/foods/chicken-thigh.jpg",

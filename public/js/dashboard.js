@@ -2,10 +2,11 @@ import { auth, db } from "./firebase-config.js";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { getIdToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
+let activeNutritionPlanForQuickFood = null;
 
 const rawUi = he ? {
   today: "היום",
@@ -197,6 +198,7 @@ function renderWorkout(planDoc, logs) {
 function renderNutrition(saved) {
   const action = $("#nutritionLink");
   if (!saved) {
+    activeNutritionPlanForQuickFood = null;
     $("#nutritionPlanName").textContent = ui.noneNutrition;
     $("#caloriesValue").textContent = "—";
     $("#proteinValue").textContent = "—";
@@ -207,6 +209,13 @@ function renderNutrition(saved) {
   action.href = "/my-nutrition-plans.html";
   action.textContent = ui.manageNutrition;
   const plan = saved.plan || {};
+  activeNutritionPlanForQuickFood = {
+    name: saved.name || plan.planName || "Nutrition Plan",
+    dailyCalories: Number(plan.dailyCalories) || null,
+    proteinGrams: Number(plan.proteinGrams) || null,
+    carbsGrams: Number(plan.carbsGrams) || null,
+    fatGrams: Number(plan.fatGrams) || null
+  };
   $("#nutritionPlanName").textContent = saved.name || plan.planName || "Nutrition Plan";
   $("#caloriesValue").textContent = plan.dailyCalories ? Number(plan.dailyCalories).toLocaleString() : "—";
   $("#proteinValue").textContent = plan.proteinGrams ? `${plan.proteinGrams}g` : "—";
@@ -324,18 +333,78 @@ function recommendation(calories) {
   return ui.quickFoodHigh;
 }
 
+function quickFoodComparison(totals) {
+  const plan = activeNutritionPlanForQuickFood;
+  const calories = Math.round(Number(totals.calories) || 0);
+  const protein = Math.round(Number(totals.proteinGrams) || 0);
+  const carbs = Math.round(Number(totals.carbsGrams) || 0);
+  const fat = Math.round(Number(totals.fatGrams) || 0);
+  const macroLine = `${protein}g ${he ? "\u05d7\u05dc\u05d1\u05d5\u05df" : "protein"} · ${carbs}g ${he ? "\u05e4\u05d7\u05de\u05d9\u05de\u05d5\u05ea" : "carbs"} · ${fat}g ${he ? "\u05e9\u05d5\u05de\u05df" : "fat"}`;
+  if (!plan?.dailyCalories) {
+    return he
+      ? `\u05d0\u05d9\u05df \u05ea\u05e4\u05e8\u05d9\u05d8 \u05de\u05d5\u05d2\u05d3\u05e8 \u05dc\u05db\u05df \u05d0\u05e0\u05d9 \u05dc\u05d0 \u05d9\u05d5\u05d3\u05e2 \u05d0\u05dd \u05d7\u05e8\u05d2\u05ea \u05d0\u05d5 \u05dc\u05d0, \u05d0\u05d1\u05dc \u05d6\u05d4 \u05d4\u05de\u05e6\u05d1 \u05e9\u05dc\u05da: ${calories} \u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea, ${macroLine}.`
+      : `No active nutrition plan is set, so I cannot tell whether you went over or not. Your estimated intake is: ${calories} calories, ${macroLine}.`;
+  }
+  const target = Number(plan.dailyCalories);
+  const delta = calories - target;
+  const absDelta = Math.abs(Math.round(delta));
+  if (delta > 250) {
+    return he
+      ? `\u05d1\u05d9\u05d7\u05e1 \u05dc\u05ea\u05e4\u05e8\u05d9\u05d8 \u05d4\u05e4\u05e2\u05d9\u05dc \u05e9\u05dc\u05da (${Math.round(target)} \u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea), \u05d6\u05d4 \u05d1\u05e2\u05e8\u05da ${absDelta} \u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea \u05de\u05e2\u05dc \u05d4\u05d9\u05e2\u05d3. \u05de\u05d5\u05de\u05dc\u05e5 \u05dc\u05e2\u05e9\u05d5\u05ea \u05d4\u05dc\u05d9\u05db\u05d4 \u05e7\u05dc\u05d4 \u05d0\u05dd \u05d6\u05d4 \u05de\u05ea\u05d0\u05d9\u05dd \u05dc\u05da, \u05d5\u05d1\u05e2\u05d9\u05e7\u05e8 \u05dc\u05d7\u05d6\u05d5\u05e8 \u05dc\u05e9\u05d2\u05e8\u05d4 \u05d1\u05d0\u05e8\u05d5\u05d7\u05d4 \u05d4\u05d1\u05d0\u05d4.`
+      : `Compared with your active plan (${Math.round(target)} calories), this is about ${absDelta} calories over target. A light walk can help if it fits your day, and the main move is getting back to the routine at the next meal.`;
+  }
+  if (delta < -250) {
+    return he
+      ? `\u05d1\u05d9\u05d7\u05e1 \u05dc\u05ea\u05e4\u05e8\u05d9\u05d8 \u05d4\u05e4\u05e2\u05d9\u05dc \u05e9\u05dc\u05da, \u05d0\u05ea\u05d4 \u05d1\u05e2\u05e8\u05da ${absDelta} \u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea \u05de\u05ea\u05d7\u05ea \u05dc\u05d9\u05e2\u05d3. \u05d0\u05dd \u05d4\u05d9\u05d5\u05dd \u05e2\u05d5\u05d3 \u05dc\u05d0 \u05e0\u05d2\u05de\u05e8, \u05db\u05d3\u05d0\u05d9 \u05dc\u05d4\u05e9\u05dc\u05d9\u05dd \u05d0\u05e8\u05d5\u05d7\u05d4 \u05de\u05d0\u05d5\u05d6\u05e0\u05ea \u05d1\u05de\u05e7\u05d5\u05dd \u05dc\u05e4\u05e6\u05d5\u05ea \u05d1\u05e6\u05d5\u05e8\u05d4 \u05e7\u05d9\u05e6\u05d5\u05e0\u05d9\u05ea.`
+      : `Compared with your active plan, you are about ${absDelta} calories under target. If the day is not over, complete it with a balanced meal instead of overcorrecting.`;
+  }
+  return he
+    ? "\u05d1\u05d9\u05d7\u05e1 \u05dc\u05ea\u05e4\u05e8\u05d9\u05d8 \u05d4\u05e4\u05e2\u05d9\u05dc \u05e9\u05dc\u05da, \u05d6\u05d4 \u05d3\u05d9 \u05e7\u05e8\u05d5\u05d1 \u05dc\u05d9\u05e2\u05d3. \u05d0\u05d9\u05df \u05e4\u05d4 \u05d3\u05e8\u05de\u05d4 \u05d2\u05d3\u05d5\u05dc\u05d4."
+    : "Compared with your active plan, this is fairly close to target. No major drama here.";
+}
+
 function initQuickFood() {
   const input = $("#quickFoodInput");
   const estimate = $("#quickFoodEstimate");
   const clear = $("#quickFoodClear");
   const result = $("#quickFoodResult");
   if (!input || !estimate || !clear || !result) return;
-  const update = () => {
+  const update = async () => {
     const value = input.value.trim();
     if (!value) {
       result.textContent = ui.quickFoodEmpty;
       result.classList.add("muted");
       return;
+    }
+    estimate.disabled = true;
+    estimate.textContent = he ? "\u05de\u05d7\u05e9\u05d1..." : "Estimating...";
+    result.textContent = he ? "\u05de\u05e2\u05e8\u05d9\u05da \u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea \u05d5\u05de\u05d0\u05e7\u05e8\u05d5..." : "Estimating calories and macros...";
+    result.classList.add("muted");
+    try {
+      const token = await getIdToken(auth.currentUser);
+      const response = await fetch("/api/quick-food-estimate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          text: value,
+          language: he ? "he" : "en",
+          activeNutritionPlan: activeNutritionPlanForQuickFood
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Could not estimate food.");
+      const totals = data.totals || {};
+      result.classList.remove("muted");
+      result.innerHTML = `<strong>${Math.round(totals.calories || 0)} ${he ? "\u05e7\u05dc\u05d5\u05e8\u05d9\u05d5\u05ea" : "calories"}</strong><span>${Math.round(totals.proteinGrams || 0)}g ${he ? "\u05d7\u05dc\u05d1\u05d5\u05df" : "protein"} · ${Math.round(totals.carbsGrams || 0)}g ${he ? "\u05e4\u05d7\u05de\u05d9\u05de\u05d5\u05ea" : "carbs"} · ${Math.round(totals.fatGrams || 0)}g ${he ? "\u05e9\u05d5\u05de\u05df" : "fat"}</span><p>${quickFoodComparison(totals)}</p>`;
+      return;
+    } catch (error) {
+      console.warn("Quick food AI estimate failed; using local fallback.", error.message);
+    } finally {
+      estimate.disabled = false;
+      estimate.textContent = ui.quickFoodEstimate;
     }
     const totals = estimateFood(value);
     if (!totals) {
