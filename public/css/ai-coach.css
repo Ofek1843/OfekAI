@@ -214,12 +214,15 @@ html[data-theme="light"] .top-actions .clear-btn::after { color:#17324d; }
 }
 
 @media (max-width: 700px) {
-  .container { padding:12px; }
+  .container { width: calc(100% - 12px); margin: 6px auto; padding:12px; border-radius:18px; }
   .container::before { display:none; }
-  .top-bar { gap:8px; padding:2px 2px 12px; }
-  .brand { padding-left:0; }
-  .brand::before, .brand::after, .top-actions .settings-btn { display:none; }
-  .brand h1 { font-size:23px; }
+  .top-bar { gap:10px; padding:4px 2px 12px; align-items:flex-start; }
+  .brand { padding-left:56px; min-width:0; }
+  .brand::before { width:40px; height:40px; }
+  .brand::after { left:56px; top:-9px; font-size:8px; }
+  .top-actions .settings-btn { display:none; }
+  .brand h1 { font-size:22px; line-height:1.05; }
+  .top-actions { gap:8px; }
   .top-actions .dashboard-btn { min-width:44px; width:44px; overflow:hidden; white-space:nowrap; color:transparent; }
   .top-actions .dashboard-btn::after { content:"←"; color:#dceeff; font-size:20px; position:absolute; }
   .mobile-history-toggle { margin-bottom:10px; min-height:46px; }
@@ -229,6 +232,9 @@ html[data-theme="light"] .top-actions .clear-btn::after { color:#17324d; }
   .input-row textarea { width:100%; min-height:50px; }
   #voiceInputBtn { width:48px; min-width:48px; }
   #sendBtn { width:auto; min-width:72px; min-height:50px; }
+  .conversation-history,
+  .chat-area,
+  #chat { border-radius:18px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -255,9 +255,41 @@ app.get("/api/exercise-demo", async (req, res) => {
     "שכיבות סמיכה": "push up",
     "מקבילים": "chest dip"
   };
-  const requestedName = localizedExerciseAliases[name] || normalizeExerciseName(name);
+  // Unicode-escaped aliases avoid the mojibake that affected older Hebrew
+  // labels and make the demo lookup independent of source-file encoding.
+  const hebrewExerciseAliases = [
+    [/\u05de\u05ea\u05d7\s*\u05d9\u05d3\s*\u05d0\u05d7\u05ea/i, "one arm pull up"],
+    [/\u05de\u05ea\u05d7/i, "pull up"],
+    [/\u05e9\u05db\u05d9\u05d1\u05d5\u05ea\s*\u05e1\u05de\u05d9\u05db\u05d4/i, "push up"],
+    [/\u05e4\u05dc\u05d0\u05e0\u05e7/i, "plank"],
+    [/\u05e4\u05e7\s*\u05d3\u05e7/i, "pec deck"],
+    [/\u05e4\u05e8\u05d9\u05e6\u05e8\s*\u05e7\u05d0\u05e8\u05dc/i, "preacher curl"],
+    [/\u05de\u05e7\u05e8\u05d1\u05d9\s*\u05d9\u05e8\u05da/i, "hip adductor machine"],
+    [/\u05de\u05e8\u05d7\u05d9\u05e7\u05d9\s*\u05d9\u05e8\u05da|\u05d4\u05e8\u05d7\u05e7\u05ea\s*\u05d9\u05e8\u05da/i, "hip abductor machine"],
+    [/\u05dc\u05d7\u05d9\u05e6\u05ea\s*\u05d7\u05d6\u05d4\s*\u05d1\u05e9\u05d9\u05e4\u05d5\u05e2/i, "incline chest press machine"],
+    [/\u05dc\u05d7\u05d9\u05e6\u05ea\s*\u05d7\u05d6\u05d4/i, "machine chest press"],
+    [/\u05d7\u05ea\u05d9\u05e8\u05d4\s*\u05d1\u05d9\u05e9\u05d9\u05d1\u05d4/i, "seated cable row"],
+    [/\u05d7\u05ea\u05d9\u05e8\u05d4\s*\u05e2\u05dd\s*\u05de\u05e9\u05e7\u05d5\u05dc\u05d5\u05ea\s*\u05d9\u05d3/i, "dumbbell row"],
+    [/\u05dc\u05d7\u05d9\u05e6\u05ea\s*\u05db\u05ea\u05e4\u05d9\u05d9\u05dd\s*\u05e2\u05dd\s*\u05de\u05e9\u05e7\u05d5\u05dc\u05d5\u05ea\s*\u05d9\u05d3/i, "dumbbell shoulder press"],
+    [/\u05dc\u05d7\u05d9\u05e6\u05ea\s*\u05db\u05ea\u05e4\u05d9\u05d9\u05dd/i, "barbell shoulder press"],
+    [/\u05db\u05e4\u05d9\u05e4\u05ea\s*\u05de\u05e8\u05e4\u05e7/i, "dumbbell biceps curl"],
+    [/\u05e4\u05e9\u05d9\u05d8\u05ea\s*\u05de\u05e8\u05e4\u05e7/i, "cable triceps pushdown"],
+    [/\u05dc\u05d7\u05d9\u05e6\u05ea\s*\u05e8\u05d2\u05dc\u05d9\u05d9\u05dd/i, "leg press"],
+    [/\u05db\u05e4\u05d9\u05e4\u05ea\s*\u05d1\u05e8\u05da/i, "seated leg curl"],
+    [/\u05e4\u05e9\u05d9\u05d8\u05ea\s*\u05d1\u05e8\u05da/i, "leg extension"],
+    [/\u05ea\u05d0\u05d5\u05de\u05d9\u05dd/i, "standing calf raise"],
+    [/\u05e1\u05e7\u05d5\u05d5\u05d0\u05d8/i, "barbell squat"]
+  ];
+  const hebrewAlias = hebrewExerciseAliases.find(([pattern]) => pattern.test(name));
+  const requestedName = localizedExerciseAliases[name] || hebrewAlias?.[1] || normalizeExerciseName(name);
   if (!requestedName) return res.status(404).json({ error: "No verified demonstration mapping exists for this exercise." });
-  const searchName = exerciseAliases[requestedName] || requestedName;
+  const searchAliases = {
+    "preacher curl": "cable preacher curl",
+    "hip adductor machine": "lever seated hip adduction",
+    "hip abductor machine": "lever seated hip abduction",
+    "pec deck": "cable chest fly"
+  };
+  const searchName = exerciseAliases[requestedName] || searchAliases[requestedName] || requestedName;
   const cacheKey = searchName;
   if (exerciseDemoCache.has(cacheKey)) return res.json(exerciseDemoCache.get(cacheKey));
   try {
