@@ -6,9 +6,6 @@ import { setupPlanSharing } from "./plan-sharing.js";
 import {
   collection,
   addDoc,
-  getDocs,
-  limit,
-  query,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 const form = document.querySelector("#workout-builder-form");
@@ -388,11 +385,6 @@ async function saveWorkoutPlan(plan) {
     user.uid,
     "workoutPlans"
   );
-  const existingPlans = await getDocs(query(workoutPlansRef, limit(5)));
-
-  if (existingPlans.size >= 5) {
-    throw new Error("WORKOUT_PLAN_LIMIT_REACHED");
-  }
 
   return addDoc(workoutPlansRef, {
     name: plan.programName || "Workout Plan",
@@ -739,16 +731,10 @@ function renderProgram(program) {
       saveWorkoutButton.textContent = isHebrew
         ? "💾 שמירת תוכנית"
         : "💾 Save Workout";
-
-      const limitReached = error.message === "WORKOUT_PLAN_LIMIT_REACHED";
       setStatus(
-        limitReached
-          ? isHebrew
-            ? "ניתן לשמור עד 5 תוכניות אימון. מחק תוכנית כדי לשמור חדשה."
-            : "You can save up to 5 workout plans. Delete one to save a new plan."
-          : isHebrew
-            ? "לא ניתן היה לשמור את התוכנית. ודא שאתה מחובר."
-            : "Could not save the plan. Make sure you are signed in.",
+        isHebrew
+          ? "לא ניתן היה לשמור את התוכנית. ודא שאתה מחובר."
+          : "Could not save the plan. Make sure you are signed in.",
         true
       );
     }

@@ -7,7 +7,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  limit,
   orderBy,
   query,
   serverTimestamp,
@@ -288,7 +287,7 @@ async function activatePlan(planId, button) {
 
 async function loadPlans(user) {
   const plansRef = collection(db, "users", user.uid, "workoutPlans");
-  const plansQuery = query(plansRef, orderBy("createdAt", "desc"), limit(5));
+  const plansQuery = query(plansRef, orderBy("createdAt", "desc"));
   const [plansSnapshot, userSnapshot] = await Promise.all([
     getDocs(plansQuery),
     getDoc(doc(db, "users", user.uid))
