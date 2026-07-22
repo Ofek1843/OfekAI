@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadPublicStats();
 
   if (statsPollHandle) clearInterval(statsPollHandle);
-  statsPollHandle = setInterval(loadPublicStats, 30000);
+  statsPollHandle = setInterval(loadPublicStats, 8000);
 
   trackPageView({ page: "landing" });
   trackClick("landing_page_view", { source: "landing" });
