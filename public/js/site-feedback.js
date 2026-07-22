@@ -1,24 +1,32 @@
-const feedbackLanguage = (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
+const feedbackLanguage =
+  (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
 
-const feedbackCopy = feedbackLanguage === "he"
-  ? {
-      trigger: "מצאת באג?",
-      title: "מצאת באג?",
-      text: "הצוות ישמח לשמוע כדי לשפר ולקדם את האתר.",
-      placeholder: "כתוב כאן מה קרה, באיזה עמוד, ומה ניסית לעשות...",
-      send: "שלח דיווח",
-      close: "סגור",
-      empty: "כתוב בקצרה מה מצאת כדי שנוכל לטפל בזה."
-    }
-  : {
-      trigger: "Found a bug?",
-      title: "Found a bug?",
-      text: "The team would love to hear so we can improve the site.",
-      placeholder: "Tell us what happened, which page you were on, and what you tried to do...",
-      send: "Send report",
-      close: "Close",
-      empty: "Briefly describe what you found so we can fix it."
-    };
+const feedbackCopy =
+  feedbackLanguage === "he"
+    ? {
+        trigger: "מצאת באג?",
+        triggerMobile: "🐞",
+        title: "מצאת באג?",
+        text: "נשמח לשמוע כדי לשפר ולקדם את האתר.",
+        placeholder:
+          "כתוב כאן מה קרה, באיזה עמוד היית, ומה ניסית לעשות...",
+        send: "שלח דיווח",
+        close: "סגור",
+        empty: "כתוב בקצרה מה מצאת כדי שנוכל לטפל בזה.",
+        sent: "הדיווח נשלח לצוות. תודה שעזרת לשפר את האתר."
+      }
+    : {
+        trigger: "Found a bug?",
+        triggerMobile: "🐞",
+        title: "Found a bug?",
+        text: "The team would love to hear so we can improve the site.",
+        placeholder:
+          "Tell us what happened, which page you were on, and what you tried to do...",
+        send: "Send report",
+        close: "Close",
+        empty: "Briefly describe what you found so we can fix it.",
+        sent: "Your report was sent to the team. Thanks for helping improve the site."
+      };
 
 function injectFeedbackStyles() {
   if (document.getElementById("siteFeedbackStyles")) return;
@@ -87,19 +95,32 @@ function injectFeedbackStyles() {
     }
     .site-feedback-send { color: #06211a; background: linear-gradient(135deg, #34d399, #38bdf8); }
     .site-feedback-close { color: #dbeafe; background: rgba(255, 255, 255, 0.06); }
-    .site-feedback-error { min-height: 18px; margin-top: 8px; color: #fda4af; font-size: 13px; font-weight: 800; }
+    .site-feedback-error {
+      min-height: 18px;
+      margin-top: 8px;
+      color: #fda4af;
+      font-size: 13px;
+      font-weight: 800;
+    }
     @media (max-width: 620px) {
-      .site-feedback-widget { right: 10px; bottom: 78px; }
+      .site-feedback-widget { right: 10px; bottom: 86px; }
       .site-feedback-trigger {
-        min-height: 40px;
-        max-width: 142px;
-        padding: 8px 12px;
-        font-size: 12px;
-        line-height: 1.1;
+        width: 46px;
+        min-width: 46px;
+        height: 46px;
+        min-height: 46px;
+        padding: 0;
+        gap: 0;
+        justify-content: center;
+        border-radius: 999px;
+        font-size: 20px;
+      }
+      .site-feedback-trigger-label {
+        display: none;
       }
       .site-feedback-panel {
         right: 0;
-        bottom: 56px;
+        bottom: 58px;
         width: min(320px, calc(100vw - 20px));
       }
     }
@@ -113,7 +134,10 @@ function initSiteFeedback() {
   const widget = document.createElement("div");
   widget.className = "site-feedback-widget";
   widget.innerHTML = `
-    <button class="site-feedback-trigger" type="button">🐞 ${feedbackCopy.trigger}</button>
+    <button class="site-feedback-trigger" type="button" aria-label="${feedbackCopy.trigger}">
+      <span aria-hidden="true">${feedbackCopy.triggerMobile}</span>
+      <span class="site-feedback-trigger-label">${feedbackCopy.trigger}</span>
+    </button>
     <section class="site-feedback-panel" hidden>
       <h2>${feedbackCopy.title}</h2>
       <p>${feedbackCopy.text}</p>
@@ -136,10 +160,12 @@ function initSiteFeedback() {
     panel.hidden = !panel.hidden;
     if (!panel.hidden) textarea.focus();
   });
+
   widget.querySelector(".site-feedback-close").addEventListener("click", () => {
     panel.hidden = true;
     error.textContent = "";
   });
+
   widget.querySelector(".site-feedback-send").addEventListener("click", () => {
     const message = textarea.value.trim();
     if (!message) {
@@ -162,18 +188,18 @@ function initSiteFeedback() {
         if (!response.ok) throw new Error("feedback_failed");
         textarea.value = "";
         panel.hidden = true;
-        error.textContent = feedbackLanguage === "he"
-          ? "הדיווח נשלח לצוות. תודה שעזרת לשפר את האתר."
-          : "Your report was sent to the team. Thanks for helping improve the site.";
+        error.textContent = feedbackCopy.sent;
       })
       .catch(() => {
         const subject = encodeURIComponent("FuelPhysique bug report");
-        const body = encodeURIComponent([
-          message,
-          "",
-          `Page: ${location.href}`,
-          `Browser: ${navigator.userAgent}`
-        ].join("\n"));
+        const body = encodeURIComponent(
+          [
+            message,
+            "",
+            `Page: ${location.href}`,
+            `Browser: ${navigator.userAgent}`
+          ].join("\n")
+        );
         location.href = `mailto:ofek1843@gmail.com?subject=${subject}&body=${body}`;
       });
   });

@@ -41,6 +41,25 @@ const rawUi = he ? {
  : {
   today: "TODAY",  welcome: name => dashboardGreeting(name, false),  intro: "Here is your training and nutrition overview.",  chat: "Chat with your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start Workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "View workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day"}
 ;
+const navLabels = he ? {
+  dashboard: "דשבורד",
+  programs: "תוכניות אימון",
+  workouts: "מעקב אימון",
+  nutrition: "תזונה",
+  progress: "התקדמות",
+  settings: "הגדרות",
+  plans: "מסלולים",
+  history: "היסטוריה"
+} : {
+  dashboard: "Dashboard",
+  programs: "Workout Plans",
+  workouts: "Workout Tracker",
+  nutrition: "Nutrition",
+  progress: "Progress",
+  settings: "Settings",
+  plans: "Plans",
+  history: "History"
+};
 const repairText = value => {
   if (typeof value !== "string" || !/[׳³׳’]/.test(value)) return value;
   try {
@@ -80,6 +99,41 @@ function localize() {
   const result = $("#quickFoodResult");
   if (input) input.placeholder = ui.quickFoodPlaceholder;
   if (result) result.textContent = ui.quickFoodEmpty;
+  document.querySelectorAll("[data-nav-key]").forEach(node => {
+    const key = node.dataset.navKey;
+    if (key && navLabels[key]) node.textContent = navLabels[key];
+  });
+  const menuOpenLabel = he ? "פתח תפריט" : "Open menu";
+  const menuCloseLabel = he ? "סגור תפריט" : "Close menu";
+  $("#mobileMenuButton")?.setAttribute("aria-label", menuOpenLabel);
+  $("#sidebarClose")?.setAttribute("aria-label", menuCloseLabel);
+  $("#mobileProfileButton")?.setAttribute("aria-label", he ? "פתח הגדרות" : "Open settings");
+}
+
+function initMobileDrawer() {
+  const body = document.body;
+  const menuButton = $("#mobileMenuButton");
+  const closeButton = $("#sidebarClose");
+  const backdrop = $("#mobileBackdrop");
+  const sidebar = $("#mobileDrawerPanel");
+  if (!menuButton || !closeButton || !backdrop || !sidebar) return;
+
+  const setOpen = open => {
+    body.classList.toggle("drawer-open", open);
+    menuButton.setAttribute("aria-expanded", open ? "true" : "false");
+  };
+
+  menuButton.addEventListener("click", () => {
+    setOpen(!body.classList.contains("drawer-open"));
+  });
+  closeButton.addEventListener("click", () => setOpen(false));
+  backdrop.addEventListener("click", () => setOpen(false));
+  sidebar.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => setOpen(false));
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 520) setOpen(false);
+  });
 }
 
 function isAthleteCoreComplete(settings) {
@@ -650,6 +704,7 @@ async function load(user) {
   showAthleteCorePromptIfNeeded(settings);
 }
 localize();
+initMobileDrawer();
 initQuickFood();
 trackPageView({
  page: "dashboard" }
