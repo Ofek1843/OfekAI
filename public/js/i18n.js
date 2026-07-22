@@ -98,19 +98,26 @@ en: {
     "Could not load sessions",
 
   landingLogin: "Login",
-  landingBadge: "TRCoachNING / NUTRITION COACH",
-  landingTitleFirst: "Build Muscle.",
-  landingTitleSecond: "Get Lean.",
+  landingBadge: "EARLY ACCESS · PUBLIC BETA",
+  landingTitleFirst: "Train with structure.",
+  landingTitleSecond: "Eat with purpose.",
   landingDescriptionFirst:
-    "Train in the gym, calisthenics, or both.",
+    "FuelPhysique helps you build workouts, nutrition plans, and progress tracking in one place.",
   landingDescriptionSecond:
-    "Keep all your training data in Athlete Core — your personal training profile.",
+    "Made for people who want a clear system instead of scattered notes, chat threads, and guesswork.",
   landingDescriptionThird:
-    "Get personalized workout plans and nutrition guidance built around your goals.",
+    "Track what matters, save what works, and keep your plan ready for the next session.",
   landingDescriptionFourth:
-    "Evidence-based coaching built to help you train with precision.",
-  landingTryButton: "🚀 Try FuelPhysique",
-  landingScroll: "↓ Scroll to explore",
+    "Built to feel fast on mobile and useful from day one.",
+  landingTryButton: "Try FuelPhysique",
+  landingScroll: "Explore the platform",
+  landingBetaNote: "Public beta · early access pricing",
+  landingPrimaryCta: "Build my program",
+  landingSecondaryCta: "Log in",
+  landingStatUsers: "Registered users",
+  landingStatPlans: "Saved workout plans",
+  landingStatLogs: "Workouts logged",
+  landingStatExercises: "Exercises tracked",
 
   userNotAuthenticated:
     "User not authenticated"
@@ -210,19 +217,26 @@ he: {
     "לא ניתן לטעון את השיחות",
 
   landingLogin: "התחברות",
-  landingBadge: "מאמן Coach לקליסטניקס ולחדר כושר",
-  landingTitleFirst: "בנה שרירים.",
-  landingTitleSecond: "התחטב.",
+  landingBadge: "גישה מוקדמת · בטא ציבורית",
+  landingTitleFirst: "מתאמנים עם סדר.",
+  landingTitleSecond: "אוכלים עם מטרה.",
   landingDescriptionFirst:
-    "התאמן בחדר כושר, בקליסטניקס או בשילוב של שניהם.",
+    "FuelPhysique עוזרת לך לבנות תוכניות אימון, תזונה ומעקב התקדמות במקום אחד.",
   landingDescriptionSecond:
-    "שמור את כל נתוני האימון שלך ב-Athlete Core – פרופיל האימון האישי שלך.",
+    "למי שרוצה מערכת ברורה במקום פתקים מפוזרים, שיחות צ'אט וניחושים.",
   landingDescriptionThird:
-    "קבל תוכניות אימון והכוונה תזונתית המותאמות למטרות שלך.",
+    "שומרים מה שעובד, עוקבים אחרי מה שחשוב, ומגיעים מוכנים לאימון הבא.",
   landingDescriptionFourth:
-    "מאמן Coach מבוסס מחקרים שיעזור לך להתאמן בצורה מדויקת יותר.",
-  landingTryButton: "🚀 נסה את FuelPhysique",
-  landingScroll: "↓ גלול כדי לגלות",
+    "בנוי להרגיש מהיר בטלפון ושימושי כבר מהיום הראשון.",
+  landingTryButton: "נסו את FuelPhysique",
+  landingScroll: "גלו את הפלטפורמה",
+  landingBetaNote: "בטא ציבורית · מחיר גישה מוקדמת",
+  landingPrimaryCta: "בנו לי תוכנית",
+  landingSecondaryCta: "כניסה",
+  landingStatUsers: "משתמשים שנרשמו",
+  landingStatPlans: "תוכניות אימון שנשמרו",
+  landingStatLogs: "אימונים שנרשמו",
+  landingStatExercises: "תרגילים שנעקבו",
 
   userNotAuthenticated:
     "המשתמש אינו מחובר"

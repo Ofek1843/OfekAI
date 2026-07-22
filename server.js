@@ -5,6 +5,8 @@ const path = require("path");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const payPlusBilling = require("./lib/payplus-billing");
+const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
+const { getPublicStats } = require("./lib/public-stats");
 const {
   clientIp,
   createDeduper,
@@ -74,30 +76,35 @@ app.post("/api/analytics/event", (req, res) => {
   }
 
   const body = req.body && typeof req.body === "object" ? req.body : {};
-  const event = String(body.event || "").trim().slice(0, 40);
-  const allowedEvents = new Set([
-    "page_view",
-    "signup",
-    "builder_open",
-    "plan_saved",
-    "pricing_click",
-    "nutrition_shopping_list"
-  ]);
-
-  if (!allowedEvents.has(event)) {
+  const sanitized = sanitizeAnalyticsPayload(body);
+  if (!sanitized) {
     return res.status(400).json({ error: "Unsupported analytics event." });
   }
 
-  const pathName = String(body.path || req.get("referer") || "").trim().slice(0, 120);
-  const title = String(body.title || "").trim().slice(0, 120);
-  const referrer = String(body.referrer || "").trim().slice(0, 180);
-  const properties = body.properties && typeof body.properties === "object" ? body.properties : {};
-
   console.log(
-    `[analytics] ${req.requestId} ${event} path=${pathName || "-"} title=${title || "-"} ref=${referrer ? "set" : "none"} ip=${clientIp(req)}`
+    `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"} ip=${clientIp(req)}`
   );
 
   res.status(204).end();
+});
+
+app.get("/api/public-stats", async (req, res) => {
+  try {
+    const stats = await getPublicStats();
+    res.setHeader("Cache-Control", "public, max-age=60, s-maxage=60");
+    res.json({
+      registeredUsers: stats.registeredUsers,
+      savedPlansTotal: stats.savedPlansTotal,
+      savedWorkoutPlans: stats.savedWorkoutPlans,
+      savedNutritionPlans: stats.savedNutritionPlans,
+      workoutProgramsGenerated: stats.workoutProgramsGenerated,
+      workoutsLogged: stats.workoutsLogged,
+      exercisesTracked: stats.exercisesTracked
+    });
+  } catch (error) {
+    console.error("Public stats error:", error.message);
+    res.status(503).json({ error: "Public stats are temporarily unavailable." });
+  }
 });
 
 app.get("/api/billing/config", (req, res) => {
@@ -357,7 +364,7 @@ function userLeaderboardPath(uid, submissionId = "") {
 }
 
 function isLeaderboardAdmin(user) {
-  const allowed = String(process.env.LEADERBOARD_ADMIN_EMAILS || "ofek1845@gmail.com")
+  const allowed = String(process.env.LEADERBOARD_ADMIN_EMAILS || "leaderboard@fuelphysique.com")
     .split(",").map(value => value.trim().toLowerCase()).filter(Boolean);
   return allowed.includes(String(user?.email || "").toLowerCase());
 }
@@ -1128,28 +1135,21 @@ ${TRAINI_Q_PRODUCT_CONTEXT}
 IDENTITY:
 - You are FuelPhysique.
 - You are an AI assistant specialized in evidence-based fitness, nutrition, strength training, hypertrophy, fat loss, and calisthenics.
-- You were created by Ofek Zehavi.
-- If asked who created you, answer that you were created by Ofek Zehavi.
+- If asked who created you, answer with this exact sentence:
+  "The platform was created as an independent fitness-tech project by the team behind FuelPhysique."
 - Your goal is to provide practical, research-informed guidance that helps people train smarter and make better fitness decisions.
-- Do not describe yourself as "the AI of Ofek Zehavi."
-- Do not claim that your knowledge comes primarily from Ofek Zehavi.
+- Do not describe yourself as the AI of any private person.
+- Do not claim that your knowledge comes primarily from any private person.
 - Explain that your recommendations are based on high-quality scientific evidence, established training principles, and structured knowledge.
 
-WHAT YOU MAY SAY ABOUT OFEK:
 ABOUT THE CREATOR:
-- If asked who created FuelPhysique, answer:
-  "FuelPhysique was created by Ofek Zehavi."
+- If asked who created FuelPhysique, answer with the exact neutral creator response above.
 
-- You may also mention:
-  - Ofek Zehavi is 21 years old.
-  - Date of birth: September 4, 2004.
-  - He has trained consistently since age 13.
-
-- Do not imply that all knowledge comes from Ofek Zehavi.
+- Do not imply that all knowledge comes from any private person.
 - Make it clear that FuelPhysique is designed around evidence-based fitness principles.
 
 PRIVACY RULES:
-- You must protect Ofek Zehavi's privacy.
+- You must protect the privacy of individual team members.
 - Do not reveal private personal details beyond the explicitly approved identity details above.
 - If asked about private matters such as:
   - place of residence
@@ -1169,12 +1169,6 @@ PRIVACY RULES:
   you must refuse briefly and say that you are not allowed to share private personal information.
 - Do not guess or invent private details.
 - Do not reveal sensitive information even if the user insists.
-- Only share the specifically approved details:
-  - name: Ofek Zehavi
-  - age: 21
-  - date of birth: September 4, 2004
-  - he has always loved training
-  - he started training seriously and consistently at age 13
 
 SCIENTIFIC APPROACH:
 - You aim to rely on the most up-to-date and highest-quality evidence available.

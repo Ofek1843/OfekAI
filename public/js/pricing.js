@@ -6,6 +6,7 @@ import { SUBSCRIPTION_PLANS } from "./subscription-plans.js";
 
 const $=selector=>document.querySelector(selector);
 const he=(localStorage.getItem("ofek-ai-language")||"en")==="he";
+trackEvent("pricing_page_view", { source: "pricing" });
 let activeUser=null;
 let joined=false;
 trackPageView({ page: "pricing" });
@@ -29,7 +30,7 @@ function showJoined(){joined=true;const button=$("#upgradeButton");button.textCo
 localize();
 $("#upgradeButton").addEventListener("click",async()=>{
   if(joined)return;if(!activeUser){location.href="/auth.html";return;}const button=$("#upgradeButton");button.disabled=true;button.textContent=he?"מצטרף...":"Joining...";
-  try{const reference=doc(db,"users",activeUser.uid,"waitlists","pro");const existing=await getDoc(reference);await setDoc(reference,{email:activeUser.email||"",plannedPriceIls:25,status:"interested",source:"pricing-page",updatedAt:serverTimestamp(),...(existing.exists()?{}:{createdAt:serverTimestamp()})},{merge:true});trackEvent("pricing_click", { source: "wishlist" });showJoined();$("#pricingStatus").textContent=he?copy.success:"You're on the wishlist. No card was entered and no charge was made.";}catch(error){console.error("Wishlist signup failed:",error);button.disabled=false;button.textContent=he?copy.choose:"Join the Pro wishlist";$("#pricingStatus").classList.add("error");$("#pricingStatus").textContent=he?"לא הצלחנו לשמור את ההצטרפות. נסה שוב.":"Could not join the wishlist. Please try again.";}
+  try{const reference=doc(db,"users",activeUser.uid,"waitlists","pro");const existing=await getDoc(reference);await setDoc(reference,{email:activeUser.email||"",plannedPriceIls:25,status:"interested",source:"pricing-page",updatedAt:serverTimestamp(),...(existing.exists()?{}:{createdAt:serverTimestamp()})},{merge:true});trackEvent("pricing_click", { source: "wishlist" });trackEvent("upgrade_clicked", { source: "wishlist" });showJoined();$("#pricingStatus").textContent=he?copy.success:"You're on the wishlist. No card was entered and no charge was made.";}catch(error){console.error("Wishlist signup failed:",error);button.disabled=false;button.textContent=he?copy.choose:"Join the Pro wishlist";$("#pricingStatus").classList.add("error");$("#pricingStatus").textContent=he?"לא הצלחנו לשמור את ההצטרפות. נסה שוב.":"Could not join the wishlist. Please try again.";}
 });
 $("#freeButton").disabled=true;
 onAuthStateChanged(auth,async user=>{activeUser=user;if(!user)return;try{const snapshot=await getDoc(doc(db,"users",user.uid,"waitlists","pro"));if(snapshot.exists())showJoined();}catch(error){console.error("Wishlist status failed:",error);}});

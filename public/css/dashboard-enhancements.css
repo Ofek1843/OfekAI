@@ -1,4 +1,9 @@
-.missed-card{--card-glow:#38bdf8;--card-border:rgba(56,189,248,.42)}.manual-card{--card-glow:#f59e0b;--card-border:rgba(245,158,11,.42)}.missed-card .card-icon{background:rgba(56,189,248,.14)}.manual-card .card-icon{background:rgba(245,158,11,.14)}
+.missed-card{--card-glow:#38bdf8;--card-border:rgba(56,189,248,.42)}.manual-card{--card-glow:#f59e0b;--card-border:rgba(245,158,11,.42)}.quick-food-card{--card-glow:#22c55e;--card-border:rgba(34,197,94,.42)}.missed-card .card-icon{background:rgba(56,189,248,.14)}.manual-card .card-icon{background:rgba(245,158,11,.14)}.quick-food-card .card-icon{background:rgba(34,197,94,.14)}
 
-#nextLabel,#nutritionLabel,#recentLabel,#progressLabel{font-size:14px;line-height:1.25;letter-spacing:.08em;font-weight:900}
-@media(max-width:480px){#nextLabel,#nutritionLabel,#recentLabel,#progressLabel{font-size:13px}}
+#nextLabel,#nutritionLabel,#recentLabel,#progressLabel,#quickFoodLabel{font-size:14px;line-height:1.25;letter-spacing:.08em;font-weight:900}
+.quick-food-input{width:100%;min-height:128px;margin-top:14px;padding:14px 15px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(255,255,255,.04);color:inherit;resize:vertical;font:inherit;line-height:1.5;outline:none}.quick-food-input:focus{border-color:rgba(34,197,94,.55);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.quick-food-actions{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.quick-food-actions .secondary-action{margin-top:0}
+.text-action{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:12px;font-weight:800;text-decoration:none;color:#bae6fd;background:transparent;border:1px solid rgba(56,189,248,.18);cursor:pointer;transition:transform .2s ease,border-color .2s ease,background .2s ease}.text-action:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.34);background:rgba(56,189,248,.08)}
+.quick-food-result{display:grid;gap:8px;margin-top:14px;padding:14px 15px;border-radius:16px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.035)}.quick-food-result strong{font-size:23px;color:#d1fae5}.quick-food-result span{color:#cbd5e1;font-weight:650}.quick-food-result p{margin:0;color:#dbeafe}.quick-food-result.muted{color:#93a0b5}
+@media(max-width:480px){#nextLabel,#nutritionLabel,#recentLabel,#progressLabel,#quickFoodLabel{font-size:13px}.quick-food-actions{flex-direction:column;align-items:stretch}.quick-food-actions .secondary-action,.text-action{width:100%}}

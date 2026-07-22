@@ -27,6 +27,17 @@
         <a id="nutritionLink" class="secondary-action" href="/my-nutrition-plans.html">Manage nutrition plans</a>
       </article>
 
+      <article class="card quick-food-card">
+        <header><span class="card-icon">🍽️</span><div><span class="card-kicker" id="quickFoodLabel">QUICK CHECK-IN</span><h2 id="quickFoodTitle">Did you stray from the plan today?</h2></div></header>
+        <p id="quickFoodText" class="muted">Write roughly what you ate today, and don't forget drinks. This is only an estimate.</p>
+        <textarea id="quickFoodInput" class="quick-food-input" rows="5" placeholder="Example: 2 eggs, chicken breast, rice, salad, milk, coffee"></textarea>
+        <div class="quick-food-actions">
+          <button id="quickFoodEstimate" class="secondary-action" type="button">Estimate calories</button>
+          <button id="quickFoodClear" class="text-action" type="button">Clear</button>
+        </div>
+        <div id="quickFoodResult" class="quick-food-result muted">Approximate calories and macros will appear here.</div>
+      </article>
+
       <article class="card recent-card">
         <header><span class="card-icon">📋</span><div><span class="card-kicker" id="recentLabel">LAST WORKOUT</span><h2 id="lastWorkoutName">No workouts yet</h2></div></header>
         <div id="lastWorkoutDetails" class="recent-details"></div><a id="historyAction" class="secondary-action" href="/workout-history.html">View workout history</a>
@@ -48,4 +59,4 @@
       </article>
     </div>
   </section>
-</main><script>if((localStorage.getItem("ofek-ai-language")||"en")==="he"){const t={missedLabel:"פספסת מעקב?",missedTitle:"הזנת האימון האחרון",missedText:"הוסף בדיעבד את משך האימון, המשקלים, החזרות וה־RPE. האימון ייכנס להיסטוריה ולגרפים.",missedAction:"הזנת אימון שבוצע",manualLabel:"התוכנית שלך",manualTitle:"בניית תוכנית באופן ידני",manualText:"חפש תרגילים, הגדר סטים וזמני מנוחה, הוסף ימים או שכפל אימון.",manualAction:"יצירת התוכנית שלי"};for(const[id,text]of Object.entries(t)){const node=document.getElementById(id);if(node)node.textContent=text}}</script><script type="module" src="/js/dashboard.js"></script></body></html>
+</main><script type="module" src="/js/dashboard.js"></script></body></html>
