@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { trackEvent } from "./analytics.js";
 
 import {
   doc,
@@ -86,6 +87,7 @@ async function ensureUserProfile(user) {
       email: user.email || "",
       displayName: user.displayName || "",
       plan: "free",
+      onboardingCompletedAt: null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
@@ -235,6 +237,10 @@ export async function saveAthleteCore(data = {}) {
     user.uid
   );
 
+  const userRef = getUserRef(user.uid);
+  const userSnapshot = await getDoc(userRef);
+  const completedOnboarding = Boolean(userSnapshot.exists() && userSnapshot.data()?.onboardingCompletedAt);
+
   await setDoc(
     athleteCoreRef,
     {
@@ -245,6 +251,16 @@ export async function saveAthleteCore(data = {}) {
       merge: true
     }
   );
+
+  if (!completedOnboarding) {
+    await setDoc(userRef, {
+      onboardingCompletedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    trackEvent("onboarding_completed", {
+      source: "athlete_core"
+    });
+  }
 
   window.dispatchEvent(
     new CustomEvent("athlete-core-updated", {

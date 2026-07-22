@@ -9,6 +9,11 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
+const requestedNext = new URLSearchParams(window.location.search).get("next");
+const nextPath = ["workout-builder.html", "nutrition-builder.html"].includes(requestedNext)
+  ? `/${requestedNext}`
+  : "/dashboard.html";
+
 const loginTab =
   document.getElementById("loginTab");
 
@@ -123,6 +128,7 @@ loginTab.addEventListener("click", () => {
 });
 signupTab.addEventListener("click", () => {
   changeMode("signup");
+  trackEvent("signup_started", { method: "email_password" });
 });
 authForm.addEventListener(
   "submit",
@@ -196,6 +202,8 @@ authForm.addEventListener(
         );
 
         await setDoc(doc(db, "users", userCredential.user.uid), {
+          email: userCredential.user.email || email,
+          displayName,
           termsAccepted: true,
           termsVersion: "2026-07-21",
           termsAcceptedAt: serverTimestamp()
@@ -203,6 +211,7 @@ authForm.addEventListener(
 
         authenticationCompleted = true;
         trackEvent("signup", { method: "email_password" });
+        trackEvent("signup_completed", { method: "email_password" });
 
         showMessage(
           "Account created successfully. Redirecting...",
@@ -224,7 +233,7 @@ authForm.addEventListener(
       }
 
 window.setTimeout(() => {
-  window.location.href = "/dashboard.html";
+  window.location.href = nextPath;
 }, 800);
     } catch (error) {
       console.error(
@@ -249,7 +258,7 @@ window.setTimeout(() => {
 
 onAuthStateChanged(auth, (user) => {
   if (user && !authenticationCompleted) {
-    window.location.href = "/dashboard.html";
+    window.location.href = nextPath;
   }
 });
 // Signed-in users enter the product through the dashboard.

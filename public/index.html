@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>FuelPhysique</title>
-
     <script>
         try {
             const theme = localStorage.getItem("ofek-ai-theme") || "dark";
@@ -14,110 +12,92 @@
                 : theme;
         } catch {}
     </script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
-
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/landing.css">
 </head>
-
 <body>
-
-<nav class="navbar">
-
-    <div class="logo">
-        FuelPhysique
-    </div>
-
-    <a
-        href="auth.html"
-        class="nav-btn"
-        data-i18n="landingLogin"
-    >
-        Login
-    </a>
-
-</nav>
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <span
-            class="badge"
-            data-i18n="landingBadge"
-        >
-            TRCoachNING / NUTRITION COACH
-        </span>
-
-        <h1>
-            <span data-i18n="landingTitleFirst">
-                Build Muscles.
-            </span>
-
-            <br>
-
-            <span data-i18n="landingTitleSecond">
-                Get Lean.
-            </span>
-        </h1>
-
-        <p>
-            <span data-i18n="landingDescriptionFirst">
-                Train in the gym, calisthenics or both.
-            </span>
-
-            <br>
-
-            <span data-i18n="landingDescriptionSecond">
-                keep all your training data in Athlete Core -your personal training profile.
-            </span>
-
-            <br>
-
-            <span data-i18n="landingDescriptionThird">
-                Personalized workouts plans built for your goals.
-            </span>
-
-            <br>
-
-            <span data-i18n="landingDescriptionFourth">
-                built to help you train precisely.
-            </span>
-        </p>
-
-        <a
-            href="auth.html"
-            class="hero-btn"
-            data-i18n="landingTryButton"
-        >
-            🚀 Try FuelPhysique
-        </a>
-
-        <div class="feature-pills" aria-label="FuelPhysique features">
-            <span class="feature-pill workout-pill">Workout plans</span>
-            <span class="feature-pill nutrition-pill">Nutrition</span>
-            <span class="feature-pill progress-pill">Progress</span>
-            <span class="feature-pill coach-pill">Coach</span>
+    <nav class="navbar">
+        <div class="logo">FuelPhysique</div>
+        <div class="nav-actions">
+            <a href="auth.html" class="nav-link" data-i18n="landingSecondaryCta">Log in</a>
+            <a href="auth.html" class="nav-btn" data-i18n="landingLogin">Login</a>
         </div>
+    </nav>
 
-        <div
-            class="scroll"
-            data-i18n="landingScroll"
-        >
-            ↓ Scroll to explore
-        </div>
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <span class="badge" data-i18n="landingBadge">EARLY ACCESS · PUBLIC BETA</span>
 
-    </div>
+                <div class="hero-meta">
+                    <span class="hero-meta-chip" data-i18n="landingBetaNote">Public beta · early access pricing</span>
+                    <span class="hero-meta-chip hero-meta-chip-muted">FuelPhysique.com</span>
+                </div>
 
-</section>
+                <h1>
+                    <span data-i18n="landingTitleFirst">Train with structure.</span>
+                    <br>
+                    <span data-i18n="landingTitleSecond">Eat with purpose.</span>
+                </h1>
 
-<script type="module" src="js/landing.js"></script>
+                <p data-i18n="landingDescriptionFirst">
+                    FuelPhysique helps you build workouts, nutrition plans, and progress tracking in one place.
+                </p>
 
+                <div class="hero-copy">
+                    <p data-i18n="landingDescriptionSecond">
+                        Made for people who want a clear system instead of scattered notes, chat threads, and guesswork.
+                    </p>
+                    <p data-i18n="landingDescriptionThird">
+                        Track what matters, save what works, and keep your plan ready for the next session.
+                    </p>
+                    <p data-i18n="landingDescriptionFourth">
+                        Built to feel fast on mobile and useful from day one.
+                    </p>
+                </div>
+
+                <section class="landing-stats" aria-label="FuelPhysique usage stats">
+                    <div class="landing-stat landing-stat-users">
+                        <span class="landing-stat-label" data-i18n="landingStatUsers">Registered users</span>
+                        <strong id="publicRegisteredUsers" data-count-value="0">0</strong>
+                    </div>
+                    <div class="landing-stat landing-stat-plans">
+                        <span class="landing-stat-label" data-i18n="landingStatPlans">Saved workout plans</span>
+                        <strong id="publicWorkoutPlans" data-count-value="0">0</strong>
+                    </div>
+                </section>
+
+                <div class="hero-cta-row">
+                    <button type="button" class="hero-btn primary" id="buildProgramCta" data-i18n="landingPrimaryCta">Build my program</button>
+                    <a href="auth.html" class="hero-btn secondary" data-i18n="landingSecondaryCta">Log in</a>
+                </div>
+
+                <div class="builder-chooser" id="builderChooser" hidden>
+                    <p class="builder-chooser-title" data-i18n="landingChooserTitle">What would you like to build?</p>
+                    <div class="builder-chooser-actions">
+                        <a class="builder-choice" href="auth.html?next=workout-builder.html">
+                            <span aria-hidden="true">&larr;</span>
+                            <strong data-i18n="landingWorkoutChoice">Workout plan</strong>
+                        </a>
+                        <a class="builder-choice" href="auth.html?next=nutrition-builder.html">
+                            <strong data-i18n="landingNutritionChoice">Nutrition plan</strong>
+                            <span aria-hidden="true">&rarr;</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="feature-pills" aria-label="FuelPhysique features">
+                    <span class="feature-pill workout-pill" data-i18n="landingFeatureWorkouts">Workout plans</span>
+                    <span class="feature-pill nutrition-pill" data-i18n="landingFeatureNutrition">Nutrition</span>
+                    <span class="feature-pill progress-pill" data-i18n="landingFeatureProgress">Progress</span>
+                    <span class="feature-pill coach-pill" data-i18n="landingFeatureCoach">Coach</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/landing.js?v=20260722-3"></script>
 </body>
 </html>

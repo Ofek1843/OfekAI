@@ -333,6 +333,10 @@ form.addEventListener("submit", async (event) => {
 if (data.program) {
   window.currentWorkoutProgram = data.program;
 
+  trackEvent("workout_generated", {
+    source: "ai_workout_builder"
+  });
+
   renderProgram(data.program);
   return;
 }
@@ -718,6 +722,7 @@ function renderProgram(program) {
     try {
       await saveWorkoutPlan(window.currentWorkoutProgram);
       trackEvent("plan_saved", { type: "workout" });
+      trackEvent("workout_saved", { source: "workout_builder" });
 
       saveWorkoutButton.textContent = isHebrew
         ? "✓ התוכנית נשמרה"

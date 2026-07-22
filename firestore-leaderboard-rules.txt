@@ -3,7 +3,7 @@
 
 function isLeaderboardAdmin() {
   return request.auth != null
-    && request.auth.token.email in ["ofek1845@gmail.com"];
+    && request.auth.token.email in ["leaderboard@fuelphysique.com"];
 }
 
 match /users/{userId}/leaderboardSubmissions/{submissionId} {

@@ -66,19 +66,49 @@
     }
 
     .top-actions {
-    display: grid;
-    grid-template-columns:
-        auto
-        minmax(210px, 280px)
-        minmax(210px, 280px)
-        auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      align-items: stretch;
+    }
 
-    align-items: stretch;
-    justify-content: end;
-    gap: 12px;
+    .nav-section {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.04);
+    }
 
-    width: 100%;
-}
+    .nav-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-section-actions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-section .workout-btn,
+    .nav-section .settings-btn,
+    .nav-section .clear-btn {
+      width: 100%;
+      min-height: 56px;
+      justify-content: flex-start;
+      text-align: left;
+      padding-inline: 14px;
+    }
+
     .settings-btn,
     .clear-btn {
       width: auto;
@@ -578,7 +608,7 @@
 }
 
       .conversation-history {
-    display: none;
+        display: none;
 }
 
 .conversation-history.mobile-open {
@@ -924,76 +954,92 @@
         <h1>Coach</h1>
 
         <p id="subtitle" class="subtitle">
-          The artificial intelligence of Ofek Zehavi — fitness, nutrition,
-          training progress, and high-quality evidence-based information.
+          FuelPhysique AI coach — fitness, nutrition, training progress, and
+          high-quality evidence-based information.
         </p>
       </div>
 
       <div class="top-actions">
-        <button
-          id="settingsBtn"
-          class="settings-btn"
-          type="button"
-          aria-haspopup="dialog"
-        >
-          ⚙️ Settings
-        </button>
+        <section class="nav-section">
+          <div class="nav-section-header">Core</div>
+          <div class="nav-section-actions">
+            <button
+              id="settingsBtn"
+              class="settings-btn"
+              type="button"
+              aria-haspopup="dialog"
+            >
+              ⚙️ Settings
+            </button>
+            <button class="workout-btn dashboard-btn" type="button" onclick="window.location.href='/dashboard.html'">
+              <span class="title">🏠 Dashboard</span>
+            </button>
+          </div>
+        </section>
 
-        <button class="workout-btn dashboard-btn" type="button" onclick="window.location.href='/dashboard.html'">
-          <span class="title">🏠 Dashboard</span>
-        </button>
+        <section class="nav-section">
+          <div class="nav-section-header">Training</div>
+          <div class="nav-section-actions">
+            <button
+              class="workout-btn workout-builder-btn"
+              type="button"
+              onclick="window.location.href='/workout-builder.html'"
+            >
+              <span class="title">🏋️ Workout Builder</span>
+            </button>
+            <button
+              class="workout-btn manual-card-btn"
+              type="button"
+              onclick="window.location.href='/manual-workout-builder.html'"
+            >
+              <span class="title">🧩 Manual Builder</span>
+            </button>
+            <button class="workout-btn workout-tracker-btn" type="button" onclick="window.location.href='/workout-tracker.html'">
+              <span class="title">🏋️ Workout Tracker</span>
+            </button>
+          </div>
+        </section>
 
-        <button
-          class="workout-btn workout-builder-btn"
-          type="button"
-          onclick="window.location.href='/workout-builder.html'"
-        >
-          <span class="title">🏋️ Workout Builder</span>
-        </button>
+        <section class="nav-section">
+          <div class="nav-section-header">Nutrition</div>
+          <div class="nav-section-actions">
+            <button
+              class="workout-btn nutrition-builder-btn"
+              type="button"
+              onclick="window.location.href='/nutrition-builder.html'"
+            >
+              <span class="title">🥗 Nutrition Builder</span>
+            </button>
+            <button class="workout-btn saved-nutrition-btn" type="button" onclick="window.location.href='/my-nutrition-plans.html'">
+              <span class="title">📂 My Nutrition Plans</span>
+            </button>
+          </div>
+        </section>
 
-        <button
-          class="workout-btn nutrition-builder-btn"
-          type="button"
-          onclick="window.location.href='/nutrition-builder.html'"
-        >
-          <span class="title">🥗 Nutrition Builder</span>
-        </button>
-
-        <button
-          class="workout-btn saved-workouts-btn"
-          type="button"
-          onclick="window.location.href='/my-workout-plans.html'"
-        >
-          <span class="title">📂 My Workout Plans</span>
-        </button>
-
-        <button class="workout-btn saved-nutrition-btn" type="button" onclick="window.location.href='/my-nutrition-plans.html'">
-          <span class="title">📂 My Nutrition Plans</span>
-        </button>
-
-        <button class="workout-btn progress-btn" type="button" onclick="window.location.href='/progress.html'">
-          <span class="title">📈 Progress Tracking</span>
-        </button>
-
-        <button class="workout-btn workout-tracker-btn" type="button" onclick="window.location.href='/workout-tracker.html'">
-          <span class="title">🏋️ Workout Tracker</span>
-        </button>
-
-        <button class="workout-btn workout-history-btn" type="button" onclick="window.location.href='/workout-history.html'">
-          <span class="title">📋 Workout History</span>
-        </button>
-
-        <button class="workout-btn exercise-progress-btn" type="button" onclick="window.location.href='/exercise-progress.html'">
-          <span class="title">📈 Exercise Progress</span>
-        </button>
-
-        <button
-          id="clearBtn"
-          class="clear-btn"
-          type="button"
-        >
-          Clear Chat
-        </button>
+        <section class="nav-section">
+          <div class="nav-section-header">Tracking</div>
+          <div class="nav-section-actions">
+            <button class="workout-btn saved-workouts-btn" type="button" onclick="window.location.href='/my-workout-plans.html'">
+              <span class="title">📂 My Workout Plans</span>
+            </button>
+            <button class="workout-btn progress-btn" type="button" onclick="window.location.href='/progress.html'">
+              <span class="title">📈 Progress Tracking</span>
+            </button>
+            <button class="workout-btn workout-history-btn" type="button" onclick="window.location.href='/workout-history.html'">
+              <span class="title">📋 Workout History</span>
+            </button>
+            <button class="workout-btn exercise-progress-btn" type="button" onclick="window.location.href='/exercise-progress.html'">
+              <span class="title">📈 Exercise Progress</span>
+            </button>
+            <button
+              id="clearBtn"
+              class="clear-btn"
+              type="button"
+            >
+              Clear Chat
+            </button>
+          </div>
+        </section>
       </div>
 
       <div class="mobile-nav-accordion" aria-label="Mobile navigation">
@@ -1128,7 +1174,7 @@
     <input
       id="settingsFullName"
       type="text"
-      placeholder="Ofek Zehavi"
+      placeholder="Your name"
       autocomplete="name"
     />
   </label>

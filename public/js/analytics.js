@@ -2,9 +2,22 @@ const ANALYTICS_ENDPOINT = "/api/analytics/event";
 const ALLOWED_EVENTS = new Set([
   "page_view",
   "signup",
+  "signup_started",
+  "signup_completed",
+  "onboarding_completed",
   "builder_open",
   "plan_saved",
   "pricing_click",
+  "pricing_page_view",
+  "landing_page_view",
+  "workout_generated",
+  "workout_saved",
+  "progress_chart_viewed",
+  "upgrade_clicked",
+  "checkout_started",
+  "subscription_completed",
+  "subscription_cancelled",
+  "referral_link_opened",
   "nutrition_shopping_list"
 ]);
 
