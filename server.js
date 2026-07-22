@@ -96,6 +96,18 @@ app.get("/api/public-stats", async (req, res) => {
     // The stats module has its own short cache. Do not let browsers/CDNs keep
     // an old counter after a user saves a plan.
     res.setHeader("Cache-Control", "no-store, max-age=0");
+    const fallbackReason = String(stats.fallbackReason || "");
+    const statsSource = stats.fallback ? "fallback" : "live";
+    const diagnostics = !stats.fallback
+      ? "live"
+      : /missing/i.test(fallbackReason)
+        ? "service-account-missing"
+        : /invalid|incomplete|json/i.test(fallbackReason)
+          ? "service-account-invalid"
+          : /authenticate|oauth|token/i.test(fallbackReason)
+            ? "service-account-auth-failed"
+            : "firestore-query-failed";
+    res.setHeader("X-FuelPhysique-Stats-Source", statsSource);
     res.json({
       registeredUsers: stats.registeredUsers,
       savedPlansTotal: stats.savedPlansTotal,
@@ -103,7 +115,11 @@ app.get("/api/public-stats", async (req, res) => {
       savedNutritionPlans: stats.savedNutritionPlans,
       workoutProgramsGenerated: stats.workoutProgramsGenerated,
       workoutsLogged: stats.workoutsLogged,
-      exercisesTracked: stats.exercisesTracked
+      exercisesTracked: stats.exercisesTracked,
+      // A safe status code lets us diagnose counters without exposing keys,
+      // tokens, Firestore paths, or any private user data.
+      statsSource,
+      statsDiagnostics: diagnostics
     });
   } catch (error) {
     console.error("Public stats error:", error.message);
