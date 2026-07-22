@@ -58,7 +58,9 @@ app.use(express.static(path.join(__dirname, "public"), {
     }
     const isAsset = /\.(?:css|js|png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath);
     if (isAsset) {
-      res.setHeader("Cache-Control", "public, max-age=3600");
+      // These assets do not use content-hashed filenames. Revalidate them so a
+      // deployed fix is visible immediately instead of surviving for an hour.
+      res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
     }
   }
 }));
@@ -91,7 +93,9 @@ app.post("/api/analytics/event", (req, res) => {
 app.get("/api/public-stats", async (req, res) => {
   try {
     const stats = await getPublicStats();
-    res.setHeader("Cache-Control", "public, max-age=60, s-maxage=60");
+    // The stats module has its own short cache. Do not let browsers/CDNs keep
+    // an old counter after a user saves a plan.
+    res.setHeader("Cache-Control", "no-store, max-age=0");
     res.json({
       registeredUsers: stats.registeredUsers,
       savedPlansTotal: stats.savedPlansTotal,

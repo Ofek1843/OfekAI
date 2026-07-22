@@ -40,6 +40,8 @@ const rawUi = he ? {
   loadError: "לא ניתן לטעון את התוכנית הפעילה.",
   saveError: "לא ניתן לשמור את האימון. נסה שוב.",
   noSessions: "בתוכנית הפעילה אין אימונים זמינים.",
+  history: "היסטוריית אימונים",
+  viewHistory: "צפייה בהיסטוריית האימונים",
   exercise: "תרגיל",
   focusLabel: "סט ממוקד",
   workingSet: "סט עבודה",
@@ -85,6 +87,8 @@ const rawUi = he ? {
   loadError: "Could not load your active workout plan.",
   saveError: "Could not save the workout. Please try again.",
   noSessions: "The active plan has no available sessions.",
+  history: "Workout History",
+  viewHistory: "View workout history",
   exercise: "Exercise",
   focusLabel: "Focused set",
   workingSet: "Working set",
@@ -100,24 +104,9 @@ const rawUi = he ? {
   warmupHint: "Warm-up sets are logged, but they do not count toward hypertrophy stats."
 };
 
-const repairText = value => {
-  if (typeof value !== "string" || !/[׳³׳’]/.test(value)) return value;
-  try {
-    return decodeURIComponent(escape(value));
-  } catch {
-    return value;
-  }
-};
-
-const ui = new Proxy(rawUi, {
-  get(target, property) {
-    const value = target[property];
-    if (typeof value === "function") {
-      return (...args) => repairText(value(...args));
-    }
-    return repairText(value);
-  }
-});
+// The source strings are UTF-8. Re-decoding them here corrupts Hebrew in the
+// browser, so keep the selected language object as-is.
+const ui = rawUi;
 
 const esc = (value = "") => String(value)
   .replaceAll("&", "&amp;")
@@ -166,6 +155,7 @@ function localize() {
     ["pageTitle", "title"],
     ["pageDescription", "description"],
     ["backLink", "back"],
+    ["historyLink", "history"],
     ["plansLink", "plans"],
     ["activeLabel", "active"],
     ["sessionLabel", "choose"],
@@ -179,6 +169,7 @@ function localize() {
     ["finishWorkoutButton", "finish"],
     ["successTitle", "saved"],
     ["anotherWorkoutButton", "another"],
+    ["viewHistoryLink", "viewHistory"],
     ["homeLink", "home"],
     ["focusLabel", "focusLabel"],
     ["focusModeBadge", "workingSet"],
@@ -351,7 +342,7 @@ function estimateSessionMinutes(session) {
 
 function formatBudgetMinutes(value) {
   const minutes = Math.max(0, Number(value) || 0);
-  return `${Math.round(minutes)} min`;
+  return he ? `${Math.round(minutes)} דקות` : `${Math.round(minutes)} min`;
 }
 
 function buildTimeFitSummary(originalSession, adaptedSession, budgetMinutes) {
@@ -369,7 +360,9 @@ function buildTimeFitSummary(originalSession, adaptedSession, budgetMinutes) {
     const after = adaptedExercises[i];
     if (before && !after) {
       trimmedExercises += 1;
-      changes.push(`${before.name || `Exercise ${i + 1}`} removed`);
+      changes.push(he
+        ? `${before.name || `תרגיל ${i + 1}`} הוסר`
+        : `${before.name || `Exercise ${i + 1}`} removed`);
       continue;
     }
     if (!before || !after) continue;
@@ -378,7 +371,9 @@ function buildTimeFitSummary(originalSession, adaptedSession, budgetMinutes) {
     if (afterSets < beforeSets) {
       const diff = beforeSets - afterSets;
       trimmedSets += diff;
-      changes.push(`${after.name || `Exercise ${i + 1}`}: -${diff} set${diff > 1 ? "s" : ""}`);
+      changes.push(he
+        ? `${after.name || `תרגיל ${i + 1}`}: ${diff}- סטים`
+        : `${after.name || `Exercise ${i + 1}`}: -${diff} set${diff > 1 ? "s" : ""}`);
     }
   }
 
