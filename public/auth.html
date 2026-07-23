@@ -201,6 +201,9 @@
     .terms-consent { display:flex; gap:9px; align-items:flex-start; margin:15px 0; color:#aeb9ce; font-size:12px; line-height:1.5; }
     .terms-consent input { width:auto; margin-top:3px; accent-color:#7c5cff; }
     .terms-consent a,.privacy-note a { color:#a99bff; }
+    .remember-consent { display:flex; gap:9px; align-items:center; margin:2px 0 16px; color:#cbd5e1; font-size:13px; font-weight:700; }
+    .remember-consent input { width:auto; accent-color:#3b82f6; }
+    body.auth-checking .auth-container { visibility:hidden; }
 
     @media (max-width: 520px) {
       body {
@@ -219,7 +222,7 @@
   </style>
 </head>
 
-<body>
+<body class="auth-checking">
   <main class="auth-container">
     <header class="brand">
       <h1>FuelPhysique</h1>
@@ -304,6 +307,11 @@
             required
           />
         </div>
+
+        <label class="remember-consent" for="rememberMe">
+          <input id="rememberMe" type="checkbox" checked>
+          <span>Remember me on this device</span>
+        </label>
 
         <button
           id="submitButton"

@@ -6,7 +6,10 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const requestedNext = new URLSearchParams(window.location.search).get("next");
@@ -42,6 +45,7 @@ const authMessage =
   document.getElementById("authMessage");
 const termsGroup = document.getElementById("termsGroup");
 const termsAccepted = document.getElementById("termsAccepted");
+const rememberMeInput = document.getElementById("rememberMe");
 
 let currentMode = "login";
 let authenticationCompleted = false;
@@ -186,6 +190,13 @@ authForm.addEventListener(
         : "Creating account...";
 
     try {
+      await setPersistence(
+        auth,
+        rememberMeInput?.checked
+          ? browserLocalPersistence
+          : browserSessionPersistence
+      );
+
       if (currentMode === "signup") {
         const userCredential =
           await createUserWithEmailAndPassword(
@@ -233,7 +244,7 @@ authForm.addEventListener(
       }
 
 window.setTimeout(() => {
-  window.location.href = nextPath;
+  window.location.replace(nextPath);
 }, 800);
     } catch (error) {
       console.error(
@@ -258,7 +269,9 @@ window.setTimeout(() => {
 
 onAuthStateChanged(auth, (user) => {
   if (user && !authenticationCompleted) {
-    window.location.href = nextPath;
+    window.location.replace(nextPath);
+    return;
   }
+  document.body.classList.remove("auth-checking");
 });
 // Signed-in users enter the product through the dashboard.

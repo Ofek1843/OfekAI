@@ -1,9 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
-  getAuth,
-  setPersistence,
-  browserLocalPersistence
+  getAuth
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -29,11 +27,5 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-
-try {
-  await setPersistence(auth, browserLocalPersistence);
-} catch (error) {
-  console.error("Firebase persistence error:", error);
-}
 
 export { auth, db, storage };

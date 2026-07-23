@@ -1,5 +1,7 @@
 import { t, getLanguage, setLanguage } from "./i18n.js?v=20260722-3";
 import { trackPageView, trackClick } from "./analytics.js";
+import { auth } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const LANDING_FALLBACKS = {
   en: {
@@ -37,6 +39,7 @@ const LANDING_FALLBACKS = {
 };
 
 let statsPollHandle = null;
+let authStatePromise = null;
 
 function formatCount(value, language) {
   return Number(value || 0).toLocaleString(language === "he" ? "he-IL" : "en-US");
@@ -121,6 +124,40 @@ function wireBuilderChooser() {
   });
 }
 
+function waitForAuthState() {
+  if (auth.currentUser) return Promise.resolve(auth.currentUser);
+  if (!authStatePromise) {
+    authStatePromise = new Promise(resolve => {
+      const unsubscribe = onAuthStateChanged(auth, user => {
+        unsubscribe();
+        resolve(user);
+      });
+    });
+  }
+  return authStatePromise;
+}
+
+function destinationFromAuthHref(href) {
+  const url = new URL(href, window.location.href);
+  const next = url.searchParams.get("next");
+  if (next === "workout-builder.html") return "/workout-builder.html";
+  if (next === "nutrition-builder.html") return "/nutrition-builder.html";
+  return "/dashboard.html";
+}
+
+function wireSmartLoginLinks() {
+  document.querySelectorAll('a[href^="auth.html"]').forEach((element) => {
+    element.addEventListener("click", async (event) => {
+      event.preventDefault();
+      trackClick("signup", { source: "landing" });
+      const user = await waitForAuthState();
+      window.location.href = user
+        ? destinationFromAuthHref(element.getAttribute("href"))
+        : element.getAttribute("href");
+    });
+  });
+}
+
 function trackReferralParams() {
   const params = new URLSearchParams(window.location.search);
   const utmSource = params.get("utm_source");
@@ -138,6 +175,7 @@ function trackReferralParams() {
 document.addEventListener("DOMContentLoaded", () => {
   translateLandingPage();
   wireBuilderChooser();
+  wireSmartLoginLinks();
   trackReferralParams();
   loadPublicStats();
 
@@ -146,8 +184,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   trackPageView({ page: "landing" });
   trackClick("landing_page_view", { source: "landing" });
-
-  document.querySelectorAll('a[href="auth.html"]').forEach((element) => {
-    element.addEventListener("click", () => trackClick("signup", { source: "landing" }));
-  });
 });
