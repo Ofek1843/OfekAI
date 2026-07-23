@@ -10,7 +10,7 @@ const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 
 const rawUi = he ? {
   title: "מעקב אימון",
-  description: "תעד כל סט מתוכנית האימון הפעילה שלך.",
+  description: "תעד את האימון שלך, סט אחד בכל פעם.",
   back: "← חזרה ל-FuelPhysique",
   plans: "התוכניות שלי",
   loading: "טוען את התוכנית הפעילה...",
@@ -36,14 +36,17 @@ const rawUi = he ? {
   saved: "האימון נשמר!",
   another: "התחלת אימון נוסף",
   home: "חזרה ל-FuelPhysique",
-  completed: (done, total, minutes) => `${done} מתוך ${total} סטים הושלמו ב-${minutes} דקות.`,
+
+  completed: (done, total, minutes) =>
+    `${done} מתוך ${total} סטים הושלמו ב-${minutes} דקות.`,
+
   loadError: "לא ניתן לטעון את התוכנית הפעילה.",
   saveError: "לא ניתן לשמור את האימון. נסה שוב.",
   noSessions: "בתוכנית הפעילה אין אימונים זמינים.",
   history: "היסטוריית אימונים",
   viewHistory: "צפייה בהיסטוריית האימונים",
   exercise: "תרגיל",
-  focusLabel: "סט ממוקד",
+  focusLabel: "הסט הנוכחי",
   workingSet: "סט עבודה",
   warmupSet: "חימום",
   backSet: "חזרה לסט קודם",
@@ -51,13 +54,28 @@ const rawUi = he ? {
   pause: "השהיית אימון",
   resume: "המשך אימון",
   markDone: "סמן כבוצע",
+  completeSet: "סיום הסט",
   restTimer: "טיימר מנוחה",
-  restHint: "סיים את הסט, חכה עד שהטיימר יסתיים ואז התחל את הסט הבא.",
+
+  restHint:
+    "סיים את הסט, המתן את זמן המנוחה שנקבע ואז התחל את הסט הבא.",
+
   warmup: "סט חימום",
-  warmupHint: "חימום נשמר ביומן, אבל לא נספר בסטטיסטיקת ההיפרטרופיה."
+
+  warmupHint:
+    "חימום נשמר ביומן, אבל לא נספר בסטטיסטיקת ההיפרטרופיה.",
+
+  setCompleted: "הסט הושלם",
+  setCompletedText: "טיימר המנוחה התחיל.",
+  targetReps: "טווח חזרות",
+  earlyNext: "התחלת הסט הבא מוקדם",
+
+  earlyConfirm: (remaining, programmed) =>
+    `האם אתה בטוח שברצונך להתחיל את הסט הבא מוקדם?\n\nזמן המנוחה שנקבע הוא ${programmed} שניות.\nנותרו עוד ${remaining} שניות.`
+
 } : {
   title: "Workout Tracker",
-  description: "Record every set from your active workout plan.",
+  description: "Track your workout one set at a time.",
   back: "← Back to FuelPhysique",
   plans: "My Workout Plans",
   loading: "Loading your active plan...",
@@ -83,14 +101,17 @@ const rawUi = he ? {
   saved: "Workout saved!",
   another: "Start another workout",
   home: "Back to FuelPhysique",
-  completed: (done, total, minutes) => `${done} of ${total} sets completed in ${minutes} minutes.`,
+
+  completed: (done, total, minutes) =>
+    `${done} of ${total} sets completed in ${minutes} minutes.`,
+
   loadError: "Could not load your active workout plan.",
   saveError: "Could not save the workout. Please try again.",
   noSessions: "The active plan has no available sessions.",
   history: "Workout History",
   viewHistory: "View workout history",
   exercise: "Exercise",
-  focusLabel: "Focused set",
+  focusLabel: "Current set",
   workingSet: "Working set",
   warmupSet: "Warm-up",
   backSet: "Back one set",
@@ -98,10 +119,24 @@ const rawUi = he ? {
   pause: "Pause workout",
   resume: "Resume workout",
   markDone: "Mark done",
+  completeSet: "Complete set",
   restTimer: "Rest timer",
-  restHint: "Finish the set, wait for the rest timer to end, then start the next set.",
+
+  restHint:
+    "Complete the set, wait for the programmed rest time, then start the next set.",
+
   warmup: "Warm-up set",
-  warmupHint: "Warm-up sets are logged, but they do not count toward hypertrophy stats."
+
+  warmupHint:
+    "Warm-up sets are logged, but they do not count toward hypertrophy stats.",
+
+  setCompleted: "Set completed",
+  setCompletedText: "Your rest timer has started.",
+  targetReps: "Target reps",
+  earlyNext: "Start next set early",
+
+  earlyConfirm: (remaining, programmed) =>
+    `Are you sure you want to start the next set early?\n\nYour programmed rest is ${programmed} seconds.\n${remaining} seconds remain.`
 };
 
 // The source strings are UTF-8. Re-decoding them here corrupts Hebrew in the
@@ -179,7 +214,7 @@ function localize() {
     ["focusWarmupLabel", "warmup"],
     ["restLabel", "restTimer"],
     ["restHint", "restHint"],
-    ["focusDoneButton", "markDone"],
+    ["focusDoneButton", "completeSet"],
     ["focusBackButton", "backSet"],
     ["focusPauseButton", "pause"],
     ["focusNextButton", "nextSet"]
@@ -202,6 +237,19 @@ function localize() {
   const panel = document.getElementById("focusPanel");
   if (panel) panel.classList.toggle("quick-mode", quickModeEnabled);
   $("#trackerStatus").textContent = ui.loading;
+  const targetLabel = $("#targetRepsLabel");
+if (targetLabel) targetLabel.textContent = ui.targetReps;
+
+const completionTitle = $("#setCompletionTitle");
+if (completionTitle) completionTitle.textContent = ui.setCompleted;
+
+const completionText = $("#setCompletionText");
+if (completionText) completionText.textContent = ui.setCompletedText;
+
+const exitLink = $(".exit-workout-link");
+if (exitLink) {
+  exitLink.textContent = he ? "יציאה מהאימון" : "Exit workout";
+}
 }
 
 function show(id) {
@@ -212,6 +260,67 @@ function show(id) {
 
 function formatTime(seconds) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
+function populateWeightOptions() {
+  const select = $("#focusWeight");
+  if (!select || select.options.length) return;
+
+  const options = [
+    `<option value="">${he ? "בחר משקל" : "Choose weight"}</option>`,
+    `<option value="0">${he ? "משקל גוף / 0 ק״ג" : "Bodyweight / 0 kg"}</option>`
+  ];
+
+  for (let weight = 2.5; weight <= 300; weight += 2.5) {
+    const value = Number(weight.toFixed(1));
+
+    options.push(
+      `<option value="${value}">${value} kg</option>`
+    );
+  }
+
+  select.innerHTML = options.join("");
+}
+
+function totalWorkoutSets(session) {
+  return (session?.exercises || []).reduce((sum, exercise) => {
+    const sets = Math.max(
+      1,
+      Math.min(20, parseInt(exercise?.sets, 10) || 1)
+    );
+
+    return sum + sets;
+  }, 0);
+}
+
+function currentSetOrdinal(session) {
+  let ordinal = 0;
+
+  for (let index = 0; index < focus.exerciseIndex; index += 1) {
+    ordinal += Math.max(
+      1,
+      Math.min(
+        20,
+        parseInt(session?.exercises?.[index]?.sets, 10) || 1
+      )
+    );
+  }
+
+  return ordinal + focus.setIndex + 1;
+}
+
+function showSetCompletion(visible) {
+  const message = $("#setCompletionMessage");
+  if (!message) return;
+
+  message.classList.toggle("hidden", !visible);
+
+  if ($("#setCompletionTitle")) {
+    $("#setCompletionTitle").textContent = ui.setCompleted;
+  }
+
+  if ($("#setCompletionText")) {
+    $("#setCompletionText").textContent = ui.setCompletedText;
+  }
 }
 
 function workoutElapsedMs() {
@@ -240,8 +349,8 @@ function startRestTimer(seconds) {
   focusTimerId = setInterval(updateRestTimer, 250);
   const nextButton = $("#focusNextButton");
   if (nextButton) {
-    nextButton.disabled = true;
-    nextButton.textContent = he ? `מנוחה ${formatTime(Math.ceil(rest.remainingMs / 1000))}` : `Rest ${formatTime(Math.ceil(rest.remainingMs / 1000))}`;
+nextButton.disabled = false;
+nextButton.textContent = ui.earlyNext;
     nextButton.classList.add("rest-button-active");
     nextButton.setAttribute("aria-busy", "true");
   }
@@ -601,20 +710,106 @@ function adjustFocusNumber(selector, delta, min, max, step = 1) {
 }
 
 function syncFocusFromRow() {
-  const row = document.querySelector(`.set-row[data-exercise-index="${focus.exerciseIndex}"][data-set-index="${focus.setIndex}"]`);
+  const row = document.querySelector(
+    `.set-row[data-exercise-index="${focus.exerciseIndex}"][data-set-index="${focus.setIndex}"]`
+  );
+
   if (!row) return;
+
   document.querySelectorAll(".exercise-card").forEach(card => {
-    card.classList.toggle("active-card", Number(card.dataset.exerciseIndex) === focus.exerciseIndex);
+    card.classList.toggle(
+      "active-card",
+      Number(card.dataset.exerciseIndex) === focus.exerciseIndex
+    );
   });
-  const previous = quickModeEnabled ? getPreviousSetData() : null;
-  setValue("#focusWeight", row.querySelector(".weight-input")?.value || previous?.weight);
-  setValue("#focusReps", row.querySelector(".reps-input")?.value || previous?.reps);
-  setValue("#focusRpe", row.querySelector(".rpe-input")?.value || previous?.rpe);
-  $("#focusWarmup").checked = row.classList.contains("warmup-set");
-  $("#focusModeBadge").textContent = row.classList.contains("warmup-set") ? ui.warmupSet : ui.workingSet;
-  $("#focusExerciseName").textContent = $("#exerciseList").querySelectorAll(".exercise-card")[focus.exerciseIndex]?.querySelector("h3")?.childNodes?.[0]?.textContent?.trim() || `${ui.exercise} ${focus.exerciseIndex + 1}`;
-  $("#focusSetMeta").textContent = `${ui.exercise} ${focus.exerciseIndex + 1} • ${focus.setIndex + 1}`;
-  setHighlightedRow(focus.exerciseIndex, focus.setIndex);
+
+  const previous = quickModeEnabled
+    ? getPreviousSetData()
+    : null;
+
+  setValue(
+    "#focusWeight",
+    row.querySelector(".weight-input")?.value ||
+      previous?.weight
+  );
+
+  setValue(
+    "#focusReps",
+    row.querySelector(".reps-input")?.value ||
+      previous?.reps
+  );
+
+  setValue(
+    "#focusRpe",
+    row.querySelector(".rpe-input")?.value ||
+      previous?.rpe
+  );
+
+  $("#focusWarmup").checked =
+    row.classList.contains("warmup-set");
+
+  $("#focusModeBadge").textContent =
+    row.classList.contains("warmup-set")
+      ? ui.warmupSet
+      : ui.workingSet;
+
+  const exerciseCards =
+    $("#exerciseList").querySelectorAll(".exercise-card");
+
+  $("#focusExerciseName").textContent =
+    exerciseCards[focus.exerciseIndex]
+      ?.querySelector("h3")
+      ?.childNodes?.[0]
+      ?.textContent?.trim() ||
+    `${ui.exercise} ${focus.exerciseIndex + 1}`;
+
+  const sessionIndex = Number(
+    $("#workoutPanel").dataset.sessionIndex
+  );
+
+  const session = activeSessionForIndex(sessionIndex);
+  const exercise =
+    session?.exercises?.[focus.exerciseIndex];
+
+  const exerciseSets = Math.max(
+    1,
+    Math.min(
+      20,
+      parseInt(exercise?.sets, 10) || 1
+    )
+  );
+
+  $("#focusSetMeta").textContent = he
+    ? `סט ${focus.setIndex + 1} מתוך ${exerciseSets}`
+    : `Set ${focus.setIndex + 1} of ${exerciseSets}`;
+
+  const target = $("#focusTargetReps");
+
+  if (target) {
+    target.textContent = String(
+      exercise?.reps || "5-15"
+    ).replace("-", "–");
+  }
+
+  const progress = $("#focusProgress");
+
+  if (progress && session) {
+    progress.textContent = he
+      ? `תרגיל ${focus.exerciseIndex + 1} מתוך ${session.exercises.length} · סט ${currentSetOrdinal(session)} מתוך ${totalWorkoutSets(session)}`
+      : `Exercise ${focus.exerciseIndex + 1} of ${session.exercises.length} · Set ${currentSetOrdinal(session)} of ${totalWorkoutSets(session)}`;
+  }
+
+  showSetCompletion(
+    Boolean(
+      row.querySelector(".set-complete")?.checked
+    )
+  );
+
+  setHighlightedRow(
+    focus.exerciseIndex,
+    focus.setIndex
+  );
+
   animateSetTransition("forward");
   renderNextSetPreview();
 }
@@ -728,20 +923,169 @@ function moveFocus(delta) {
 }
 
 function finishOrAdvanceSet() {
-  writeFocusToRow(true);
-  saveCurrentDraft();
-  startRestTimer(restSecondsForCurrentSet());
-}
+  const weight = $("#focusWeight")?.value;
 
-function startNextSet() {
-  if (rest.active && rest.remainingMs > 0) return;
+  if (weight === "") {
+    $("#trackerStatus").textContent = he
+      ? "בחר משקל לפני סיום הסט."
+      : "Choose a weight before completing the set.";
+
+    $("#trackerStatus").classList.add("error");
+    $("#focusWeight")?.focus();
+    return;
+  }
+
+  $("#trackerStatus").textContent = "";
+  $("#trackerStatus").classList.remove("error");
+
+  writeFocusToRow(true);
+  showSetCompletion(true);
+  saveCurrentDraft();
+
+  startRestTimer(
+    restSecondsForCurrentSet()
+  );
+}
+function openEarlyRestModal(remaining, programmed) {
+  return new Promise(resolve => {
+    const modal = $("#earlyRestModal");
+    const title = $("#earlyRestModalTitle");
+    const text = $("#earlyRestModalText");
+    const backButton = $("#earlyRestBackButton");
+    const agreeButton = $("#earlyRestAgreeButton");
+    const backdrop = modal?.querySelector(
+      "[data-close-early-modal]"
+    );
+
+    if (
+      !modal ||
+      !title ||
+      !text ||
+      !backButton ||
+      !agreeButton
+    ) {
+      resolve(false);
+      return;
+    }
+
+    title.textContent = he
+      ? "להתחיל את הסט הבא מוקדם?"
+      : "Start the next set early?";
+
+    text.textContent = he
+      ? `זמן המנוחה שנקבע הוא ${programmed} שניות.\nנותרו עוד ${remaining} שניות.`
+      : `Your programmed rest is ${programmed} seconds.\n${remaining} seconds remain.`;
+
+    backButton.textContent = he
+      ? "חזרה"
+      : "Back";
+
+    agreeButton.textContent = he
+      ? "אישור"
+      : "Agree";
+
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    const close = approved => {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+
+      backButton.removeEventListener(
+        "click",
+        onBack
+      );
+
+      agreeButton.removeEventListener(
+        "click",
+        onAgree
+      );
+
+      backdrop?.removeEventListener(
+        "click",
+        onBack
+      );
+
+      document.removeEventListener(
+        "keydown",
+        onKeydown
+      );
+
+      resolve(approved);
+    };
+
+    const onBack = () => close(false);
+    const onAgree = () => close(true);
+
+    const onKeydown = event => {
+      if (event.key === "Escape") {
+        close(false);
+      }
+    };
+
+    backButton.addEventListener(
+      "click",
+      onBack
+    );
+
+    agreeButton.addEventListener(
+      "click",
+      onAgree
+    );
+
+    backdrop?.addEventListener(
+      "click",
+      onBack
+    );
+
+    document.addEventListener(
+      "keydown",
+      onKeydown
+    );
+
+    agreeButton.focus();
+  });
+}
+async function startNextSet() {
+  if (rest.active) {
+    const remaining = Math.max(
+      0,
+      Math.ceil(
+        (rest.endsAt - Date.now()) / 1000
+      )
+    );
+
+    if (remaining > 0) {
+      const programmed =
+        restSecondsForCurrentSet();
+
+      const approved =
+        await openEarlyRestModal(
+          remaining,
+          programmed
+        );
+
+      if (!approved) return;
+    }
+  }
+
   stopRestTimer();
+  showSetCompletion(false);
+
   if (!moveFocus(1)) {
-    $("#trackerStatus").textContent = he ? "אין עוד סטים בתוכנית הזאת." : "There are no more sets in this workout.";
+    $("#trackerStatus").textContent = he
+      ? "כל הסטים הושלמו. אפשר לשמור את האימון."
+      : "All sets are complete. You can save the workout.";
+
+    $("#finishWorkoutButton")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
     saveCurrentDraft();
   }
 }
-
 function backOneSet() {
   stopRestTimer();
   if (moveFocus(-1)) {
@@ -906,11 +1250,23 @@ function updateRestTimer() {
   const progress = Math.max(0, Math.min(100, (remaining / total) * 100));
   $("#focusRestTimer").textContent = formatTime(remaining);
   const nextButton = $("#focusNextButton");
-  if (nextButton) {
-    nextButton.textContent = he ? `מנוחה ${formatTime(remaining)}` : `Rest ${formatTime(remaining)}`;
-    nextButton.classList.add("rest-button-active");
-    nextButton.setAttribute("aria-busy", "true");
-  }
+if (nextButton) {
+  nextButton.disabled = false;
+
+  nextButton.textContent =
+    remaining > 0
+      ? ui.earlyNext
+      : ui.nextSet;
+
+  nextButton.classList.add(
+    "rest-button-active"
+  );
+
+  nextButton.setAttribute(
+    "aria-busy",
+    "true"
+  );
+}
   $("#restHint").textContent = remaining > 0
     ? (he ? "תן לטיימר להסתיים ואז עבור לסט הבא." : "Let the timer finish, then move to the next set.")
     : (he ? "אפשר לעבור לסט הבא." : "You can move to the next set.");
@@ -990,6 +1346,7 @@ async function load() {
   restoreDraft();
 }
 
+populateWeightOptions();
 localize();
 bindFocusInputs();
 

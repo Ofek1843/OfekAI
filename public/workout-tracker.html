@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FuelPhysique Workout Tracker</title>
-  <link rel="stylesheet" href="/css/workout-tracker.css?v=20260722-4">
+  <link rel="stylesheet" href="/css/workout-tracker.css?v=20260723-focus-1">
   <link rel="stylesheet" href="/css/exercise-demo.css">
   <link rel="stylesheet" href="/css/exercise-demo-theme.css">
   <style>
@@ -73,6 +73,7 @@
         <p id="workoutMeta"></p>
       </div>
       <div class="toolbar-actions">
+        <a class="exit-workout-link" href="/dashboard.html">Exit workout</a>
         <button id="quickModeButton" class="ghost-button quick-mode-button" type="button" aria-pressed="true">? Quick mode</button>
         <div class="timer">
           <span id="durationLabel">Duration</span>
@@ -88,38 +89,44 @@
       </div>
       <div class="focus-body">
         <div class="focus-identity">
+          <p id="focusProgress" class="focus-progress">Exercise 1 of 1 · Set 1 of 1</p>
           <h3 id="focusExerciseName">Exercise</h3>
           <p id="focusSetMeta">Set 1 of 1</p>
         </div>
-        <div class="focus-grid">
-          <label><span id="focusWeightLabel">Weight (kg)</span><input id="focusWeight" type="number" min="0" max="1000" step="0.25" inputmode="decimal"></label>
-          <label><span id="focusRepsLabel">Reps</span><input id="focusReps" type="number" min="0" max="999" step="1" inputmode="numeric"></label>
-          <label><span id="focusRpeLabel">RPE</span><input id="focusRpe" type="number" min="1" max="10" step="0.5" inputmode="decimal"></label>
+        <div class="single-set-entry">
+          <label class="weight-picker">
+            <span id="focusWeightLabel">Weight (kg)</span>
+            <select id="focusWeight" aria-label="Weight (kg)"></select>
+          </label>
+          <div class="target-reps-card" aria-live="polite">
+            <span id="targetRepsLabel">Target reps</span>
+            <strong id="focusTargetReps">5–15</strong>
+          </div>
         </div>
-        <label class="focus-warmup"><input id="focusWarmup" type="checkbox"> <span id="focusWarmupLabel">Warm-up set</span></label>
-      </div>
-      <div class="quick-actions" aria-label="Quick workout controls">
-        <button id="copyPreviousButton" type="button" class="quick-action">? Copy previous set</button>
-        <button id="weightMinusButton" type="button" class="quick-action">?2.5 kg</button>
-        <button id="weightPlusButton" type="button" class="quick-action">+2.5 kg</button>
-        <button id="repsMinusButton" type="button" class="quick-action">?1 rep</button>
-        <button id="repsPlusButton" type="button" class="quick-action">+1 rep</button>
+        <div id="setCompletionMessage" class="set-completion-message hidden" role="status" aria-live="polite">
+          <span class="set-completion-icon">✓</span>
+          <div><strong id="setCompletionTitle">Set completed</strong><span id="setCompletionText">Rest before the next set.</span></div>
+        </div>
       </div>
       <div id="nextSetPreview" class="next-set-preview" aria-live="polite"></div>
       <div class="focus-actions">
-        <button id="focusBackButton" type="button" class="ghost-button">Back</button>
+        <button id="focusBackButton" type="button" class="ghost-button">Back one set</button>
         <button id="focusPauseButton" type="button" class="ghost-button">Pause workout</button>
-        <button id="focusDoneButton" type="button" class="primary-button strong">Mark done</button>
-        <button id="focusNextButton" type="button" class="finish-button" disabled>Start rest</button>
+        <button id="focusDoneButton" type="button" class="primary-button strong">Complete set</button>
+        <button id="focusNextButton" type="button" class="finish-button" disabled>Start next set</button>
       </div>
       <div class="rest-strip">
         <span id="restLabel">Rest timer</span>
         <strong id="focusRestTimer">00:00</strong>
         <div id="restProgress" class="rest-progress" aria-hidden="true"></div>
-        <p id="restHint">Finish the set, wait for the rest timer to end, then start the next set.</p>
+        <p id="restHint">Complete the set, then wait for the programmed rest time.</p>
+      </div>
+      <div class="tracker-legacy-fields" aria-hidden="true">
+        <input id="focusReps" type="number"><input id="focusRpe" type="number"><input id="focusWarmup" type="checkbox">
+        <span id="focusRepsLabel"></span><span id="focusRpeLabel"></span><span id="focusWarmupLabel"></span>
+        <button id="copyPreviousButton" type="button"></button><button id="weightMinusButton" type="button"></button><button id="weightPlusButton" type="button"></button><button id="repsMinusButton" type="button"></button><button id="repsPlusButton" type="button"></button>
       </div>
     </section>
-
     <div id="exerciseList" class="exercise-list"></div>
 
     <div class="finish-bar panel">
@@ -145,7 +152,44 @@
     </div>
   </section>
 </main>
-<script type="module" src="/js/workout-tracker.js?v=20260722-4"></script>
+<script type="module" src="/js/workout-tracker.js?v=20260723-focus-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
+  <div
+  id="earlyRestModal"
+  class="confirm-modal hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="earlyRestModalTitle"
+>
+  <div class="confirm-modal-backdrop" data-close-early-modal></div>
+
+  <div class="confirm-modal-card">
+    <span class="confirm-modal-icon">⚠</span>
+
+    <h2 id="earlyRestModalTitle">
+      Start the next set early?
+    </h2>
+
+    <p id="earlyRestModalText"></p>
+
+    <div class="confirm-modal-actions">
+      <button
+        id="earlyRestBackButton"
+        type="button"
+        class="confirm-modal-button confirm-modal-button--back"
+      >
+        Back
+      </button>
+
+      <button
+        id="earlyRestAgreeButton"
+        type="button"
+        class="confirm-modal-button confirm-modal-button--agree"
+      >
+        Agree
+      </button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

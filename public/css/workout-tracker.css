@@ -628,3 +628,158 @@ body.rest-active .finish-button.rest-button-active{
   from{transform:translateY(4px);opacity:.85}
   to{transform:translateY(0);opacity:1}
 }
+
+
+/* Focused one-set workout flow */
+.tracker-legacy-fields,#exerciseList,.finish-bar,.quick-mode-button{display:none!important}
+#workoutPanel{min-height:calc(100vh - 48px)}
+.workout-toolbar{position:sticky;top:10px;z-index:20;padding:14px 18px;margin-bottom:12px;backdrop-filter:blur(18px)}
+.workout-toolbar h2{font-size:18px}.workout-toolbar p{margin:4px 0 0;font-size:13px}.toolbar-actions{gap:16px}
+.exit-workout-link{display:inline-flex;align-items:center;min-height:40px;padding:9px 13px;border:1px solid rgba(251,113,133,.24);border-radius:12px;color:#fecdd3;background:rgba(251,113,133,.08);font-size:13px;font-weight:850;text-decoration:none}
+.focus-panel{display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 150px);margin:0;padding:clamp(24px,4vw,52px);border-color:rgba(34,197,94,.34);background:radial-gradient(circle at top right,rgba(34,197,94,.12),transparent 30%),radial-gradient(circle at bottom left,rgba(59,130,246,.09),transparent 28%),linear-gradient(180deg,rgba(13,20,31,.99),rgba(8,13,22,.99));box-shadow:0 0 0 1px rgba(34,197,94,.05),0 28px 80px rgba(0,0,0,.38)}
+.focus-topline{margin-bottom:20px}.focus-progress{margin:0 0 8px!important;color:#7dd3fc!important;font-size:13px;font-weight:850;letter-spacing:.04em;text-transform:uppercase}.focus-identity h3{font-size:clamp(34px,5vw,64px);line-height:1;letter-spacing:-.035em}.focus-identity #focusSetMeta{margin-top:12px;font-size:16px}
+.single-set-entry{display:grid;grid-template-columns:minmax(240px,1fr) minmax(180px,.55fr);gap:18px;margin-top:28px}.weight-picker{gap:10px}.weight-picker span,.target-reps-card span{color:#cbd5e1;font-size:14px;font-weight:850}
+#focusWeight{
+  min-height:68px;
+  padding:12px 18px;
+  border-color:rgba(34,197,94,.3);
+  border-radius:16px;
+  color:#fff;
+  font-size:24px;
+  font-weight:900;
+  background:linear-gradient(
+    180deg,
+    rgba(30,41,59,.96),
+    rgba(15,23,42,.96)
+  );
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+#focusWeight option{
+  color:#000;
+  background:#fff;
+}
+#focusWeight:focus{border-color:rgba(34,197,94,.62);box-shadow:0 0 0 4px rgba(34,197,94,.14)}
+.target-reps-card{display:grid;align-content:center;gap:8px;min-height:104px;padding:18px 22px;border:1px solid rgba(245,158,11,.28);border-radius:16px;background:linear-gradient(135deg,rgba(245,158,11,.11),rgba(251,146,60,.06))}.target-reps-card strong{color:#fde68a;font-size:clamp(28px,4vw,46px);line-height:1}
+.set-completion-message{display:flex;align-items:center;gap:14px;margin-top:20px;padding:16px 18px;border:1px solid rgba(34,197,94,.35);border-radius:16px;background:rgba(34,197,94,.1);animation:completePulse .55s ease-out}.set-completion-icon{display:grid;width:42px;height:42px;place-items:center;flex:0 0 42px;border-radius:50%;color:#052e16;background:#4ade80;font-size:25px;font-weight:950}.set-completion-message div{display:grid;gap:3px}.set-completion-message strong{color:#dcfce7;font-size:16px}.set-completion-message span:last-child{color:#bbf7d0;font-size:13px}
+.next-set-preview{margin-top:22px}.focus-actions{display:grid;grid-template-columns:auto auto minmax(170px,1fr) minmax(190px,1fr);align-items:stretch;margin-top:20px}.focus-actions button{min-height:56px}#focusDoneButton{font-size:16px}#focusNextButton.rest-button-active,#focusNextButton.rest-button-active:disabled{opacity:1;cursor:pointer}.rest-strip{margin-top:18px}body.rest-active #focusDoneButton{display:none}body.rest-active #focusNextButton{grid-column:3/5}
+@media(max-width:720px){.tracker-page{width:100%;padding:8px 8px 24px}.page-nav,.tracker-header,#trackerStatus{display:none}.workout-toolbar{top:6px;border-radius:16px}.workout-toolbar>div:first-child{min-width:0}.workout-toolbar h2,.workout-toolbar p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.toolbar-actions{width:auto;flex-direction:row;align-items:center}.timer{min-width:58px}.exit-workout-link{padding:8px 10px}.focus-panel{min-height:calc(100svh - 94px);padding:22px 16px;border-radius:20px}.focus-identity h3{font-size:clamp(32px,11vw,48px)}.single-set-entry{grid-template-columns:1fr}.target-reps-card{min-height:86px}.focus-actions{grid-template-columns:1fr 1fr}#focusDoneButton,#focusNextButton{grid-column:1/-1}body.rest-active #focusNextButton{grid-column:1/-1}}
+.confirm-modal{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+
+.confirm-modal.hidden{
+  display:none;
+}
+
+.confirm-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(2,6,23,.76);
+  backdrop-filter:blur(8px);
+}
+
+.confirm-modal-card{
+  position:relative;
+  z-index:1;
+  width:min(460px,100%);
+  padding:28px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:22px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(17,24,39,.99),
+      rgba(9,14,24,.99)
+    );
+  box-shadow:
+    0 30px 90px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  animation:confirmModalIn .2s ease-out;
+}
+
+.confirm-modal-icon{
+  display:grid;
+  width:50px;
+  height:50px;
+  place-items:center;
+  margin-bottom:18px;
+  border-radius:15px;
+  color:#fef3c7;
+  background:rgba(245,158,11,.15);
+  font-size:26px;
+}
+
+.confirm-modal-card h2{
+  margin:0;
+  color:#f8fafc;
+  font-size:25px;
+}
+
+.confirm-modal-card p{
+  margin:14px 0 0;
+  color:#cbd5e1;
+  font-size:15px;
+  line-height:1.65;
+  white-space:pre-line;
+}
+
+.confirm-modal-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:26px;
+}
+
+.confirm-modal-button{
+  min-height:50px;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  transition:
+    transform .16s ease,
+    filter .16s ease;
+}
+
+.confirm-modal-button:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.08);
+}
+
+.confirm-modal-button--back{
+  background:linear-gradient(135deg,#b91c1c,#ef4444);
+}
+
+.confirm-modal-button--agree{
+  background:linear-gradient(135deg,#15803d,#22c55e);
+}
+
+@keyframes confirmModalIn{
+  from{
+    opacity:0;
+    transform:translateY(10px) scale(.97);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+@media(max-width:520px){
+  .confirm-modal-card{
+    padding:22px;
+    border-radius:18px;
+  }
+
+  .confirm-modal-actions{
+    grid-template-columns:1fr;
+  }
+}
