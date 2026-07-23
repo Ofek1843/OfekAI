@@ -37,9 +37,9 @@ function dashboardGreeting(name, isHebrew) {
 }
 
 const rawUi = he ? {
-  today: "היום",  welcome: name => dashboardGreeting(name, true),  intro: "בחר את הצעד הבא שלך בלי ללכת לאיבוד בין יותר מדי כפתורים.",  chat: "שאל את המאמן שלך →",  loading: "טוען את הדשבורד שלך...",  week: "אימונים השבוע",  streak: "רצף נוכחי",  weight: "משקל אחרון",  sets: "סטים שהושלמו",  update: "עדכון התקדמות",  next: "האימון הבא",  noneWorkout: "אין תוכנית אימון פעילה",  start: "התחלת אימון",  nutrition: "תזונה פעילה",  noneNutrition: "אין תוכנית תזונה פעילה",  calories: "קלוריות",  protein: "חלבון",  manageNutrition: "ניהול תוכניות תזונה",  recent: "האימון האחרון",  noWorkouts: "עדיין אין אימונים",  history: "היסטוריית אימונים",  progress: "התקדמות",  momentum: "ממשיכים לצבור תנופה",  analytics: "ניתוח תרגילים",  goal: (done, target) => target ? `${done} מתוך ${target} אימונים מתוכננים` : "הגדר יעד ב־Athlete Core",  streakHint: n => n ? "ימים רצופים עם פעילות" : "האימון הראשון מתחיל את הרצף",  setsHint: "ב־30 האימונים האחרונים",  exerciseMore: n => `ועוד ${n}`,  minutes: "דקות",  completed: "סטים הושלמו",  progressMessage: n => n ? `השלמת ${n} אימונים. כל אימון מתועד משפר את ניתוח ההתקדמות שלך.` : "סיים את האימון הראשון כדי להתחיל למדוד התקדמות.",  error: "לא ניתן לטעון את הדשבורד.",  quickFoodLabel: "בדיקה מהירה",  quickFoodTitle: "חרגת מהתפריט היום?",  quickFoodText: "כתוב בקירוב מה אכלת היום. אל תשכח משקאות. זה חישוב משוער בלבד.",  quickFoodEstimate: "חשב קירוב",  quickFoodClear: "נקה",  quickFoodEmpty: "כאן יופיעו קלוריות ומאקרו משוערים.",  quickFoodPlaceholder: "לדוגמה: 2 ביצים, חזה עוף, אורז, סלט, חלב, קפה",  quickFoodLow: "נראה שהיום לא היה דרמטי במיוחד — אפשר לסגור אותו עם הליכה קלה.",  quickFoodMid: "יש כאן חריגה מתונה. חזרה למסלול מחר תספיק.",  quickFoodHigh: "נראה שהיום היה גבוה יותר קלורית. עדיף לחזור לשגרה ולא להילחץ.",  scheduleLabel: "תצוגת השבוע",  scheduleTitle: "ימי האימון של השבוע",  scheduleHint: "גרור אימון ליום אחר כדי להזיז את כל השבוע קדימה בלי לפגוע במנוחה.",  scheduleShift: "הזז יום קדימה",  buildWorkout: "בניית תוכנית אימון",  buildNutrition: "בניית תוכנית תזונה",  trackProgress: "מעקב התקדמות",  heroHistory: "היסטוריית אימונים",  drawerCoach: "שיחה עם המאמן",  drawerPrimary: "התחלה מהירה",  drawerTraining: "כלי אימון",  drawerSupport: "התקדמות וחשבון",  manualLabel: "תוכנית עצמית",  manualTitle: "בניית תוכנית בעצמך",  manualText: "בחר תרגילים, קבע סטים ומנוחות, ובנה או שכפל ימי אימון בקצב שלך.",  manualAction: "יצירת תוכנית עצמית",  manualNav: "בניית תוכנית עצמית",  toolsKicker: "כלים מתקדמים",  toolsSummary: "פתיחת כלים נוספים",  toolsText: "היסטוריה, בנייה ידנית ובדיקת חריגה נשמרים כאן כדי שהמסך הראשי יישאר פשוט וברור.",  logout: "התנתקות",  logoutConfirm: "להתנתק מהחשבון?",  logoutWorking: "מתנתק...",  logoutError: "לא הצלחנו להתנתק. נסה שוב."}
+  today: "היום",  welcome: name => dashboardGreeting(name, true),  intro: "בחר את הצעד הבא שלך בלי ללכת לאיבוד בין יותר מדי כפתורים.",  chat: "שאל את המאמן שלך →",  loading: "טוען את הדשבורד שלך...",  week: "אימונים השבוע",  streak: "רצף נוכחי",  weight: "משקל אחרון",  sets: "סטים שהושלמו",  update: "עדכון התקדמות",  next: "האימון הבא",  noneWorkout: "אין תוכנית אימון פעילה",  start: "התחלת אימון",  nutrition: "תזונה פעילה",  noneNutrition: "אין תוכנית תזונה פעילה",  calories: "קלוריות",  protein: "חלבון",  manageNutrition: "ניהול תוכניות תזונה",  recent: "האימון האחרון",  noWorkouts: "עדיין אין אימונים",  history: "היסטוריית אימונים",  progress: "התקדמות",  momentum: "ממשיכים לצבור תנופה",  analytics: "ניתוח תרגילים",  goal: (done, target) => target ? `${done} מתוך ${target} אימונים מתוכננים` : "הגדר יעד ב־Athlete Core",  streakHint: n => n ? "ימים רצופים עם פעילות" : "האימון הראשון מתחיל את הרצף",  setsHint: "ב־30 האימונים האחרונים",  exerciseMore: n => `ועוד ${n}`,  minutes: "דקות",  completed: "סטים הושלמו",  progressMessage: n => n ? `השלמת ${n} אימונים. כל אימון מתועד משפר את ניתוח ההתקדמות שלך.` : "סיים את האימון הראשון כדי להתחיל למדוד התקדמות.",  error: "לא ניתן לטעון את הדשבורד.",  quickFoodLabel: "בדיקה מהירה",  quickFoodTitle: "חרגת מהתפריט היום?",  quickFoodText: "כתוב בקירוב מה אכלת היום. אל תשכח משקאות. זה חישוב משוער בלבד.",  quickFoodEstimate: "חשב קירוב",  quickFoodClear: "נקה",  quickFoodEmpty: "כאן יופיעו קלוריות ומאקרו משוערים.",  quickFoodPlaceholder: "לדוגמה: 2 ביצים, חזה עוף, אורז, סלט, חלב, קפה",  quickFoodLow: "נראה שהיום לא היה דרמטי במיוחד — אפשר לסגור אותו עם הליכה קלה.",  quickFoodMid: "יש כאן חריגה מתונה. חזרה למסלול מחר תספיק.",  quickFoodHigh: "נראה שהיום היה גבוה יותר קלורית. עדיף לחזור לשגרה ולא להילחץ.",  scheduleLabel: "תצוגת השבוע",  scheduleTitle: "ימי האימון של השבוע",  scheduleHint: "גרור אימון ליום אחר כדי להזיז את כל השבוע קדימה בלי לפגוע במנוחה.",  scheduleShift: "הזז יום קדימה",  buildWorkout: "בניית תוכנית אימון",  buildNutrition: "בניית תוכנית תזונה",  trackProgress: "מעקב התקדמות",  heroHistory: "היסטוריית אימונים",  drawerCoach: "שיחה עם המאמן",  drawerPrimary: "התחלה מהירה",  drawerTraining: "כלי אימון",  drawerSupport: "התקדמות וחשבון",  missedLabel: "פספסת אימון?",  missedTitle: "הזן אותו כאן",  missedText: "הוסף את האימון עכשיו כדי שההיסטוריה וגרפי ההתקדמות יישארו מלאים.",  missedAction: "הזנת אימון שבוצע",  manualLabel: "תוכנית עצמית",  manualTitle: "בניית תוכנית בעצמך",  manualText: "בחר תרגילים, קבע סטים ומנוחות, ובנה או שכפל ימי אימון בקצב שלך.",  manualAction: "יצירת תוכנית עצמית",  manualNav: "בניית תוכנית עצמית",  toolsKicker: "כלים מתקדמים",  toolsSummary: "פתיחת כלים נוספים",  toolsText: "היסטוריה, בנייה ידנית ובדיקת חריגה נשמרים כאן כדי שהמסך הראשי יישאר פשוט וברור.",  logout: "התנתקות",  logoutConfirm: "להתנתק מהחשבון?",  logoutWorking: "מתנתק...",  logoutError: "לא הצלחנו להתנתק. נסה שוב."}
  : {
-  today: "TODAY",  welcome: name => dashboardGreeting(name, false),  intro: "Pick your next move without wading through too many buttons at once.",  chat: "Ask your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start Workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "Workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day",  buildWorkout: "Build workout plan",  buildNutrition: "Build nutrition plan",  trackProgress: "Track progress",  heroHistory: "Workout history",  drawerCoach: "Chat with your coach",  drawerPrimary: "Start here",  drawerTraining: "Training tools",  drawerSupport: "Progress & account",  manualLabel: "YOUR OWN PROGRAM",  manualTitle: "Build a plan manually",  manualText: "Search exercises, set your sets and rest times, and build or duplicate workout days at your pace.",  manualAction: "Create my plan",  manualNav: "Build a plan manually",  toolsKicker: "MORE TOOLS",  toolsSummary: "Open advanced tools",  toolsText: "History, manual planning, and nutrition check-ins live here so the main screen stays simple and easy to use.",  logout: "Log out",  logoutConfirm: "Log out of your account?",  logoutWorking: "Logging out...",  logoutError: "Could not log out. Please try again."}
+  today: "TODAY",  welcome: name => dashboardGreeting(name, false),  intro: "Pick your next move without wading through too many buttons at once.",  chat: "Ask your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start Workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "Workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day",  buildWorkout: "Build workout plan",  buildNutrition: "Build nutrition plan",  trackProgress: "Track progress",  heroHistory: "Workout history",  drawerCoach: "Chat with your coach",  drawerPrimary: "Start here",  drawerTraining: "Training tools",  drawerSupport: "Progress & account",  missedLabel: "MISSED TRACKING?",  missedTitle: "Missed a workout? Log it here",  missedText: "Add the workout later so your history and progress charts stay complete.",  missedAction: "Log a past workout",  manualLabel: "YOUR OWN PROGRAM",  manualTitle: "Build a plan manually",  manualText: "Search exercises, set your sets and rest times, and build or duplicate workout days at your pace.",  manualAction: "Create my plan",  manualNav: "Build a plan manually",  toolsKicker: "MORE TOOLS",  toolsSummary: "Open advanced tools",  toolsText: "History, manual planning, and nutrition check-ins live here so the main screen stays simple and easy to use.",  logout: "Log out",  logoutConfirm: "Log out of your account?",  logoutWorking: "Logging out...",  logoutError: "Could not log out. Please try again."}
 ;
 const navLabels = he ? {
   dashboard: "דשבורד",
@@ -64,13 +64,108 @@ const drawerSearchCopy = he
   ? {
       topbar: "חיפוש מהיר",
       placeholder: "חפש עמוד או כלי...",
-      open: "פתח חיפוש"
+      open: "פתח חיפוש",
+      noResults: "לא נמצאו תוצאות"
     }
   : {
       topbar: "Search dashboard",
       placeholder: "Search pages or tools...",
-      open: "Open search"
+      open: "Open search",
+      noResults: "No results found"
     };
+const searchableItems = [
+  {
+    id: "dashboard",
+    title: "Dashboard",
+    titleHe: "דשבורד",
+    route: "/dashboard.html",
+    keywords: ["dashboard", "home", "overview", "main", "דשבורד", "בית", "ראשי", "סקירה"]
+  },
+  {
+    id: "coach",
+    title: "Coach",
+    titleHe: "המאמן שלך",
+    route: "/app.html",
+    keywords: ["coach", "chat", "assistant", "ask coach", "personal coach", "מאמן", "צאט", "צ'אט", "שיחה", "שאל את המאמן"]
+  },
+  {
+    id: "workout-builder",
+    title: "Workout plan builder",
+    titleHe: "בניית תוכנית אימון",
+    route: "/workout-builder.html",
+    keywords: ["workout builder", "workout plan", "program builder", "build workout", "training plan", "תוכנית אימון", "בניית תוכנית", "מחולל אימון", "מחולל תוכנית", "אימון"]
+  },
+  {
+    id: "workout-tracker",
+    title: "Workout Tracker",
+    titleHe: "מעקב אימונים",
+    route: "/workout-tracker.html",
+    keywords: ["workout tracker", "workout track", "workout", "track workout", "training log", "workout log", "sets", "reps", "מעקב אימון", "מעקב אימונים", "מעקב אימ", "אימונים", "יומן אימונים", "רישום אימון", "סטים", "חזרות"]
+  },
+  {
+    id: "manual-workout-builder",
+    title: "Build a plan manually",
+    titleHe: "בניית תוכנית בעצמך",
+    route: "/manual-workout-builder.html",
+    keywords: ["manual plan", "manual workout", "custom workout", "build manually", "create own program", "תוכנית עצמית", "בניית תוכנית בעצמך", "בנייה ידנית", "תוכנית ידנית", "תוכנית משלי"]
+  },
+  {
+    id: "workout-history",
+    title: "Workout history",
+    titleHe: "היסטוריית אימונים",
+    route: "/workout-history.html",
+    keywords: ["history", "workout history", "logs", "past workouts", "יומן", "היסטוריה", "היסטוריית אימונים", "אימונים קודמים", "אימון קודם"]
+  },
+  {
+    id: "missed-workout",
+    title: "Missed a workout? Log it here",
+    titleHe: "פספסת אימון? תעד אותו כאן",
+    route: "/log-workout.html",
+    keywords: ["missed workout", "missed a workout", "log it here", "missed tracking", "log workout", "past workout", "פספסת אימון", "החמצת אימון", "תעד אותו", "אימון שבוצע", "הזנת אימון"]
+  },
+  {
+    id: "nutrition-builder",
+    title: "Nutrition plan builder",
+    titleHe: "בניית תפריט תזונה",
+    route: "/nutrition-builder.html",
+    keywords: ["nutrition builder", "meal plan", "diet plan", "food plan", "nutrition", "תפריט", "תזונה", "מחולל תפריט", "בניית תפריט", "דיאטה"]
+  },
+  {
+    id: "nutrition-plans",
+    title: "My nutrition plans",
+    titleHe: "תוכניות התזונה שלי",
+    route: "/my-nutrition-plans.html",
+    keywords: ["nutrition plans", "saved meal plans", "my nutrition", "meal plans", "תוכניות תזונה", "תפריטים שמורים", "התפריטים שלי", "תזונה שמורה"]
+  },
+  {
+    id: "workout-plans",
+    title: "My workout plans",
+    titleHe: "תוכניות האימון שלי",
+    route: "/my-workout-plans.html",
+    keywords: ["workout plans", "saved workouts", "my programs", "programs", "תוכניות אימון", "תוכניות שמורות", "התוכניות שלי", "אימונים שמורים"]
+  },
+  {
+    id: "progress",
+    title: "Progress",
+    titleHe: "התקדמות",
+    route: "/progress.html",
+    keywords: ["progress", "analytics", "charts", "weight", "measurements", "graphs", "התקדמות", "גרפים", "מדדים", "משקל", "מדידות", "ניתוח"]
+  },
+  {
+    id: "settings",
+    title: "Settings",
+    titleHe: "הגדרות",
+    route: "/app.html?settings=open",
+    keywords: ["settings", "profile", "athlete core", "account", "preferences", "הגדרות", "פרופיל", "אטלט קור", "חשבון", "העדפות"]
+  },
+  {
+    id: "pricing",
+    title: "Plans",
+    titleHe: "מסלולים",
+    route: "/pricing.html",
+    keywords: ["pricing", "plans", "pro", "upgrade", "subscription", "מחיר", "מסלולים", "פרו", "שדרוג", "מנוי"]
+  }
+];
 const repairText = value => {
   if (typeof value !== "string" || !/[׳³׳’]/.test(value)) return value;
   try {
@@ -98,10 +193,129 @@ const esc = value => String(value ?? "").replace(/[&<>"\x27]/g, char => ({
   "\"": "&quot;",
   "'": "&#039;"
 }[char]));
+
+function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function itemSearchHaystack(item) {
+  return [
+    item.title,
+    item.titleHe,
+    item.id,
+    item.route,
+    ...(item.keywords || [])
+  ].map(normalizeSearchText);
+}
+
+function searchDashboardItems(query) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return [];
+  const queryParts = normalizedQuery.split(" ").filter(Boolean);
+
+  return searchableItems
+    .map(item => {
+      const haystack = itemSearchHaystack(item);
+      const exactish = haystack.some(text => text.includes(normalizedQuery));
+      const allParts = queryParts.every(part => haystack.some(text => text.includes(part)));
+      const startsWith = haystack.some(text => text.startsWith(normalizedQuery));
+      const score = startsWith ? 3 : exactish ? 2 : allParts ? 1 : 0;
+      return { item, score };
+    })
+    .filter(result => result.score > 0)
+    .sort((a, b) => b.score - a.score || a.item.title.localeCompare(b.item.title))
+    .map(result => result.item);
+}
+
+function debounce(callback, delay = 240) {
+  let timeoutId;
+  return (...args) => {
+    window.clearTimeout(timeoutId);
+    timeoutId = window.setTimeout(() => callback(...args), delay);
+  };
+}
+
+function renderSearchResults(root, results, query) {
+  const resultsBox = root.querySelector("[data-search-results]");
+  if (!resultsBox) return;
+
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) {
+    resultsBox.hidden = true;
+    resultsBox.innerHTML = "";
+    return;
+  }
+
+  resultsBox.hidden = false;
+  if (!results.length) {
+    resultsBox.innerHTML = `<div class="dashboard-search-empty">${esc(drawerSearchCopy.noResults)}</div>`;
+    return;
+  }
+
+  resultsBox.innerHTML = results.slice(0, 7).map(item => `
+    <a class="dashboard-search-result" href="${esc(item.route)}" data-search-result-id="${esc(item.id)}">
+      <span>${esc(he ? item.titleHe : item.title)}</span>
+      <small>${esc(he ? item.title : item.titleHe)}</small>
+    </a>
+  `).join("");
+}
+
+function closeSearchResults(exceptRoot = null) {
+  document.querySelectorAll("[data-dashboard-search]").forEach(root => {
+    if (root === exceptRoot) return;
+    const resultsBox = root.querySelector("[data-search-results]");
+    if (resultsBox) {
+      resultsBox.hidden = true;
+      resultsBox.innerHTML = "";
+    }
+  });
+}
+
+function initDashboardSearch() {
+  const searchRoots = [...document.querySelectorAll("[data-dashboard-search]")];
+  if (!searchRoots.length) return;
+
+  searchRoots.forEach(root => {
+    const input = root.querySelector("input[type='search']");
+    if (!input) return;
+
+    const runSearch = () => {
+      const results = searchDashboardItems(input.value);
+      renderSearchResults(root, results, input.value);
+    };
+    const debouncedSearch = debounce(runSearch);
+
+    input.addEventListener("input", debouncedSearch);
+    input.addEventListener("focus", runSearch);
+    input.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        input.value = "";
+        closeSearchResults();
+        input.blur();
+      }
+    });
+    root.addEventListener("click", event => {
+      const result = event.target.closest("[data-search-result-id]");
+      if (result) {
+        closeSearchResults();
+      }
+    });
+  });
+
+  document.addEventListener("click", event => {
+    const activeRoot = event.target.closest("[data-dashboard-search]");
+    if (!activeRoot) closeSearchResults();
+  });
+}
+
 function localize() {
   document.documentElement.lang = he ? "he" : "en";
   document.documentElement.dir = he ? "rtl" : "ltr";
-  for (const [id, key] of [["todayLabel", "today"], ["welcomeText", "intro"], ["chatLink", "chat"], ["weekLabel", "week"], ["streakLabel", "streak"], ["weightLabel", "weight"], ["setsLabel", "sets"], ["weightLink", "update"], ["nextLabel", "next"], ["startWorkoutLink", "start"], ["nutritionLabel", "nutrition"], ["caloriesLabel", "calories"], ["proteinLabel", "protein"], ["nutritionLink", "manageNutrition"], ["recentLabel", "recent"], ["historyAction", "history"], ["progressLabel", "progress"], ["progressTitle", "momentum"], ["analyticsAction", "analytics"], ["scheduleLabel", "scheduleLabel"], ["scheduleTitle", "scheduleTitle"], ["scheduleHint", "scheduleHint"], ["shiftScheduleButton", "scheduleShift"], ["quickFoodLabel", "quickFoodLabel"], ["quickFoodTitle", "quickFoodTitle"], ["quickFoodText", "quickFoodText"], ["quickFoodEstimate", "quickFoodEstimate"], ["quickFoodClear", "quickFoodClear"], ["heroWorkoutBuilderLink", "buildWorkout"], ["heroNutritionBuilderLink", "buildNutrition"], ["heroProgressLink", "trackProgress"], ["heroHistoryLink", "heroHistory"], ["drawerCoachLink", "drawerCoach"], ["drawerPrimaryLabel", "drawerPrimary"], ["drawerTrainingLabel", "drawerTraining"], ["drawerSupportLabel", "drawerSupport"], ["manualLabel", "manualLabel"], ["manualTitle", "manualTitle"], ["manualText", "manualText"], ["manualAction", "manualAction"], ["drawerManualBuilderLink", "manualNav"], ["toolsKicker", "toolsKicker"], ["toolsSummary", "toolsSummary"], ["toolsText", "toolsText"], ["dashboardLogoutButton", "logout"]]) {
+  for (const [id, key] of [["todayLabel", "today"], ["welcomeText", "intro"], ["chatLink", "chat"], ["weekLabel", "week"], ["streakLabel", "streak"], ["weightLabel", "weight"], ["setsLabel", "sets"], ["weightLink", "update"], ["nextLabel", "next"], ["startWorkoutLink", "start"], ["nutritionLabel", "nutrition"], ["caloriesLabel", "calories"], ["proteinLabel", "protein"], ["nutritionLink", "manageNutrition"], ["recentLabel", "recent"], ["historyAction", "history"], ["missedLabel", "missedLabel"], ["missedTitle", "missedTitle"], ["missedText", "missedText"], ["missedAction", "missedAction"], ["progressLabel", "progress"], ["progressTitle", "momentum"], ["analyticsAction", "analytics"], ["scheduleLabel", "scheduleLabel"], ["scheduleTitle", "scheduleTitle"], ["scheduleHint", "scheduleHint"], ["shiftScheduleButton", "scheduleShift"], ["quickFoodLabel", "quickFoodLabel"], ["quickFoodTitle", "quickFoodTitle"], ["quickFoodText", "quickFoodText"], ["quickFoodEstimate", "quickFoodEstimate"], ["quickFoodClear", "quickFoodClear"], ["heroWorkoutBuilderLink", "buildWorkout"], ["heroNutritionBuilderLink", "buildNutrition"], ["heroProgressLink", "trackProgress"], ["heroHistoryLink", "heroHistory"], ["drawerCoachLink", "drawerCoach"], ["drawerPrimaryLabel", "drawerPrimary"], ["drawerTrainingLabel", "drawerTraining"], ["drawerSupportLabel", "drawerSupport"], ["manualLabel", "manualLabel"], ["manualTitle", "manualTitle"], ["manualText", "manualText"], ["manualAction", "manualAction"], ["drawerManualBuilderLink", "manualNav"], ["toolsKicker", "toolsKicker"], ["toolsSummary", "toolsSummary"], ["toolsText", "toolsText"], ["dashboardLogoutButton", "logout"]]) {
     const node = $("#" + id);
     if (node) node.textContent = ui[key];
   }
@@ -124,6 +338,8 @@ function localize() {
   if (searchLabel) searchLabel.textContent = drawerSearchCopy.topbar;
   const drawerSearch = $("#drawerSearchInput");
   if (drawerSearch) drawerSearch.placeholder = drawerSearchCopy.placeholder;
+  const desktopSearch = $("#desktopSearchInput");
+  if (desktopSearch) desktopSearch.placeholder = drawerSearchCopy.placeholder;
 }
 
 function initMobileDrawer() {
@@ -154,17 +370,6 @@ function initMobileDrawer() {
   backdrop.addEventListener("click", () => setOpen(false));
   sidebar.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", () => setOpen(false));
-  });
-  searchInput?.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    sidebar.querySelectorAll(".sidebar-nav a").forEach(link => {
-      const text = (link.textContent || "").trim().toLowerCase();
-      link.hidden = query ? !text.includes(query) : false;
-    });
-    sidebar.querySelectorAll(".sidebar-section").forEach(section => {
-      const hasVisibleLink = [...section.querySelectorAll(".sidebar-nav a")].some(link => !link.hidden);
-      section.hidden = query ? !hasVisibleLink : false;
-    });
   });
   window.addEventListener("resize", () => {
     if (window.innerWidth > 520) setOpen(false);
@@ -772,6 +977,7 @@ async function load(user) {
 }
 localize();
 initMobileDrawer();
+initDashboardSearch();
 initQuickFood();
 initLogout();
 trackPageView({

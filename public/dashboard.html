@@ -13,6 +13,8 @@
     } catch {}
   </script>
   <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/dashboard-enhancements.css">
+  <link rel="stylesheet" href="/css/theme-toggle.css">
 </head>
 <body>
   <main class="dashboard-shell">
@@ -22,8 +24,9 @@
         <a class="brand" href="/dashboard.html">FuelPhysique</a>
         <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close menu">✕</button>
       </div>
-      <div class="sidebar-search">
+      <div class="dashboard-search sidebar-search" data-dashboard-search>
         <input id="drawerSearchInput" type="search" placeholder="Search sections" autocomplete="off">
+        <div class="dashboard-search-results" data-search-results hidden></div>
       </div>
       <a class="drawer-coach-link" id="drawerCoachLink" href="/app.html">Ask your coach →</a>
       <div class="sidebar-section">
@@ -65,7 +68,9 @@
           <span class="mobile-search-icon">⌕</span>
           <span class="mobile-search-label">Search dashboard</span>
         </button>
-        <a class="mobile-profile-button" id="mobileProfileButton" href="/app.html?settings=open" aria-label="Open settings">👤</a>
+        <button class="mobile-theme-button theme-toggle theme-toggle--compact" type="button" data-theme-toggle aria-label="Toggle theme">
+          <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌙</span>
+        </button>
       </header>
 
       <header class="hero-row">
@@ -80,6 +85,14 @@
           </div>
         </div>
         <div class="hero-actions">
+          <button class="theme-toggle hero-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">
+            <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌙</span>
+            <span class="theme-toggle-label" data-theme-toggle-label>Dark mode</span>
+          </button>
+          <div class="dashboard-search desktop-search" data-dashboard-search>
+            <input id="desktopSearchInput" type="search" placeholder="Search pages or tools..." autocomplete="off">
+            <div class="dashboard-search-results" data-search-results hidden></div>
+          </div>
           <a class="chat-link" id="chatLink" href="/app.html">Ask your coach →</a>
           <a class="hero-secondary-action" id="heroHistoryLink" href="/workout-history.html">Workout history</a>
         </div>
@@ -153,6 +166,18 @@
             <a id="nutritionLink" class="secondary-action" href="/my-nutrition-plans.html">Manage nutrition plans</a>
           </article>
 
+          <article class="card missed-card">
+            <header>
+              <span class="card-icon">⏱️</span>
+              <div>
+                <span class="card-kicker" id="missedLabel">MISSED TRACKING?</span>
+                <h2 id="missedTitle">Missed a workout? Log it here</h2>
+              </div>
+            </header>
+            <p id="missedText" class="muted">Add the workout later so your history and progress charts stay complete.</p>
+            <a id="missedAction" class="secondary-action" href="/log-workout.html">Log a past workout</a>
+          </article>
+
           <details class="card tools-accordion" id="moreToolsAccordion">
             <summary class="tools-accordion-summary">
               <span class="card-icon">🧰</span>
@@ -224,6 +249,7 @@
   </div>
 
   <script type="module" src="/js/site-feedback.js"></script>
+  <script type="module" src="/js/theme-toggle.js"></script>
   <script type="module" src="/js/dashboard.js?v=20260722-7"></script>
 </body>
 </html>

@@ -6,9 +6,21 @@
 
   <title>FuelPhysique Coach</title>
 
+  <script>
+    try {
+      const t = localStorage.getItem("ofek-ai-theme") || "dark";
+      document.documentElement.dataset.theme = t === "system"
+        ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
+        : t;
+    } catch {}
+  </script>
+
   <link rel="stylesheet" href="/css/settings.css" />
+  <link rel="stylesheet" href="/css/theme-toggle.css" />
 
   <style>
+    @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap");
+
     * {
       box-sizing: border-box;
     }
@@ -17,7 +29,7 @@
       margin: 0;
       padding: 0;
       min-height: 100vh;
-      font-family: Arial, sans-serif;
+      font-family: "Heebo", Inter, system-ui, sans-serif;
       background: linear-gradient(135deg, #0f172a, #111827, #1e293b);
       color: #f8fafc;
     }
@@ -35,10 +47,35 @@
 
 .top-bar {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 18px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.coach-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e0e7ff;
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.top-bar .theme-toggle {
+  margin-inline-start: auto;
+}
+
+html[data-theme="light"] .coach-back-link {
+  color: #17324d;
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(71, 85, 105, 0.14);
 }
 
     .brand {
@@ -794,15 +831,16 @@
 
   html[data-theme="light"] body {
     background:
-      radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 34%),
-      linear-gradient(135deg, #dcecf5, #e8f3f7, #d9e8f2);
+      radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 32%),
+      radial-gradient(circle at 88% 18%, rgba(34, 197, 94, 0.09), transparent 28%),
+      linear-gradient(135deg, #eaf3f9, #eef6fa 52%, #e7f2f8);
     color: #17324d;
   }
 
   html[data-theme="light"] .container {
-    background: rgba(232, 244, 249, 0.94);
-    border-color: rgba(23, 79, 114, 0.14);
-    box-shadow: 0 18px 50px rgba(30, 77, 105, 0.16);
+    background: rgba(246, 251, 253, 0.95);
+    border-color: rgba(23, 79, 114, 0.12);
+    box-shadow: 0 18px 50px rgba(30, 77, 105, 0.12);
   }
 
   html[data-theme="light"] .subtitle {
@@ -951,6 +989,9 @@
   <main class="container">
     <header class="top-bar coach-minimal-header">
       <a class="coach-back-link" href="/dashboard.html">← Dashboard</a>
+      <button class="theme-toggle theme-toggle--compact" type="button" data-theme-toggle aria-label="Toggle theme">
+        <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌙</span>
+      </button>
     </header>
 
     <div class="app-layout">
@@ -1451,6 +1492,7 @@
   <script type="module" src="/js/session-trail.js"></script>
   <script type="module" src="/js/app-auth.js"></script>
   <script type="module" src="/js/user-profile.js"></script>
+  <script type="module" src="/js/theme-toggle.js"></script>
   <script type="module" src="/js/settings.js"></script>
 <script>
   const mobileHistoryToggle = document.getElementById("mobileHistoryToggle");

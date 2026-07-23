@@ -174,6 +174,20 @@ function applyTheme(
         );
     }
 
+    window.dispatchEvent(
+        new CustomEvent(
+            "ofekai:theme-changed",
+            {
+                detail: {
+                    preference:
+                        normalizedTheme,
+                    theme:
+                        resolvedTheme
+                }
+            }
+        )
+    );
+
     if (
         elements.theme &&
         elements.theme.value !== normalizedTheme
@@ -652,36 +666,20 @@ async function loadSettings(user) {
             loadedSettings
         );
         window.dispatchEvent(
-    new CustomEvent(
-        "ofekai:settings-loaded",
-        {
-            detail: {
-                ...loadedSettings,
-                email: user.email || "",
-                displayName:
-                    loadedSettings.displayName ||
-                    user.displayName ||
-                    ""
-            }
-        }
-    )
-);
-
-        window.dispatchEvent(
-    new CustomEvent(
-        "ofekai:settings-loaded",
-        {
-            detail: {
-                ...loadedSettings,
-                email: user.email || "",
-                displayName:
-                    loadedSettings.displayName ||
-                    user.displayName ||
-                    ""
-            }
-        }
-    )
-);
+            new CustomEvent(
+                "ofekai:settings-loaded",
+                {
+                    detail: {
+                        ...loadedSettings,
+                        email: user.email || "",
+                        displayName:
+                            loadedSettings.displayName ||
+                            user.displayName ||
+                            ""
+                    }
+                }
+            )
+        );
     } catch (error) {
         console.error(
             "Failed to load settings:",
