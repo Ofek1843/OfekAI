@@ -1682,3 +1682,199 @@ html[data-theme="light"] .schedule-day.is-today {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* =========================================================
+   FuelPhysique dashboard layout refresh
+   ========================================================= */
+
+@media (min-width: 521px) {
+  .drawer-coach-link {
+    display: none !important;
+  }
+
+  .hero-row {
+    align-items: flex-start;
+    padding-bottom: 2px;
+  }
+
+  .hero-copy {
+    max-width: 820px;
+  }
+
+  .hero-actions {
+    min-width: 0;
+    margin-inline-start: auto;
+    justify-items: end;
+  }
+
+  .dashboard-primary-actions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+  }
+
+  .dashboard-action {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 60px;
+    padding: 14px 18px;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 17px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    box-shadow: 0 14px 34px rgba(2, 6, 23, 0.22);
+    transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+  }
+
+  .dashboard-action::before {
+    flex: 0 0 auto;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .dashboard-action::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, rgba(255,255,255,.16), transparent 42%);
+    pointer-events: none;
+  }
+
+  .dashboard-action:hover,
+  .dashboard-action:focus-visible {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    outline: none;
+  }
+
+  .dashboard-action--coach {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border-color: rgba(196, 181, 253, .34);
+    box-shadow: 0 16px 38px rgba(79, 70, 229, .25);
+  }
+
+  .dashboard-action--coach::before { content: "💬"; }
+
+  .dashboard-action--workout {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb 52%, #3b82f6);
+    border-color: rgba(147, 197, 253, .34);
+    box-shadow: 0 16px 38px rgba(37, 99, 235, .24);
+  }
+
+  .dashboard-action--workout::before { content: "🏋️"; }
+
+  .dashboard-action--nutrition {
+    background: linear-gradient(135deg, #15803d, #16a34a 52%, #22c55e);
+    border-color: rgba(134, 239, 172, .3);
+    box-shadow: 0 16px 38px rgba(22, 163, 74, .22);
+  }
+
+  .dashboard-action--nutrition::before { content: "🥗"; }
+
+  .dashboard-action--progress {
+    background: linear-gradient(135deg, #c2410c, #ea580c 52%, #f97316);
+    border-color: rgba(253, 186, 116, .34);
+    box-shadow: 0 16px 38px rgba(234, 88, 12, .22);
+  }
+
+  .dashboard-action--progress::before { content: "📈"; }
+
+  .dashboard-search--wide {
+    display: block;
+    width: 100%;
+    max-width: none;
+    z-index: 35;
+  }
+
+  .dashboard-search--wide input {
+    height: 56px;
+    padding-inline: 18px;
+    border-radius: 17px;
+    font-size: 15px;
+    background: rgba(255, 255, 255, .055);
+    box-shadow: 0 14px 34px rgba(2, 6, 23, .14);
+  }
+
+  html[data-theme="light"] .dashboard-search--wide input {
+    background: rgba(255, 255, 255, .94);
+  }
+
+  .workout-history-card {
+    --card-glow: #8b5cf6;
+    --card-border: rgba(139, 92, 246, .4);
+    min-height: 0;
+  }
+
+  .workout-history-card .card-icon {
+    background: rgba(139, 92, 246, .14);
+  }
+
+  .workout-history-card .secondary-action {
+    margin-top: auto;
+  }
+}
+
+@media (min-width: 521px) and (max-width: 1080px) {
+  .dashboard-primary-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .dashboard-primary-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .dashboard-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 11px 10px;
+    border: 1px solid rgba(148, 163, 184, .16);
+    border-radius: 16px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .dashboard-action--coach {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  }
+
+  .dashboard-action--workout {
+    background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  }
+
+  .dashboard-action--nutrition {
+    background: linear-gradient(135deg, #15803d, #22c55e);
+  }
+
+  .dashboard-action--progress {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #c2410c, #f97316);
+  }
+
+  .workout-history-card { order: 3; }
+  .missed-card { order: 4; }
+  .tools-accordion { order: 5; }
+}
+

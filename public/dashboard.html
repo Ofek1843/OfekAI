@@ -28,7 +28,6 @@
         <input id="drawerSearchInput" type="search" placeholder="Search sections" autocomplete="off">
         <div class="dashboard-search-results" data-search-results hidden></div>
       </div>
-      <a class="drawer-coach-link" id="drawerCoachLink" href="/app.html">Ask your coach →</a>
       <div class="sidebar-section">
         <p class="sidebar-section-label" id="drawerPrimaryLabel">Start here</p>
         <nav class="sidebar-nav" aria-label="Primary dashboard sections">
@@ -78,25 +77,27 @@
           <span class="eyebrow" id="todayLabel">TODAY</span>
           <h1 id="welcomeTitle">Welcome back</h1>
           <p id="welcomeText">Here is your training and nutrition overview.</p>
-          <div class="hero-shortcuts" aria-label="Quick actions">
-            <a class="hero-shortcut" id="heroWorkoutBuilderLink" href="/workout-builder.html">Build workout plan</a>
-            <a class="hero-shortcut" id="heroNutritionBuilderLink" href="/nutrition-builder.html">Build nutrition plan</a>
-            <a class="hero-shortcut" id="heroProgressLink" href="/progress.html">Track progress</a>
-          </div>
         </div>
+
         <div class="hero-actions">
           <button class="theme-toggle hero-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">
             <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌙</span>
             <span class="theme-toggle-label" data-theme-toggle-label>Dark mode</span>
           </button>
-          <div class="dashboard-search desktop-search" data-dashboard-search>
-            <input id="desktopSearchInput" type="search" placeholder="Search pages or tools..." autocomplete="off">
-            <div class="dashboard-search-results" data-search-results hidden></div>
-          </div>
-          <a class="chat-link" id="chatLink" href="/app.html">Ask your coach →</a>
-          <a class="hero-secondary-action" id="heroHistoryLink" href="/workout-history.html">Workout history</a>
         </div>
       </header>
+
+      <nav class="dashboard-primary-actions" aria-label="Quick actions">
+        <a class="dashboard-action dashboard-action--coach" id="chatLink" href="/app.html">Ask your coach</a>
+        <a class="dashboard-action dashboard-action--workout" id="heroWorkoutBuilderLink" href="/workout-builder.html">Build workout plan</a>
+        <a class="dashboard-action dashboard-action--nutrition" id="heroNutritionBuilderLink" href="/nutrition-builder.html">Build nutrition plan</a>
+        <a class="dashboard-action dashboard-action--progress" id="heroProgressLink" href="/progress.html">Track progress</a>
+      </nav>
+
+      <div class="dashboard-search desktop-search dashboard-search--wide" data-dashboard-search>
+        <input id="desktopSearchInput" type="search" placeholder="Search pages or tools..." autocomplete="off">
+        <div class="dashboard-search-results" data-search-results hidden></div>
+      </div>
 
       <p id="dashboardStatus" class="status" role="status" aria-live="polite">Loading your dashboard...</p>
 
@@ -166,6 +167,20 @@
             <a id="nutritionLink" class="secondary-action" href="/my-nutrition-plans.html">Manage nutrition plans</a>
           </article>
 
+
+
+              <article class="card recent-card workout-history-card">
+                <header>
+                  <span class="card-icon">📋</span>
+                  <div>
+                    <span class="card-kicker" id="recentLabel">LAST WORKOUT</span>
+                    <h2 id="lastWorkoutName">No workouts yet</h2>
+                  </div>
+                </header>
+                <div id="lastWorkoutDetails" class="recent-details"></div>
+                <a id="historyAction" class="secondary-action" href="/workout-history.html">View workout history</a>
+              </article>
+
           <article class="card missed-card">
             <header>
               <span class="card-icon">⏱️</span>
@@ -206,18 +221,6 @@
                 <div id="quickFoodResult" class="quick-food-result muted">Approximate calories and macros will appear here.</div>
               </article>
 
-              <article class="card recent-card tools-accordion-card">
-                <header>
-                  <span class="card-icon">📋</span>
-                  <div>
-                    <span class="card-kicker" id="recentLabel">LAST WORKOUT</span>
-                    <h2 id="lastWorkoutName">No workouts yet</h2>
-                  </div>
-                </header>
-                <div id="lastWorkoutDetails" class="recent-details"></div>
-                <a id="historyAction" class="secondary-action" href="/workout-history.html">View workout history</a>
-              </article>
-
               <article class="card manual-card tools-accordion-card">
                 <header>
                   <span class="card-icon">🧩</span>
@@ -250,6 +253,6 @@
 
   <script type="module" src="/js/site-feedback.js"></script>
   <script type="module" src="/js/theme-toggle.js"></script>
-  <script type="module" src="/js/dashboard.js?v=20260722-7"></script>
+  <script type="module" src="/js/dashboard.js?v=20260723-layout-1"></script>
 </body>
 </html>
