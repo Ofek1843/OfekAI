@@ -787,6 +787,38 @@ function extractJsonObject(text) {
   }
 }
 
+async function generateMealImage(platingDescription) {
+  if (!platingDescription) return null;
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3-medium",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          inputs: `Professional food photography of ${platingDescription}, high quality, appetizing, shallow depth of field, studio lighting`
+        })
+      }
+    );
+
+    if (!response.ok) {
+      console.warn(`HuggingFace API error: ${response.status}`);
+      return null;
+    }
+
+    const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString("base64");
+    return `data:image/jpeg;base64,${base64}`;
+  } catch (error) {
+    console.warn("Image generation failed:", error.message);
+    return null;
+  }
+}
+
 function boundedMacro(value, max) {
   const number = Number(value);
   if (!Number.isFinite(number)) return 0;
@@ -2523,6 +2555,7 @@ The JSON must exactly follow this structure:
   "optionProteinGrams": 0,
   "optionCarbsGrams": 0,
   "optionFatGrams": 0,
+  "platingDescription": "string - describe how the meal looks on a plate, e.g. 'Grilled chicken breast on white plate with roasted broccoli and sweet potato'",
   "foods": [
   {
   "name": "string",
@@ -2614,6 +2647,7 @@ chicken breast, chicken thigh, turkey breast, lean ground beef, steak, salmon, t
 - optionFatGrams must equal the sum of the fatGrams of all foods in that option.
 - Verify every calculation before returning the final JSON.
 - Double-check all calculations before returning the JSON.
+- For each option, include a platingDescription that describes how the meal looks when plated or served. Example: "Grilled chicken breast on a white plate with roasted broccoli and sweet potato wedges, drizzle of olive oil" or "Oatmeal in a white bowl topped with sliced banana, honey, and cinnamon". Make the description appetizing and visual, suitable for generating an AI image.
 
 Language rules:
 
@@ -2702,6 +2736,27 @@ const imageKey = String(food.imageKey || "")
 food.imageUrl =
   localFoodImages[imageKey] ||
   "/images/food-placeholder.png";
+    }
+  }
+}
+
+// Generate meal plating images if HUGGINGFACE_API_KEY is available
+if (process.env.HUGGINGFACE_API_KEY) {
+  console.log("Starting meal image generation...");
+  for (const meal of plan.meals) {
+    for (const option of meal.options) {
+      if (option.platingDescription) {
+        try {
+          console.log(`Generating image for: ${option.platingDescription.substring(0, 50)}...`);
+          const mealImage = await generateMealImage(option.platingDescription);
+          if (mealImage) {
+            option.mealImage = mealImage;
+            console.log("Image generated successfully");
+          }
+        } catch (imgError) {
+          console.warn(`Image generation for option ${option.optionNumber} failed:`, imgError.message);
+        }
+      }
     }
   }
 }

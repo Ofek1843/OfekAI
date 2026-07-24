@@ -528,6 +528,8 @@ const optionsCarousel = options.length > 0 ? `
       <div class="carousel-options-container">
         ${options.map((option, idx) => {
           const foods = Array.isArray(option.foods) ? option.foods : [];
+          const mealImage = option.mealImage || null;
+
           const foodsText = foods.map((food, foodIndex) => `
             <tr>
               <td class="food-cell">
@@ -543,6 +545,7 @@ const optionsCarousel = options.length > 0 ? `
 
           return `
             <div class="carousel-option ${idx === 0 ? 'active' : ''}" data-option-number="${option.optionNumber}">
+              ${mealImage ? `<img class="carousel-option-image" src="${mealImage}" alt="Meal plating" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 16px; max-height: 280px; object-fit: cover;" />` : ''}
               <table class="nutrition-food-table">
                 <thead>
                   <tr>
