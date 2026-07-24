@@ -1,0 +1,21 @@
+﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/css/legal.css"><title>Contact Us - FuelPhysique</title></head><body><div class="legal-page"><nav class="legal-nav"><a class="legal-nav-brand" href="/dashboard.html">FuelPhysique</a><div class="legal-nav-links"><a href="/faq.html">FAQ</a><a href="/contact.html">Contact</a><a href="/terms.html">Terms</a><a href="/privacy.html">Privacy</a></div></nav><div class="legal-hero"><span class="legal-badge">Support</span><h1>Contact Us</h1><p class="legal-hero-meta">Our team typically responds within 1-2 business days.</p></div>
+<div class="contact-email-card"><div class="contact-email-icon">&#9993;&#65039;</div><div class="contact-email-text"><strong>Support email</strong><a href="mailto:fuelphysiquesupport@gmail.com">fuelphysiquesupport@gmail.com</a><p class="contact-note">Our team will get back to you as soon as possible.</p></div></div>
+<div class="legal-section"><h2>Send us a message</h2><div class="contact-grid">
+<div class="contact-field"><label for="cn">Your name</label><input id="cn" type="text" placeholder="John Smith" autocomplete="name"></div>
+<div class="contact-field"><label for="ce">Email address</label><input id="ce" type="email" placeholder="you@example.com"></div>
+<div class="contact-field"><label for="cs">Subject</label><select id="cs"><option value="">Select a topic...</option><option>General question</option><option>Billing or subscription</option><option>Refund request</option><option>Technical issue / bug</option><option>Feature request</option><option>Account deletion</option><option>Other</option></select></div>
+<div class="contact-field"><label for="cm">Message</label><textarea id="cm" rows="6" placeholder="Describe your question or issue in detail..."></textarea></div>
+<button class="contact-submit" id="csbtn" type="button">Send message</button>
+<p id="cres" style="color:#22c55e;font-weight:700;display:none;text-align:center">Message opened in your email app. We will be in touch shortly.</p>
+</div></div>
+<div class="legal-section"><h2>Before you write</h2><p>Many common questions are answered in our <a href="/faq.html">FAQ</a>. You may also find answers in:<br><a href="/terms.html">Terms of Service</a> &middot; <a href="/privacy.html">Privacy Policy</a> &middot; <a href="/subscription-policy.html">Subscription Policy</a> &middot; <a href="/refund-policy.html">Refund Policy</a></p></div></div><footer class="site-footer"><div class="site-footer-inner"><div><div class="site-footer-brand">FuelPhysique</div><p class="site-footer-tagline">Train smarter. Eat better. Track everything.</p><p class="site-footer-copy">&#169; 2026 FuelPhysique. All rights reserved.</p></div><div class="site-footer-links"><a href="/faq.html">FAQ</a><a href="/contact.html">Contact</a><a href="/terms.html">Terms of Service</a><a href="/privacy.html">Privacy Policy</a><a href="/subscription-policy.html">Subscription Policy</a><a href="/refund-policy.html">Refund Policy</a></div></div></footer><script>
+document.getElementById("csbtn").addEventListener("click",function(){
+  var n=document.getElementById("cn").value.trim(),e=document.getElementById("ce").value.trim(),m=document.getElementById("cm").value.trim();
+  if(!n||!e||!m){alert("Please fill in your name, email, and message.");return;}
+  var s=document.getElementById("cs").value||"Contact from FuelPhysique";
+  var b=encodeURIComponent("Name: "+n+"\nEmail: "+e+"\n\n"+m);
+  window.location.href="mailto:fuelphysiquesupport@gmail.com?subject="+encodeURIComponent(s)+"&body="+b;
+  document.getElementById("cres").style.display="block";
+});
+</script><script type="module" src="/js/legal-i18n.js"></script></body></html>
+

@@ -148,7 +148,6 @@ const equipmentHeading =
       ".equipment-section-title",
       "[data-equipment-title]",
       ".equipment-grid-title",
-      "fieldset legend"
     ].join(",")
   );
   if (equipmentHeading) {
@@ -274,8 +273,174 @@ translateFormOptions();
 document.documentElement.lang = isHebrew ? "he" : "en";
 document.documentElement.dir = isHebrew ? "rtl" : "ltr";
 
+
+const wizardSteps = [...document.querySelectorAll(".wizard-step")];
+const wizardBackButton = document.querySelector("#wizardBackButton");
+const wizardNextButton = document.querySelector("#wizardNextButton");
+const wizardProgressBar = document.querySelector("#wizardProgressBar");
+const wizardStepLabel = document.querySelector("#wizardStepLabel");
+const wizardStepTitle = document.querySelector("#wizardStepTitle");
+const wizardError = document.querySelector("#wizardError");
+let wizardStepIndex = 0;
+
+function applyBuilderLanguage() {
+  document.querySelectorAll("[data-en][data-he]").forEach(element => {
+    element.textContent = isHebrew ? element.dataset.he : element.dataset.en;
+  });
+  const limitations = document.querySelector("#limitations");
+  if (limitations) limitations.placeholder = isHebrew
+    ? "תאר פציעות, כאבים או מגבלות תנועה."
+    : "Describe any injuries, pain, or movement limitations.";
+}
+
+function setupVisualSelections() {
+  document.querySelectorAll("[data-sync-select]").forEach(group => {
+    const select = document.querySelector(`#${group.dataset.syncSelect}`);
+    if (!select) return;
+    group.querySelectorAll('input[type="radio"]').forEach(input => {
+      input.addEventListener("change", () => {
+        if (!input.checked) return;
+        select.value = input.value;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        clearWizardError();
+      });
+    });
+  });
+  document.querySelectorAll('.visual-choice-card input[type="checkbox"]').forEach(input => {
+    input.addEventListener("change", clearWizardError);
+  });
+}
+
+function selectedAvailableDays() {
+  return [...document.querySelectorAll('input[name="availableDays"]:checked')].map(input => input.value);
+}
+
+function updateAvailableDayLimit() {
+  const limit = Number(document.querySelector("#daysPerWeek")?.value || 1);
+  const boxes = [...document.querySelectorAll('input[name="availableDays"]')];
+  while (boxes.filter(box => box.checked).length > limit) {
+    boxes.filter(box => box.checked).at(-1).checked = false;
+  }
+  const selected = boxes.filter(box => box.checked).length;
+  boxes.forEach(box => { box.disabled = !box.checked && selected >= limit; });
+  const hint = document.querySelector("#availableDaysHint");
+  if (hint) hint.textContent = isHebrew
+    ? `בחר בדיוק ${limit} ${limit === 1 ? "יום" : "ימים"}. נבחרו ${selected}.`
+    : `Choose exactly ${limit} day${limit === 1 ? "" : "s"}. ${selected} selected.`;
+}
+
+function clearWizardError() {
+  if (!wizardError) return;
+  wizardError.textContent = "";
+  wizardError.classList.add("hidden");
+}
+
+function showWizardError(message) {
+  if (!wizardError) return;
+  wizardError.textContent = message;
+  wizardError.classList.remove("hidden");
+}
+
+function validateWizardStep(index) {
+  const key = wizardSteps[index]?.dataset.wizardStep;
+  if (key === "goal" && !document.querySelector("#goal")?.value) return isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
+  if (key === "experience" && !document.querySelector("#experience")?.value) return isHebrew ? "בחר את רמת הניסיון שלך." : "Choose your training experience.";
+  if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
+  if (key === "equipment" && !document.querySelector('input[name="equipment"]:checked')) return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
+  if (key === "priority" && !document.querySelector("#priority")?.value) return isHebrew ? "בחר דגש מרכזי לאימון." : "Choose a training priority.";
+  if (key === "schedule") {
+    const age = Number(document.querySelector("#age")?.value);
+    const duration = Number(document.querySelector("#sessionDuration")?.value);
+    const days = Number(document.querySelector("#daysPerWeek")?.value);
+    if (!Number.isFinite(age) || age < 10 || age > 100) return isHebrew ? "הזן גיל תקין בין 10 ל־100." : "Enter a valid age between 10 and 100.";
+    if (!Number.isFinite(duration) || duration < 20 || duration > 180) return isHebrew ? "הזן משך אימון בין 20 ל־180 דקות." : "Enter a session duration between 20 and 180 minutes.";
+    if (selectedAvailableDays().length !== days) return isHebrew ? `בחר בדיוק ${days} ימים זמינים.` : `Choose exactly ${days} available day${days === 1 ? "" : "s"}.`;
+  }
+  return "";
+}
+
+function renderWizardReview() {
+  const review = document.querySelector("#wizardReview");
+  if (!review) return;
+  const formData = new FormData(form);
+  const readable = value => document.querySelector(`option[value="${CSS.escape(String(value || ""))}"]`)?.textContent || value || "—";
+  const equipment = formData.getAll("equipment").map(value => hebrewOptionLabels[normalizeOptionKey(value)] || value).join(", ");
+  const days = formData.getAll("availableDays").join(", ");
+  review.innerHTML = isHebrew
+    ? `<strong>סיכום:</strong><br>מטרה: ${readable(formData.get("goal"))}<br>ניסיון: ${readable(formData.get("experience"))}<br>סגנון: ${readable(formData.get("trainingStyle"))}<br>ציוד: ${equipment}<br>אימונים: ${formData.get("daysPerWeek")} בשבוע, ${formData.get("sessionDuration")} דקות<br>ימים זמינים: ${days}`
+    : `<strong>Summary:</strong><br>Goal: ${readable(formData.get("goal"))}<br>Experience: ${readable(formData.get("experience"))}<br>Style: ${readable(formData.get("trainingStyle"))}<br>Equipment: ${equipment}<br>Schedule: ${formData.get("daysPerWeek")} days/week, ${formData.get("sessionDuration")} minutes<br>Available days: ${days}`;
+}
+
+function renderWizardStep() {
+  wizardSteps.forEach((step, index) => step.classList.toggle("is-active", index === wizardStepIndex));
+  const step = wizardSteps[wizardStepIndex];
+  const total = wizardSteps.length;
+  if (wizardProgressBar) wizardProgressBar.style.width = `${((wizardStepIndex + 1) / total) * 100}%`;
+  if (wizardStepLabel) wizardStepLabel.textContent = isHebrew ? `שלב ${wizardStepIndex + 1} מתוך ${total}` : `Step ${wizardStepIndex + 1} of ${total}`;
+  if (wizardStepTitle) wizardStepTitle.textContent = isHebrew ? step.dataset.stepTitleHe : step.dataset.stepTitleEn;
+  if (wizardBackButton) wizardBackButton.disabled = wizardStepIndex === 0;
+  const isLast = wizardStepIndex === total - 1;
+  wizardNextButton?.classList.toggle("hidden", isLast);
+  button?.classList.toggle("hidden", !isLast);
+  if (isLast) renderWizardReview();
+  clearWizardError();
+  step?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+wizardNextButton?.addEventListener("click", () => {
+  const error = validateWizardStep(wizardStepIndex);
+  if (error) return showWizardError(error);
+  wizardStepIndex = Math.min(wizardSteps.length - 1, wizardStepIndex + 1);
+  renderWizardStep();
+});
+
+wizardBackButton?.addEventListener("click", () => {
+  wizardStepIndex = Math.max(0, wizardStepIndex - 1);
+  renderWizardStep();
+});
+
+document.querySelector("#daysPerWeek")?.addEventListener("change", updateAvailableDayLimit);
+document.querySelectorAll('input[name="availableDays"]').forEach(input => input.addEventListener("change", updateAvailableDayLimit));
+
+applyBuilderLanguage();
+setupVisualSelections();
+updateAvailableDayLimit();
+renderWizardStep();
+
+
+const goalCardCopy = isHebrew ? {
+  buildMuscle: ["בניית שריר", "הגדלת מסת השריר ופיתוח מראה שרירי"],
+  loseFat: ["ירידה באחוזי שומן", "שיפור החיטוב והרכב הגוף"],
+  increaseStrength: ["שיפור כוח", "הרמת משקלים גבוהים יותר ושיפור ביצועים"],
+  improveSkills: ["שיפור מיומנויות קליסטניקס", "פיתוח שליטה לתרגילים כמו פלאנץ'"],
+  maintainPerformance: ["שמירה על הביצועים", "שמירה על עקביות, יכולת ואתלטיות"]
+} : {
+  buildMuscle: ["Build muscle", "Add size and muscular development"],
+  loseFat: ["Lose fat", "Improve definition and body composition"],
+  increaseStrength: ["Increase strength", "Lift more and improve performance"],
+  improveSkills: ["Improve calisthenics skills", "Build control for skills such as planche"],
+  maintainPerformance: ["Maintain performance", "Stay consistent, capable and athletic"]
+};
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  const currentError = validateWizardStep(wizardStepIndex);
+  if (currentError) {
+    showWizardError(currentError);
+    return;
+  }
+
+  const goalSelect = document.querySelector("#goal");
+  const goalError = document.querySelector("#goalChoiceError");
+  if (!goalSelect?.value) {
+    if (goalError) {
+      goalError.textContent = isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
+      goalError.classList.remove("hidden");
+    }
+    document.querySelector("#goalChoices")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
 
   setLoading(true);
 
@@ -299,6 +464,7 @@ form.addEventListener("submit", async (event) => {
     ),
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
+    availableDays: formData.getAll("availableDays"),
     priority: formData.get("priority"),
     limitations:
       formData.get("limitations")?.trim() ||

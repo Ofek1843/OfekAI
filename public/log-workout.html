@@ -1,10 +1,120 @@
-﻿<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Log a past workout · FuelPhysique</title><link rel="stylesheet" href="/css/log-workout.css"></head><body><main class="log-page">
-<nav><a href="/dashboard.html">← FuelPhysique</a><a href="/workout-history.html">Workout history</a></nav>
-<header><span class="badge">FuelPhysique</span><h1 id="title">Missed a workout? Log it here</h1><p id="intro">Add the workout later so your history and progress charts stay complete.</p></header>
-<p id="status" role="status" aria-live="polite"></p>
-<form id="pastWorkoutForm" class="panel hidden">
-<div class="form-grid"><label><span id="sessionLabel">Workout</span><select id="sessionSelect" required></select></label><label><span id="dateLabel">Date and time</span><input id="completedAt" type="datetime-local" required></label><label><span id="durationLabel">Duration (minutes)</span><input id="durationMinutes" type="number" min="1" max="360" value="60" required></label></div>
-<div id="exerciseList"></div><label class="notes"><span id="notesLabel">Notes (optional)</span><textarea id="notes" rows="3" maxlength="1000"></textarea></label><button id="saveButton" type="submit">Save workout</button>
-</form></main><script type="module" src="/js/log-workout.js"></script>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Log a past workout · FuelPhysique</title>
+  <link rel="stylesheet" href="/css/log-workout.css?v=3">
+</head>
+<body>
+  <main class="log-page">
+    <nav>
+      <a href="/dashboard.html">← FuelPhysique</a>
+      <a href="/workout-history.html" id="historyLink">Workout history</a>
+    </nav>
+
+    <p id="status" role="status" aria-live="polite"></p>
+
+    <!-- STEP 1: Setup -->
+    <section id="setupPanel" class="setup-panel hidden">
+      <header class="setup-header">
+        <span class="badge">FuelPhysique</span>
+        <h1 id="title">Missed a workout? Log it here</h1>
+        <p id="intro">Add the workout later so your history and progress charts stay complete.</p>
+      </header>
+      <div class="setup-grid">
+        <label>
+          <span id="sessionLabel">Workout</span>
+          <select id="sessionSelect" required></select>
+        </label>
+        <label>
+          <span id="dateLabel">Date</span>
+          <input id="completedAt" type="date" required>
+        </label>
+      </div>
+      <button id="startButton" type="button" class="btn-start">Start logging →</button>
+    </section>
+
+    <!-- STEP 2: Set-by-set tracker -->
+    <section id="trackerPanel" class="hidden">
+      <div class="tracker-topbar">
+        <div class="tracker-topbar-left">
+          <span class="tracker-live-dot"></span>
+          <span class="tracker-live-label" id="trackerLiveLabel">LOGGING PAST WORKOUT</span>
+        </div>
+        <div class="tracker-topbar-center">
+          <div id="trackerWorkoutName" class="tracker-workout-name"></div>
+          <div id="trackerWorkoutSub" class="tracker-workout-sub"></div>
+        </div>
+        <button id="exitLogBtn" class="exit-btn" type="button">Exit</button>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-top">
+          <span class="current-set-kicker" id="currentSetKicker">CURRENT SET</span>
+          <span class="set-type-badge">Working set</span>
+        </div>
+
+        <p id="exerciseCounter" class="exercise-counter"></p>
+        <h2 id="exerciseName" class="exercise-name"></h2>
+        <p id="setOfSets" class="set-of-sets"></p>
+
+        <div class="inputs-row">
+          <div class="weight-col">
+            <label class="field-label" id="weightLabel">Weight (kg)</label>
+            <div class="weight-select-wrap">
+              <select id="weightSelect" class="weight-select"></select>
+              <span class="weight-chevron">&#8964;</span>
+            </div>
+          </div>
+          <div class="target-box">
+            <div class="target-box-label" id="targetRepsLabel">Target reps</div>
+            <div id="targetRepsValue" class="target-box-value"></div>
+          </div>
+        </div>
+
+        <div class="actual-row">
+          <div class="actual-col">
+            <label class="field-label" id="actualRepsLabel">Actual reps</label>
+            <input id="actualReps" type="number" min="0" step="1" inputmode="numeric" class="actual-input" placeholder="—">
+          </div>
+          <div class="actual-col">
+            <label class="field-label" id="rpeLabel">RPE <span class="optional">(optional)</span></label>
+            <input id="rpeInput" type="number" min="1" max="10" step=".5" inputmode="decimal" class="actual-input" placeholder="—">
+          </div>
+        </div>
+
+        <div id="nextPreview" class="next-preview hidden">
+          <span class="next-preview-kicker">NEXT EXERCISE</span>
+          <span id="nextPreviewText"></span>
+        </div>
+
+        <div class="set-actions">
+          <button id="backSetBtn" type="button" class="btn-back">Back one set</button>
+          <button id="nextSetBtn" type="button" class="btn-next">Complete set →</button>
+        </div>
+
+        <div class="log-progress-bar">
+          <div id="logProgressFill" class="log-progress-fill"></div>
+        </div>
+        <p class="log-progress-text" id="logProgressText"></p>
+      </div>
+    </section>
+
+    <!-- STEP 3: Summary + save -->
+    <section id="summaryPanel" class="setup-panel hidden">
+      <div class="summary-icon">🎯</div>
+      <h2 id="summaryTitle">All sets logged!</h2>
+      <p class="muted" id="summarySubtitle">Review and save your workout to your history and charts.</p>
+      <label class="notes-label">
+        <span id="notesLabel">Notes (optional)</span>
+        <textarea id="notes" rows="3" maxlength="1000"></textarea>
+      </label>
+      <button id="saveButton" type="button" class="btn-save">Save workout</button>
+    </section>
+  </main>
+
+  <script type="module" src="/js/log-workout.js?v=3"></script>
   <script type="module" src="/js/site-feedback.js"></script>
-</body></html>
+</body>
+</html>

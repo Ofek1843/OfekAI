@@ -1,19 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FuelPhysique Nutrition Builder</title>
-
-  <link
-    rel="stylesheet"
-    href="/css/nutrition-builder.css"
-  />
+  <link rel="stylesheet" href="/css/nutrition-builder.css?v=20260724-wiz-5" />
   <link rel="stylesheet" href="/css/plan-sharing.css" />
 </head>
 
@@ -23,12 +14,11 @@
       <a href="/dashboard.html">← FuelPhysique</a>
       <a href="/my-nutrition-plans.html">📂 My Nutrition Plans</a>
     </nav>
+
     <section class="builder-card">
       <div class="builder-header">
         <span class="builder-badge">FuelPhysique</span>
-
         <h1>Nutrition Builder</h1>
-
         <p class="builder-description">
           Build a personalized nutrition plan based on your goal,
           body measurements, activity level, food preferences, and
@@ -36,295 +26,285 @@
         </p>
       </div>
 
-      <form id="nutrition-builder-form">
-        <!-- Goal -->
-        <div class="form-group">
-          <label for="goal">Primary goal</label>
-
-          <select id="goal" name="goal" required>
-            <option value="">Select a goal</option>
-            <option value="loseFat">Lose fat</option>
-            <option value="buildMuscle">Build muscle</option>
-            <option value="maintainWeight">Maintain weight</option>
-            <option value="improvePerformance">
-              Improve performance
-            </option>
-          </select>
+      <!-- Wizard progress -->
+      <div class="wizard-progress" id="wizardProgress">
+        <div class="wizard-progress-topline">
+          <span id="wizardStepLabel">Step 1 of 6</span>
+          <strong id="wizardStepTitle">Primary goal</strong>
         </div>
+        <div class="wizard-progress-track">
+          <span id="wizardProgressBar" style="width:16.6%"></span>
+        </div>
+      </div>
 
-        <!-- Age and gender -->
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="age">Age</label>
+      <form id="nutrition-builder-form" novalidate>
 
-            <input
-              id="age"
-              name="age"
-              type="number"
-              min="15"
-              max="100"
-              value="21"
-              required
-            />
+        <!-- Hidden select#goal kept for JS compatibility -->
+        <select id="goal" name="goal" class="visually-hidden-select" required aria-hidden="true" tabindex="-1">
+          <option value="">Select a goal</option>
+          <option value="loseFat">Lose fat</option>
+          <option value="buildMuscle">Build muscle</option>
+          <option value="maintainWeight">Maintain weight</option>
+        </select>
+
+        <!-- ── STEP 1: Primary goal ── -->
+        <section class="wizard-step is-active"
+          data-wizard-step="goal"
+          data-step-title-en="Primary goal"
+          data-step-title-he="מטרה עיקרית">
+
+          <div class="wizard-step-heading">
+            <span>01</span>
+            <div>
+              <h2 data-en="What is your nutrition goal?" data-he="מה המטרה התזונתית שלך?">What is your nutrition goal?</h2>
+              <p data-en="This shapes your calories, macros, and meal structure." data-he="הבחירה תקבע את הקלוריות, המאקרו ומבנה הארוחות.">This shapes your calories, macros, and meal structure.</p>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="gender">Gender</label>
-
-            <select id="gender" name="gender" required>
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="diagnosedConditions">Diagnosed nutrition-related conditions</label>
-          <div id="diagnosedConditions" class="condition-options">
-            <label><input type="checkbox" name="diagnosedConditions" value="ironDeficiencyAnemia"><span>Iron-deficiency anemia</span></label>
-            <label><input type="checkbox" name="diagnosedConditions" value="b12Deficiency"><span>Vitamin B12 deficiency</span></label>
-            <label><input type="checkbox" name="diagnosedConditions" value="vitaminDDeficiency"><span>Vitamin D deficiency</span></label>
-            <label><input type="checkbox" name="diagnosedConditions" value="hypertension"><span>High blood pressure</span></label>
-            <label><input type="checkbox" name="diagnosedConditions" value="type2Diabetes"><span>Type 2 diabetes or prediabetes</span></label>
-          </div>
-          <small class="medical-field-note">You may select more than one diagnosed condition, and click a selected option again to remove it. FuelPhysique adapts food choices but does not provide medical treatment.</small>
-        </div>
-
-        <label id="youth-consent-field" class="youth-consent hidden">
-          <input id="youthGuardianConsent" name="youthGuardianConsent" type="checkbox">
-          <span>I confirm that a parent or legal guardian approves use of Youth Mode. This plan supports healthy growth and is not a weight-loss treatment.</span>
-        </label>
-
-        <!-- Height and weight -->
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="height">Height in centimeters</label>
-
-            <input
-              id="height"
-              name="height"
-              type="number"
-              min="120"
-              max="230"
-              value="175"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="weight">Weight in kilograms</label>
-
-            <input
-              id="weight"
-              name="weight"
-              type="number"
-              min="35"
-              max="300"
-              step="0.1"
-              value="75"
-              required
-            />
-          </div>
-        </div>
-
-        <!-- Activity -->
-        <div class="form-group">
-          <label for="activityLevel">Daily activity level</label>
-
-          <select
-            id="activityLevel"
-            name="activityLevel"
-            required
-          >
-            <option value="">Select activity level</option>
-
-            <option value="sedentary">
-              Sedentary
-            </option>
-
-            <option value="lightlyActive">
-              Lightly active
-            </option>
-
-            <option value="moderatelyActive">
-              Moderately active
-            </option>
-
-            <option value="veryActive">
-              Very active
-            </option>
-
-            <option value="extremelyActive">
-              Extremely active
-            </option>
-          </select>
-        </div>
-
-        <!-- Training and meals -->
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="trainingDays">
-              Training days per week
+          <div class="visual-choice-grid nutr-goal-grid">
+            <label class="visual-choice-card visual-choice-card--nutr-muscle">
+              <input type="radio" name="visualGoal" value="buildMuscle">
+              <span class="visual-choice-image"></span>
+              <span class="visual-choice-shade"></span>
+              <span class="visual-choice-content">
+                <strong data-en="Build muscle" data-he="בניית שריר">Build muscle</strong>
+                <small data-en="Higher calories and protein for muscle growth" data-he="עודף קלורי וחלבון גבוה לבניית מסת שריר">Higher calories and protein for muscle growth</small>
+              </span>
+              <span class="visual-choice-check">✓</span>
             </label>
 
-            <input
-              id="trainingDays"
-              name="trainingDays"
-              type="number"
-              min="0"
-              max="7"
-              value="4"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="mealsPerDay">
-              Meals per day
+            <label class="visual-choice-card visual-choice-card--nutr-fat">
+              <input type="radio" name="visualGoal" value="loseFat">
+              <span class="visual-choice-image"></span>
+              <span class="visual-choice-shade"></span>
+              <span class="visual-choice-content">
+                <strong data-en="Lose fat" data-he="ירידה בשומן">Lose fat</strong>
+                <small data-en="Calorie deficit with high protein to preserve muscle" data-he="גירעון קלורי עם חלבון גבוה לשמירה על שריר">Calorie deficit with high protein to preserve muscle</small>
+              </span>
+              <span class="visual-choice-check">✓</span>
             </label>
 
-            <select
-              id="mealsPerDay"
-              name="mealsPerDay"
-              required
-            >
-              <option value="3">3 meals</option>
-              <option value="4" selected>4 meals</option>
-              <option value="5">5 meals</option>
-              <option value="6">6 meals</option>
-            </select>
+            <label class="visual-choice-card visual-choice-card--nutr-maintain visual-choice-card--wide">
+              <input type="radio" name="visualGoal" value="maintainWeight">
+              <span class="visual-choice-image"></span>
+              <span class="visual-choice-shade"></span>
+              <span class="visual-choice-content">
+                <strong data-en="Maintain weight" data-he="שמירה על המשקל">Maintain weight</strong>
+                <small data-en="Balanced eating to stay at your current weight and composition" data-he="תזונה מאוזנת לשמירה על המשקל והרכב הגוף הנוכחיים">Balanced eating to stay at your current weight and composition</small>
+              </span>
+              <span class="visual-choice-check">✓</span>
+            </label>
           </div>
-        </div>
 
-        <!-- Diet -->
-        <div class="form-group">
-          <label for="dietaryPreference">
-            Dietary preference
+          <div id="wizardError" class="wizard-error hidden"></div>
+        </section>
+
+        <!-- ── STEP 2: About you ── -->
+        <section class="wizard-step"
+          data-wizard-step="about"
+          data-step-title-en="About you"
+          data-step-title-he="פרטים אישיים">
+
+          <div class="wizard-step-heading">
+            <span>02</span>
+            <div>
+              <h2 data-en="Tell us about yourself" data-he="ספר לנו עליך">Tell us about yourself</h2>
+              <p data-en="Age and gender are used to calculate your metabolic rate." data-he="גיל ומין משמשים לחישוב קצב חילוף החומרים שלך.">Age and gender are used to calculate your metabolic rate.</p>
+            </div>
+          </div>
+
+          <div class="wizard-fields-grid wizard-fields-grid--two">
+            <label>
+              <span data-en="Age" data-he="גיל">Age</span>
+              <input id="age" name="age" type="number" min="15" max="100" value="21" required />
+            </label>
+            <label>
+              <span data-en="Gender" data-he="מין">Gender</span>
+              <select id="gender" name="gender" required>
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </label>
+          </div>
+
+          <label id="youth-consent-field" class="youth-consent hidden">
+            <input id="youthGuardianConsent" name="youthGuardianConsent" type="checkbox">
+            <span>I confirm that a parent or legal guardian approves use of Youth Mode. This plan supports healthy growth and is not a weight-loss treatment.</span>
           </label>
+        </section>
 
-          <select
-            id="dietaryPreference"
-            name="dietaryPreference"
-            required
-          >
-            <option value="balanced">
-              Balanced
-            </option>
+        <!-- ── STEP 3: Body measurements ── -->
+        <section class="wizard-step"
+          data-wizard-step="body"
+          data-step-title-en="Body measurements"
+          data-step-title-he="מדדי גוף">
 
-            <option value="highProtein">
-              High protein
-            </option>
+          <div class="wizard-step-heading">
+            <span>03</span>
+            <div>
+              <h2 data-en="What are your measurements?" data-he="מה המדדים שלך?">What are your measurements?</h2>
+              <p data-en="Used to calculate your TDEE and calorie targets." data-he="משמשים לחישוב ה-TDEE ויעדי הקלוריות שלך.">Used to calculate your TDEE and calorie targets.</p>
+            </div>
+          </div>
 
-            <option value="vegetarian">
-              Vegetarian
-            </option>
+          <div class="wizard-fields-grid wizard-fields-grid--two">
+            <label>
+              <span data-en="Height (cm)" data-he="גובה (ס״מ)">Height (cm)</span>
+              <input id="height" name="height" type="number" min="120" max="230" value="175" required />
+            </label>
+            <label>
+              <span data-en="Weight (kg)" data-he="משקל (ק״ג)">Weight (kg)</span>
+              <input id="weight" name="weight" type="number" min="35" max="300" step="0.1" value="75" required />
+            </label>
+          </div>
+        </section>
 
-            <option value="vegan">
-              Vegan
-            </option>
+        <!-- ── STEP 4: Activity ── -->
+        <section class="wizard-step"
+          data-wizard-step="activity"
+          data-step-title-en="Activity level"
+          data-step-title-he="רמת פעילות">
 
-            <option value="pescatarian">
-              Pescatarian
-            </option>
+          <div class="wizard-step-heading">
+            <span>04</span>
+            <div>
+              <h2 data-en="How active are you?" data-he="כמה אתה פעיל?">How active are you?</h2>
+              <p data-en="Activity level and training frequency affect your calorie needs." data-he="רמת הפעילות ותדירות האימון משפיעים על צרכי הקלוריות שלך.">Activity level and training frequency affect your calorie needs.</p>
+            </div>
+          </div>
 
-            <option value="lowCarb">
-              Low carbohydrate
-            </option>
+          <div class="wizard-fields-grid">
+            <label>
+              <span data-en="Daily activity level" data-he="רמת פעילות יומית">Daily activity level</span>
+              <select id="activityLevel" name="activityLevel" required>
+                <option value="">Select activity level</option>
+                <option value="sedentary">Sedentary</option>
+                <option value="lightlyActive">Lightly active</option>
+                <option value="moderatelyActive">Moderately active</option>
+                <option value="veryActive">Very active</option>
+                <option value="extremelyActive">Extremely active</option>
+              </select>
+            </label>
+            <label>
+              <span data-en="Training days per week" data-he="מספר אימונים בשבוע">Training days per week</span>
+              <input id="trainingDays" name="trainingDays" type="number" min="0" max="7" value="4" required />
+            </label>
+            <label>
+              <span data-en="Meals per day" data-he="מספר ארוחות ביום">Meals per day</span>
+              <select id="mealsPerDay" name="mealsPerDay" required>
+                <option value="3">3 meals</option>
+                <option value="4" selected>4 meals</option>
+                <option value="5">5 meals</option>
+                <option value="6">6 meals</option>
+              </select>
+            </label>
+          </div>
+        </section>
 
-            <option value="mediterranean">
-              Mediterranean
-            </option>
-          </select>
+        <!-- ── STEP 5: Diet preference ── -->
+        <section class="wizard-step"
+          data-wizard-step="diet"
+          data-step-title-en="Diet preference"
+          data-step-title-he="העדפה תזונתית">
+
+          <div class="wizard-step-heading">
+            <span>05</span>
+            <div>
+              <h2 data-en="What is your dietary style?" data-he="מהי ההעדפה התזונתית שלך?">What is your dietary style?</h2>
+              <p data-en="This affects food choices and macro distribution." data-he="זה משפיע על בחירות המזון וחלוקת המאקרו.">This affects food choices and macro distribution.</p>
+            </div>
+          </div>
+
+          <div class="wizard-fields-grid wizard-fields-grid--one">
+            <label>
+              <span data-en="Dietary preference" data-he="העדפה תזונתית">Dietary preference</span>
+              <select id="dietaryPreference" name="dietaryPreference" required>
+                <option value="balanced">Balanced</option>
+                <option value="highProtein">High protein</option>
+                <option value="vegetarian">Vegetarian</option>
+                <option value="vegan">Vegan</option>
+                <option value="pescatarian">Pescatarian</option>
+                <option value="lowCarb">Low carbohydrate</option>
+                <option value="mediterranean">Mediterranean</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="limitations-field" style="margin-top:20px">
+            <span data-en="Preferred foods (optional)" data-he="מזונות מועדפים (אופציונלי)">Preferred foods (optional)</span>
+            <textarea id="favoriteFoods" name="favoriteFoods" rows="3"
+              placeholder="List foods you enjoy and would like included."></textarea>
+          </div>
+
+          <div class="limitations-field" style="margin-top:14px">
+            <span data-en="Foods to avoid (optional)" data-he="מזונות להימנע (אופציונלי)">Foods to avoid (optional)</span>
+            <textarea id="foodsToAvoid" name="foodsToAvoid" rows="3"
+              placeholder="List foods you dislike or do not want included."></textarea>
+          </div>
+        </section>
+
+        <!-- ── STEP 6: Restrictions & Generate ── -->
+        <section class="wizard-step"
+          data-wizard-step="restrictions"
+          data-step-title-en="Final details"
+          data-step-title-he="פרטים אחרונים">
+
+          <div class="wizard-step-heading">
+            <span>06</span>
+            <div>
+              <h2 data-en="Any restrictions we should know?" data-he="האם יש מגבלות שצריך לדעת?">Any restrictions we should know?</h2>
+              <p data-en="Leave blank if none. This helps us avoid unsafe or unwanted food choices." data-he="השאר ריק אם אין. זה עוזר לנו להימנע מבחירות מזון לא בטוחות.">Leave blank if none. This helps us avoid unsafe or unwanted food choices.</p>
+            </div>
+          </div>
+
+          <div class="limitations-field">
+            <span data-en="Allergies or dietary restrictions" data-he="אלרגיות או מגבלות תזונתיות">Allergies or dietary restrictions</span>
+            <textarea id="allergies" name="allergies" rows="3"
+              placeholder="Describe allergies, intolerances, religious restrictions, or medical dietary limitations."></textarea>
+          </div>
+
+          <div class="form-group" style="margin-top:20px">
+            <label for="diagnosedConditions" data-en="Diagnosed nutrition-related conditions" data-he="מצבים רפואיים שאובחנו">Diagnosed nutrition-related conditions</label>
+            <div id="diagnosedConditions" class="condition-options">
+              <label><input type="checkbox" name="diagnosedConditions" value="ironDeficiencyAnemia"><span>Iron-deficiency anemia</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="b12Deficiency"><span>Vitamin B12 deficiency</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="vitaminDDeficiency"><span>Vitamin D deficiency</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="hypertension"><span>High blood pressure</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="type2Diabetes"><span>Type 2 diabetes or prediabetes</span></label>
+            </div>
+            <small class="medical-field-note">You may select more than one. FuelPhysique adapts food choices but does not provide medical treatment.</small>
+          </div>
+
+          <div class="limitations-field" style="margin-top:14px">
+            <span data-en="Additional notes (optional)" data-he="הערות נוספות (אופציונלי)">Additional notes (optional)</span>
+            <textarea id="additionalNotes" name="additionalNotes" rows="3"
+              placeholder="Meal timing, budget, cooking preferences, or other details."></textarea>
+          </div>
+
+          <div class="wizard-review" id="wizardReview"></div>
+        </section>
+
+        <!-- Wizard navigation -->
+        <div id="wizardError" class="wizard-error hidden" style="margin-top:14px"></div>
+
+        <div class="wizard-actions">
+          <button type="button" class="wizard-button wizard-button--back" id="wizardBackButton" disabled>Back</button>
+          <button type="button" class="wizard-button wizard-button--next" id="wizardNextButton">Next</button>
+          <button id="generate-button" type="submit" class="wizard-button wizard-button--generate hidden">Generate My Nutrition Plan</button>
         </div>
 
-        <!-- Favorite foods -->
-        <div class="form-group">
-          <label for="favoriteFoods">
-            Preferred foods
-          </label>
-
-          <textarea
-            id="favoriteFoods"
-            name="favoriteFoods"
-            rows="3"
-            placeholder="List foods you enjoy and would like included."
-          ></textarea>
-        </div>
-
-        <!-- Avoided foods -->
-        <div class="form-group">
-          <label for="foodsToAvoid">
-            Foods to avoid
-          </label>
-
-          <textarea
-            id="foodsToAvoid"
-            name="foodsToAvoid"
-            rows="3"
-            placeholder="List foods you dislike or do not want included."
-          ></textarea>
-        </div>
-
-        <!-- Allergies -->
-        <div class="form-group">
-          <label for="allergies">
-            Allergies or dietary restrictions
-          </label>
-
-          <textarea
-            id="allergies"
-            name="allergies"
-            rows="3"
-            placeholder="Describe allergies, intolerances, religious restrictions, or medical dietary limitations."
-          ></textarea>
-        </div>
-
-        <!-- Notes -->
-        <div class="form-group">
-          <label for="additionalNotes">
-            Additional notes
-          </label>
-
-          <textarea
-            id="additionalNotes"
-            name="additionalNotes"
-            rows="4"
-            placeholder="Add meal timing preferences, budget limitations, cooking preferences, or other relevant details."
-          ></textarea>
-        </div>
-
-        <button id="generate-button" type="submit">
-          Generate My Nutrition Plan
-        </button>
-
-        <p
-          id="builder-status"
-          class="builder-status"
-          aria-live="polite"
-        ></p>
+        <p id="builder-status" class="builder-status" aria-live="polite"></p>
       </form>
     </section>
 
-    <section
-      id="nutrition-result"
-      class="program-result hidden"
-      aria-live="polite"
-    ></section>
+    <section id="nutrition-result" class="program-result hidden" aria-live="polite"></section>
   </main>
 
-  <div
-    id="shoppingListModal"
-    class="shopping-modal hidden"
-    aria-hidden="true"
-  >
+  <!-- Shopping list modal (unchanged) -->
+  <div id="shoppingListModal" class="shopping-modal hidden" aria-hidden="true">
     <div class="shopping-modal__backdrop" data-close-shopping-modal></div>
-    <section
-      class="shopping-modal__panel"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="shoppingListTitle"
-    >
+    <section class="shopping-modal__panel" role="dialog" aria-modal="true" aria-labelledby="shoppingListTitle">
       <header class="shopping-modal__header">
         <div>
           <span class="shopping-modal__eyebrow">FuelPhysique</span>
@@ -341,10 +321,85 @@
     </section>
   </div>
 
-  <script
-    type="module"
-    src="/js/nutrition-builder.js"
-  ></script>
+  <!-- Wizard navigation script (must run before nutrition-builder.js) -->
+  <script type="module">
+    const wizardSteps = [...document.querySelectorAll('.wizard-step')];
+    const backBtn = document.querySelector('#wizardBackButton');
+    const nextBtn = document.querySelector('#wizardNextButton');
+    const generateBtn = document.querySelector('#generate-button');
+    const progressBar = document.querySelector('#wizardProgressBar');
+    const stepLabel = document.querySelector('#wizardStepLabel');
+    const stepTitle = document.querySelector('#wizardStepTitle');
+    const errorBox = document.querySelector('#wizardError');
+    const goalSelect = document.querySelector('#goal');
+    let current = 0;
+
+    // Sync visual goal cards → hidden select
+    document.querySelectorAll('input[name="visualGoal"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (goalSelect) goalSelect.value = radio.value;
+        clearErr();
+      });
+    });
+
+    function clearErr() {
+      if (errorBox) { errorBox.textContent = ''; errorBox.classList.add('hidden'); }
+    }
+    function showErr(msg) {
+      if (errorBox) { errorBox.textContent = msg; errorBox.classList.remove('hidden'); }
+    }
+
+    function validate(index) {
+      const key = wizardSteps[index]?.dataset.wizardStep;
+      if (key === 'goal' && !goalSelect?.value) return 'Choose a primary goal to continue.';
+      if (key === 'about') {
+        const age = Number(document.querySelector('#age')?.value);
+        if (!age || age < 15 || age > 100) return 'Enter a valid age between 15 and 100.';
+        if (!document.querySelector('#gender')?.value) return 'Select your gender.';
+        const isYouth = age >= 15 && age < 18;
+        if (isYouth && !document.querySelector('#youthGuardianConsent')?.checked) return 'Guardian consent is required for users under 18.';
+      }
+      if (key === 'body') {
+        const h = Number(document.querySelector('#height')?.value);
+        const w = Number(document.querySelector('#weight')?.value);
+        if (!h || h < 120 || h > 230) return 'Enter a valid height between 120 and 230 cm.';
+        if (!w || w < 35 || w > 300) return 'Enter a valid weight between 35 and 300 kg.';
+      }
+      if (key === 'activity' && !document.querySelector('#activityLevel')?.value) return 'Select your daily activity level.';
+      return '';
+    }
+
+    function render() {
+      wizardSteps.forEach((s, i) => s.classList.toggle('is-active', i === current));
+      const total = wizardSteps.length;
+      if (progressBar) progressBar.style.width = `${((current + 1) / total) * 100}%`;
+      if (stepLabel) stepLabel.textContent = `Step ${current + 1} of ${total}`;
+      const step = wizardSteps[current];
+      if (stepTitle) stepTitle.textContent = step?.dataset.stepTitleEn || '';
+      if (backBtn) backBtn.disabled = current === 0;
+      const isLast = current === total - 1;
+      if (nextBtn) nextBtn.classList.toggle('hidden', isLast);
+      if (generateBtn) generateBtn.classList.toggle('hidden', !isLast);
+      clearErr();
+      wizardSteps[current]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    nextBtn?.addEventListener('click', () => {
+      const err = validate(current);
+      if (err) return showErr(err);
+      current = Math.min(wizardSteps.length - 1, current + 1);
+      render();
+    });
+
+    backBtn?.addEventListener('click', () => {
+      current = Math.max(0, current - 1);
+      render();
+    });
+
+    render();
+  </script>
+
+  <script type="module" src="/js/nutrition-builder.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

@@ -1878,3 +1878,224 @@ html[data-theme="light"] .schedule-day.is-today {
   .tools-accordion { order: 5; }
 }
 
+
+/* ── Progress photo teaser card ── */
+.progress-teaser-card {
+  margin-top: 20px;
+}
+
+.progress-teaser-compare {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.progress-teaser-photo {
+  flex: 1;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #060d1a;
+  aspect-ratio: 2/3;
+  max-height: 420px;
+}
+
+.progress-teaser-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  filter: brightness(0.92);
+}
+
+.progress-teaser-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 14px;
+  background: linear-gradient(0deg, rgba(2,6,23,.85) 0%, transparent 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.progress-teaser-vs {
+  font-size: 22px;
+  font-weight: 900;
+  color: #8b5cf6;
+  flex-shrink: 0;
+  text-align: center;
+  min-width: 36px;
+}
+
+@media (max-width: 600px) {
+  .progress-teaser-compare {
+    flex-direction: column;
+  }
+  .progress-teaser-photo {
+    width: 100%;
+    max-height: 260px;
+    aspect-ratio: 4/3;
+  }
+  .progress-teaser-photo img {
+    object-position: center 20%;
+  }
+  .progress-teaser-vs {
+    transform: rotate(90deg);
+  }
+}
+
+/* ── Progress teaser redesign ── */
+.progress-teaser-card {
+  margin-top: 20px;
+  border: 1.5px solid rgba(139,92,246,.25);
+  background: linear-gradient(160deg, #0d1020 0%, #111827 100%);
+  overflow: hidden;
+}
+
+.progress-teaser-header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.progress-teaser-kicker {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #a78bfa;
+  margin-bottom: 12px;
+}
+
+.progress-teaser-title {
+  font-size: clamp(22px, 2.6vw, 32px);
+  font-weight: 900;
+  line-height: 1.15;
+  color: #fff;
+  margin: 0 0 14px;
+  letter-spacing: -.01em;
+}
+
+.progress-teaser-sub {
+  font-size: 15px;
+  font-weight: 600;
+  color: #b8c8e0;
+  line-height: 1.6;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.progress-teaser-compare {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.progress-teaser-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-teaser-date-badge {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #cbd5e1;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 99px;
+  padding: 5px 16px;
+  text-align: center;
+}
+
+.progress-teaser-date-badge--after {
+  color: #a78bfa;
+  background: rgba(139,92,246,.12);
+  border-color: rgba(139,92,246,.3);
+}
+
+.progress-teaser-photo {
+  width: 100%;
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #060d1a;
+  aspect-ratio: 2/3;
+  max-height: 420px;
+  border: 1.5px solid rgba(255,255,255,.06);
+}
+
+.progress-teaser-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  filter: brightness(0.93);
+}
+
+.progress-teaser-phase-label {
+  font-size: 15px;
+  font-weight: 900;
+  color: #e2e8f0;
+  letter-spacing: .04em;
+  text-shadow: 0 0 12px rgba(139,92,246,.3);
+}
+
+.progress-teaser-vs {
+  font-size: 26px;
+  font-weight: 900;
+  color: #8b5cf6;
+  flex-shrink: 0;
+  text-align: center;
+  min-width: 40px;
+  align-self: center;
+  text-shadow: 0 0 20px rgba(139,92,246,.5);
+}
+
+.progress-teaser-cta {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 17px 24px;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 14px;
+  text-decoration: none;
+  letter-spacing: .02em;
+  box-shadow: 0 8px 28px rgba(124,58,237,.35);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.progress-teaser-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(124,58,237,.5);
+}
+
+@media (max-width: 600px) {
+  .progress-teaser-compare { flex-direction: column; }
+  .progress-teaser-vs { transform: rotate(90deg); align-self: center; }
+  .progress-teaser-photo { max-height: 280px; aspect-ratio: 3/4; }
+  .progress-teaser-cta { font-size: 14px; padding: 14px 16px; }
+}
+
+/* ── Skeleton Loaders ── */
+.skeleton { background: linear-gradient(90deg, #0f1825 0%, #171f30 50%, #0f1825 100%); background-size: 200% 100%; animation: shimmer 2s infinite; border-radius: 12px; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-line { height: 12px; margin-bottom: 8px; }
+.skeleton-card { height: 200px; margin-bottom: 16px; }
+
+/* ── Share Button ── */
+.share-btn { padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(139,92,246,.3); background: rgba(139,92,246,.1); color: #a78bfa; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s ease; }
+.share-btn:hover { background: rgba(139,92,246,.2); border-color: rgba(139,92,246,.5); }

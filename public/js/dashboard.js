@@ -259,7 +259,7 @@ function renderSearchResults(root, results, query) {
   resultsBox.innerHTML = results.slice(0, 7).map(item => `
     <a class="dashboard-search-result" href="${esc(item.route)}" data-search-result-id="${esc(item.id)}">
       <span>${esc(he ? item.titleHe : item.title)}</span>
-      <small>${esc(he ? item.title : item.titleHe)}</small>
+      ${he ? `<small>${esc(item.title)}</small>` : ''}
     </a>
   `).join("");
 }

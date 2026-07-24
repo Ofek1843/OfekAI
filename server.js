@@ -2466,6 +2466,20 @@ const targetCarbs = Math.round(
 
     const outputLanguage =
       language === "he" ? "Hebrew" : "English";
+
+    const languageRules = language === "he"
+      ? `- When Hebrew is selected, use the meal name "ארוחת ביניים" instead of "ארוחת חטיף".
+- When Hebrew is selected, write all meal names, food names, descriptions and notes in Hebrew.
+- When Hebrew is selected, translate "protein powder" as "אבקת חלבון".
+- When Hebrew is selected, write "מיליליטר" instead of the abbreviation for milliliters.
+- For example, write "200 מיליליטר", not a Hebrew abbreviation containing quotation marks.
+- Do not mix English into Hebrew user-facing values.`
+      : `- Always write all user-facing text in English ONLY.
+- Never output Hebrew text or any non-English language.
+- Use English meal names, food names, descriptions, and notes.
+- Do not translate anything to Hebrew.
+- All text must be in English, including but not limited to: meal names, food names, all descriptions, and all notes.`;
+
       console.time("Nutrition AI");
           const nutritionResponse = await createChatCompletion({
       temperature: 0.3,
@@ -2550,7 +2564,6 @@ Nutrition rules:
 - Alternatives must be genuinely different meals, not the same foods with a 10-gram quantity change. At least two options per meal must differ by one main protein or carbohydrate food.
 - Keep the meal target calories and macros only once at the meal level.
 - Include accurate numeric calories and macronutrients for every food item in the JSON so the server can verify the totals. The interface may hide these internal calculation fields.
-- In Hebrew, use the meal name "ארוחת ביניים" instead of "ארוחת חטיף".
 - Use the calculated daily calorie target provided by the server.
 - Set dailyCalories exactly to that calculated target.
 - Do not independently recalculate or override the calorie target.
@@ -2574,8 +2587,6 @@ Nutrition rules:
 - Ensure the displayed target calories are plausible for the listed food amounts; do not label a roughly 700-calorie option as 900 calories.
 - Never use the regular double-quote character inside JSON string values.
 - Write measurement abbreviations as full words.
-- In Hebrew, write "מיליליטר" instead of the abbreviation for milliliters.
-- For example, write "200 מיליליטר", not a Hebrew abbreviation containing quotation marks.
 - Make the calories and macronutrients reasonably consistent.
 - The sum of the meals should approximately match the daily totals.
 - Do not diagnose medical conditions.
@@ -2608,10 +2619,7 @@ Language rules:
 
 - Output all user-facing values in ${outputLanguage}.
 - JSON property names must remain in English.
-- When Hebrew is selected, write all meal names, food names,
-  descriptions and notes in Hebrew.
-- When Hebrew is selected, translate "protein powder" as "אבקת חלבון".
-- Do not mix English into Hebrew user-facing values.
+${languageRules}
 
           `.trim()
         },

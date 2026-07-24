@@ -4,22 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <title>FuelPhysique Dashboard</title>
-  <meta name="description" content="FuelPhysique: AI-powered fitness platform with personalized workout plans, nutrition plans, real-time tracking, and progress analytics.">
-  <meta property="og:title" content="FuelPhysique — Your AI Fitness Coach">
-  <meta property="og:description" content="Personalized workout & nutrition plans, real-time tracking, progress photos. Free & Pro plans.">
-  <meta property="og:image" content="https://fuelphysique.com/images/og-image.jpg">
-  <meta property="og:url" content="https://fuelphysique.com/dashboard.html">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="twitter:title" content="FuelPhysique">
-  <meta property="twitter:description" content="AI fitness platform with personalized plans">
-  <meta property="twitter:image" content="https://fuelphysique.com/images/og-image.jpg">
-  <meta name="theme-color" content="#070b14">
-  <link rel="manifest" href="/manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
-    }
-  </script>
   <script>
     try {
       const t = localStorage.getItem("ofek-ai-theme") || "dark";
@@ -251,56 +235,9 @@
             </div>
           </details>
         </section>
-
-        <!-- Progress photo teaser -->
-        <article class="card progress-teaser-card">
-          <div class="progress-teaser-header">
-            <span class="progress-teaser-kicker">📸 REAL RESULTS · 3 MONTHS</span>
-            <h2 class="progress-teaser-title">This is what 12 weeks on FuelPhysique looks like</h2>
-            <p class="progress-teaser-sub">Custom workout plan + personalized nutrition plan. Same person. 3 months apart. Track your own transformation the same way.</p>
-          </div>
-
-          <div class="progress-teaser-compare">
-            <div class="progress-teaser-col">
-              <div class="progress-teaser-date-badge">April 2026 · Start</div>
-              <div class="progress-teaser-photo">
-                <img src="/images/demo/progress-bulk.jpg" alt="Start — bulk phase" />
-              </div>
-              <div class="progress-teaser-phase-label">🏋️ Bulk phase</div>
-            </div>
-
-            <div class="progress-teaser-vs">➜</div>
-
-            <div class="progress-teaser-col">
-              <div class="progress-teaser-date-badge progress-teaser-date-badge--after">July 2026 · Now</div>
-              <div class="progress-teaser-photo">
-                <img src="/images/demo/progress-cutting.jpg" alt="After — cut phase" />
-              </div>
-              <div class="progress-teaser-phase-label">🔥 Cut phase</div>
-            </div>
-          </div>
-
-          <a href="/progress.html#photo-upload" class="progress-teaser-cta">
-            Track your own progress — compare photos between dates →
-          </a>
-        </article>
-
       </section>
     </section>
-    </section>
   </main>
-
-  <footer style="border-top:1px solid rgba(255,255,255,.08);margin-top:40px;padding:28px 0;text-align:center">
-    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:12px">
-      <a href="/faq.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">FAQ</a>
-      <a href="/contact.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Contact</a>
-      <a href="/terms.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Terms of Service</a>
-      <a href="/privacy.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Privacy Policy</a>
-      <a href="/subscription-policy.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Subscription Policy</a>
-      <a href="/refund-policy.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Refund Policy</a>
-    </div>
-    <p style="margin:0;font-size:12px;color:#4a5568">© 2026 FuelPhysique. All rights reserved.</p>
-  </footer>
 
   <div id="athleteCorePrompt" class="athlete-core-prompt hidden" role="dialog" aria-modal="true" aria-labelledby="athleteCorePromptTitle">
     <div class="athlete-core-prompt-card">

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -9,7 +9,7 @@
 
   <title>FuelPhysique Workout Builder</title>
 
-<link rel="stylesheet" href="/css/workout-builder.css">
+<link rel="stylesheet" href="/css/workout-builder.css?v=20260724-wizard-5">
 <link rel="stylesheet" href="/css/exercise-demo.css">
 <link rel="stylesheet" href="/css/exercise-demo-theme.css">
 <link rel="stylesheet" href="/css/plan-sharing.css">
@@ -33,180 +33,142 @@
         </p>
       </div>
 
-      <form id="workout-builder-form">
-        <div class="form-group">
-          <label for="goal">Primary goal</label>
+      <form id="workout-builder-form" class="builder-wizard" novalidate>
+        <div class="wizard-progress" aria-label="Builder progress">
+          <div class="wizard-progress-topline">
+            <span id="wizardStepLabel">Step 1 of 7</span>
+            <strong id="wizardStepTitle">Primary goal</strong>
+          </div>
+          <div class="wizard-progress-track" aria-hidden="true">
+            <span id="wizardProgressBar"></span>
+          </div>
+        </div>
 
-          <select id="goal" name="goal" required>
+        <section class="wizard-step is-active" data-wizard-step="goal" data-step-title-en="Primary goal" data-step-title-he="מטרה עיקרית">
+          <div class="wizard-step-heading">
+            <span>01</span>
+            <div>
+              <h2 data-en="What do you want to achieve?" data-he="מה המטרה שלך?">What do you want to achieve?</h2>
+              <p data-en="Choose the result your program should prioritize." data-he="בחר את התוצאה שהתוכנית צריכה להציב בראש סדר העדיפויות.">Choose the result your program should prioritize.</p>
+            </div>
+          </div>
+
+          <select id="goal" name="goal" class="visually-hidden-select" required tabindex="-1">
             <option value="">Select a goal</option>
             <option value="buildMuscle">Build muscle</option>
             <option value="loseFat">Lose fat</option>
             <option value="increaseStrength">Increase strength</option>
-            <option value="improveSkills">
-              Improve calisthenics skills
-            </option>
-            <option value="maintainPerformance">
-              Maintain performance
-            </option>
+            <option value="improveSkills">Improve calisthenics skills</option>
+            <option value="maintainPerformance">Maintain performance</option>
           </select>
-        </div>
 
-        <div class="form-group">
-          <label for="experience">Training experience</label>
-
-          <select id="experience" name="experience" required>
-            <option value="">Select your level</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <div class="form-group">
-  <label for="age">Age</label>
-
-  <input
-    id="age"
-    name="age"
-    type="number"
-    min="10"
-    max="100"
-    required
-  />
-</div>
-            <label for="daysPerWeek">Training days per week</label>
-
-            <input
-              id="daysPerWeek"
-              name="daysPerWeek"
-              type="number"
-              min="1"
-              max="7"
-              value="4"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="sessionDuration">
-              Session duration in minutes
+          <div class="visual-choice-grid visual-choice-grid--goals" data-sync-select="goal">
+            <label class="visual-choice-card visual-choice-card--goal-muscle">
+              <input type="radio" name="visualGoal" value="buildMuscle">
+              <span class="visual-choice-image"></span><span class="visual-choice-shade"></span>
+              <span class="visual-choice-content"><strong data-en="Build muscle" data-he="בניית שריר">Build muscle</strong><small data-en="Add size and muscular development" data-he="הגדלת מסת השריר ופיתוח גוף שרירי">Add size and muscular development</small></span><span class="visual-choice-check">✓</span>
             </label>
-
-            <input
-              id="sessionDuration"
-              name="sessionDuration"
-              type="number"
-              min="20"
-              max="180"
-              step="5"
-              value="60"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="trainingStyle">Training style</label>
-
-          <select id="trainingStyle" name="trainingStyle" required>
-            <option value="">Select training style</option>
-            <option value="gym">Gym</option>
-            <option value="calisthenics">Calisthenics</option>
-            <option value="hybrid">Hybrid</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Available equipment</label>
-
-          <div class="checkbox-grid">
-            <label class="checkbox-option">
-              <input
-                type="checkbox"
-                name="equipment"
-                value="bodyweight"
-              />
-              <span>Bodyweight</span>
+            <label class="visual-choice-card visual-choice-card--goal-fat">
+              <input type="radio" name="visualGoal" value="loseFat">
+              <span class="visual-choice-image"></span><span class="visual-choice-shade"></span>
+              <span class="visual-choice-content"><strong data-en="Lose fat" data-he="ירידה באחוזי שומן">Lose fat</strong><small data-en="Improve definition and body composition" data-he="שיפור החיטוב והרכב הגוף">Improve definition and body composition</small></span><span class="visual-choice-check">✓</span>
             </label>
-
-            <label class="checkbox-option">
-              <input
-                type="checkbox"
-                name="equipment"
-                value="pullUpBar"
-              />
-              <span>Pull-up bar</span>
+            <label class="visual-choice-card visual-choice-card--goal-strength">
+              <input type="radio" name="visualGoal" value="increaseStrength">
+              <span class="visual-choice-image"></span><span class="visual-choice-shade"></span>
+              <span class="visual-choice-content"><strong data-en="Increase strength" data-he="שיפור כוח">Increase strength</strong><small data-en="Lift more and improve performance" data-he="הגדלת כוח ושיפור ביצועים">Lift more and improve performance</small></span><span class="visual-choice-check">✓</span>
             </label>
-
-            <label class="checkbox-option">
-              <input
-                type="checkbox"
-                name="equipment"
-                value="rings"
-              />
-              <span>Gymnastic rings</span>
+            <label class="visual-choice-card visual-choice-card--goal-skills">
+              <input type="radio" name="visualGoal" value="improveSkills">
+              <span class="visual-choice-image"></span><span class="visual-choice-shade"></span>
+              <span class="visual-choice-content"><strong data-en="Calisthenics skills" data-he="מיומנויות קליסטניקס">Calisthenics skills</strong><small data-en="Build control for planche, lever and more" data-he="פיתוח שליטה לפלאנץ׳, פרונט לבר ועוד">Build control for planche, lever and more</small></span><span class="visual-choice-check">✓</span>
             </label>
-
-            <label class="checkbox-option">
-              <input
-                type="checkbox"
-                name="equipment"
-                value="dumbbells"
-              />
-              <span>Dumbbells</span>
-            </label>
-
-            <label class="checkbox-option">
-              <input
-                type="checkbox"
-                name="equipment"
-                value="barbell"
-              />
-              <span>Barbell</span>
-            </label>
-
-            <label class="checkbox-option">
-              <input
-                type="checkbox"
-                name="equipment"
-                value="machines"
-              />
-              <span>Machines</span>
+            <label class="visual-choice-card visual-choice-card--goal-performance visual-choice-card--wide">
+              <input type="radio" name="visualGoal" value="maintainPerformance">
+              <span class="visual-choice-image"></span><span class="visual-choice-shade"></span>
+              <span class="visual-choice-content"><strong data-en="Maintain performance" data-he="שמירה על הביצועים">Maintain performance</strong><small data-en="Stay consistent, capable and athletic" data-he="שמירה על עקביות, יכולת וכושר אתלטי">Stay consistent, capable and athletic</small></span><span class="visual-choice-check">✓</span>
             </label>
           </div>
+        </section>
+
+        <section class="wizard-step" data-wizard-step="experience" data-step-title-en="Training experience" data-step-title-he="ניסיון באימונים">
+          <div class="wizard-step-heading"><span>02</span><div><h2 data-en="What is your training level?" data-he="מה רמת הניסיון שלך?">What is your training level?</h2><p data-en="This controls exercise complexity, volume and progression." data-he="הבחירה תשפיע על מורכבות התרגילים, הנפח וקצב ההתקדמות.">This controls exercise complexity, volume and progression.</p></div></div>
+          <select id="experience" name="experience" class="visually-hidden-select" required tabindex="-1"><option value="">Select your level</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select>
+          <div class="visual-choice-grid visual-choice-grid--three" data-sync-select="experience">
+            <label class="visual-choice-card visual-choice-card--beginner"><input type="radio" name="visualExperience" value="beginner"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Beginner" data-he="מתחיל">Beginner</strong><small data-en="New or returning to structured training" data-he="חדש באימונים או חוזר לאחר הפסקה">New or returning to structured training</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--intermediate"><input type="radio" name="visualExperience" value="intermediate"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Intermediate" data-he="בינוני">Intermediate</strong><small data-en="Consistent training and solid technique" data-he="מתאמן באופן עקבי עם טכניקה טובה">Consistent training and solid technique</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--advanced"><input type="radio" name="visualExperience" value="advanced"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Advanced" data-he="מתקדם">Advanced</strong><small data-en="Years of training and high work capacity" data-he="שנות ניסיון ויכולת עבודה גבוהה">Years of training and high work capacity</small></span><span class="visual-choice-check">✓</span></label>
+          </div>
+        </section>
+
+        <section class="wizard-step" data-wizard-step="style" data-step-title-en="Training style" data-step-title-he="סגנון אימון">
+          <div class="wizard-step-heading"><span>03</span><div><h2 data-en="How do you prefer to train?" data-he="איך אתה מעדיף להתאמן?">How do you prefer to train?</h2><p data-en="Choose the environment and movement style you enjoy most." data-he="בחר את סביבת וסגנון האימון שאתה נהנה מהם יותר.">Choose the environment and movement style you enjoy most.</p></div></div>
+          <select id="trainingStyle" name="trainingStyle" class="visually-hidden-select" required tabindex="-1"><option value="">Select training style</option><option value="gym">Gym</option><option value="calisthenics">Calisthenics</option><option value="hybrid">Hybrid</option></select>
+          <div class="visual-choice-grid visual-choice-grid--three" data-sync-select="trainingStyle">
+            <label class="visual-choice-card visual-choice-card--gym"><input type="radio" name="visualStyle" value="gym"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Gym" data-he="חדר כושר">Gym</strong><small data-en="Machines, cables and free weights" data-he="מכונות, כבלים ומשקולות חופשיות">Machines, cables and free weights</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--calisthenics"><input type="radio" name="visualStyle" value="calisthenics"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Calisthenics" data-he="קליסטניקס">Calisthenics</strong><small data-en="Bodyweight strength and advanced skills" data-he="כוח במשקל גוף ומיומנויות מתקדמות">Bodyweight strength and advanced skills</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--hybrid"><input type="radio" name="visualStyle" value="hybrid"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Hybrid" data-he="משולב">Hybrid</strong><small data-en="Combine weights and bodyweight training" data-he="שילוב משקולות ואימון במשקל גוף">Combine weights and bodyweight training</small></span><span class="visual-choice-check">✓</span></label>
+          </div>
+        </section>
+
+        <section class="wizard-step" data-wizard-step="equipment" data-step-title-en="Available equipment" data-step-title-he="ציוד זמין">
+          <div class="wizard-step-heading"><span>04</span><div><h2 data-en="What equipment can you use?" data-he="איזה ציוד זמין לך?">What equipment can you use?</h2><p data-en="Select every option available. You can choose more than one." data-he="סמן את כל האפשרויות הזמינות לך. ניתן לבחור יותר מאפשרות אחת.">Select every option available. You can choose more than one.</p></div></div>
+          <div class="visual-choice-grid visual-choice-grid--equipment">
+            <label class="visual-choice-card visual-choice-card--equipment visual-choice-card--bodyweight"><input type="checkbox" name="equipment" value="bodyweight"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Bodyweight" data-he="משקל גוף">Bodyweight</strong></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--equipment visual-choice-card--pullup"><input type="checkbox" name="equipment" value="pullUpBar"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Pull-up bar" data-he="מתח">Pull-up bar</strong></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--equipment visual-choice-card--rings"><input type="checkbox" name="equipment" value="rings"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Gymnastic rings" data-he="טבעות">Gymnastic rings</strong></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--equipment visual-choice-card--dumbbells"><input type="checkbox" name="equipment" value="dumbbells"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Dumbbells" data-he="משקולות יד">Dumbbells</strong></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--equipment visual-choice-card--barbell"><input type="checkbox" name="equipment" value="barbell"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Barbell" data-he="מוט ומשקולות">Barbell</strong></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--equipment visual-choice-card--machines"><input type="checkbox" name="equipment" value="machines"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Machines" data-he="מכונות">Machines</strong></span><span class="visual-choice-check">✓</span></label>
+          </div>
+        </section>
+
+        <section class="wizard-step" data-wizard-step="priority" data-step-title-en="Training priority" data-step-title-he="דגש מרכזי">
+          <div class="wizard-step-heading"><span>05</span><div><h2 data-en="What should the program emphasize?" data-he="על מה התוכנית צריכה לשים דגש?">What should the program emphasize?</h2><p data-en="Choose the adaptation you care about most." data-he="בחר את סוג ההתקדמות שהכי חשוב לך.">Choose the adaptation you care about most.</p></div></div>
+          <select id="priority" name="priority" class="visually-hidden-select" required tabindex="-1"><option value="">Select priority</option><option value="hypertrophy">Hypertrophy</option><option value="strength">Strength</option><option value="skills">Skills</option><option value="generalFitness">General fitness</option></select>
+          <div class="visual-choice-grid" data-sync-select="priority">
+            <label class="visual-choice-card visual-choice-card--hypertrophy"><input type="radio" name="visualPriority" value="hypertrophy"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Hypertrophy" data-he="היפרטרופיה">Hypertrophy</strong><small data-en="Maximize muscular growth" data-he="מקסום גדילת השריר">Maximize muscular growth</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--priority-strength"><input type="radio" name="visualPriority" value="strength"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Strength" data-he="כוח">Strength</strong><small data-en="Improve force and heavy performance" data-he="שיפור כוח וביצועים כבדים">Improve force and heavy performance</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--priority-skills"><input type="radio" name="visualPriority" value="skills"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Skills" data-he="מיומנויות">Skills</strong><small data-en="Practice control and technical ability" data-he="פיתוח שליטה ויכולת טכנית">Practice control and technical ability</small></span><span class="visual-choice-check">✓</span></label>
+            <label class="visual-choice-card visual-choice-card--fitness"><input type="radio" name="visualPriority" value="generalFitness"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="General fitness" data-he="כושר כללי">General fitness</strong><small data-en="Build balanced strength and conditioning" data-he="פיתוח מאוזן של כוח וכושר">Build balanced strength and conditioning</small></span><span class="visual-choice-check">✓</span></label>
+          </div>
+        </section>
+
+        <section class="wizard-step" data-wizard-step="schedule" data-step-title-en="Schedule" data-step-title-he="לוח זמנים">
+          <div class="wizard-step-heading"><span>06</span><div><h2 data-en="Fit the plan to your week" data-he="התאם את התוכנית לשבוע שלך">Fit the plan to your week</h2><p data-en="Tell us how often, how long and on which days you can train." data-he="ציין כמה פעמים, כמה זמן ובאילו ימים אתה יכול להתאמן.">Tell us how often, how long and on which days you can train.</p></div></div>
+          <div class="wizard-fields-grid">
+            <label><span data-en="Age" data-he="גיל">Age</span><input id="age" name="age" type="number" min="10" max="100" required></label>
+            <label><span data-en="Session duration" data-he="משך אימון בדקות">Session duration</span><input id="sessionDuration" name="sessionDuration" type="number" min="20" max="180" step="5" value="60" required></label>
+            <label><span data-en="Training days per week" data-he="מספר אימונים בשבוע">Training days per week</span><select id="daysPerWeek" name="daysPerWeek" required><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></label>
+          </div>
+          <fieldset class="available-days-fieldset">
+            <legend data-en="Which days are available?" data-he="באילו ימים אתה פנוי?">Which days are available?</legend>
+            <p id="availableDaysHint"></p>
+            <div class="weekday-grid">
+              <label><input type="checkbox" name="availableDays" value="monday"><span data-en="Mon" data-he="ב׳">Mon</span></label>
+              <label><input type="checkbox" name="availableDays" value="tuesday"><span data-en="Tue" data-he="ג׳">Tue</span></label>
+              <label><input type="checkbox" name="availableDays" value="wednesday"><span data-en="Wed" data-he="ד׳">Wed</span></label>
+              <label><input type="checkbox" name="availableDays" value="thursday"><span data-en="Thu" data-he="ה׳">Thu</span></label>
+              <label><input type="checkbox" name="availableDays" value="friday"><span data-en="Fri" data-he="ו׳">Fri</span></label>
+              <label><input type="checkbox" name="availableDays" value="saturday"><span data-en="Sat" data-he="ש׳">Sat</span></label>
+              <label><input type="checkbox" name="availableDays" value="sunday"><span data-en="Sun" data-he="א׳">Sun</span></label>
+            </div>
+          </fieldset>
+        </section>
+
+        <section class="wizard-step" data-wizard-step="limitations" data-step-title-en="Final details" data-step-title-he="פרטים אחרונים">
+          <div class="wizard-step-heading"><span>07</span><div><h2 data-en="Anything the program should avoid?" data-he="האם יש משהו שהתוכנית צריכה להימנע ממנו?">Anything the program should avoid?</h2><p data-en="Add injuries, pain or movement limitations. Leave blank if none." data-he="הוסף פציעות, כאבים או מגבלות תנועה. השאר ריק אם אין.">Add injuries, pain or movement limitations. Leave blank if none.</p></div></div>
+          <label class="limitations-field"><span data-en="Injuries or limitations" data-he="פציעות או מגבלות">Injuries or limitations</span><textarea id="limitations" name="limitations" rows="5" placeholder="Describe any injuries, pain, or movement limitations."></textarea></label>
+          <div class="wizard-review" id="wizardReview"></div>
+        </section>
+
+        <p id="wizardError" class="wizard-error hidden" role="alert"></p>
+
+        <div class="wizard-actions">
+          <button id="wizardBackButton" type="button" class="wizard-button wizard-button--back" disabled data-en="Back" data-he="חזרה">Back</button>
+          <button id="wizardNextButton" type="button" class="wizard-button wizard-button--next" data-en="Next" data-he="הבא">Next</button>
+          <button id="generate-button" type="submit" class="wizard-button wizard-button--generate hidden">Generate My Program</button>
         </div>
-
-        <div class="form-group">
-          <label for="priority">Training priority</label>
-
-          <select id="priority" name="priority">
-            <option value="hypertrophy">Hypertrophy</option>
-            <option value="strength">Strength</option>
-            <option value="skills">Skills</option>
-            <option value="generalFitness">
-              General fitness
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="limitations">
-            Injuries or limitations
-          </label>
-
-          <textarea
-            id="limitations"
-            name="limitations"
-            rows="4"
-            placeholder="Describe any injuries, pain, or movement limitations."
-          ></textarea>
-        </div>
-
-        <button id="generate-button" type="submit">
-          Generate My Program
-        </button>
 
         <p id="builder-status" class="builder-status"></p>
       </form>
@@ -219,7 +181,7 @@
     ></section>
   </main>
 
-<script type="module" src="/js/workout-builder.js?v=20260722-4"></script>
+<script type="module" src="/js/workout-builder.js?v=20260724-wizard-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>
