@@ -496,116 +496,82 @@ const options = Array.isArray(meal.options)
   ? meal.options
   : [];
 
-const optionsHtml = options
-  .map((option) => {
-    const foods = Array.isArray(option.foods)
-      ? option.foods
-      : [];
-
-const foodsText = foods
-.map(
-  (food, foodIndex) => `
-        <tr>
-<td class="food-cell">
-  <img
-    class="food-image"
-    src="${food.imageUrl || "/images/food-placeholder.png"}"
-    alt="${escapeHtml(food.name || "")}"
-    loading="lazy"
-  />
-
-  <span>
-    ${escapeHtml(food.name || "")}
-  </span>
-</td>
-<td>${escapeHtml(food.amount || "")}</td>
-
-<td>
-  <button
-    type="button"
-    class="nutrition-reroll-food-button"
-    data-meal-number="${meal.mealNumber}"
-    data-option-number="${option.optionNumber}"
-    data-food-index="${foodIndex}"
-  >
-    🔄
-  </button>
-</td>
-      </tr>
-    `
-  )
-  .join("");
-  return `
-  <article
-  class="meal-option-card"
-  role="button"
-  tabindex="0"
-  data-meal-number="${escapeHtml(meal.mealNumber ?? "")}"
-  data-option-number="${escapeHtml(option.optionNumber ?? "")}"
->
-    <div class="meal-option-header">
-      <span class="option-label">
-        ${isHebrew ? "אפשרות" : "Option"}
-      </span>
-
-      <strong class="option-number">
-        ${escapeHtml(option.optionNumber ?? "")}
-      </strong>
+const optionsCarousel = options.length > 0 ? `
+<div class="meal-options-carousel" data-meal-number="${meal.mealNumber}">
+  <div class="carousel-main">
+    <div class="carousel-image-container">
+      <div class="carousel-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 280px; border-radius: 16px; color: #fff; font-size: 18px;">
+        🍽️ ${escapeHtml(meal.name || `${ui.meal} ${meal.mealNumber || ""}`)}
+      </div>
     </div>
 
-<div class="option-foods">
-  <table class="nutrition-food-table">
-    <thead>
-      <tr>
-        <th>${isHebrew ? "מזון" : "Food"}</th>
-        <th>${isHebrew ? "כמות" : "Amount"}</th>
-      </tr>
-    </thead>
+    <div class="carousel-content">
+      <div class="carousel-header">
+        <h3>${escapeHtml(meal.name || `${ui.meal} ${meal.mealNumber || ""}`)} · Option <span class="carousel-counter"><span class="carousel-current">1</span>/<span class="carousel-total">${options.length}</span></span></h3>
+      </div>
 
-    <tbody>
-      ${foodsText}
-    </tbody>
-  </table>
-</div>
-  </article>
-`;
-  })
-  .join("");
-      return `
-        <section class="meal-card">
-<div class="meal-header">
-  <h3>
-    🍽️
-    ${escapeHtml(
-      meal.name ||
-        `${ui.meal} ${meal.mealNumber || ""}`
-    )}
-  </h3>
+      <div class="carousel-meta">
+        <div class="meta-item">
+          <span class="meta-label">🔥</span>
+          <span class="meta-value">${escapeHtml(meal.targetCalories ?? "-")} ${ui.calories}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">💪</span>
+          <span class="meta-value">${escapeHtml(meal.targetProteinGrams ?? "-")}g ${ui.protein}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">🍚</span>
+          <span class="meta-value">${escapeHtml(meal.targetCarbsGrams ?? "-")}g ${ui.carbs}</span>
+        </div>
+      </div>
 
-  <span>
-    🔥 ${escapeHtml(meal.targetCalories ?? "-")}
-    ${ui.calories}
-  </span>
-</div>
-<div class="meal-macros">
-  <span>💪 ${escapeHtml(meal.targetProteinGrams ?? "-")}g ${ui.protein}</span>
+      <div class="carousel-options-container">
+        ${options.map((option, idx) => {
+          const foods = Array.isArray(option.foods) ? option.foods : [];
+          const foodsText = foods.map((food, foodIndex) => `
+            <tr>
+              <td class="food-cell">
+                <img class="food-image" src="${food.imageUrl || "/images/food-placeholder.png"}" alt="${escapeHtml(food.name || "")}" loading="lazy" />
+                <span>${escapeHtml(food.name || "")}</span>
+              </td>
+              <td>${escapeHtml(food.amount || "")}</td>
+              <td>
+                <button type="button" class="nutrition-reroll-food-button" data-meal-number="${meal.mealNumber}" data-option-number="${option.optionNumber}" data-food-index="${foodIndex}">🔄</button>
+              </td>
+            </tr>
+          `).join("");
 
-  <span>🍚 ${escapeHtml(meal.targetCarbsGrams ?? "-")}g ${ui.carbs}</span>
+          return `
+            <div class="carousel-option ${idx === 0 ? 'active' : ''}" data-option-number="${option.optionNumber}">
+              <table class="nutrition-food-table">
+                <thead>
+                  <tr>
+                    <th>${isHebrew ? "מזון" : "Food"}</th>
+                    <th>${isHebrew ? "כמות" : "Amount"}</th>
+                  </tr>
+                </thead>
+                <tbody>${foodsText}</tbody>
+              </table>
+            </div>
+          `;
+        }).join("")}
+      </div>
 
-  <span>🥑 ${escapeHtml(meal.targetFatGrams ?? "-")}g ${ui.fat}</span>
-</div>
-<div class="nutrition-options">
-  <h4>
-    ${isHebrew ? "אפשרויות לארוחה" : "Meal Options"}
-  </h4>
-
-  <div class="meal-options-title">
-  <span class="meal-options-title-main">Meal alternatives</span>
-  <span class="meal-options-title-sub">Choose one option</span>
-</div>
-    ${optionsHtml}
+      <div class="carousel-nav">
+        <button class="carousel-nav-btn carousel-prev" data-meal-number="${meal.mealNumber}">← ${isHebrew ? "הקודם" : "Prev"}</button>
+        <div class="carousel-dots">
+          ${options.map((_, idx) => `<div class="carousel-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></div>`).join("")}
+        </div>
+        <button class="carousel-nav-btn carousel-next" data-meal-number="${meal.mealNumber}">→ ${isHebrew ? "הבא" : "Next"}</button>
+      </div>
+    </div>
   </div>
 </div>
+` : "";
+
+      return `
+        <section class="meal-card">
+          ${optionsCarousel}
         </section>
       `;
     })
@@ -793,6 +759,49 @@ renderNutritionPlan(window.currentNutritionPlan);
 }
 
 });  });
+
+// Setup carousel navigation
+resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
+  const mealNumber = Number(carousel.dataset.mealNumber);
+  const options = carousel.querySelectorAll(".carousel-option");
+  const dots = carousel.querySelectorAll(".carousel-dot");
+  const prevBtn = carousel.querySelector(".carousel-prev");
+  const nextBtn = carousel.querySelector(".carousel-next");
+  const currentCounter = carousel.querySelector(".carousel-current");
+
+  let currentIndex = 0;
+
+  const showOption = (index) => {
+    options.forEach(opt => opt.classList.remove("active"));
+    dots.forEach(dot => dot.classList.remove("active"));
+    options[index].classList.add("active");
+    dots[index].classList.add("active");
+    currentIndex = index;
+    currentCounter.textContent = index + 1;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === options.length - 1;
+  };
+
+  prevBtn?.addEventListener("click", () => {
+    if (currentIndex > 0) showOption(currentIndex - 1);
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    if (currentIndex < options.length - 1) showOption(currentIndex + 1);
+  });
+
+  dots.forEach((dot, idx) => {
+    dot.addEventListener("click", () => showOption(idx));
+  });
+
+  // Keyboard navigation
+  carousel.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft" && currentIndex > 0) showOption(currentIndex - 1);
+    if (e.key === "ArrowRight" && currentIndex < options.length - 1) showOption(currentIndex + 1);
+  });
+
+  showOption(0);
+});
 
 }
 function escapeHtml(value = "") {

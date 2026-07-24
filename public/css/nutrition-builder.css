@@ -1219,6 +1219,153 @@ html[dir="ltr"] .nutrition-food-table td {
 /* Builder card wider for wizard */
 .builder-card{max-width:900px}
 
+/* Meal Options Carousel */
+.meal-options-carousel {
+  padding: 24px 0;
+}
+
+.carousel-main {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.carousel-image-container {
+  position: sticky;
+  top: 20px;
+}
+
+.carousel-image {
+  aspect-ratio: 4/3;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.carousel-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.carousel-counter {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.carousel-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.meta-label {
+  font-size: 18px;
+}
+
+.meta-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.carousel-options-container {
+  position: relative;
+  min-height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.carousel-option {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.carousel-option.active {
+  opacity: 1;
+  pointer-events: auto;
+  position: relative;
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 12px;
+}
+
+.carousel-nav-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.carousel-nav-btn:hover {
+  opacity: 0.9;
+}
+
+.carousel-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.carousel-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.carousel-dot.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  opacity: 1;
+  width: 28px;
+  border-radius: 5px;
+}
+
 /* Mobile */
 @media(max-width:700px){
   .nutr-goal-grid{grid-template-columns:1fr}
@@ -1229,4 +1376,16 @@ html[dir="ltr"] .nutrition-food-table td {
   .wizard-actions{grid-template-columns:1fr 1fr}
   .wizard-button--back{min-width:0}
   .wizard-button--generate{grid-column:2}
+
+  .carousel-main {
+    grid-template-columns: 1fr;
+  }
+
+  .carousel-image-container {
+    position: static;
+  }
+
+  .carousel-image {
+    min-height: 220px;
+  }
 }
