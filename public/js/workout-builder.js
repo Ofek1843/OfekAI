@@ -1,9 +1,9 @@
 import { auth, db } from "./firebase-config.js";
-import { setupExerciseDemos } from "./exercise-demos.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
+import { derivePriorityFromGoal } from "./workout-priority.js";
 
 import {
   collection,
@@ -449,6 +449,7 @@ form.addEventListener("submit", async (event) => {
 
   const payload = {
     goal: formData.get("goal"),
+    priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
     age: Number(formData.get("age")),
     daysPerWeek: Number(formData.get("daysPerWeek")),
@@ -952,6 +953,7 @@ try {
     exerciseIndex,
     program: window.currentWorkoutProgram,
     goal: formData.get("goal"),
+    priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
@@ -1015,4 +1017,16 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
-setupExerciseDemos(document);
+async function initializeExerciseDemosSafely() {
+  try {
+    const { setupExerciseDemos } = await import("./exercise-demos.js");
+    setupExerciseDemos(document);
+  } catch (error) {
+    console.warn(
+      "Exercise demos are unavailable; the workout builder remains usable.",
+      error
+    );
+  }
+}
+
+initializeExerciseDemosSafely();

@@ -9,6 +9,7 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
+const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
 const { translateValidationMessages } = require("./lib/workout-validation-i18n");
 const {
@@ -2039,6 +2040,7 @@ app.post("/api/workout-builder", async (req, res) => {
         error: "OPENAI_API_KEY is missing"
       });
     }
+    const canonicalPriority = priority || derivePriorityFromGoal(goal);
 const outputLanguage =
   language === "he" ? "Hebrew" : "English";
 
@@ -2193,7 +2195,7 @@ Available equipment: ${
               ? equipment.join(", ")
               : String(equipment)
           }
-Priority: ${String(priority || "General")}
+Priority: ${String(canonicalPriority)}
 Injuries, limitations or special requests: ${String(limitations)}
           `.trim()
         }
@@ -2399,6 +2401,7 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
 
     // Normalize equipment constraint for validation
     const selectedEquipment = Array.isArray(equipment) ? equipment : [];
+    const canonicalPriority = priority || derivePriorityFromGoal(goal);
 
     const rerollPrompt = `
 Replace only this exercise with another suitable exercise.
@@ -2411,7 +2414,7 @@ User constraints:
 - Training style: ${trainingStyle || "any"}
 - Goal: ${goal || "general"}
 - Experience: ${experience || "any"}
-- Priority: ${priority || "general"}
+- Priority: ${canonicalPriority}
 - Injuries/limitations: ${limitations || "none"}
 
 Rules:
