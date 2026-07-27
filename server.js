@@ -17,7 +17,9 @@ const {
   markAsUpstreamProviderError,
   isUpstreamProviderError,
   providerUnavailableMessage,
-  sanitizeUpstreamErrorForLogging
+  sanitizeUpstreamErrorForLogging,
+  DEFAULT_OPENAI_CHAT_MODEL,
+  isGpt5ChatModel
 } = require("./lib/openai-diagnostics");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
@@ -535,7 +537,7 @@ app.get("/api/admin/openai-diagnostics", async (req, res) => {
     }
 
     const modelIds = Array.isArray(body?.data) ? body.data.map((model) => model.id) : [];
-    const configuredModel = process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini";
+    const configuredModel = process.env.OPENAI_CHAT_MODEL || DEFAULT_OPENAI_CHAT_MODEL;
 
     return res.json({
       ok: true,
@@ -876,14 +878,24 @@ async function createChatCompletion({
   const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
   try {
     return await aiQueue.schedule(taskName, async () => {
+      const model = process.env.OPENAI_CHAT_MODEL || DEFAULT_OPENAI_CHAT_MODEL;
+      const useGpt5ChatPayload = isGpt5ChatModel(model);
       const requestBody = {
-        model: process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini",
-        temperature,
+        model,
         messages
       };
 
+      if (!useGpt5ChatPayload) {
+        requestBody.temperature = temperature;
+      }
+
       if (maxTokens) {
-        requestBody.max_tokens = Math.min(Number(maxTokens) || 0, Number(process.env.OPENAI_MAX_TOKENS || maxTokens));
+        const cappedMaxTokens = Math.min(Number(maxTokens) || 0, Number(process.env.OPENAI_MAX_TOKENS || maxTokens));
+        if (useGpt5ChatPayload) {
+          requestBody.max_completion_tokens = cappedMaxTokens;
+        } else {
+          requestBody.max_tokens = cappedMaxTokens;
+        }
       }
 
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
