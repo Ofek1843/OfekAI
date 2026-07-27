@@ -197,6 +197,7 @@ textarea:focus {
   margin: 14px 0 0;
   color: var(--muted);
   text-align: center;
+  white-space: pre-line;
 }
 
 .builder-status.error {

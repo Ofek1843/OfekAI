@@ -202,15 +202,18 @@ test("A successful mocked OpenAI response still returns 200", async (t) => {
 });
 
 test("Internal validation 422 remains 422 (not remapped to 502)", async (t) => {
-  const server = await startServer(4182);
+  // MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID forces two exercises to share a
+  // pre-set exerciseId — the repair-before-validate pipeline (see
+  // lib/workout-repair.js) only fills in a MISSING exerciseId, it never
+  // silently rewrites one already provided, so this stays invalid (Rule 9)
+  // even after repair, deterministically forcing this 422 path.
+  const server = await startServer(4182, { MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID: "true" });
   t.after(() => stopServer(server));
 
-  // sessionDuration at the minimum (20) with the fixed 5-exercise mock
-  // program deterministically exceeds the session-duration cap.
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify(buildWorkoutPayload({ sessionDuration: 20 }))
+    body: JSON.stringify(buildWorkoutPayload())
   });
   const data = await res.json();
 

@@ -140,11 +140,15 @@ test("POST /api/workout-builder: fewer available days than daysPerWeek returns 4
   assert.ok(data.error, "Should include an error message");
 });
 
-test("POST /api/workout-builder: an invalid generated program returns 422 and success:false", async () => {
-  // sessionDuration of 20 (the minimum accepted) combined with 3 exercises
-  // of 3 sets/90s rest from the mock generator will overrun the session-cap
-  // rule (session-cap tolerance is max(5, duration*0.1)), forcing validation
-  // to fail deterministically without needing a malformed AI response.
+test("POST /api/workout-builder: an oversized program is repaired (accessory exercises trimmed) instead of rejected", async () => {
+  // sessionDuration of 20 (the minimum accepted) combined with the mock
+  // generator's 5 fixed exercises overruns the session-cap rule. Before
+  // the repair-before-validate fix this was a deterministic 422; now
+  // lib/workout-repair.js trims lowest-priority accessory exercises from
+  // the end of the session until it fits (down to a floor of 3), so this
+  // now succeeds. See test/workout-builder-422-repair.test.js and
+  // test/workout-repair.test.js for the still-invalid-after-repair paths
+  // (equipment/duplicate-exerciseId cases repair does not touch).
   const res = await fetch(`${BASE_URL}/api/workout-builder`, {
     method: "POST",
     headers: authHeaders(),
@@ -156,9 +160,11 @@ test("POST /api/workout-builder: an invalid generated program returns 422 and su
   });
   const data = await res.json();
 
-  assert.equal(res.status, 422, `Expected 422. Body: ${JSON.stringify(data)}`);
-  assert.equal(data.success, false);
-  assert.ok(Array.isArray(data.details) && data.details.length > 0, "Should include validation error details");
+  assert.equal(res.status, 200, `Expected 200 after repair. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.success, true);
+  assert.ok(data.program.sessions[0].exercises.length <= 5, "Repair may have trimmed accessory exercises");
+  assert.ok(data.program.sessions[0].exercises.length >= 3, "Repair must never trim below the minimum floor");
+  assert.ok(data.sessionDurations[0].estimatedMinutes <= 25, "Repaired session must fit the duration budget (20min + 5min tolerance)");
 });
 
 test("POST /api/workout-builder: invalid programs are never returned with success:true", async () => {
