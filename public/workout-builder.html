@@ -36,7 +36,7 @@
       <form id="workout-builder-form" class="builder-wizard" novalidate>
         <div class="wizard-progress" aria-label="Builder progress">
           <div class="wizard-progress-topline">
-            <span id="wizardStepLabel">Step 1 of 7</span>
+            <span id="wizardStepLabel">Step 1 of 6</span>
             <strong id="wizardStepTitle">Primary goal</strong>
           </div>
           <div class="wizard-progress-track" aria-hidden="true">
@@ -123,19 +123,8 @@
           </div>
         </section>
 
-        <section class="wizard-step" data-wizard-step="priority" data-step-title-en="Training priority" data-step-title-he="דגש מרכזי">
-          <div class="wizard-step-heading"><span>05</span><div><h2 data-en="What should the program emphasize?" data-he="על מה התוכנית צריכה לשים דגש?">What should the program emphasize?</h2><p data-en="Choose the adaptation you care about most." data-he="בחר את סוג ההתקדמות שהכי חשוב לך.">Choose the adaptation you care about most.</p></div></div>
-          <select id="priority" name="priority" class="visually-hidden-select" required tabindex="-1"><option value="">Select priority</option><option value="hypertrophy">Hypertrophy</option><option value="strength">Strength</option><option value="skills">Skills</option><option value="generalFitness">General fitness</option></select>
-          <div class="visual-choice-grid" data-sync-select="priority">
-            <label class="visual-choice-card visual-choice-card--hypertrophy"><input type="radio" name="visualPriority" value="hypertrophy"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Hypertrophy" data-he="היפרטרופיה">Hypertrophy</strong><small data-en="Maximize muscular growth" data-he="מקסום גדילת השריר">Maximize muscular growth</small></span><span class="visual-choice-check">✓</span></label>
-            <label class="visual-choice-card visual-choice-card--priority-strength"><input type="radio" name="visualPriority" value="strength"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Strength" data-he="כוח">Strength</strong><small data-en="Improve force and heavy performance" data-he="שיפור כוח וביצועים כבדים">Improve force and heavy performance</small></span><span class="visual-choice-check">✓</span></label>
-            <label class="visual-choice-card visual-choice-card--priority-skills"><input type="radio" name="visualPriority" value="skills"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="Skills" data-he="מיומנויות">Skills</strong><small data-en="Practice control and technical ability" data-he="פיתוח שליטה ויכולת טכנית">Practice control and technical ability</small></span><span class="visual-choice-check">✓</span></label>
-            <label class="visual-choice-card visual-choice-card--fitness"><input type="radio" name="visualPriority" value="generalFitness"><span class="visual-choice-image"></span><span class="visual-choice-shade"></span><span class="visual-choice-content"><strong data-en="General fitness" data-he="כושר כללי">General fitness</strong><small data-en="Build balanced strength and conditioning" data-he="פיתוח מאוזן של כוח וכושר">Build balanced strength and conditioning</small></span><span class="visual-choice-check">✓</span></label>
-          </div>
-        </section>
-
         <section class="wizard-step" data-wizard-step="schedule" data-step-title-en="Schedule" data-step-title-he="לוח זמנים">
-          <div class="wizard-step-heading"><span>06</span><div><h2 data-en="Fit the plan to your week" data-he="התאם את התוכנית לשבוע שלך">Fit the plan to your week</h2><p data-en="Tell us how often, how long and on which days you can train." data-he="ציין כמה פעמים, כמה זמן ובאילו ימים אתה יכול להתאמן.">Tell us how often, how long and on which days you can train.</p></div></div>
+          <div class="wizard-step-heading"><span>05</span><div><h2 data-en="Fit the plan to your week" data-he="התאם את התוכנית לשבוע שלך">Fit the plan to your week</h2><p data-en="Tell us how often, how long and on which days you can train." data-he="ציין כמה פעמים, כמה זמן ובאילו ימים אתה יכול להתאמן.">Tell us how often, how long and on which days you can train.</p></div></div>
           <div class="wizard-fields-grid">
             <label><span data-en="Age" data-he="גיל">Age</span><input id="age" name="age" type="number" min="10" max="100" required></label>
             <label><span data-en="Session duration" data-he="משך אימון בדקות">Session duration</span><input id="sessionDuration" name="sessionDuration" type="number" min="20" max="180" step="5" value="60" required></label>
@@ -157,7 +146,7 @@
         </section>
 
         <section class="wizard-step" data-wizard-step="limitations" data-step-title-en="Final details" data-step-title-he="פרטים אחרונים">
-          <div class="wizard-step-heading"><span>07</span><div><h2 data-en="Anything the program should avoid?" data-he="האם יש משהו שהתוכנית צריכה להימנע ממנו?">Anything the program should avoid?</h2><p data-en="Add injuries, pain or movement limitations. Leave blank if none." data-he="הוסף פציעות, כאבים או מגבלות תנועה. השאר ריק אם אין.">Add injuries, pain or movement limitations. Leave blank if none.</p></div></div>
+          <div class="wizard-step-heading"><span>06</span><div><h2 data-en="Anything the program should avoid?" data-he="האם יש משהו שהתוכנית צריכה להימנע ממנו?">Anything the program should avoid?</h2><p data-en="Add injuries, pain or movement limitations. Leave blank if none." data-he="הוסף פציעות, כאבים או מגבלות תנועה. השאר ריק אם אין.">Add injuries, pain or movement limitations. Leave blank if none.</p></div></div>
           <label class="limitations-field"><span data-en="Injuries or limitations" data-he="פציעות או מגבלות">Injuries or limitations</span><textarea id="limitations" name="limitations" rows="5" placeholder="Describe any injuries, pain, or movement limitations."></textarea></label>
           <div class="wizard-review" id="wizardReview"></div>
         </section>

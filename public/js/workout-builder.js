@@ -40,7 +40,6 @@ const ui = isHebrew
       sessionDuration: "משך האימון בדקות",
       trainingStyle: "סגנון האימון",
       availableEquipment: "ציוד זמין",
-      trainingPriority: "דגש מרכזי באימון",
       limitations: "פציעות או מגבלות",
       limitationsPlaceholder:
         "תאר פציעות, כאבים או מגבלות תנועה.",
@@ -83,7 +82,6 @@ const ui = isHebrew
       sessionDuration: "Session duration in minutes",
       trainingStyle: "Training style",
       availableEquipment: "Available equipment",
-      trainingPriority: "Training priority",
       limitations: "Injuries or limitations",
       limitationsPlaceholder:
         "Describe any injuries, pain, or movement limitations.",
@@ -139,7 +137,6 @@ function translateBuilderInterface() {
   setText('label[for="daysPerWeek"]', ui.trainingDays);
   setText('label[for="sessionDuration"]', ui.sessionDuration);
   setText('label[for="trainingStyle"]', ui.trainingStyle);
-  setText('label[for="priority"]', ui.trainingPriority);
   setText('label[for="limitations"]', ui.limitations);
 
 const equipmentHeading =
@@ -342,7 +339,6 @@ function validateWizardStep(index) {
   if (key === "experience" && !document.querySelector("#experience")?.value) return isHebrew ? "בחר את רמת הניסיון שלך." : "Choose your training experience.";
   if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
   if (key === "equipment" && !document.querySelector('input[name="equipment"]:checked')) return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
-  if (key === "priority" && !document.querySelector("#priority")?.value) return isHebrew ? "בחר דגש מרכזי לאימון." : "Choose a training priority.";
   if (key === "schedule") {
     const age = Number(document.querySelector("#age")?.value);
     const duration = Number(document.querySelector("#sessionDuration")?.value);
@@ -462,7 +458,6 @@ form.addEventListener("submit", async (event) => {
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
     availableDays: formData.getAll("availableDays"),
-    priority: formData.get("priority"),
     limitations:
       formData.get("limitations")?.trim() ||
       (isHebrew ? "ללא מגבלות" : "None"),
@@ -960,7 +955,6 @@ try {
     experience: formData.get("experience"),
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
-    priority: formData.get("priority"),
     limitations: formData.get("limitations")
   };
 
