@@ -405,6 +405,15 @@ async function requireFirebaseUser(req, res) {
     return null;
   }
 
+  // Same MOCK_EXTERNAL_SERVICES flag that stubs the AI call (see
+  // createChatCompletion above) also stubs Firebase token verification, so
+  // integration tests can exercise real auth-gated routes deterministically
+  // and offline. A bearer token is still required — only the network call
+  // to Firebase Identity Toolkit is skipped. Never true outside test/CI.
+  if (mockExternalServices) {
+    return { uid: `mock-${token.slice(0, 24)}`, email: "mock-user@example.test" };
+  }
+
   try {
     const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_WEB_API_KEY}`, {
       method: "POST",
@@ -671,6 +680,34 @@ async function createChatCompletion({
     if (/Create a short title/i.test(systemPrompt)) {
       return "Mock Title";
     }
+    if (/expert strength coach/i.test(systemPrompt) && /Replace only this exercise/i.test(userPrompt)) {
+      // Deliberately echoes the CURRENT exercise's equipment rather than
+      // honoring "Selected equipment" — this mirrors a real AI response that
+      // ignores the constraint, so tests exercise the server-side equipment
+      // validation gate (the thing actually responsible for correctness)
+      // instead of trivially getting a compliant mock response for free.
+      const currentExerciseMatch = userPrompt.match(/Current exercise:\s*({[\s\S]*?})\s*\n\s*User constraints:/i);
+      let mockEquipment = "Bodyweight";
+      try {
+        const currentExercise = currentExerciseMatch ? JSON.parse(currentExerciseMatch[1]) : null;
+        if (currentExercise?.equipment) mockEquipment = currentExercise.equipment;
+      } catch {
+        // fall back to Bodyweight if the current-exercise JSON can't be parsed
+      }
+      const slug = String(mockEquipment).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      return JSON.stringify({
+        exerciseId: `mock-${slug || "bodyweight"}-replacement`,
+        name: `Mock ${mockEquipment} Replacement`,
+        demoName: `Mock ${mockEquipment} Replacement`,
+        muscleGroup: "Quads",
+        equipment: mockEquipment,
+        sets: 3,
+        reps: "8-12",
+        restSeconds: 90,
+        rir: "1-3",
+        notes: "Mock mode."
+      });
+    }
     if (/Return ONLY valid JSON/i.test(systemPrompt) && /programName/.test(systemPrompt)) {
       const daysMatch = userPrompt.match(/Training days per week:\s*(\d+)/i);
       const daysPerWeek = Math.max(1, Math.min(7, Number(daysMatch?.[1] || 3)));
@@ -678,9 +715,11 @@ async function createChatCompletion({
         day: index + 1,
         name: `Mock Session ${index + 1}`,
         exercises: [
-          { name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
+          { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "lunge", name: "Lunge", demoName: "Bodyweight Lunge", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
         ]
       }));
       return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
