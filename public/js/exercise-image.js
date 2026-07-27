@@ -11,6 +11,98 @@
 // duplicated image file. When adding art, name the file after the most common
 // spelling and alias the rest to it.
 
+export const EXERCISE_FALLBACK_IMAGE_URL =
+  "/images/exercises/fuelphysique-demo-fallback.svg";
+
+export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
+  "ab-wheel-rollout",
+  "abductors",
+  "adductors",
+  "archer-push-up",
+  "arnold-press",
+  "australian-row",
+  "barbell-bicep-curl",
+  "barbell-front-squat",
+  "barbell-hip-thrust",
+  "barbell-row",
+  "barbell-shoulder-press",
+  "barbell-shrug",
+  "barbell-squat",
+  "barbell-upright-row",
+  "bench-press",
+  "bulgarian-split-squat",
+  "cable-bicep-curl",
+  "cable-crossover",
+  "cable-crunch",
+  "cable-lateral-raise",
+  "cable-tricep-pushdown",
+  "cable-wood-chopper",
+  "cable-woodchopper",
+  "chin-up",
+  "close-grip-bench-press",
+  "close-grip-lat-pulldown",
+  "concentration-curl",
+  "diamond-push-up",
+  "dip",
+  "dumbbell-bench-press",
+  "dumbbell-bicep-curl",
+  "dumbbell-fly",
+  "dumbbell-front-raise",
+  "dumbbell-goblet-squat",
+  "dumbbell-hip-thrust",
+  "dumbbell-lateral-raise",
+  "dumbbell-reverse-fly",
+  "dumbbell-row",
+  "dumbbell-shoulder-press",
+  "dumbbell-shrug",
+  "face-pull",
+  "good-morning",
+  "hack-squat",
+  "hammer-curl",
+  "handstand",
+  "handstand-push-up",
+  "hanging-leg-raise",
+  "incline-bench-press",
+  "incline-dumbbell-bench-press",
+  "kettlebell-swing",
+  "l-sit",
+  "lat-pulldown",
+  "leg-extension",
+  "leg-press",
+  "lying-leg-curl",
+  "machine-chest-fly",
+  "machine-chest-press",
+  "machine-shoulder-press",
+  "muscle-up",
+  "neutral-grip-pull-up",
+  "one-arm-pull-up",
+  "overhead-tricep-extension",
+  "pike-push-up",
+  "pistol-squat",
+  "plank",
+  "preacher-curl",
+  "pull-up",
+  "push-up",
+  "rack-pull",
+  "reverse-lunge",
+  "romanian-deadlift",
+  "russian-twist",
+  "seated-cable-row",
+  "seated-calf-raise",
+  "seated-leg-curl",
+  "side-plank",
+  "skull-crusher",
+  "standing-calf-raise",
+  "step-up",
+  "sumo-deadlift",
+  "t-bar-row",
+  "tricep-dip",
+  "typewriter-pull-ups",
+  "wide-grip-push-up"
+]);
+
+const missingExerciseImageWarnings = new Set();
+
 export function slugifyExerciseName(name = "") {
   return String(name)
     .toLowerCase()
@@ -35,6 +127,10 @@ const ALIASES = {
   "forward-lunge": "reverse-lunge",
   "split-squat": "bulgarian-split-squat",
   "bulgarian-split-squat-dumbbell": "bulgarian-split-squat",
+  "step-ups": "step-up",
+  "box-step-up": "step-up",
+  "dumbbell-step-up": "step-up",
+  "barbell-step-up": "step-up",
 
   // --- Calf raise: generic name must land somewhere ---
   "calf-raise": "standing-calf-raise",
@@ -53,11 +149,25 @@ const ALIASES = {
   rdl: "romanian-deadlift",
   "lying-leg-curls": "lying-leg-curl",
   "leg-curl": "lying-leg-curl",
-  "seated-leg-curl": "lying-leg-curl",
+  "seated-leg-curl": "seated-leg-curl",
+  "seated-leg-curls": "seated-leg-curl",
+  "seated-hamstring-curl": "seated-leg-curl",
   "hamstring-curl": "lying-leg-curl",
   "leg-extensions": "leg-extension",
   "knee-extension": "leg-extension",
   "seated-leg-extension": "leg-extension",
+  "hip-abductor": "abductors",
+  abductors: "abductors",
+  "hip-abductor-machine": "abductors",
+  "hip-abduction-machine": "abductors",
+  "abductor-machine": "abductors",
+  "seated-hip-abduction": "abductors",
+  "hip-adductor": "adductors",
+  adductors: "adductors",
+  "hip-adductor-machine": "adductors",
+  "hip-adduction-machine": "adductors",
+  "adductor-machine": "adductors",
+  "seated-hip-adduction": "adductors",
 
   // --- Chest ---
   "barbell-bench-press": "bench-press",
@@ -65,8 +175,10 @@ const ALIASES = {
   "flat-barbell-bench-press": "bench-press",
   "incline-barbell-bench-press": "incline-bench-press",
   "incline-press": "incline-bench-press",
-  "incline-dumbbell-press": "dumbbell-bench-press",
-  "incline-dumbbell-bench-press": "dumbbell-bench-press",
+  "incline-dumbbell-press": "incline-dumbbell-bench-press",
+  "incline-dumbbell-bench-press": "incline-dumbbell-bench-press",
+  "incline-db-press": "incline-dumbbell-bench-press",
+  "incline-db-bench-press": "incline-dumbbell-bench-press",
   "dumbbell-press": "dumbbell-bench-press",
   "chest-press-machine": "machine-chest-press",
   "chest-press": "machine-chest-press",
@@ -98,6 +210,9 @@ const ALIASES = {
   "assisted-one-arm-pull-up": "one-arm-pull-up",
   "one-arm-chin-up": "one-arm-pull-up",
   "archer-pull-up": "one-arm-pull-up",
+  "typewriter-pull-up": "typewriter-pull-ups",
+  "typewriter-pullups": "typewriter-pull-ups",
+  "typewriter-pull-ups": "typewriter-pull-ups",
   "lat-pulldowns": "lat-pulldown",
   "neutral-grip-lat-pulldown": "close-grip-lat-pulldown",
   "wide-grip-lat-pulldown": "lat-pulldown",
@@ -170,7 +285,8 @@ const ALIASES = {
   "chest-dip": "dip",
 
   // --- Core ---
-  "cable-crunch": "cable-woodchopper",
+  "cable-crunch": "cable-crunch",
+  "kneeling-cable-crunch": "cable-crunch",
   crunch: "russian-twist",
   "hanging-knee-raise": "hanging-leg-raise",
   "leg-raise": "hanging-leg-raise",
@@ -180,13 +296,31 @@ const ALIASES = {
   "cable-woodchop": "cable-woodchopper"
 };
 
-export const EXERCISE_FALLBACK_IMAGE_URL =
-  "/images/exercises/fuelphysique-demo-fallback.svg";
-
 export function exerciseImageSlug(name = "") {
   const slug = slugifyExerciseName(name);
   if (!slug) return "";
   return ALIASES[slug] || slug;
+}
+
+export function hasExerciseImageSlug(slug = "") {
+  return KNOWN_EXERCISE_IMAGE_SLUGS.has(slug);
+}
+
+function warnMissingExerciseImage(source, slug) {
+  if (
+    typeof window === "undefined" ||
+    typeof console === "undefined" ||
+    window.location?.hostname !== "localhost" ||
+    missingExerciseImageWarnings.has(slug)
+  ) {
+    return;
+  }
+
+  missingExerciseImageWarnings.add(slug);
+  console.warn("Missing exercise demo image; using branded fallback.", {
+    source,
+    slug
+  });
 }
 
 export function exerciseImageUrl(exercise = {}) {
@@ -200,7 +334,15 @@ export function exerciseImageUrl(exercise = {}) {
         exercise.exercise ||
         "";
   const slug = exerciseImageSlug(source);
-  return slug ? `/images/exercises/${slug}.png` : EXERCISE_FALLBACK_IMAGE_URL;
+  if (slug && hasExerciseImageSlug(slug)) {
+    return `/images/exercises/${slug}.png`;
+  }
+
+  if (slug) {
+    warnMissingExerciseImage(source, slug);
+  }
+
+  return EXERCISE_FALLBACK_IMAGE_URL;
 }
 
 export function fallbackExerciseImageUrl() {

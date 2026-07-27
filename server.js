@@ -19,7 +19,9 @@ const {
   providerUnavailableMessage,
   sanitizeUpstreamErrorForLogging,
   DEFAULT_OPENAI_CHAT_MODEL,
-  isGpt5ChatModel
+  DEFAULT_OPENAI_WORKOUT_MODEL,
+  isGpt5ChatModel,
+  incompleteResponseMessage
 } = require("./lib/openai-diagnostics");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
@@ -733,6 +735,116 @@ app.post("/api/transcribe", async (req, res) => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "landing.html"));
 });
+
+const OPENAI_INCOMPLETE_RESPONSE_CODES = new Set([
+  "openai_no_choices",
+  "openai_no_message",
+  "openai_empty_content",
+  "openai_truncated",
+  "openai_refusal",
+  "openai_reasoning_exhausted"
+]);
+
+function resolveWorkoutModel(env = process.env) {
+  return env.OPENAI_WORKOUT_MODEL || env.OPENAI_CHAT_MODEL || DEFAULT_OPENAI_WORKOUT_MODEL;
+}
+
+function extractVisibleMessageContent(message) {
+  const content = message?.content;
+  if (typeof content === "string") return content.trim();
+  if (Array.isArray(content)) {
+    return content
+      .map((part) => {
+        if (typeof part === "string") return part;
+        if (typeof part?.text === "string") return part.text;
+        if (typeof part?.content === "string") return part.content;
+        return "";
+      })
+      .join("")
+      .trim();
+  }
+  return "";
+}
+
+function sanitizedOpenAiChoiceDiagnostics(data = {}) {
+  const choices = Array.isArray(data?.choices) ? data.choices : [];
+  const firstChoice = choices[0] || {};
+  const message = firstChoice.message || {};
+  const content = extractVisibleMessageContent(message);
+  const usage = data?.usage || {};
+  const completionDetails = usage.completion_tokens_details || {};
+
+  return {
+    choicesLength: choices.length,
+    finishReason: firstChoice.finish_reason || null,
+    messageRole: message.role || null,
+    hasMessageContent: Boolean(content),
+    visibleContentLength: content.length,
+    hasRefusal: Boolean(message.refusal),
+    toolCallsCount: Array.isArray(message.tool_calls) ? message.tool_calls.length : 0,
+    completionTokens: usage.completion_tokens || null,
+    reasoningTokens: completionDetails.reasoning_tokens || null
+  };
+}
+
+function classifyOpenAiContent(data = {}) {
+  const choices = Array.isArray(data?.choices) ? data.choices : [];
+  const firstChoice = choices[0];
+  const diagnostics = sanitizedOpenAiChoiceDiagnostics(data);
+
+  if (!firstChoice) {
+    return { ok: false, reason: "openai_no_choices", retryable: true, diagnostics };
+  }
+
+  const message = firstChoice.message;
+  if (!message) {
+    return { ok: false, reason: "openai_no_message", retryable: true, diagnostics };
+  }
+
+  if (message.refusal) {
+    return { ok: false, reason: "openai_refusal", retryable: false, diagnostics };
+  }
+
+  const content = extractVisibleMessageContent(message);
+  if (content) {
+    return { ok: true, content, diagnostics };
+  }
+
+  if (firstChoice.finish_reason === "length") {
+    return { ok: false, reason: "openai_truncated", retryable: true, diagnostics };
+  }
+
+  const completionTokens = Number(data?.usage?.completion_tokens || 0);
+  const reasoningTokens = Number(data?.usage?.completion_tokens_details?.reasoning_tokens || 0);
+  if (completionTokens > 0 && reasoningTokens >= completionTokens) {
+    return { ok: false, reason: "openai_reasoning_exhausted", retryable: true, diagnostics };
+  }
+
+  return { ok: false, reason: "openai_empty_content", retryable: true, diagnostics };
+}
+
+function createOpenAiIncompleteContentError({ data, response, classification, taskName }) {
+  const error = new Error("OpenAI returned no usable visible content.");
+  error.status = 502;
+  error.details = {
+    error: {
+      type: "incomplete_response",
+      code: classification.reason,
+      message: "OpenAI returned an HTTP 200 response without usable visible content."
+    },
+    diagnostics: classification.diagnostics
+  };
+  error.openAiIncompleteResponse = true;
+  markAsUpstreamProviderError(error, {
+    status: response?.status || 200,
+    requestId: response?.headers?.get?.("x-request-id"),
+    type: "incomplete_response",
+    code: classification.reason,
+    sanitizedMessage: `${taskName || "ai"} received no usable visible content`
+  });
+  return error;
+}
+
 /**
  * Sends a request to OpenAI's Chat Completions API.
  */
@@ -740,7 +852,9 @@ async function createChatCompletion({
   messages,
   temperature = 0.3,
   maxTokens,
-  taskName = "ai"
+  taskName = "ai",
+  model,
+  retryIncomplete = true
 }) {
   if (mockExternalServices) {
     // Test-only, env-gated simulation of a real OpenAI upstream failure
@@ -768,6 +882,69 @@ async function createChatCompletion({
         sanitizedMessage: error.details.error.message
       });
       throw error;
+    }
+
+    const mockResponseMode = String(process.env.MOCK_OPENAI_CHAT_RESPONSE_MODE || "").toLowerCase();
+    if (mockResponseMode) {
+      const mockAttempt = Number(process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS || 0) + 1;
+      process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS = String(mockAttempt);
+      const validWorkout = JSON.stringify({
+        programName: "Mock Workout Program",
+        daysPerWeek: 1,
+        durationWeeks: 8,
+        goal: "Mock Goal",
+        sessions: [
+          {
+            day: 1,
+            name: "Mock Session 1",
+            exercises: [
+              { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
+            ]
+          }
+        ]
+      });
+      const fakeData = {
+        choices: [
+          {
+            finish_reason: "stop",
+            message: { role: "assistant", content: validWorkout }
+          }
+        ],
+        usage: { completion_tokens: 120, completion_tokens_details: { reasoning_tokens: 0 } }
+      };
+
+      if (mockResponseMode === "empty-content" || (mockResponseMode === "retry-success" && mockAttempt === 1) || (mockResponseMode === "retry-fail")) {
+        fakeData.choices[0].message.content = "";
+        fakeData.usage = { completion_tokens: 3500, completion_tokens_details: { reasoning_tokens: mockResponseMode === "empty-content" ? 3500 : 0 } };
+      }
+      if (mockResponseMode === "length") {
+        fakeData.choices[0].finish_reason = "length";
+        fakeData.choices[0].message.content = "";
+      }
+      if (mockResponseMode === "refusal") {
+        fakeData.choices[0].message = { role: "assistant", content: "", refusal: "Cannot comply." };
+      }
+      if (mockResponseMode === "malformed-json") {
+        fakeData.choices[0].message.content = "{ not valid json";
+      }
+
+      const classification = classifyOpenAiContent(fakeData);
+      if (classification.ok) return classification.content;
+      if (classification.retryable && retryIncomplete) {
+        console.warn("OpenAI mock response unusable; retrying once:", {
+          taskName,
+          reason: classification.reason,
+          diagnostics: classification.diagnostics
+        });
+        return createChatCompletion({ messages, temperature, maxTokens, taskName, model, retryIncomplete: false });
+      }
+      throw createOpenAiIncompleteContentError({
+        data: fakeData,
+        response: { status: 200, headers: { get: () => "req_mock_incomplete_response" } },
+        classification,
+        taskName
+      });
     }
 
     const normalizedMessages = Array.isArray(messages) ? messages : [];
@@ -878,66 +1055,80 @@ async function createChatCompletion({
   const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
   try {
     return await aiQueue.schedule(taskName, async () => {
-      const model = process.env.OPENAI_CHAT_MODEL || DEFAULT_OPENAI_CHAT_MODEL;
-      const useGpt5ChatPayload = isGpt5ChatModel(model);
-      const requestBody = {
-        model,
-        messages
-      };
+      const selectedModel = model || process.env.OPENAI_CHAT_MODEL || DEFAULT_OPENAI_CHAT_MODEL;
+      const useGpt5ChatPayload = isGpt5ChatModel(selectedModel);
+      const maxAttempts = retryIncomplete ? 2 : 1;
 
-      if (!useGpt5ChatPayload) {
-        requestBody.temperature = temperature;
-      }
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const requestBody = {
+          model: selectedModel,
+          messages
+        };
 
-      if (maxTokens) {
-        const cappedMaxTokens = Math.min(Number(maxTokens) || 0, Number(process.env.OPENAI_MAX_TOKENS || maxTokens));
-        if (useGpt5ChatPayload) {
-          requestBody.max_completion_tokens = cappedMaxTokens;
-        } else {
-          requestBody.max_tokens = cappedMaxTokens;
+        if (!useGpt5ChatPayload) {
+          requestBody.temperature = temperature;
         }
-      }
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-        },
-        signal: controller.signal,
-        body: JSON.stringify(requestBody)
-      });
+        if (maxTokens) {
+          const cappedMaxTokens = Math.min(Number(maxTokens) || 0, Number(process.env.OPENAI_MAX_TOKENS || maxTokens));
+          if (useGpt5ChatPayload) {
+            requestBody.max_completion_tokens = cappedMaxTokens;
+          } else {
+            requestBody.max_tokens = cappedMaxTokens;
+          }
+        }
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        const error = new Error("OpenAI API request failed.");
-
-        error.status = response.status;
-        error.details = data;
-        markAsUpstreamProviderError(error, {
-          status: response.status,
-          requestId: response.headers.get("x-request-id"),
-          type: data?.error?.type,
-          code: data?.error?.code,
-          sanitizedMessage: data?.error?.message
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+          },
+          signal: controller.signal,
+          body: JSON.stringify(requestBody)
         });
 
-        throw error;
+        const data = await response.json();
+
+        if (!response.ok) {
+          const error = new Error("OpenAI API request failed.");
+
+          error.status = response.status;
+          error.details = data;
+          markAsUpstreamProviderError(error, {
+            status: response.status,
+            requestId: response.headers.get("x-request-id"),
+            type: data?.error?.type,
+            code: data?.error?.code,
+            sanitizedMessage: data?.error?.message
+          });
+
+          throw error;
+        }
+
+        const classification = classifyOpenAiContent(data);
+        if (classification.ok) {
+          return classification.content;
+        }
+
+        console.warn("OpenAI returned no usable visible content:", {
+          taskName,
+          model: selectedModel,
+          attempt,
+          reason: classification.reason,
+          diagnostics: classification.diagnostics
+        });
+
+        if (classification.retryable && attempt < maxAttempts) {
+          continue;
+        }
+
+        throw createOpenAiIncompleteContentError({ data, response, classification, taskName });
       }
 
-      const content = data?.choices?.[0]?.message?.content?.trim();
-
-      if (!content) {
-        const error = new Error("No valid response was received from the model.");
-
-        error.status = 500;
-        error.details = data;
-
-        throw error;
-      }
-
-      return content;
+      const error = new Error("OpenAI returned no usable visible content.");
+      error.status = 502;
+      throw error;
     });
   } finally {
     clearTimeout(timeout);
@@ -1941,6 +2132,8 @@ async function repairWorkoutProgram({ program, issues, parsedDays, equipment, tr
   const repairResponse = await createChatCompletion({
     temperature: 0.2,
     maxTokens: 3500,
+    model: resolveWorkoutModel(),
+    taskName: "workout-builder-repair",
     messages: [
       {
         role: "system",
@@ -2059,6 +2252,8 @@ const outputLanguage =
     const workoutResponse = await createChatCompletion({
       temperature: 0.3,
       maxTokens: 3500,
+      model: resolveWorkoutModel(),
+      taskName: "workout-builder",
       messages: [
         {
           role: "system",
@@ -2225,11 +2420,12 @@ Injuries, limitations or special requests: ${String(limitations)}
     try {
       program = JSON.parse(cleanedResponse);
     } catch (parseError) {
-      console.error(
-        "Workout JSON parsing failed:",
-        parseError,
-        cleanedResponse
-      );
+      console.error("Workout JSON parsing failed:", {
+        message: parseError.message,
+        responseLength: cleanedResponse.length,
+        startsWithJsonObject: cleanedResponse.startsWith("{"),
+        endsWithJsonObject: cleanedResponse.endsWith("}")
+      });
 
       return res.status(502).json({
         error: "The AI returned an invalid workout format"
@@ -2356,7 +2552,9 @@ Injuries, limitations or special requests: ${String(limitations)}
         sanitizeUpstreamErrorForLogging(error.upstreamStatus, error.upstreamRequestId, error.details)
       );
       return res.status(502).json({
-        error: providerUnavailableMessage(req.body?.language)
+        error: OPENAI_INCOMPLETE_RESPONSE_CODES.has(error.upstreamCode)
+          ? incompleteResponseMessage(req.body?.language)
+          : providerUnavailableMessage(req.body?.language)
       });
     }
 
@@ -2458,6 +2656,8 @@ Required JSON format:
     const aiResponse = await createChatCompletion({
       temperature: 0.7,
       maxTokens: 500,
+      model: resolveWorkoutModel(),
+      taskName: "workout-builder-reroll",
       messages: [
         {
           role: "system",
@@ -2574,7 +2774,9 @@ Required JSON format:
         sanitizeUpstreamErrorForLogging(error.upstreamStatus, error.upstreamRequestId, error.details)
       );
       return res.status(502).json({
-        error: providerUnavailableMessage(req.body?.language)
+        error: OPENAI_INCOMPLETE_RESPONSE_CODES.has(error.upstreamCode)
+          ? incompleteResponseMessage(req.body?.language)
+          : providerUnavailableMessage(req.body?.language)
       });
     }
 
