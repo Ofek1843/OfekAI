@@ -9,6 +9,13 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
+const {
+  logOpenAiStartupDiagnostics,
+  markAsUpstreamProviderError,
+  isUpstreamProviderError,
+  providerUnavailableMessage,
+  sanitizeUpstreamErrorForLogging
+} = require("./lib/openai-diagnostics");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
@@ -42,6 +49,11 @@ const telemetry = createTelemetryAgent({
   brandName: "FuelPhysique",
   getPublicStats
 });
+
+// Safe (never logs the full key) diagnostic so a misconfigured
+// OPENAI_API_KEY/OPENAI_CHAT_MODEL is visible in the startup logs instead
+// of only surfacing as a 403 on the first user-facing request.
+logOpenAiStartupDiagnostics();
 
 app.disable("x-powered-by");
 app.use((req, res, next) => {
@@ -484,6 +496,58 @@ function isLeaderboardAdmin(user) {
   return allowed.includes(String(user?.email || "").toLowerCase());
 }
 
+// Manual, admin-gated connectivity check for the OpenAI integration. Calls
+// the SAME environment variable (OPENAI_API_KEY) and the SAME Authorization
+// header construction production generation uses, against the lightest
+// possible endpoint (GET /v1/models), so a 403 here isolates the failure to
+// "this key/project cannot reach OpenAI at all" versus "this key works but
+// lacks access to the specific model we request" (which /v1/models cannot
+// itself detect — the response is inspected for the configured model by
+// the caller of this diagnostic, not computed here). Never runs
+// automatically; requires an authenticated admin.
+app.get("/api/admin/openai-diagnostics", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  if (!isLeaderboardAdmin(user)) return res.status(403).json({ error: "Admin access is required." });
+
+  const apiKey = process.env.OPENAI_API_KEY || "";
+  if (!apiKey.trim()) {
+    return res.json({ ok: false, reason: "OPENAI_API_KEY is not set." });
+  }
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/models", {
+      headers: { Authorization: `Bearer ${apiKey}` }
+    });
+    const requestId = response.headers.get("x-request-id");
+    const body = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      return res.json({
+        ok: false,
+        status: response.status,
+        requestId: requestId || null,
+        upstreamError: sanitizeUpstreamErrorForLogging(response.status, requestId, body)
+      });
+    }
+
+    const modelIds = Array.isArray(body?.data) ? body.data.map((model) => model.id) : [];
+    const configuredModel = process.env.OPENAI_CHAT_MODEL || "gpt-4o-mini";
+
+    return res.json({
+      ok: true,
+      status: response.status,
+      requestId: requestId || null,
+      modelCount: modelIds.length,
+      configuredModel,
+      configuredModelAvailable: modelIds.includes(configuredModel)
+    });
+  } catch (error) {
+    console.error("OpenAI diagnostics connectivity check failed:", error.message);
+    return res.status(502).json({ ok: false, reason: "Could not reach OpenAI." });
+  }
+});
+
 app.post("/api/progress-photos/upload", async (req, res) => {
   res.status(410).json({
     error: "Progress photo uploads now use direct browser-to-ImageKit upload. Please refresh and try again."
@@ -674,6 +738,33 @@ async function createChatCompletion({
   taskName = "ai"
 }) {
   if (mockExternalServices) {
+    // Test-only, env-gated simulation of a real OpenAI upstream failure
+    // (e.g. 403 model_not_found), so tests can exercise the upstream ->
+    // 502 mapping deterministically and offline. Mirrors exactly what the
+    // real fetch path does on a non-ok response (same tagging call), so
+    // the two code paths stay behaviorally identical. Never true outside
+    // test/CI — requires MOCK_EXTERNAL_SERVICES=true AND this second flag.
+    if (String(process.env.MOCK_OPENAI_UPSTREAM_FAILURE || "").toLowerCase() === "true") {
+      const error = new Error("OpenAI API request failed.");
+      const status = Number(process.env.MOCK_OPENAI_UPSTREAM_STATUS || 403);
+      error.status = status;
+      error.details = {
+        error: {
+          type: "invalid_request_error",
+          code: "model_not_found",
+          message: "Project does not have access to model `gpt-4o-mini`"
+        }
+      };
+      markAsUpstreamProviderError(error, {
+        status,
+        requestId: "req_mock_upstream_failure",
+        type: error.details.error.type,
+        code: error.details.error.code,
+        sanitizedMessage: error.details.error.message
+      });
+      throw error;
+    }
+
     const normalizedMessages = Array.isArray(messages) ? messages : [];
     const systemPrompt = normalizedMessages[0]?.content || "";
     const userPrompt = normalizedMessages[normalizedMessages.length - 1]?.content || "";
@@ -793,6 +884,13 @@ async function createChatCompletion({
 
         error.status = response.status;
         error.details = data;
+        markAsUpstreamProviderError(error, {
+          status: response.status,
+          requestId: response.headers.get("x-request-id"),
+          type: data?.error?.type,
+          code: data?.error?.code,
+          sanitizedMessage: data?.error?.message
+        });
 
         throw error;
       }
@@ -2201,6 +2299,22 @@ Injuries, limitations or special requests: ${String(limitations)}
       });
     }
 
+    // Upstream AI-provider failures (invalid/unauthorized key, model not
+    // available to this account, provider outage, etc.) are never the
+    // client's fault and never something they can fix by resending the
+    // same request — surface them as a generic 502, not OpenAI's raw
+    // status code. Our own statuses (400/401/409/422/429, set elsewhere in
+    // this handler) are untouched by this branch.
+    if (isUpstreamProviderError(error)) {
+      console.error(
+        "Workout builder upstream OpenAI failure:",
+        sanitizeUpstreamErrorForLogging(error.upstreamStatus, error.upstreamRequestId, error.details)
+      );
+      return res.status(502).json({
+        error: providerUnavailableMessage(req.body?.language)
+      });
+    }
+
     return res.status(error.status || 500).json({
       error: error.message || "Could not generate workout program"
     });
@@ -2392,7 +2506,17 @@ Required JSON format:
   } catch (error) {
     console.error("Re-roll error:", error);
 
-    return res.status(500).json({
+    if (isUpstreamProviderError(error)) {
+      console.error(
+        "Reroll upstream OpenAI failure:",
+        sanitizeUpstreamErrorForLogging(error.upstreamStatus, error.upstreamRequestId, error.details)
+      );
+      return res.status(502).json({
+        error: providerUnavailableMessage(req.body?.language)
+      });
+    }
+
+    return res.status(error.status || 500).json({
       error: error.message || "Re-roll failed."
     });
   } finally {
