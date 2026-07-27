@@ -7,7 +7,7 @@
     "start": "node server.js",
     "lint": "node --check server.js && node --check scripts/load-test.js",
     "load:test": "node scripts/load-test.js",
-    "test": "npm run lint && node --test test/fuelphysique-policy.test.js && npm run load:test"
+    "test": "npm run lint && node --test test/fuelphysique-policy.test.js test/workout-phase-1.test.js test/workout-phase-1-integration.test.js && npm run load:test"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "autocannon": "^8.0.0",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
+    "firebase-admin": "^14.2.0",
     "imagekit": "^6.0.0"
   }
 }

@@ -944,16 +944,27 @@ rerollButton.classList.add("is-loading");
 rerollButton.disabled = true;
 
 try {
+  // Capture current form state so the reroll respects the same
+  // equipment/goal/experience constraints the program was generated with.
+  const formData = new FormData(form);
+  const rerollPayload = {
+    sessionIndex,
+    exerciseIndex,
+    program: window.currentWorkoutProgram,
+    goal: formData.get("goal"),
+    experience: formData.get("experience"),
+    trainingStyle: formData.get("trainingStyle"),
+    equipment: formData.getAll("equipment"),
+    priority: formData.get("priority"),
+    limitations: formData.get("limitations")
+  };
+
   const response = await fetch(
     "/api/workout-builder/reroll-exercise",
     {
       method: "POST",
       headers: await authHeaders(),
-body: JSON.stringify({
-  sessionIndex,
-  exerciseIndex,
-program: window.currentWorkoutProgram
-})
+      body: JSON.stringify(rerollPayload)
     }
   );
 

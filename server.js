@@ -5,6 +5,10 @@ const path = require("path");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const payPlusBilling = require("./lib/payplus-billing");
+const { calculateWeeklyVolume } = require("./lib/workout-volume");
+const { estimateSessionDuration } = require("./lib/workout-duration");
+const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
+const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
@@ -401,6 +405,15 @@ async function requireFirebaseUser(req, res) {
     return null;
   }
 
+  // Same MOCK_EXTERNAL_SERVICES flag that stubs the AI call (see
+  // createChatCompletion above) also stubs Firebase token verification, so
+  // integration tests can exercise real auth-gated routes deterministically
+  // and offline. A bearer token is still required — only the network call
+  // to Firebase Identity Toolkit is skipped. Never true outside test/CI.
+  if (mockExternalServices) {
+    return { uid: `mock-${token.slice(0, 24)}`, email: "mock-user@example.test" };
+  }
+
   try {
     const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_WEB_API_KEY}`, {
       method: "POST",
@@ -667,6 +680,34 @@ async function createChatCompletion({
     if (/Create a short title/i.test(systemPrompt)) {
       return "Mock Title";
     }
+    if (/expert strength coach/i.test(systemPrompt) && /Replace only this exercise/i.test(userPrompt)) {
+      // Deliberately echoes the CURRENT exercise's equipment rather than
+      // honoring "Selected equipment" — this mirrors a real AI response that
+      // ignores the constraint, so tests exercise the server-side equipment
+      // validation gate (the thing actually responsible for correctness)
+      // instead of trivially getting a compliant mock response for free.
+      const currentExerciseMatch = userPrompt.match(/Current exercise:\s*({[\s\S]*?})\s*\n\s*User constraints:/i);
+      let mockEquipment = "Bodyweight";
+      try {
+        const currentExercise = currentExerciseMatch ? JSON.parse(currentExerciseMatch[1]) : null;
+        if (currentExercise?.equipment) mockEquipment = currentExercise.equipment;
+      } catch {
+        // fall back to Bodyweight if the current-exercise JSON can't be parsed
+      }
+      const slug = String(mockEquipment).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      return JSON.stringify({
+        exerciseId: `mock-${slug || "bodyweight"}-replacement`,
+        name: `Mock ${mockEquipment} Replacement`,
+        demoName: `Mock ${mockEquipment} Replacement`,
+        muscleGroup: "Quads",
+        equipment: mockEquipment,
+        sets: 3,
+        reps: "8-12",
+        restSeconds: 90,
+        rir: "1-3",
+        notes: "Mock mode."
+      });
+    }
     if (/Return ONLY valid JSON/i.test(systemPrompt) && /programName/.test(systemPrompt)) {
       const daysMatch = userPrompt.match(/Training days per week:\s*(\d+)/i);
       const daysPerWeek = Math.max(1, Math.min(7, Number(daysMatch?.[1] || 3)));
@@ -674,9 +715,11 @@ async function createChatCompletion({
         day: index + 1,
         name: `Mock Session ${index + 1}`,
         exercises: [
-          { name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
+          { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "lunge", name: "Lunge", demoName: "Bodyweight Lunge", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+          { exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
         ]
       }));
       return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
@@ -1814,10 +1857,12 @@ app.post("/api/workout-builder", async (req, res) => {
     const {
       goal,
       experience,
+      age,
       daysPerWeek,
       sessionDuration,
       equipment = [],
       trainingStyle,
+      availableDays = [],
       priority,
       limitations = "None",
       language = "en"
@@ -1837,6 +1882,7 @@ app.post("/api/workout-builder", async (req, res) => {
 
     const parsedDays = Number(daysPerWeek);
     const parsedDuration = Number(sessionDuration);
+    const parsedAge = age ? Number(age) : null;
 
     if (
       !Number.isInteger(parsedDays) ||
@@ -1848,6 +1894,27 @@ app.post("/api/workout-builder", async (req, res) => {
     ) {
       return res.status(400).json({
         error: "Invalid workout preferences"
+      });
+    }
+
+    // Normalize availableDays to 0-6 indexes (Sun=0...Sat=6)
+    const dayNameMap = {
+      sunday: 0,
+      monday: 1,
+      tuesday: 2,
+      wednesday: 3,
+      thursday: 4,
+      friday: 5,
+      saturday: 6
+    };
+    const availableDayIndexes = (Array.isArray(availableDays) ? availableDays : [])
+      .map((d) => dayNameMap[String(d || "").toLowerCase()])
+      .filter((d) => Number.isFinite(d));
+
+    // Validate sufficient available days
+    if (availableDayIndexes.length < parsedDays) {
+      return res.status(400).json({
+        error: `User selected ${availableDayIndexes.length} available days, but requested ${parsedDays} training days.`
       });
     }
 
@@ -2002,7 +2069,7 @@ Create a workout program using these preferences:
 
 Goal: ${String(goal)}
 Experience: ${String(experience)}
-Training days per week: ${parsedDays}
+${parsedAge ? `Age: ${parsedAge}\n` : ""}Training days per week: ${parsedDays}
 Session duration: ${parsedDuration} minutes
 Training style: ${String(trainingStyle)}
 Available equipment: ${
@@ -2050,46 +2117,80 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     program.daysPerWeek = parsedDays;
-    let qualityIssues = workoutQualityIssues(program, { daysPerWeek: parsedDays, equipment, trainingStyle });
 
-    if (qualityIssues.length) {
-      try {
-        const repairedProgram = await repairWorkoutProgram({
-          program,
-          issues: qualityIssues,
-          parsedDays,
-          equipment,
-          trainingStyle,
-          outputLanguage
-        });
-        const repairedIssues = workoutQualityIssues(repairedProgram, {
-          daysPerWeek: parsedDays,
-          equipment,
-          trainingStyle
-        });
-        if (!repairedIssues.length) {
-          program = repairedProgram;
-          qualityIssues = [];
-        } else {
-          qualityIssues = repairedIssues;
-        }
-      } catch (repairError) {
-        console.warn("Workout repair attempt failed:", repairError.message);
+    // Generate weeklyScheduleDays from available days (spread evenly across the week)
+    const step = 7 / parsedDays;
+    program.weeklyScheduleDays = [];
+    const usedScheduleDays = new Set();
+    for (let i = 0; i < parsedDays; i++) {
+      let day = Math.round(i * step);
+      while (usedScheduleDays.has(day)) {
+        day = (day + 1) % 7;
+      }
+      if (availableDayIndexes.includes(day)) {
+        program.weeklyScheduleDays.push(day);
+        usedScheduleDays.add(day);
       }
     }
+    // If not enough distinct available days were reachable via the spread
+    // above, fall back to the first N available days in order.
+    if (program.weeklyScheduleDays.length < parsedDays) {
+      program.weeklyScheduleDays = availableDayIndexes.slice(0, parsedDays);
+    }
 
-    if (qualityIssues.length) {
-      console.warn("Workout quality validation produced warnings:", qualityIssues);
-      return res.json({
-        success: true,
-        program,
-        warnings: qualityIssues
+    // Run the enhanced validator against the generated program
+    const validation = validateWorkoutProgram(program, {
+      daysPerWeek: parsedDays,
+      sessionDuration: parsedDuration,
+      equipment,
+      availableDayIndexes,
+      goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
+    });
+
+    // Log validation issues (internal only, not sent to user verbatim)
+    if (!validation.ok) {
+      console.warn(`Workout validation failed for user ${user.uid}:`, validation.errors);
+    }
+    if (validation.warnings.length > 0) {
+      console.info(`Workout validation warnings for user ${user.uid}:`, validation.warnings);
+    }
+
+    // Deterministic weekly volume, based only on the explicit setCredits map
+    const { perMuscle, totalHardSets, mappedExercises, unknownExercises, mappingCoveragePercent, warnings: volumeWarnings } =
+      calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+
+    // Add estimated duration to each session
+    const sessionDurations = program.sessions.map((session) => ({
+      name: session.name,
+      ...estimateSessionDuration(session)
+    }));
+
+    // If validation failed, the program cannot be returned as usable —
+    // 422 (not 200) so the client never treats an invalid program as a plan.
+    if (!validation.ok) {
+      return res.status(422).json({
+        success: false,
+        error: "The generated workout program did not meet requirements.",
+        details: validation.errors.slice(0, 5) // Return top 5 errors
       });
     }
 
     return res.json({
       success: true,
-      program
+      program,
+      weeklyVolume: {
+        perMuscle,
+        totalHardSets,
+        mappedExercises,
+        unknownExercises,
+        mappingCoveragePercent
+      },
+      sessionDurations,
+      validationSummary: {
+        passed: validation.ok,
+        errors: [],
+        warnings: [...validation.warnings, ...volumeWarnings]
+      }
     });
   } catch (error) {
     console.error("Workout builder error:", error);
@@ -2117,56 +2218,70 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
     dedupeKey = rejectIfDuplicateAi(req, res, user, "workout-builder-reroll");
     if (!dedupeKey) return;
     const {
-  sessionIndex,
-  exerciseIndex,
-  program
-  } = req.body;
+      sessionIndex,
+      exerciseIndex,
+      program,
+      equipment = [],
+      trainingStyle,
+      goal,
+      experience,
+      priority,
+      limitations
+    } = req.body;
 
-  if (
-  !program ||
-  !Array.isArray(program.sessions)
-) {
-  return res.status(400).json({
-    error: "Workout program is required."
-  });
-}
-const session = program.sessions[sessionIndex];
+    if (!program || !Array.isArray(program.sessions)) {
+      return res.status(400).json({
+        error: "Workout program is required."
+      });
+    }
 
-if (
-  !session ||
-  !Array.isArray(session.exercises)
-) {
-  return res.status(400).json({
-    error: "Invalid session."
-  });
-}
+    const session = program.sessions[sessionIndex];
 
-const currentExercise = session.exercises[exerciseIndex];
+    if (!session || !Array.isArray(session.exercises)) {
+      return res.status(400).json({
+        error: "Invalid session."
+      });
+    }
 
-if (!currentExercise) {
-  return res.status(400).json({
-    error: "Invalid exercise."
-  });
-}
-console.log("Current exercise for reroll:", currentExercise);
+    const currentExercise = session.exercises[exerciseIndex];
 
-const rerollPrompt = `
+    if (!currentExercise) {
+      return res.status(400).json({
+        error: "Invalid exercise."
+      });
+    }
+
+    // Normalize equipment constraint for validation
+    const selectedEquipment = Array.isArray(equipment) ? equipment : [];
+
+    const rerollPrompt = `
 Replace only this exercise with another suitable exercise.
 
 Current exercise:
 ${JSON.stringify(currentExercise, null, 2)}
 
+User constraints:
+- Selected equipment: ${selectedEquipment.join(", ") || "any"}
+- Training style: ${trainingStyle || "any"}
+- Goal: ${goal || "general"}
+- Experience: ${experience || "any"}
+- Priority: ${priority || "general"}
+- Injuries/limitations: ${limitations || "none"}
+
 Rules:
 - Keep the same muscle group.
 - Keep the same training goal.
 - Keep similar difficulty.
-- Keep similar equipment when possible.
+- Use ONLY the selected equipment (if specified).
+- Set exerciseId to a lowercase-hyphenated identifier for the exercise (e.g. "barbell-bench-press").
 - Set demoName to the precise canonical English exercise name, including equipment and position modifiers.
 - Return only one exercise.
 - Return valid JSON only.
+- Do not use prohibited equipment or movements.
 
 Required JSON format:
 {
+  "exerciseId": "lowercase-hyphenated-id",
   "name": "",
   "demoName": "precise canonical English exercise name",
   "muscleGroup": "",
@@ -2179,31 +2294,107 @@ Required JSON format:
 }
 `;
 
-const aiResponse = await createChatCompletion({
-  temperature: 0.7,
-  maxTokens: 500,
-  messages: [
-    {
-      role: "system",
-      content: "You are an expert strength coach."
-    },
-    {
-      role: "user",
-      content: rerollPrompt
-    }
-  ]
-});
-const newExercise = JSON.parse(aiResponse);
-return res.json({
-  success: true,
-  exercise: newExercise
-});
-} catch (error) {
-  console.error("Re-roll error:", error);
+    const aiResponse = await createChatCompletion({
+      temperature: 0.7,
+      maxTokens: 500,
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert strength coach."
+        },
+        {
+          role: "user",
+          content: rerollPrompt
+        }
+      ]
+    });
 
-  return res.status(500).json({
-    error: error.message || "Re-roll failed."
-  });
+    // Strip JSON fences
+    const cleanedResponse = String(aiResponse)
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    let newExercise;
+    try {
+      newExercise = JSON.parse(cleanedResponse);
+    } catch (parseError) {
+      console.error("Reroll JSON parse failed:", parseError, cleanedResponse);
+      return res.status(502).json({
+        error: "The AI returned an invalid exercise format"
+      });
+    }
+
+    // Validate equipment constraint using canonical exact matching —
+    // an empty/unrecognized equipment string must never silently pass.
+    if (selectedEquipment.length > 0) {
+      const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment));
+      const newEquipNorm = normalizeEquipment(newExercise.equipment);
+
+      const isAllowed = newEquipNorm !== "" && (newEquipNorm === "bodyweight" || selectedNorm.has(newEquipNorm));
+
+      if (!isAllowed) {
+        console.warn(
+          `Reroll produced exercise with disallowed equipment: "${newExercise.equipment}", selected: ${selectedEquipment.join(", ")}`
+        );
+        return res.status(422).json({
+          success: false,
+          error: `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
+        });
+      }
+    }
+
+    // Validate full program with replacement
+    session.exercises[exerciseIndex] = newExercise;
+    const programValidation = validateWorkoutProgram(program, {
+      daysPerWeek: program.daysPerWeek || program.sessions.length,
+      sessionDuration: program.sessionDuration || 60,
+      equipment: selectedEquipment,
+      goalProfile: goal && goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
+    });
+
+    if (!programValidation.ok) {
+      console.warn(`Reroll validation failed:`, programValidation.errors);
+      return res.status(422).json({
+        success: false,
+        error: "Replacement exercise makes the program invalid.",
+        details: programValidation.errors.slice(0, 3)
+      });
+    }
+
+    // Recalculate volume and durations against the updated program so the
+    // client's displayed totals never go stale after a reroll.
+    const { perMuscle, totalHardSets, mappedExercises, unknownExercises, mappingCoveragePercent, warnings: volumeWarnings } =
+      calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+    const sessionDurations = program.sessions.map((s) => ({
+      name: s.name,
+      ...estimateSessionDuration(s)
+    }));
+
+    return res.json({
+      success: true,
+      exercise: newExercise,
+      weeklyVolume: {
+        perMuscle,
+        totalHardSets,
+        mappedExercises,
+        unknownExercises,
+        mappingCoveragePercent
+      },
+      sessionDurations,
+      validationSummary: {
+        passed: programValidation.ok,
+        errors: [],
+        warnings: [...programValidation.warnings, ...volumeWarnings]
+      }
+    });
+  } catch (error) {
+    console.error("Re-roll error:", error);
+
+    return res.status(500).json({
+      error: error.message || "Re-roll failed."
+    });
   } finally {
     if (dedupeKey) inFlight.finish(dedupeKey);
   }
