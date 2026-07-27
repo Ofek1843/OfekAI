@@ -3,6 +3,7 @@ import { setupExerciseDemos } from "./exercise-demos.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
+import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
 
 import {
   collection,
@@ -186,19 +187,14 @@ const hebrewOptionLabels = {
   hypertrophy: "בניית שריר",
   strength: "כוח",
   endurance: "סיבולת",
-  skills: "מיומנויות",
+  skills: "מיומנויות"
 
-  bodyweight: "משקל גוף",
-  "pull-up bar": "מתח",
-  pullupbar: "מתח",
-  dumbbells: "משקולות יד",
-  dumbbell: "משקולות יד",
-  "gymnastic rings": "טבעות",
-  rings: "טבעות",
-  machines: "מכונות",
-  machine: "מכונות",
-  barbell: "מוט ומשקולות",
-  cable: "כבלים"
+  // Equipment labels are NOT listed here — they come exclusively from
+  // equipment-i18n.mjs (getEquipmentLabel/buildEquipmentSummaryText), keyed
+  // by canonical equipment id and gated on the active locale. That is the
+  // only source of truth for equipment display text; duplicating it here
+  // was the root cause of Hebrew equipment names leaking into English mode
+  // (this dictionary was applied unconditionally, without checking isHebrew).
 };
 
 function normalizeOptionKey(value = "") {
@@ -239,13 +235,12 @@ function translateFormOptions() {
         return;
       }
 
-      const valueKey = normalizeOptionKey(input.value);
+      // Equipment checkbox values are canonical ids (bodyweight, pullupbar,
+      // rings, dumbbell, barbell, machine, cable) — resolve display text
+      // through the single equipment-i18n dictionary, not hebrewOptionLabels.
+      const translation = getEquipmentLabel("he", input.value);
 
-      const translation =
-        hebrewOptionLabels[input.value] ||
-        hebrewOptionLabels[valueKey];
-
-      if (!translation) {
+      if (!translation || translation === input.value) {
         return;
       }
 
@@ -364,7 +359,9 @@ function renderWizardReview() {
   if (!review) return;
   const formData = new FormData(form);
   const readable = value => document.querySelector(`option[value="${CSS.escape(String(value || ""))}"]`)?.textContent || value || "—";
-  const equipment = formData.getAll("equipment").map(value => hebrewOptionLabels[normalizeOptionKey(value)] || value).join(", ");
+  // Equipment values are canonical ids — resolve display text through the
+  // active locale (currentLanguage), never unconditionally through Hebrew.
+  const equipment = buildEquipmentSummaryText(currentLanguage, formData.getAll("equipment"));
   const days = formData.getAll("availableDays").join(", ");
   review.innerHTML = isHebrew
     ? `<strong>סיכום:</strong><br>מטרה: ${readable(formData.get("goal"))}<br>ניסיון: ${readable(formData.get("experience"))}<br>סגנון: ${readable(formData.get("trainingStyle"))}<br>ציוד: ${equipment}<br>אימונים: ${formData.get("daysPerWeek")} בשבוע, ${formData.get("sessionDuration")} דקות<br>ימים זמינים: ${days}`
