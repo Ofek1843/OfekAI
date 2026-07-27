@@ -479,7 +479,7 @@ form.addEventListener("submit", async (event) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
+      const error = new Error(
         data.error ||
           (
             isHebrew
@@ -487,6 +487,11 @@ form.addEventListener("submit", async (event) => {
               : "Could not generate the workout program"
           )
       );
+      // The API already returns validation "details" in the active
+      // language (server.js translates them for language:"he" requests)
+      // — surface them instead of only the generic top-level message.
+      error.details = Array.isArray(data.details) ? data.details : [];
+      throw error;
     }
 
     setStatus("");
@@ -535,7 +540,10 @@ if (data.program) {
       error
     );
 
-    setStatus(error.message, true);
+    const detailLines = Array.isArray(error.details) && error.details.length > 0
+      ? error.details.map((detail) => `• ${detail}`).join("\n")
+      : "";
+    setStatus(detailLines ? `${error.message}\n${detailLines}` : error.message, true);
   } finally {
     setLoading(false);
   }

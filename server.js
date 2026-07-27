@@ -9,6 +9,8 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
+const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
+const { translateValidationMessages } = require("./lib/workout-validation-i18n");
 const {
   logOpenAiStartupDiagnostics,
   markAsUpstreamProviderError,
@@ -802,15 +804,31 @@ async function createChatCompletion({
     if (/Return ONLY valid JSON/i.test(systemPrompt) && /programName/.test(systemPrompt)) {
       const daysMatch = userPrompt.match(/Training days per week:\s*(\d+)/i);
       const daysPerWeek = Math.max(1, Math.min(7, Number(daysMatch?.[1] || 3)));
+      // Test-only: simulate the actual production AI response shape, which
+      // never included exerciseId (the prompt's JSON schema never asked for
+      // it) — this is what production was really sending before the
+      // repair-before-validate fix. Never true outside test/CI.
+      const omitExerciseId = String(process.env.MOCK_OPENAI_OMIT_EXERCISE_ID || "").toLowerCase() === "true";
+      // Test-only: a duplicate PRE-SET exerciseId is intentionally left
+      // alone by the repair step (repair only fills in a MISSING id — it
+      // never silently rewrites one the AI/mock explicitly provided, since
+      // that's not "repairing a gap", it's rewriting real AI output). Lets
+      // tests force a still-invalid-after-repair 422 deterministically.
+      const forceDuplicateExerciseId = String(process.env.MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID || "").toLowerCase() === "true";
+      const stripId = (exercise) => {
+        if (!omitExerciseId) return exercise;
+        const { exerciseId, ...rest } = exercise;
+        return rest;
+      };
       const sessions = Array.from({ length: daysPerWeek }, (_, index) => ({
         day: index + 1,
         name: `Mock Session ${index + 1}`,
         exercises: [
-          { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { exerciseId: "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." },
-          { exerciseId: "lunge", name: "Lunge", demoName: "Bodyweight Lunge", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-          { exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
+          stripId({ exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: forceDuplicateExerciseId ? "push-up" : "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "lunge", name: "Lunge", demoName: "Bodyweight Lunge", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." })
         ]
       }));
       return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
@@ -2236,7 +2254,18 @@ Injuries, limitations or special requests: ${String(limitations)}
       program.weeklyScheduleDays = availableDayIndexes.slice(0, parsedDays);
     }
 
-    // Run the enhanced validator against the generated program
+    // Deterministic, non-AI repair pass: assigns exerciseId (via known
+    // alias -> canonical id, else a deterministic slug — never invents
+    // muscle credits), fixes minor schema formatting defects, and trims
+    // lowest-priority accessory exercises if a session still exceeds the
+    // duration cap. This makes the DATA satisfy validateWorkoutProgram's
+    // existing rules wherever possible; it never loosens or skips a rule.
+    const { repairs } = repairGeneratedWorkoutProgram(program, { sessionDuration: parsedDuration });
+    if (repairs.length > 0) {
+      console.info(`Workout repair applied for user ${user.uid}:`, repairs);
+    }
+
+    // Run the enhanced validator against the (possibly repaired) program
     const validation = validateWorkoutProgram(program, {
       daysPerWeek: parsedDays,
       sessionDuration: parsedDuration,
@@ -2247,7 +2276,7 @@ Injuries, limitations or special requests: ${String(limitations)}
 
     // Log validation issues (internal only, not sent to user verbatim)
     if (!validation.ok) {
-      console.warn(`Workout validation failed for user ${user.uid}:`, validation.errors);
+      console.warn(`Workout validation failed for user ${user.uid} (after repair):`, validation.errors);
     }
     if (validation.warnings.length > 0) {
       console.info(`Workout validation warnings for user ${user.uid}:`, validation.warnings);
@@ -2263,13 +2292,15 @@ Injuries, limitations or special requests: ${String(limitations)}
       ...estimateSessionDuration(session)
     }));
 
-    // If validation failed, the program cannot be returned as usable —
+    // Only return 422 if the program is STILL invalid after repair —
     // 422 (not 200) so the client never treats an invalid program as a plan.
     if (!validation.ok) {
       return res.status(422).json({
         success: false,
-        error: "The generated workout program did not meet requirements.",
-        details: validation.errors.slice(0, 5) // Return top 5 errors
+        error: language === "he"
+          ? "תוכנית האימונים שנוצרה אינה עומדת בדרישות."
+          : "The generated workout program did not meet requirements.",
+        details: translateValidationMessages(validation.errors.slice(0, 5), language) // Top 5 errors
       });
     }
 
@@ -2340,7 +2371,8 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
       goal,
       experience,
       priority,
-      limitations
+      limitations,
+      language = "en"
     } = req.body;
 
     if (!program || !Array.isArray(program.sessions)) {
@@ -2454,9 +2486,22 @@ Required JSON format:
         );
         return res.status(422).json({
           success: false,
-          error: `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
+          error: language === "he"
+            ? `התרגיל החלופי דורש "${newExercise.equipment || "ציוד לא ידוע"}", שאינו זמין.`
+            : `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
         });
       }
+    }
+
+    // Same deterministic repair pass used by /api/workout-builder — the
+    // reroll prompt already asks the AI for exerciseId, but this is a
+    // defensive backstop, not the primary fix for it.
+    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
+      { sessions: [{ exercises: [newExercise] }] },
+      { sessionDuration: program.sessionDuration || 60 }
+    );
+    if (rerollRepairs.length > 0) {
+      console.info("Reroll repair applied:", rerollRepairs);
     }
 
     // Validate full program with replacement
@@ -2472,8 +2517,10 @@ Required JSON format:
       console.warn(`Reroll validation failed:`, programValidation.errors);
       return res.status(422).json({
         success: false,
-        error: "Replacement exercise makes the program invalid.",
-        details: programValidation.errors.slice(0, 3)
+        error: language === "he"
+          ? "התרגיל החלופי הופך את התוכנית ללא תקינה."
+          : "Replacement exercise makes the program invalid.",
+        details: translateValidationMessages(programValidation.errors.slice(0, 3), language)
       });
     }
 
