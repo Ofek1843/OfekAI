@@ -4,6 +4,7 @@ import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
+import { checkWorkoutPreferences } from "./workout-preferences-check.mjs";
 
 import {
   collection,
@@ -341,7 +342,19 @@ function validateWizardStep(index) {
   if (key === "goal" && !document.querySelector("#goal")?.value) return isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
   if (key === "experience" && !document.querySelector("#experience")?.value) return isHebrew ? "בחר את רמת הניסיון שלך." : "Choose your training experience.";
   if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
-  if (key === "equipment" && !document.querySelector('input[name="equipment"]:checked')) return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
+  if (key === "equipment") {
+    if (!document.querySelector('input[name="equipment"]:checked')) {
+      return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
+    }
+    const compatibility = checkWorkoutPreferences({
+      goal: document.querySelector("#goal")?.value,
+      trainingStyle: document.querySelector("#trainingStyle")?.value,
+      equipment: [...document.querySelectorAll('input[name="equipment"]:checked')].map((el) => el.value),
+      floorSkillsOnly: Boolean(document.querySelector("#floorSkillsOnly")?.checked),
+      language: currentLanguage
+    });
+    if (!compatibility.valid) return compatibility.errors[0];
+  }
   if (key === "priority" && !document.querySelector("#priority")?.value) return isHebrew ? "בחר דגש מרכזי לאימון." : "Choose a training priority.";
   if (key === "schedule") {
     const age = Number(document.querySelector("#age")?.value);
@@ -350,6 +363,19 @@ function validateWizardStep(index) {
     if (!Number.isFinite(age) || age < 10 || age > 100) return isHebrew ? "הזן גיל תקין בין 10 ל־100." : "Enter a valid age between 10 and 100.";
     if (!Number.isFinite(duration) || duration < 20 || duration > 180) return isHebrew ? "הזן משך אימון בין 20 ל־180 דקות." : "Enter a session duration between 20 and 180 minutes.";
     if (selectedAvailableDays().length !== days) return isHebrew ? `בחר בדיוק ${days} ימים זמינים.` : `Choose exactly ${days} available day${days === 1 ? "" : "s"}.`;
+  }
+  // Re-check compatibility on the final ("limitations"/review) step too —
+  // the user may have changed goal/style/equipment on an earlier step
+  // after already passing the equipment step once.
+  if (key === "limitations") {
+    const compatibility = checkWorkoutPreferences({
+      goal: document.querySelector("#goal")?.value,
+      trainingStyle: document.querySelector("#trainingStyle")?.value,
+      equipment: [...document.querySelectorAll('input[name="equipment"]:checked')].map((el) => el.value),
+      floorSkillsOnly: Boolean(document.querySelector("#floorSkillsOnly")?.checked),
+      language: currentLanguage
+    });
+    if (!compatibility.valid) return compatibility.errors[0];
   }
   return "";
 }
@@ -466,7 +492,8 @@ form.addEventListener("submit", async (event) => {
     limitations:
       formData.get("limitations")?.trim() ||
       (isHebrew ? "ללא מגבלות" : "None"),
-    language: currentLanguage
+    language: currentLanguage,
+    floorSkillsOnly: Boolean(document.querySelector("#floorSkillsOnly")?.checked)
   };
 
   try {
@@ -479,18 +506,22 @@ form.addEventListener("submit", async (event) => {
     const data = await response.json();
 
     if (!response.ok) {
+      // Two response shapes reach here: the legacy {error, details} shape
+      // (validation/upstream failures) and the structured wizard-
+      // compatibility shape {errorCode, message, fieldErrors,
+      // suggestedChanges} from the preflight check (server.js). Both are
+      // already in the active language.
       const error = new Error(
-        data.error ||
+        data.message || data.error ||
           (
             isHebrew
               ? "לא ניתן היה ליצור את תוכנית האימונים"
               : "Could not generate the workout program"
           )
       );
-      // The API already returns validation "details" in the active
-      // language (server.js translates them for language:"he" requests)
-      // — surface them instead of only the generic top-level message.
       error.details = Array.isArray(data.details) ? data.details : [];
+      error.errorCode = data.errorCode || null;
+      error.suggestedChanges = Array.isArray(data.suggestedChanges) ? data.suggestedChanges : [];
       throw error;
     }
 
@@ -827,7 +858,7 @@ function renderProgram(program) {
       <header class="program-header">
         <div>
           <span class="program-eyebrow">
-            FuelPhysique ${ui.personalizedPlan}
+            ${ui.personalizedPlan}
           </span>
 
           <h2>
@@ -838,7 +869,6 @@ function renderProgram(program) {
 
           <p class="program-description">
             ${ui.programDescription}
-            around your goal, experience and available equipment.
           </p>
         </div>
 

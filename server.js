@@ -11,6 +11,7 @@ const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-va
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
 const { translateValidationMessages } = require("./lib/workout-validation-i18n");
+const { validateWorkoutPreferences } = require("./lib/workout-preferences-validator");
 const {
   logOpenAiStartupDiagnostics,
   markAsUpstreamProviderError,
@@ -1981,7 +1982,8 @@ app.post("/api/workout-builder", async (req, res) => {
       availableDays = [],
       priority,
       limitations = "None",
-      language = "en"
+      language = "en",
+      floorSkillsOnly = false
     } = req.body;
 
     if (
@@ -2034,6 +2036,31 @@ app.post("/api/workout-builder", async (req, res) => {
       });
     }
 
+    // Deterministic wizard-preflight compatibility check — catches
+    // genuinely incompatible preferences (e.g. calisthenics skill training
+    // with no hanging apparatus and no Floor-Skills-Only opt-out) BEFORE
+    // spending an AI call on a request that can only fail. Soft concerns
+    // (like 7 training days/week) are collected as warnings, not blockers,
+    // and are surfaced alongside the successful response below.
+    const preferenceCheck = validateWorkoutPreferences({
+      goal,
+      trainingStyle,
+      equipment,
+      daysPerWeek: parsedDays,
+      floorSkillsOnly,
+      language
+    });
+
+    if (!preferenceCheck.valid) {
+      return res.status(400).json({
+        success: false,
+        errorCode: "INCOMPATIBLE_EQUIPMENT_FOR_STYLE",
+        message: preferenceCheck.errors[0],
+        fieldErrors: preferenceCheck.fieldErrors,
+        suggestedChanges: preferenceCheck.suggestedChanges
+      });
+    }
+
     if (!process.env.OPENAI_API_KEY) {
       return res.status(500).json({
         error: "OPENAI_API_KEY is missing"
@@ -2071,10 +2098,12 @@ The JSON must exactly follow this structure:
       "name": "string",
       "exercises": [
 {
+  "exerciseId": "lowercase-hyphenated-id, e.g. barbell-bench-press",
   "name": "string",
   "demoName": "canonical English exercise name used only for media lookup",
   "muscleGroup": "string",
   "equipment": "string",
+  "prescriptionType": "one of: sets_reps, timed_hold, skill_practice, continuous_conditioning, intervals",
   "sets": 3,
   "reps": "8-12",
   "restSeconds": 120,
@@ -2085,6 +2114,8 @@ The JSON must exactly follow this structure:
     }
   ]
 }
+
+For a continuous_conditioning exercise (a cardio circuit, machine row, bike, etc. with no discrete sets/reps), use durationMinutes instead of sets/reps, and omit rir. For an intervals exercise, use rounds/workSeconds instead of sets/reps. For a timed_hold (a plank, front lever hold, handstand hold), use durationSeconds instead of reps.
 
 Programming rules:
 - Match the requested number of training days exactly.
@@ -2098,7 +2129,7 @@ Programming rules:
 - Include approximately 4 to 8 exercises per session depending on duration.
 - Use evidence-based hypertrophy and strength principles.
 - Avoid excessive volume.
-- Use realistic sets, repetitions, rest periods and RIR.
+- Use realistic sets, repetitions, rest periods and RIR for sets_reps exercises; use the type-appropriate fields (see above) for every other prescriptionType. Never write "NA" or "N/A" into rir or any other field — omit a field entirely if it does not apply.
 - Ensure balanced weekly muscle-group coverage unless the user requests specialization.
 - For hypertrophy, audit weekly direct working sets before returning: generally provide about 6-12 sets per major muscle group for beginners/intermediates and 8-16 for advanced users, adjusted for specialization and recovery. Do not accidentally leave chest, quads, hamstrings or glutes at only 3 weekly sets in an advanced hypertrophy plan.
 - A requested skill such as one-arm pull-up is supplemental practice. Include it without duplicating high-fatigue work or displacing balanced hypertrophy work.
@@ -2108,8 +2139,10 @@ Programming rules:
 - For every exercise, set demoName to the precise canonical English exercise name. Include equipment and position modifiers such as seated, standing, incline, barbell, dumbbell, cable, machine, split or single-leg whenever they change the movement.
 - demoName is hidden technical metadata. Keep it in English even when all visible values are Hebrew.
 - Never use vague or non-exercise names such as a general stance or limb position.
+- Every exercise name must be ONE concrete movement using ONE specific piece of equipment the user selected. Never write an exercise name containing an unresolved alternative such as "Pull-up (Rings or Bar)" or "Rowing Machine or Cardio Circuit" — pick exactly one.
 - For every exercise, include the exact equipment required.
 - Keep muscle-group names short, such as Chest, Back, Quads, Hamstrings, Shoulders, Biceps, Triceps or Core.
+- Do not repeat the brand name "FuelPhysique" or generic marketing phrases in programName or goal — those are rendered by the app separately. programName should be a short, specific description of the program's focus (e.g. "3-Day Push/Pull/Legs Hypertrophy").
 - Keep equipment names short, such as Machine, Cable, Dumbbell, Barbell, Bodyweight or Pull-up Bar.
 LANGUAGE RULES:
 
@@ -2260,7 +2293,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     // lowest-priority accessory exercises if a session still exceeds the
     // duration cap. This makes the DATA satisfy validateWorkoutProgram's
     // existing rules wherever possible; it never loosens or skips a rule.
-    const { repairs } = repairGeneratedWorkoutProgram(program, { sessionDuration: parsedDuration });
+    const { repairs } = repairGeneratedWorkoutProgram(program, { sessionDuration: parsedDuration, equipment });
     if (repairs.length > 0) {
       console.info(`Workout repair applied for user ${user.uid}:`, repairs);
     }
@@ -2318,7 +2351,7 @@ Injuries, limitations or special requests: ${String(limitations)}
       validationSummary: {
         passed: validation.ok,
         errors: [],
-        warnings: [...validation.warnings, ...volumeWarnings]
+        warnings: [...preferenceCheck.warnings, ...validation.warnings, ...volumeWarnings]
       }
     });
   } catch (error) {
@@ -2472,8 +2505,24 @@ Required JSON format:
       });
     }
 
+    // Same deterministic repair pass used by /api/workout-builder — runs
+    // BEFORE the equipment check below so a recognized movement (e.g. the
+    // AI returning a pull-up-bar variant when the user selected rings) is
+    // resolved to a concrete, equipment-compatible implementation instead
+    // of being rejected outright. Also fills in exerciseId as a defensive
+    // backstop (the reroll prompt already asks the AI for one).
+    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
+      { sessions: [{ exercises: [newExercise] }] },
+      { sessionDuration: program.sessionDuration || 60, equipment: selectedEquipment }
+    );
+    if (rerollRepairs.length > 0) {
+      console.info("Reroll repair applied:", rerollRepairs);
+    }
+
     // Validate equipment constraint using canonical exact matching —
     // an empty/unrecognized equipment string must never silently pass.
+    // Only reached for exercises repair could NOT resolve (no recognized
+    // movement pattern, or none of the user's equipment satisfies it).
     if (selectedEquipment.length > 0) {
       const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment));
       const newEquipNorm = normalizeEquipment(newExercise.equipment);
@@ -2491,17 +2540,6 @@ Required JSON format:
             : `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
         });
       }
-    }
-
-    // Same deterministic repair pass used by /api/workout-builder — the
-    // reroll prompt already asks the AI for exerciseId, but this is a
-    // defensive backstop, not the primary fix for it.
-    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
-      { sessions: [{ exercises: [newExercise] }] },
-      { sessionDuration: program.sessionDuration || 60 }
-    );
-    if (rerollRepairs.length > 0) {
-      console.info("Reroll repair applied:", rerollRepairs);
     }
 
     // Validate full program with replacement
