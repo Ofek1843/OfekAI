@@ -5,6 +5,10 @@ const path = require("path");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const payPlusBilling = require("./lib/payplus-billing");
+const { calculateWeeklyVolume } = require("./lib/workout-volume");
+const { estimateSessionDuration } = require("./lib/workout-duration");
+const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
+const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
@@ -1814,10 +1818,12 @@ app.post("/api/workout-builder", async (req, res) => {
     const {
       goal,
       experience,
+      age,
       daysPerWeek,
       sessionDuration,
       equipment = [],
       trainingStyle,
+      availableDays = [],
       priority,
       limitations = "None",
       language = "en"
@@ -1837,6 +1843,7 @@ app.post("/api/workout-builder", async (req, res) => {
 
     const parsedDays = Number(daysPerWeek);
     const parsedDuration = Number(sessionDuration);
+    const parsedAge = age ? Number(age) : null;
 
     if (
       !Number.isInteger(parsedDays) ||
@@ -1848,6 +1855,27 @@ app.post("/api/workout-builder", async (req, res) => {
     ) {
       return res.status(400).json({
         error: "Invalid workout preferences"
+      });
+    }
+
+    // Normalize availableDays to 0-6 indexes (Sun=0...Sat=6)
+    const dayNameMap = {
+      sunday: 0,
+      monday: 1,
+      tuesday: 2,
+      wednesday: 3,
+      thursday: 4,
+      friday: 5,
+      saturday: 6
+    };
+    const availableDayIndexes = (Array.isArray(availableDays) ? availableDays : [])
+      .map((d) => dayNameMap[String(d || "").toLowerCase()])
+      .filter((d) => Number.isFinite(d));
+
+    // Validate sufficient available days
+    if (availableDayIndexes.length < parsedDays) {
+      return res.status(400).json({
+        error: `User selected ${availableDayIndexes.length} available days, but requested ${parsedDays} training days.`
       });
     }
 
@@ -2002,7 +2030,7 @@ Create a workout program using these preferences:
 
 Goal: ${String(goal)}
 Experience: ${String(experience)}
-Training days per week: ${parsedDays}
+${parsedAge ? `Age: ${parsedAge}\n` : ""}Training days per week: ${parsedDays}
 Session duration: ${parsedDuration} minutes
 Training style: ${String(trainingStyle)}
 Available equipment: ${
@@ -2050,46 +2078,80 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     program.daysPerWeek = parsedDays;
-    let qualityIssues = workoutQualityIssues(program, { daysPerWeek: parsedDays, equipment, trainingStyle });
 
-    if (qualityIssues.length) {
-      try {
-        const repairedProgram = await repairWorkoutProgram({
-          program,
-          issues: qualityIssues,
-          parsedDays,
-          equipment,
-          trainingStyle,
-          outputLanguage
-        });
-        const repairedIssues = workoutQualityIssues(repairedProgram, {
-          daysPerWeek: parsedDays,
-          equipment,
-          trainingStyle
-        });
-        if (!repairedIssues.length) {
-          program = repairedProgram;
-          qualityIssues = [];
-        } else {
-          qualityIssues = repairedIssues;
-        }
-      } catch (repairError) {
-        console.warn("Workout repair attempt failed:", repairError.message);
+    // Generate weeklyScheduleDays from available days (spread evenly across the week)
+    const step = 7 / parsedDays;
+    program.weeklyScheduleDays = [];
+    const usedScheduleDays = new Set();
+    for (let i = 0; i < parsedDays; i++) {
+      let day = Math.round(i * step);
+      while (usedScheduleDays.has(day)) {
+        day = (day + 1) % 7;
+      }
+      if (availableDayIndexes.includes(day)) {
+        program.weeklyScheduleDays.push(day);
+        usedScheduleDays.add(day);
       }
     }
+    // If not enough distinct available days were reachable via the spread
+    // above, fall back to the first N available days in order.
+    if (program.weeklyScheduleDays.length < parsedDays) {
+      program.weeklyScheduleDays = availableDayIndexes.slice(0, parsedDays);
+    }
 
-    if (qualityIssues.length) {
-      console.warn("Workout quality validation produced warnings:", qualityIssues);
-      return res.json({
-        success: true,
-        program,
-        warnings: qualityIssues
+    // Run the enhanced validator against the generated program
+    const validation = validateWorkoutProgram(program, {
+      daysPerWeek: parsedDays,
+      sessionDuration: parsedDuration,
+      equipment,
+      availableDayIndexes,
+      goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
+    });
+
+    // Log validation issues (internal only, not sent to user verbatim)
+    if (!validation.ok) {
+      console.warn(`Workout validation failed for user ${user.uid}:`, validation.errors);
+    }
+    if (validation.warnings.length > 0) {
+      console.info(`Workout validation warnings for user ${user.uid}:`, validation.warnings);
+    }
+
+    // Deterministic weekly volume, based only on the explicit setCredits map
+    const { perMuscle, totalHardSets, mappedExercises, unknownExercises, mappingCoveragePercent, warnings: volumeWarnings } =
+      calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+
+    // Add estimated duration to each session
+    const sessionDurations = program.sessions.map((session) => ({
+      name: session.name,
+      ...estimateSessionDuration(session)
+    }));
+
+    // If validation failed, the program cannot be returned as usable —
+    // 422 (not 200) so the client never treats an invalid program as a plan.
+    if (!validation.ok) {
+      return res.status(422).json({
+        success: false,
+        error: "The generated workout program did not meet requirements.",
+        details: validation.errors.slice(0, 5) // Return top 5 errors
       });
     }
 
     return res.json({
       success: true,
-      program
+      program,
+      weeklyVolume: {
+        perMuscle,
+        totalHardSets,
+        mappedExercises,
+        unknownExercises,
+        mappingCoveragePercent
+      },
+      sessionDurations,
+      validationSummary: {
+        passed: validation.ok,
+        errors: [],
+        warnings: [...validation.warnings, ...volumeWarnings]
+      }
     });
   } catch (error) {
     console.error("Workout builder error:", error);
