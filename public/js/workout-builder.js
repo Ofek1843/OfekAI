@@ -688,14 +688,16 @@ function renderProgram(program) {
         ? session.exercises
         : [];
 
-      const exerciseCards = exercises
-        .map((exercise, exerciseIndex) => {
+      const exerciseGroups = new Map();
+
+      exercises.forEach((exercise, exerciseIndex) => {
           const exerciseName = translateWorkoutValue(exercise.name);
+          const muscleName = translateWorkoutValue(exercise.muscleGroup || ui.general);
           const rirTitle = isHebrew
             ? "RIR — כמה חזרות נוספות נשארו לך לפני כשל. לדוגמה, RIR 2 פירושו שיכולת לבצע עוד כשתי חזרות."
             : "RIR (Reps In Reserve) — how many more reps you could complete before failure. RIR 2 means about two reps remained.";
 
-          return `
+          const cardHtml = `
             <article class="exercise-card" data-session="${sessionIndex}" data-exercise="${exerciseIndex}">
               <div class="exercise-card-media">
                 <img
@@ -720,7 +722,7 @@ function renderProgram(program) {
                 <h4 class="exercise-card-name">${escapeHtml(exerciseName)}</h4>
 
                 <div class="exercise-card-badges">
-                  <span class="muscle-badge">${escapeHtml(translateWorkoutValue(exercise.muscleGroup || ui.general))}</span>
+                  <span class="muscle-badge">${escapeHtml(muscleName)}</span>
                   <span class="equipment-badge">${escapeHtml(translateWorkoutValue(exercise.equipment || ui.equipmentFallback))}</span>
                 </div>
 
@@ -751,7 +753,26 @@ function renderProgram(program) {
               </div>
             </article>
           `;
-        })
+
+          const groupKey = muscleName || ui.general;
+          if (!exerciseGroups.has(groupKey)) {
+            exerciseGroups.set(groupKey, []);
+          }
+          exerciseGroups.get(groupKey).push(cardHtml);
+        });
+
+      const exerciseCards = Array.from(exerciseGroups.entries())
+        .map(([muscleName, cards]) => `
+          <section class="muscle-exercise-group">
+            <div class="muscle-exercise-group-header">
+              <span>${escapeHtml(muscleName)}</span>
+              <strong>${cards.length} ${ui.exercises}</strong>
+            </div>
+            <div class="muscle-exercise-group-grid">
+              ${cards.join("")}
+            </div>
+          </section>
+        `)
         .join("");
 
       return `

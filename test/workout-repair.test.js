@@ -142,7 +142,10 @@ test("resolveExerciseId canonicalizes generated variant ids before validation/re
     [{ exerciseId: "bulgarian-split-squat", name: "Bulgarian Split Squat" }, "bulgarian-split-squat"],
     [{ exerciseId: "seated-leg-curl", name: "Seated Leg Curl" }, "seated-leg-curl"],
     [{ exerciseId: "triceps-dip", name: "Triceps Dip" }, "tricep-dip"],
-    [{ exerciseId: "dumbbell-hammer-curl", name: "Dumbbell Hammer Curl" }, "hammer-curl"]
+    [{ exerciseId: "dumbbell-hammer-curl", name: "Dumbbell Hammer Curl" }, "hammer-curl"],
+    [{ exerciseId: "machine-rear-delt-fly", name: "Machine Rear Delt Fly" }, "reverse-pec-deck"],
+    [{ exerciseId: "ab-crunch-machine", name: "Ab Crunch Machine" }, "crunch"],
+    [{ exerciseId: "incline-dumbbell-chest-press", name: "Incline Dumbbell Chest Press" }, "incline-dumbbell-bench-press"]
   ];
 
   for (const [exercise, expectedId] of cases) {
@@ -152,7 +155,7 @@ test("resolveExerciseId canonicalizes generated variant ids before validation/re
   }
 });
 
-test("repairWorkoutProgram replaces exercises that are disabled until dedicated images exist", () => {
+test("repairWorkoutProgram replaces disabled exercises while preserving newly supported exact images", () => {
   const program = {
     programName: "Image Safety Fixture",
     daysPerWeek: 1,
@@ -180,7 +183,7 @@ test("repairWorkoutProgram replaces exercises that are disabled until dedicated 
   const { repairs } = repairWorkoutProgram(program, context);
   const ids = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
 
-  assert.deepEqual(ids, ["seated-cable-row", "face-pull", "standing-calf-raise"]);
+  assert.deepEqual(ids, ["seated-cable-row", "reverse-pec-deck", "standing-calf-raise"]);
   assert.ok(repairs.some((repair) => repair.includes("replaced disabled exercise")));
 
   const validation = validateWorkoutProgram(program, context);
