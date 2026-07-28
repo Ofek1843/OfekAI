@@ -1,6 +1,6 @@
 # Exercise Image Coverage Report
 
-Generated: 2026-07-28T16:05:01.621Z
+Generated: 2026-07-28T16:33:05.972Z
 
 The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.
 
@@ -8,26 +8,26 @@ The workout model may still produce arbitrary free-text exercise names. This aud
 
 | Metric | Value |
 | --- | --- |
-| physicalFiles | 89 |
-| dedicatedExerciseImagesExcludingFallback | 88 |
-| canonicalSupportedExercises | 88 |
-| canonicalExercisesWithDedicatedImages | 88 |
+| physicalFiles | 90 |
+| dedicatedExerciseImagesExcludingFallback | 89 |
+| canonicalSupportedExercises | 89 |
+| canonicalExercisesWithDedicatedImages | 89 |
 | canonicalExercisesMissingImages | 0 |
-| aliasesCovered | 220 |
+| aliasesCovered | 221 |
 | orphanFiles | 0 |
 | brokenMappings | 0 |
 | invalidFiles | 0 |
 | caseMismatches | 0 |
 | fallbackOnlyAliases | 0 |
-| generatorSupportedCanonicalExercises | 91 |
-| generatorKnownNameVariants | 281 |
-| generatorVariantsWithDedicatedOrSurrogateImage | 281 |
+| generatorSupportedCanonicalExercises | 92 |
+| generatorKnownNameVariants | 283 |
+| generatorVariantsWithDedicatedOrSurrogateImage | 283 |
 | generatorVariantsReachingFallback | 0 |
 | generatorExistingFilesWithBrokenRouting | 0 |
 | generatorGenuinelyMissingImages | 0 |
 | generatorSurrogateImageRoutes | 174 |
 | generatorCanonicalMismatches | 0 |
-| publicEnabledExercises | 93 |
+| publicEnabledExercises | 94 |
 | publicReleaseImageFailures | 0 |
 | disabledUntilDedicatedImages | 12 |
 
@@ -60,7 +60,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | barbell-squat | Barbell Squat | /images/exercises/barbell-squat.png | barbell-squat.png | COVERED | back-squat, barbell-back-squat, high-bar-squat, low-bar-squat, squat |
 | barbell-upright-row | Barbell Upright Row | /images/exercises/barbell-upright-row.png | barbell-upright-row.png | COVERED | upright-row |
 | bench-press | Bench Press | /images/exercises/bench-press.png | bench-press.png | COVERED | barbell-bench-press, flat-barbell-bench-press, flat-bench-press |
-| bulgarian-split-squat | Bulgarian Split Squat | /images/exercises/bulgarian-split-squat.png | bulgarian-split-squat.png | COVERED | bulgarian-split-squat-dumbbell, dumbbell-bulgarian-split-squat, split-squat |
+| bulgarian-split-squat | Bulgarian Split Squat | /images/exercises/bulgarian-split-squat.png | bulgarian-split-squat.png | COVERED | split-squat |
 | cable-bicep-curl | Cable Bicep Curl | /images/exercises/cable-bicep-curl.png | cable-bicep-curl.png | COVERED | cable-biceps-curl, cable-curl |
 | cable-crossover | Cable Crossover | /images/exercises/cable-crossover.png | cable-crossover.png | COVERED | cable-chest-fly, cable-fly, high-to-low-cable-fly |
 | cable-crunch | Cable Crunch | /images/exercises/cable-crunch.png | cable-crunch.png | COVERED | cable-crunch, kneeling-cable-crunch |
@@ -76,6 +76,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | dip | Dip | /images/exercises/dip.png | dip.png | COVERED | chest-dip, parallel-bar-dip |
 | dumbbell-bench-press | Dumbbell Bench Press | /images/exercises/dumbbell-bench-press.png | dumbbell-bench-press.png | COVERED | dumbbell-press |
 | dumbbell-bicep-curl | Dumbbell Bicep Curl | /images/exercises/dumbbell-bicep-curl.png | dumbbell-bicep-curl.png | COVERED | alternating-dumbbell-curl, bicep-curl, biceps-curl, dumbbell-biceps-curl, dumbbell-curl |
+| dumbbell-bulgarian-split-squat | Dumbbell Bulgarian Split Squat | /images/exercises/dumbbell-bulgarian-split-squat.png | dumbbell-bulgarian-split-squat.png | COVERED | bulgarian-dumbbell-split-squat, bulgarian-split-squat-dumbbell, dumbbell-bulgarian-split-squat |
 | dumbbell-calf-raise | Dumbbell Calf Raise | /images/exercises/dumbbell-calf-raise.png | dumbbell-calf-raise.png | COVERED | dumbbell-calf-raises, standing-dumbbell-calf-raise, standing-dumbbell-calf-raises |
 | dumbbell-fly | Dumbbell Fly | /images/exercises/dumbbell-fly.png | dumbbell-fly.png | COVERED | dumbbell-chest-fly, flat-dumbbell-fly |
 | dumbbell-front-raise | Dumbbell Front Raise | /images/exercises/dumbbell-front-raise.png | dumbbell-front-raise.png | COVERED | front-raise |
@@ -164,11 +165,12 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | close-grip-bench-press.png | 1133049 | tracked | close-grip-bench-press | yes | COVERED |
 | close-grip-lat-pulldown.png | 1505180 | tracked | close-grip-lat-pulldown | yes | COVERED |
 | concentration-curl.png | 1487280 | tracked | concentration-curl | yes | COVERED |
-| crunch.png | 1011469 | ?? | crunch | yes | COVERED |
+| crunch.png | 1011469 | tracked | crunch | yes | COVERED |
 | diamond-push-up.png | 1141454 | tracked | diamond-push-up | yes | COVERED |
 | dip.png | 1215324 | tracked | dip | yes | COVERED |
 | dumbbell-bench-press.png | 1353888 | tracked | dumbbell-bench-press | yes | COVERED |
 | dumbbell-bicep-curl.png | 943124 | tracked | dumbbell-bicep-curl | yes | COVERED |
+| dumbbell-bulgarian-split-squat.png | 1313247 | ?? | dumbbell-bulgarian-split-squat | yes | COVERED |
 | dumbbell-calf-raise.png | 1098289 | tracked | dumbbell-calf-raise | yes | COVERED |
 | dumbbell-fly.png | 1418851 | tracked | dumbbell-fly | yes | COVERED |
 | dumbbell-front-raise.png | 1127923 | tracked | dumbbell-front-raise | yes | COVERED |
@@ -190,7 +192,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | hanging-leg-raise.png | 1149960 | tracked | hanging-leg-raise | yes | COVERED |
 | incline-bench-press.png | 1297955 | tracked | incline-bench-press | yes | COVERED |
 | incline-dumbbell-bench-press.png | 1536297 | tracked | incline-dumbbell-bench-press | yes | COVERED |
-| incline-dumbbell-curl.png | 1154186 | ?? | incline-dumbbell-curl | yes | COVERED |
+| incline-dumbbell-curl.png | 1154186 | tracked | incline-dumbbell-curl | yes | COVERED |
 | kettlebell-swing.png | 1328800 | tracked | kettlebell-swing | yes | COVERED |
 | l-sit.png | 1331514 | tracked | l-sit | yes | COVERED |
 | lat-pulldown.png | 1327966 | tracked | lat-pulldown | yes | COVERED |
@@ -212,7 +214,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | push-up.png | 1142435 | tracked | push-up | yes | COVERED |
 | rack-pull.png | 1360410 | tracked | rack-pull | yes | COVERED |
 | reverse-lunge.png | 1674039 | tracked | reverse-lunge | yes | COVERED |
-| reverse-pec-deck.png | 1158834 | ?? | reverse-pec-deck | yes | COVERED |
+| reverse-pec-deck.png | 1158834 | tracked | reverse-pec-deck | yes | COVERED |
 | romanian-deadlift.png | 1185094 | tracked | romanian-deadlift | yes | COVERED |
 | russian-twist.png | 1369448 | tracked | russian-twist | yes | COVERED |
 | seated-cable-row.png | 1181976 | tracked | seated-cable-row | yes | COVERED |
@@ -277,9 +279,10 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Biceps Curl | Biceps Curl | biceps-curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Bodyweight Row | Bodyweight Row | bodyweight-row | australian-row | /images/exercises/australian-row.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Box Step Up | Box Step Up | box-step-up | step-up | /images/exercises/step-up.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Bulgarian Dumbbell Split Squat | Bulgarian Dumbbell Split Squat | bulgarian-dumbbell-split-squat | dumbbell-bulgarian-split-squat | /images/exercises/dumbbell-bulgarian-split-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Bulgarian Split Squat | Bulgarian Split Squat |  | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | GENERATOR_COVERED | observed-fixture |
 | Bulgarian Split Squat | Bulgarian Split Squat | bulgarian-split-squat | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | GENERATOR_COVERED | setcredits |
-| Bulgarian Split Squat Dumbbell | Bulgarian Split Squat Dumbbell | bulgarian-split-squat-dumbbell | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Bulgarian Split Squat Dumbbell | Bulgarian Split Squat Dumbbell | bulgarian-split-squat-dumbbell | dumbbell-bulgarian-split-squat | /images/exercises/dumbbell-bulgarian-split-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Cable Bicep Curl | Cable Bicep Curl | cable-bicep-curl | cable-bicep-curl | /images/exercises/cable-bicep-curl.png | GENERATOR_COVERED | setcredits |
 | Cable Biceps Curl | Cable Biceps Curl | cable-biceps-curl | cable-bicep-curl | /images/exercises/cable-bicep-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Cable Chest Fly | Cable Chest Fly | cable-chest-fly | cable-crossover | /images/exercises/cable-crossover.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -318,7 +321,8 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Dumbbell Bent Over Row | Dumbbell Bent Over Row | dumbbell-bent-over-row | dumbbell-row | /images/exercises/dumbbell-row.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Dumbbell Bicep Curl | Dumbbell Bicep Curl | dumbbell-bicep-curl | dumbbell-bicep-curl | /images/exercises/dumbbell-bicep-curl.png | GENERATOR_COVERED | setcredits |
 | Dumbbell Biceps Curl | Dumbbell Biceps Curl | dumbbell-biceps-curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
-| Dumbbell Bulgarian Split Squat | Dumbbell Bulgarian Split Squat | dumbbell-bulgarian-split-squat | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Dumbbell Bulgarian Split Squat | Dumbbell Bulgarian Split Squat |  | dumbbell-bulgarian-split-squat | /images/exercises/dumbbell-bulgarian-split-squat.png | GENERATOR_COVERED | observed-fixture |
+| Dumbbell Bulgarian Split Squat | Dumbbell Bulgarian Split Squat | dumbbell-bulgarian-split-squat | dumbbell-bulgarian-split-squat | /images/exercises/dumbbell-bulgarian-split-squat.png | GENERATOR_COVERED | backend-alias, setcredits |
 | Dumbbell Calf Raise | Dumbbell Calf Raise | dumbbell-calf-raise | dumbbell-calf-raise | /images/exercises/dumbbell-calf-raise.png | GENERATOR_COVERED | setcredits |
 | Dumbbell Chest Fly | Dumbbell Chest Fly | dumbbell-chest-fly | dumbbell-fly | /images/exercises/dumbbell-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Dumbbell Curl | Dumbbell Curl | dumbbell-curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | GENERATOR_COVERED | setcredits |
@@ -551,7 +555,8 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Biceps Curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | no exact dedicated file |
 | Bodyweight Row | australian-row | /images/exercises/australian-row.png | no exact dedicated file |
 | Box Step Up | step-up | /images/exercises/step-up.png | no exact dedicated file |
-| Bulgarian Split Squat Dumbbell | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | no exact dedicated file |
+| Bulgarian Dumbbell Split Squat | dumbbell-bulgarian-split-squat | /images/exercises/dumbbell-bulgarian-split-squat.png | no exact dedicated file |
+| Bulgarian Split Squat Dumbbell | dumbbell-bulgarian-split-squat | /images/exercises/dumbbell-bulgarian-split-squat.png | no exact dedicated file |
 | Cable Biceps Curl | cable-bicep-curl | /images/exercises/cable-bicep-curl.png | no exact dedicated file |
 | Cable Chest Fly | cable-crossover | /images/exercises/cable-crossover.png | no exact dedicated file |
 | Cable Crossover Fly | cable-crossover | /images/exercises/cable-crossover.png | no exact dedicated file |
@@ -573,7 +578,6 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Close Grip Push Up | diamond-push-up | /images/exercises/diamond-push-up.png | no exact dedicated file |
 | Dumbbell Bent Over Row | dumbbell-row | /images/exercises/dumbbell-row.png | no exact dedicated file |
 | Dumbbell Biceps Curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | no exact dedicated file |
-| Dumbbell Bulgarian Split Squat | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | no exact dedicated file |
 | Dumbbell Chest Fly | dumbbell-fly | /images/exercises/dumbbell-fly.png | no exact dedicated file |
 | Dumbbell Hammer Curl | hammer-curl | /images/exercises/hammer-curl.png | no exact dedicated file |
 | Dumbbell Hammer Curls | hammer-curl | /images/exercises/hammer-curl.png | no exact dedicated file |

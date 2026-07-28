@@ -1,28 +1,28 @@
 {
-  "generatedAt": "2026-07-28T16:05:01.621Z",
+  "generatedAt": "2026-07-28T16:33:05.972Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
-    "physicalFiles": 89,
-    "dedicatedExerciseImagesExcludingFallback": 88,
-    "canonicalSupportedExercises": 88,
-    "canonicalExercisesWithDedicatedImages": 88,
+    "physicalFiles": 90,
+    "dedicatedExerciseImagesExcludingFallback": 89,
+    "canonicalSupportedExercises": 89,
+    "canonicalExercisesWithDedicatedImages": 89,
     "canonicalExercisesMissingImages": 0,
-    "aliasesCovered": 220,
+    "aliasesCovered": 221,
     "orphanFiles": 0,
     "brokenMappings": 0,
     "invalidFiles": 0,
     "caseMismatches": 0,
     "fallbackOnlyAliases": 0,
-    "generatorSupportedCanonicalExercises": 91,
-    "generatorKnownNameVariants": 281,
-    "generatorVariantsWithDedicatedOrSurrogateImage": 281,
+    "generatorSupportedCanonicalExercises": 92,
+    "generatorKnownNameVariants": 283,
+    "generatorVariantsWithDedicatedOrSurrogateImage": 283,
     "generatorVariantsReachingFallback": 0,
     "generatorExistingFilesWithBrokenRouting": 0,
     "generatorGenuinelyMissingImages": 0,
     "generatorSurrogateImageRoutes": 174,
     "generatorCanonicalMismatches": 0,
-    "publicEnabledExercises": 93,
+    "publicEnabledExercises": 94,
     "publicReleaseImageFailures": 0,
     "disabledUntilDedicatedImages": 12
   },
@@ -281,8 +281,6 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
-        "bulgarian-split-squat-dumbbell",
-        "dumbbell-bulgarian-split-squat",
         "split-squat"
       ]
     },
@@ -510,6 +508,22 @@
         "biceps-curl",
         "dumbbell-biceps-curl",
         "dumbbell-curl"
+      ]
+    },
+    {
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
+      "englishName": "Dumbbell Bulgarian Split Squat",
+      "muscleGroup": "quadriceps",
+      "equipment": "dumbbells",
+      "expectedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "physicalFile": "dumbbell-bulgarian-split-squat.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "bulgarian-dumbbell-split-squat",
+        "bulgarian-split-squat-dumbbell",
+        "dumbbell-bulgarian-split-squat"
       ]
     },
     {
@@ -2433,6 +2447,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Bulgarian Dumbbell Split Squat",
+      "demoName": "Bulgarian Dumbbell Split Squat",
+      "providedExerciseId": "bulgarian-dumbbell-split-squat",
+      "equipment": "dumbbells",
+      "muscleGroup": "quadriceps",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-bulgarian-split-squat",
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Bulgarian Split Squat",
       "demoName": "Bulgarian Split Squat",
       "providedExerciseId": "",
@@ -2486,18 +2525,18 @@
       "originalName": "Bulgarian Split Squat Dumbbell",
       "demoName": "Bulgarian Split Squat Dumbbell",
       "providedExerciseId": "bulgarian-split-squat-dumbbell",
-      "equipment": "bodyweight/dumbbells",
+      "equipment": "dumbbells",
       "muscleGroup": "quadriceps",
       "sources": [
         "backend-alias"
       ],
-      "expectedCanonical": "bulgarian-split-squat",
-      "canonicalExerciseId": "bulgarian-split-squat",
+      "expectedCanonical": "dumbbell-bulgarian-split-squat",
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
       "canonicalizationSource": "existing-alias",
       "expectedCanonicalMatches": true,
       "resolverSourceField": "exerciseId",
-      "attemptedSlug": "bulgarian-split-squat",
-      "resolvedImageUrl": "/images/exercises/bulgarian-split-squat.png",
+      "attemptedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -3461,27 +3500,53 @@
     {
       "originalName": "Dumbbell Bulgarian Split Squat",
       "demoName": "Dumbbell Bulgarian Split Squat",
+      "providedExerciseId": "",
+      "equipment": "Dumbbell",
+      "muscleGroup": "Quads",
+      "sources": [
+        "observed-fixture"
+      ],
+      "expectedCanonical": "dumbbell-bulgarian-split-squat",
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
+      "canonicalizationSource": "name-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "dumbbell-bulgarian-split-squat.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Dumbbell Bulgarian Split Squat",
+      "demoName": "Dumbbell Bulgarian Split Squat",
       "providedExerciseId": "dumbbell-bulgarian-split-squat",
-      "equipment": "bodyweight/dumbbells",
+      "equipment": "dumbbells",
       "muscleGroup": "quadriceps",
       "sources": [
-        "backend-alias"
+        "backend-alias",
+        "setcredits"
       ],
-      "expectedCanonical": "bulgarian-split-squat",
-      "canonicalExerciseId": "bulgarian-split-squat",
+      "expectedCanonical": "dumbbell-bulgarian-split-squat",
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
       "canonicalizationSource": "existing-alias",
       "expectedCanonicalMatches": true,
       "resolverSourceField": "exerciseId",
-      "attemptedSlug": "bulgarian-split-squat",
-      "resolvedImageUrl": "/images/exercises/bulgarian-split-squat.png",
+      "attemptedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
-      "exactDedicatedFile": false,
-      "usesSurrogateImage": true,
-      "dedicatedExactImageExpected": false,
-      "classification": "COVERED_BY_SURROGATE_IMAGE"
+      "directPhysicalFile": "dumbbell-bulgarian-split-squat.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Dumbbell Calf Raise",
@@ -9019,21 +9084,46 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
-      "originalName": "Bulgarian Split Squat Dumbbell",
-      "demoName": "Bulgarian Split Squat Dumbbell",
-      "providedExerciseId": "bulgarian-split-squat-dumbbell",
-      "equipment": "bodyweight/dumbbells",
+      "originalName": "Bulgarian Dumbbell Split Squat",
+      "demoName": "Bulgarian Dumbbell Split Squat",
+      "providedExerciseId": "bulgarian-dumbbell-split-squat",
+      "equipment": "dumbbells",
       "muscleGroup": "quadriceps",
       "sources": [
         "backend-alias"
       ],
-      "expectedCanonical": "bulgarian-split-squat",
-      "canonicalExerciseId": "bulgarian-split-squat",
+      "expectedCanonical": "dumbbell-bulgarian-split-squat",
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
       "canonicalizationSource": "existing-alias",
       "expectedCanonicalMatches": true,
       "resolverSourceField": "exerciseId",
-      "attemptedSlug": "bulgarian-split-squat",
-      "resolvedImageUrl": "/images/exercises/bulgarian-split-squat.png",
+      "attemptedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Bulgarian Split Squat Dumbbell",
+      "demoName": "Bulgarian Split Squat Dumbbell",
+      "providedExerciseId": "bulgarian-split-squat-dumbbell",
+      "equipment": "dumbbells",
+      "muscleGroup": "quadriceps",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-bulgarian-split-squat",
+      "canonicalExerciseId": "dumbbell-bulgarian-split-squat",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-bulgarian-split-squat",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -9559,31 +9649,6 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "dumbbell-bicep-curl",
       "resolvedImageUrl": "/images/exercises/dumbbell-bicep-curl.png",
-      "usedFallback": false,
-      "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
-      "exactDedicatedFile": false,
-      "usesSurrogateImage": true,
-      "dedicatedExactImageExpected": false,
-      "classification": "COVERED_BY_SURROGATE_IMAGE"
-    },
-    {
-      "originalName": "Dumbbell Bulgarian Split Squat",
-      "demoName": "Dumbbell Bulgarian Split Squat",
-      "providedExerciseId": "dumbbell-bulgarian-split-squat",
-      "equipment": "bodyweight/dumbbells",
-      "muscleGroup": "quadriceps",
-      "sources": [
-        "backend-alias"
-      ],
-      "expectedCanonical": "bulgarian-split-squat",
-      "canonicalExerciseId": "bulgarian-split-squat",
-      "canonicalizationSource": "existing-alias",
-      "expectedCanonicalMatches": true,
-      "resolverSourceField": "exerciseId",
-      "attemptedSlug": "bulgarian-split-squat",
-      "resolvedImageUrl": "/images/exercises/bulgarian-split-squat.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -13088,6 +13153,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "dumbbell-bulgarian-split-squat",
+      "expectedImageFile": "dumbbell-bulgarian-split-squat.png",
+      "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "resolvedImageFile": "dumbbell-bulgarian-split-squat.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "dumbbell-calf-raise",
       "expectedImageFile": "dumbbell-calf-raise.png",
       "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
@@ -14206,8 +14282,6 @@
       "referencedByResolver": true,
       "canonicalExercise": "bulgarian-split-squat",
       "aliases": [
-        "bulgarian-split-squat-dumbbell",
-        "dumbbell-bulgarian-split-squat",
         "split-squat"
       ],
       "genericFallback": false,
@@ -14386,7 +14460,7 @@
       "extension": ".png",
       "exactCase": "crunch.png",
       "size": 1011469,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "crunch",
       "aliases": [
@@ -14465,6 +14539,24 @@
         "biceps-curl",
         "dumbbell-biceps-curl",
         "dumbbell-curl"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "dumbbell-bulgarian-split-squat.png",
+      "extension": ".png",
+      "exactCase": "dumbbell-bulgarian-split-squat.png",
+      "size": 1313247,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "dumbbell-bulgarian-split-squat",
+      "aliases": [
+        "bulgarian-dumbbell-split-squat",
+        "bulgarian-split-squat-dumbbell",
+        "dumbbell-bulgarian-split-squat"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -14834,7 +14926,7 @@
       "extension": ".png",
       "exactCase": "incline-dumbbell-curl.png",
       "size": 1154186,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "incline-dumbbell-curl",
       "aliases": [
@@ -15193,7 +15285,7 @@
       "extension": ".png",
       "exactCase": "reverse-pec-deck.png",
       "size": 1158834,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "reverse-pec-deck",
       "aliases": [
