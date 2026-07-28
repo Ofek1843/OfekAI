@@ -132,6 +132,23 @@ test("transformation submission remains visible before auth and localizes Hebrew
   assert.match(submitJs, /tools\.length === 0/);
 });
 
+test("transformation submission essential content is visible without reveal observer", () => {
+  const html = read("public/transformation-submit.html");
+  const css = read("public/css/transformation-submit.css");
+
+  assert.doesNotMatch(html, /class="submission-hero[^"]*reveal-on-scroll/);
+  assert.doesNotMatch(html, /class="submission-card[^"]*reveal-on-scroll/);
+  assert.match(css, /\.submission-page \.submission-hero,\s*\.submission-page \.submission-card\s*{\s*opacity: 1;\s*transform: none;/);
+  assert.doesNotMatch(css, /\.submission-page \.submission-hero[^}]*opacity:\s*0/);
+  assert.doesNotMatch(css, /\.submission-page \.submission-card[^}]*opacity:\s*0/);
+  assert.doesNotMatch(html, /landing\.js/);
+  assert.match(html, /id="transformationSubmissionForm"/);
+  assert.match(html, /id="beforePhoto"[^>]+required/);
+  assert.match(html, /id="afterPhoto"[^>]+required/);
+  assert.match(html, /id="durationValue"[^>]+required/);
+  assert.match(html, /id="processType"[^>]+required/);
+});
+
 test("transformation submission stores private pending metadata and never auto-publishes", () => {
   const submitJs = read("public/js/transformation-submit.js");
 
