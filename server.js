@@ -14,6 +14,16 @@ const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
 const { translateValidationMessages } = require("./lib/workout-validation-i18n");
 const {
+  buildMealSlots,
+  filterMeals,
+  catalogForPrompt,
+  selectMeals,
+  buildMealOption,
+  getMealById,
+  detectAllergens,
+  CONDITION_NUTRIENTS
+} = require("./lib/meal-catalog");
+const {
   logOpenAiStartupDiagnostics,
   markAsUpstreamProviderError,
   isUpstreamProviderError,
@@ -2923,6 +2933,87 @@ console.log({
     if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
+
+// Swaps one whole meal option for a different catalog meal in the same
+// slot. Fully deterministic (no AI call) — the catalog already has correct
+// macros, foods and a plate photo for every id, so this is instant and free.
+app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
+  try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+
+    const { mealNumber, optionNumber, language, plan } = req.body;
+    const isHebrew = language === "he";
+
+    if (!plan || !Array.isArray(plan.meals)) {
+      return res.status(400).json({
+        error: isHebrew ? "חסרה תוכנית תזונה." : "Missing nutrition plan."
+      });
+    }
+
+    const meal = plan.meals.find((entry) => entry.mealNumber === mealNumber);
+    if (!meal) {
+      return res.status(404).json({
+        error: isHebrew ? "הארוחה לא נמצאה." : "Meal not found."
+      });
+    }
+
+    const option = meal.options?.find((entry) => entry && entry.optionNumber === optionNumber);
+    if (!option) {
+      return res.status(404).json({
+        error: isHebrew ? "אפשרות הארוחה לא נמצאה." : "Meal option not found."
+      });
+    }
+
+    const catalogDiet = plan.dietaryPreference || "omnivore";
+    const excludeAllergens = Array.isArray(plan.excludeAllergens) ? plan.excludeAllergens : [];
+    const slot = meal.slot || "lunch";
+
+    const pool = filterMeals({ diet: catalogDiet, excludeAllergens, slot });
+
+    const usedMealIds = new Set();
+    for (const entry of plan.meals) {
+      for (const entryOption of entry.options || []) {
+        if (entryOption?.mealId) usedMealIds.add(entryOption.mealId);
+      }
+    }
+
+    const [nextMealId] = selectMeals({
+      pool,
+      slot,
+      targetCalories: meal.targetCalories,
+      count: 1,
+      exclude: [...usedMealIds]
+    });
+
+    if (!nextMealId) {
+      return res.status(409).json({
+        error: isHebrew
+          ? "אין ארוחה חלופית זמינה בקטגוריה הזו."
+          : "No alternative meal is available for this slot."
+      });
+    }
+
+    const newOption = buildMealOption(nextMealId, {
+      targetCalories: meal.targetCalories,
+      isHebrew,
+      optionNumber,
+      foodImages: localFoodImages
+    });
+
+    return res.json({
+      success: true,
+      option: newOption
+    });
+  } catch (error) {
+    console.error("Meal reroll error:", error);
+    return res.status(error.status || 500).json({
+      error: error.message || "Failed to reroll meal."
+    });
+  }
+});
+
 app.post("/api/nutrition-builder", async (req, res) => {
   console.log("Nutrition Builder endpoint reached");
   try {
@@ -3090,273 +3181,243 @@ const targetCarbs = Math.round(
 
     const outputLanguage =
       language === "he" ? "Hebrew" : "English";
+    const isHebrew = language === "he";
 
     const languageRules = language === "he"
-      ? `- When Hebrew is selected, use the meal name "ארוחת ביניים" instead of "ארוחת חטיף".
-- When Hebrew is selected, write all meal names, food names, descriptions and notes in Hebrew.
-- When Hebrew is selected, translate "protein powder" as "אבקת חלבון".
-- When Hebrew is selected, write "מיליליטר" instead of the abbreviation for milliliters.
-- For example, write "200 מיליליטר", not a Hebrew abbreviation containing quotation marks.
+      ? `- Write all meal names, descriptions and notes in Hebrew.
 - Do not mix English into Hebrew user-facing values.`
-      : `- Always write all user-facing text in English ONLY.
-- Never output Hebrew text or any non-English language.
-- Use English meal names, food names, descriptions, and notes.
-- Do not translate anything to Hebrew.
-- All text must be in English, including but not limited to: meal names, food names, all descriptions, and all notes.`;
+      : `- Write all meal names, descriptions and notes in English only.
+- Never output Hebrew text.`;
 
-      console.time("Nutrition AI");
-          const nutritionResponse = await createChatCompletion({
-      temperature: 0.3,
-      maxTokens: 6000,
+    // Meals come from a curated catalog (lib/meal-catalog.js): the AI only
+    // SELECTS meal ids per slot, it never invents foods. This keeps every
+    // food name, macro number and plate photo deterministic and correct —
+    // the model can't hallucinate a food into existence or get the math
+    // wrong, and the prompt is a fraction of the size (and cost) of the old
+    // free-form-recipe version.
+    const DIET_MAP = {
+      vegan: "vegan",
+      vegetarian: "vegetarian",
+      pescatarian: "pescatarian",
+      balanced: "omnivore",
+      highProtein: "omnivore",
+      lowCarb: "omnivore",
+      mediterranean: "omnivore"
+    };
+    const catalogDiet = DIET_MAP[dietaryPreference] || "omnivore";
+    const excludeAllergens = detectAllergens(allergies, foodsToAvoid);
+    const preferNutrients = safeConditions
+      .map((condition) => CONDITION_NUTRIENTS[condition])
+      .filter(Boolean);
+
+    const slots = buildMealSlots(parsedMealsPerDay, isHebrew);
+    const totalWeight = slots.reduce((sum, slot) => sum + slot.weight, 0);
+    const slotPools = new Map();
+    for (const slot of slots) {
+      if (!slotPools.has(slot.slot)) {
+        slotPools.set(
+          slot.slot,
+          filterMeals({ diet: catalogDiet, excludeAllergens, slot: slot.slot })
+        );
+      }
+    }
+
+    const promptSections = [...slotPools.entries()]
+      .map(([slotName, pool]) => `${slotName.toUpperCase()} options:\n${catalogForPrompt(pool, isHebrew)}`)
+      .join("\n\n");
+
+    console.time("Nutrition AI");
+    const nutritionResponse = await createChatCompletion({
+      temperature: 0.2,
+      maxTokens: 1200,
       messages: [
         {
           role: "system",
           content: `
-You are FuelPhysique, an evidence-based nutrition planning assistant.
+You are FuelPhysique, a nutrition planning assistant that assembles a day of meals from a fixed curated catalog. You do NOT invent foods or meals — you only SELECT meal ids from the lists given below.
 
-Create a practical and personalized one-day nutrition plan.
-
-Return ONLY valid JSON.
-Do not use markdown.
-Do not use code fences.
-Do not include text outside the JSON.
+Return ONLY valid JSON. No markdown, no code fences, no text outside the JSON.
 
 The JSON must exactly follow this structure:
-
 {
   "planName": "string",
   "description": "string",
-  "goal": "string",
-  "dailyCalories": 2500,
-  "proteinGrams": 180,
-  "carbsGrams": 280,
-  "fatGrams": 75,
-  "waterLiters": 3,
-  "meals": [
-    {
-      "mealNumber": 1,
-      "name": "string",
-      "targetCalories": 600,
-      "targetProteinGrams": 40,
-      "targetCarbsGrams": 70,
-      "targetFatGrams": 18,
-      "options": [
-{
-  "optionNumber": 1,
-  "optionCalories": 0,
-  "optionProteinGrams": 0,
-  "optionCarbsGrams": 0,
-  "optionFatGrams": 0,
-  "platingDescription": "string - describe how the meal looks on a plate, e.g. 'Grilled chicken breast on white plate with roasted broccoli and sweet potato'",
-  "foods": [
-  {
-  "name": "string",
-  "imageKey": "one allowed image key",
-  "amount": "string",
-  "calories": 0,
-  "proteinGrams": 0,
-  "carbsGrams": 0,
-  "fatGrams": 0
-}
-                ]
-        }
-      ]
-    }
+  "selections": [
+    { "mealNumber": 1, "mealIds": ["id-a", "id-b", "id-c"] }
   ],
-        "mealCalories": 600,
-      "mealProteinGrams": 40,
-      "mealCarbsGrams": 70,
-      "mealFatGrams": 18
-    }
-  ],
-  "notes": [
-    "string"
-  ]
+  "notes": ["string"]
 }
 
-Nutrition rules:
-
-- Create exactly ${parsedMealsPerDay} meals.
-- Create exactly 3 options for every meal.
-- Every option in the same meal must have nearly identical calories and macronutrients.
-- The difference between any two options in the same meal must not exceed:
-  - 5% calories
-  - 5 grams protein
-  - 10 grams carbohydrates
-  - 5 grams fat
-- If an option exceeds these limits, adjust the food amounts until all options fall within these tolerances.
-- Each option must use different food combinations.
-- Alternatives must be genuinely different meals, not the same foods with a 10-gram quantity change. At least two options per meal must differ by one main protein or carbohydrate food.
-- Keep the meal target calories and macros only once at the meal level.
-- Include accurate numeric calories and macronutrients for every food item in the JSON so the server can verify the totals. The interface may hide these internal calculation fields.
-- Use the calculated daily calorie target provided by the server.
-- Set dailyCalories exactly to that calculated target.
-- Do not independently recalculate or override the calorie target.
-- Use the calculated protein, carbohydrate and fat targets provided by the server.
-- Set proteinGrams exactly to the calculated protein target.
-- Set carbsGrams exactly to the calculated carbohydrate target.
-- Set fatGrams exactly to the calculated fat target.
-- Do not independently recalculate or override these macro targets.
-- Make the combined meal targets approximately match the daily calorie and macro targets.
-- Adjust calories according to the user's goal.
-- Use realistic and sustainable calorie targets.
-- Prioritize sufficient protein.
-- Avoid extreme calorie deficits or surpluses.
-- Respect the selected dietary preference.
-- Respect allergies and dietary restrictions strictly.
-- Do not include foods the user asked to avoid.
-- Before returning JSON, perform a literal final scan of every food name against allergies, foods to avoid and dietary preference. Remove and replace every conflict.
-- Prefer foods the user listed as favorites when appropriate.
-- Use realistic household or metric serving amounts.
-- State whether staple-food weights are cooked/ready-to-eat or dry/uncooked. Default to cooked or ready-to-eat weights and make that convention explicit in notes.
-- Ensure the displayed target calories are plausible for the listed food amounts; do not label a roughly 700-calorie option as 900 calories.
-- Never use the regular double-quote character inside JSON string values.
-- Write measurement abbreviations as full words.
-- Make the calories and macronutrients reasonably consistent.
-- The sum of the meals should approximately match the daily totals.
-- Do not diagnose medical conditions.
-- Treat selected conditions only as clinician-diagnosed user-provided context.
-- Never prescribe supplements, medication changes, or claim this plan treats or cures a condition.
-- When conditions are selected, mention the nutrition-support focus in planName and description (for example, fat loss with iron-supportive nutrition), without presenting it as medical treatment.
-- Include a note that medical nutrition care and follow-up remain the responsibility of a qualified health professional.
+Rules:
+- There are exactly ${slots.length} meal slots, numbered 1 to ${slots.length} in order.
+- For each mealNumber, choose exactly 3 DIFFERENT meal ids from that slot's list below.
+- Only use ids that appear verbatim in the matching slot's list. Never invent an id.
+- Prefer ids whose calorie count is close to that slot's target calories.
+- Avoid repeating the same meal id across different meal numbers in the same day when the slot's list has enough alternatives.
+- Do not diagnose medical conditions. Treat any diagnosed condition only as user-provided context, never as something to treat or cure.
 - ${olderAdultInstructions}
 - ${youthInstructions}
 ${medicalSafetyInstructions}
-- If a diagnosed deficiency cannot be reliably supported within the selected diet and restrictions, say so explicitly. Never claim vitamin B12 support from ordinary tofu, tempeh or other foods unless the item is explicitly fortified.
-- When constraints conflict or leave no safe practical food combination, do not silently violate them. Return the safest feasible plan and add a prominent note explaining the unresolved constraint and recommending qualified professional review.
-- Do not claim the calorie estimate is perfectly precise.
-- Keep food names and meal names clear and practical.
-- For every food item, set imageKey to exactly one value from this allowed list:
-chicken breast, chicken thigh, turkey breast, lean ground beef, steak, salmon, tuna, tilapia, cod, shrimp, eggs, egg whites, cottage cheese, greek yogurt, skyr, tofu, tempeh, seitan, protein powder, white rice, brown rice, jasmine rice, basmati rice, oats, quinoa, couscous, bulgur, whole wheat pasta, pasta, sweet potato, potato, whole wheat bread, bread, pita, tortilla, rice cakes, cornflakes, granola, banana, apple, orange, pear, grapes, strawberries, blueberries, raspberries, kiwi, pineapple, mango, watermelon, melon, peach, plum, dates, raisins, broccoli, cauliflower, carrots, cucumber, tomato, lettuce, spinach, kale, zucchini, bell pepper, onion, mushrooms, avocado, cabbage, green beans, peas, corn, almonds, walnuts, cashews, pistachios, peanuts, peanut butter, almond butter, tahini, olive oil, milk, lactose free milk, soy milk, almond milk, oat milk, cheese, mozzarella, parmesan, honey, jam, dark chocolate, hummus, ketchup, mustard, tomato sauce, salsa.
-- Choose the imageKey that best represents the main ingredient of the food item.
-- Never invent a new imageKey.
-- Every food item must include accurate calories, proteinGrams, carbsGrams and fatGrams based on the specified amount.
-- Use realistic nutritional values based on reliable food composition data.
-- The sum of all food items in an option must closely match the meal target calories and macronutrients.
-- optionCalories must equal the sum of the calories of all foods in that option.
-- optionProteinGrams must equal the sum of the proteinGrams of all foods in that option.
-- optionCarbsGrams must equal the sum of the carbsGrams of all foods in that option.
-- optionFatGrams must equal the sum of the fatGrams of all foods in that option.
-- Verify every calculation before returning the final JSON.
-- Double-check all calculations before returning the JSON.
-- For each option, include a platingDescription that describes how the meal looks when plated or served. Example: "Grilled chicken breast on a white plate with roasted broccoli and sweet potato wedges, drizzle of olive oil" or "Oatmeal in a white bowl topped with sliced banana, honey, and cinnamon". Make the description appetizing and visual, suitable for generating an AI image.
-
-Language rules:
-
-- Output all user-facing values in ${outputLanguage}.
-- JSON property names must remain in English.
+- planName and description must be in ${outputLanguage}. If a diagnosed condition was selected, reflect the nutrition-support focus in planName/description without presenting it as medical treatment.
+- notes: 1-3 short practical notes in ${outputLanguage} (hydration, consistency, and a reminder that medical nutrition needs should be reviewed by a qualified professional).
 ${languageRules}
 
+Slot lists (id | name | calories P/C/F | slots | tags):
+
+${promptSections}
           `.trim()
         },
-                {
+        {
           role: "user",
           content: `
-Create a nutrition plan using these preferences:
+Build today's plan.
 
 Goal: ${String(goal)}
-Calculated daily calorie target: ${targetCalories} calories
-Calculated protein target: ${targetProtein} grams
-Calculated carbohydrate target: ${targetCarbs} grams
-Calculated fat target: ${targetFat} grams
-Age: ${parsedAge}
-Gender: ${String(gender)}
-Height: ${parsedHeight} cm
-Weight: ${parsedWeight} kg
-Daily activity: ${String(activityLevel)}
-Training days per week: ${parsedTrainingDays}
-Meals per day: ${parsedMealsPerDay}
+Daily calorie target: ${targetCalories} calories
 Dietary preference: ${String(dietaryPreference)}
 Diagnosed nutrition-related conditions: ${safeConditions.length ? safeConditions.map((condition) => conditionNames[condition]).join(", ") : "None selected"}
 Favorite foods: ${String(favoriteFoods)}
 Foods to avoid: ${String(foodsToAvoid)}
 Allergies or dietary restrictions: ${String(allergies)}
 Additional notes: ${String(additionalNotes)}
+
+Meal slots and targets:
+${slots
+  .map(
+    (slot) =>
+      `${slot.mealNumber}. ${slot.name} (${slot.slot}) — target ${Math.round((targetCalories * slot.weight) / totalWeight)} kcal`
+  )
+  .join("\n")}
           `.trim()
         }
       ]
     });
     console.timeEnd("Nutrition AI");
-const cleanedResponse = String(nutritionResponse)
-  .replace(/^```json\s*/i, "")
-  .replace(/^```\s*/i, "")
-  .replace(/\s*```$/i, "")
-  .replace(/מ"ל/g, "מיליליטר")
-  .trim();
 
-    let plan;
+    const cleanedResponse = String(nutritionResponse)
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
 
+    let aiPlan = null;
     try {
-      plan = JSON.parse(cleanedResponse);
+      aiPlan = JSON.parse(cleanedResponse);
     } catch (parseError) {
-      console.error(
-        "Nutrition JSON parsing failed:",
-        parseError,
-        cleanedResponse
-      );
-
-      return res.status(502).json({
-        error: "The AI returned an invalid nutrition format"
-      });
+      console.error("Nutrition JSON parsing failed:", parseError, cleanedResponse);
     }
 
-if (
-  !plan ||
-  typeof plan !== "object" ||
-  !Array.isArray(plan.meals) ||
-  plan.meals.some(
-    (meal) =>
-      !meal ||
-      !Array.isArray(meal.options) ||
-      meal.options.length === 0
-  )
-) {
-        return res.status(502).json({
-        error: "The AI returned an incomplete nutrition plan"
-      });
-    }
-
-plan=normalizeNutritionPlan(plan,{targetCalories,targetProtein,targetCarbs,targetFat,mealsPerDay:parsedMealsPerDay,isYouth,safeConditions,dietaryPreference});
-
-for (const meal of plan.meals) {
-  for (const option of meal.options) {
-    for (const food of option.foods) {
-const imageKey = String(food.imageKey || "")
-  .trim()
-  .toLowerCase();
-
-food.imageUrl =
-  localFoodImages[imageKey] ||
-  "/images/food-placeholder.png";
-    }
-  }
-}
-
-// Generate meal plating images if HUGGINGFACE_API_KEY is available
-if (process.env.HUGGINGFACE_API_KEY) {
-  console.log("Starting meal image generation...");
-  for (const meal of plan.meals) {
-    for (const option of meal.options) {
-      if (option.platingDescription) {
-        try {
-          console.log(`Generating image for: ${option.platingDescription.substring(0, 50)}...`);
-          const mealImage = await generateMealImage(option.platingDescription);
-          if (mealImage) {
-            option.mealImage = mealImage;
-            console.log("Image generated successfully");
-          }
-        } catch (imgError) {
-          console.warn(`Image generation for option ${option.optionNumber} failed:`, imgError.message);
+    const selectionByMealNumber = new Map();
+    if (aiPlan && Array.isArray(aiPlan.selections)) {
+      for (const entry of aiPlan.selections) {
+        const mealNumber = Number(entry?.mealNumber);
+        if (Number.isFinite(mealNumber) && Array.isArray(entry?.mealIds)) {
+          selectionByMealNumber.set(mealNumber, entry.mealIds);
         }
       }
     }
-  }
-}
 
-return res.json({
-    success: true,
-  plan
-});
+    // Every meal is guaranteed to fill regardless of what the model returned:
+    // valid AI picks are used first, selectMeals() deterministically tops up
+    // anything missing or invalid, so a plan is always complete and correct.
+    const usedMealIds = new Set();
+    const meals = slots.map((slot) => {
+      const pool = slotPools.get(slot.slot) || [];
+      const slotTargetCalories = Math.round((targetCalories * slot.weight) / totalWeight);
+      const aiChoice = selectionByMealNumber.get(slot.mealNumber) || [];
+
+      const validIds = [];
+      for (const id of aiChoice) {
+        if (pool.some((entry) => entry.id === id) && !validIds.includes(id)) {
+          validIds.push(id);
+        }
+      }
+
+      if (validIds.length < 3) {
+        const fallbackIds = selectMeals({
+          pool,
+          slot: slot.slot,
+          targetCalories: slotTargetCalories,
+          count: 3 - validIds.length,
+          exclude: [...validIds, ...usedMealIds],
+          preferNutrients
+        });
+        fallbackIds.forEach((id) => {
+          if (!validIds.includes(id)) validIds.push(id);
+        });
+      }
+
+      // Absolute last resort for a slot with fewer than 3 catalog meals.
+      while (validIds.length < 3 && pool.length) {
+        const candidate = pool[validIds.length % pool.length].id;
+        if (!validIds.includes(candidate) || pool.length < 3) validIds.push(candidate);
+        else break;
+      }
+
+      validIds.forEach((id) => usedMealIds.add(id));
+
+      const options = validIds
+        .map((id, index) =>
+          buildMealOption(id, {
+            targetCalories: slotTargetCalories,
+            isHebrew,
+            optionNumber: index + 1,
+            foodImages: localFoodImages
+          })
+        )
+        .filter(Boolean);
+
+      const macroScale = slotTargetCalories / Math.max(1, targetCalories);
+
+      return {
+        mealNumber: slot.mealNumber,
+        slot: slot.slot,
+        name: slot.name,
+        targetCalories: slotTargetCalories,
+        targetProteinGrams: Math.round(targetProtein * macroScale),
+        targetCarbsGrams: Math.round(targetCarbs * macroScale),
+        targetFatGrams: Math.round(targetFat * macroScale),
+        options
+      };
+    });
+
+    if (meals.some((meal) => !meal.options.length)) {
+      return res.status(502).json({
+        error: "Could not assemble a nutrition plan for the selected preferences"
+      });
+    }
+
+    const waterLiters = Math.round((parsedWeight * 0.035 + parsedTrainingDays * 0.15) * 10) / 10;
+
+    const plan = {
+      planName:
+        aiPlan?.planName ||
+        (isHebrew ? "תוכנית תזונה אישית" : "Personal Nutrition Plan"),
+      description:
+        aiPlan?.description ||
+        (isHebrew
+          ? "תוכנית תזונה מותאמת אישית מקטלוג ארוחות אצור."
+          : "A personalized nutrition plan built from a curated meal catalog."),
+      goal: String(goal),
+      dailyCalories: targetCalories,
+      proteinGrams: targetProtein,
+      carbsGrams: targetCarbs,
+      fatGrams: targetFat,
+      waterLiters,
+      // Kept on the plan so reroll-meal can rebuild the same catalog filter
+      // (diet + allergen exclusions) without the client resending the form.
+      dietaryPreference: catalogDiet,
+      excludeAllergens,
+      meals,
+      notes: Array.isArray(aiPlan?.notes)
+        ? aiPlan.notes.filter((note) => typeof note === "string").slice(0, 5)
+        : []
+    };
+
+    return res.json({
+      success: true,
+      plan
+    });
   } 
   catch (error) {
     console.error("Nutrition builder error:", error);

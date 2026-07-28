@@ -481,7 +481,10 @@ function hideResult() {
   resultElement.classList.add("hidden");
   resultElement.innerHTML = "";
 }
-function renderNutritionPlan(plan) {
+// activeOptions maps mealNumber -> visible option index, so re-rendering
+// after a meal swap keeps every carousel where the user left it instead of
+// snapping them all back to option 1.
+function renderNutritionPlan(plan, activeOptions = null) {
   const meals = Array.isArray(plan.meals)
     ? plan.meals
     : [];
@@ -492,89 +495,110 @@ function renderNutritionPlan(plan) {
 
   const mealsHtml = meals
     .map((meal) => {
-const options = Array.isArray(meal.options)
-  ? meal.options
-  : [];
+      const options = Array.isArray(meal.options) ? meal.options : [];
+      if (!options.length) return "";
 
-const optionsCarousel = options.length > 0 ? `
-<div class="meal-options-carousel" data-meal-number="${meal.mealNumber}">
-  <div class="carousel-main">
-    <div class="carousel-image-container">
-      <div class="carousel-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; min-height: 280px; border-radius: 16px; color: #fff; font-size: 18px;">
-        🍽️ ${escapeHtml(meal.name || `${ui.meal} ${meal.mealNumber || ""}`)}
-      </div>
-    </div>
-
-    <div class="carousel-content">
-      <div class="carousel-header">
-        <h3>${escapeHtml(meal.name || `${ui.meal} ${meal.mealNumber || ""}`)} · Option <span class="carousel-counter"><span class="carousel-current">1</span>/<span class="carousel-total">${options.length}</span></span></h3>
-      </div>
-
-      <div class="carousel-meta">
-        <div class="meta-item">
-          <span class="meta-label">🔥</span>
-          <span class="meta-value">${escapeHtml(meal.targetCalories ?? "-")} ${ui.calories}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">💪</span>
-          <span class="meta-value">${escapeHtml(meal.targetProteinGrams ?? "-")}g ${ui.protein}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">🍚</span>
-          <span class="meta-value">${escapeHtml(meal.targetCarbsGrams ?? "-")}g ${ui.carbs}</span>
-        </div>
-      </div>
-
-      <div class="carousel-options-container">
-        ${options.map((option, idx) => {
+      const optionsHtml = options
+        .map((option, idx) => {
           const foods = Array.isArray(option.foods) ? option.foods : [];
-          const mealImage = option.mealImage || null;
+          const mealName = option.mealName || meal.name || "";
 
-          const foodsText = foods.map((food, foodIndex) => `
-            <tr>
-              <td class="food-cell">
-                <img class="food-image" src="${food.imageUrl || "/images/food-placeholder.png"}" alt="${escapeHtml(food.name || "")}" loading="lazy" />
-                <span>${escapeHtml(food.name || "")}</span>
-              </td>
-              <td>${escapeHtml(food.amount || "")}</td>
-              <td>
-                <button type="button" class="nutrition-reroll-food-button" data-meal-number="${meal.mealNumber}" data-option-number="${option.optionNumber}" data-food-index="${foodIndex}">🔄</button>
-              </td>
-            </tr>
-          `).join("");
+          const foodRows = foods
+            .map(
+              (food) => `
+                <tr>
+                  <td class="food-cell">
+                    <img class="food-image" src="${food.imageUrl || "/images/food-placeholder.png"}" alt="" loading="lazy" />
+                    <span>${escapeHtml(food.name || "")}</span>
+                  </td>
+                  <td class="food-amount">${escapeHtml(food.amount || "")}</td>
+                </tr>
+              `
+            )
+            .join("");
 
           return `
-            <div class="carousel-option ${idx === 0 ? 'active' : ''}" data-option-number="${option.optionNumber}">
-              ${mealImage ? `<img class="carousel-option-image" src="${mealImage}" alt="Meal plating" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 16px; max-height: 280px; object-fit: cover;" />` : ''}
-              <table class="nutrition-food-table">
-                <thead>
-                  <tr>
-                    <th>${isHebrew ? "מזון" : "Food"}</th>
-                    <th>${isHebrew ? "כמות" : "Amount"}</th>
-                  </tr>
-                </thead>
-                <tbody>${foodsText}</tbody>
-              </table>
+            <div class="carousel-option ${idx === 0 ? "active" : ""}" data-option-number="${option.optionNumber}">
+              <div class="meal-option-media">
+                <div class="meal-photo${option.mealImage ? "" : " no-image"}">
+                  ${
+                    option.mealImage
+                      ? `<img src="${option.mealImage}" alt="${escapeHtml(mealName)}" loading="lazy"
+                           onerror="this.parentElement.classList.add('no-image');this.remove();" />`
+                      : ""
+                  }
+                  <span class="meal-photo-fallback">🍽️ ${escapeHtml(mealName)}</span>
+                </div>
+
+                ${
+                  option.preparation
+                    ? `<details class="meal-prep">
+                         <summary>${isHebrew ? "אופן ההכנה" : "How to prepare"}</summary>
+                         <p>${escapeHtml(option.preparation)}</p>
+                       </details>`
+                    : ""
+                }
+              </div>
+
+              <div class="meal-option-body">
+                <div class="meal-title-row">
+                  <h3 class="meal-option-name">${escapeHtml(mealName)}</h3>
+                  <button type="button" class="nutrition-reroll-meal-button"
+                          title="${isHebrew ? "החלפת הארוחה" : "Swap this meal"}"
+                          data-meal-number="${meal.mealNumber}"
+                          data-option-number="${option.optionNumber}">🔄</button>
+                </div>
+
+                <div class="meal-option-macros">
+                  <span><strong>${escapeHtml(option.optionCalories ?? "-")}</strong> ${ui.calories}</span>
+                  <span><strong>${escapeHtml(option.optionProteinGrams ?? "-")}g</strong> ${ui.protein}</span>
+                  <span><strong>${escapeHtml(option.optionCarbsGrams ?? "-")}g</strong> ${ui.carbs}</span>
+                  <span><strong>${escapeHtml(option.optionFatGrams ?? "-")}g</strong> ${ui.fat}</span>
+                </div>
+
+                <table class="nutrition-food-table">
+                  <thead>
+                    <tr>
+                      <th>${isHebrew ? "מזון" : "Food"}</th>
+                      <th>${isHebrew ? "כמות" : "Amount"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>${foodRows}</tbody>
+                </table>
+              </div>
             </div>
           `;
-        }).join("")}
-      </div>
-
-      <div class="carousel-nav">
-        <button class="carousel-nav-btn carousel-prev" data-meal-number="${meal.mealNumber}">← ${isHebrew ? "הקודם" : "Prev"}</button>
-        <div class="carousel-dots">
-          ${options.map((_, idx) => `<div class="carousel-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"></div>`).join("")}
-        </div>
-        <button class="carousel-nav-btn carousel-next" data-meal-number="${meal.mealNumber}">→ ${isHebrew ? "הבא" : "Next"}</button>
-      </div>
-    </div>
-  </div>
-</div>
-` : "";
+        })
+        .join("");
 
       return `
         <section class="meal-card">
-          ${optionsCarousel}
+          <div class="meal-options-carousel" data-meal-number="${meal.mealNumber}" tabindex="0">
+            <div class="meal-slot-header">
+              <div>
+                <span class="meal-slot-name">${escapeHtml(meal.name || `${ui.meal} ${meal.mealNumber || ""}`)}</span>
+                <span class="meal-slot-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(meal.targetCalories ?? "-")} ${ui.calories}</span>
+              </div>
+              <span class="carousel-counter"><span class="carousel-current">1</span>/<span class="carousel-total">${options.length}</span></span>
+            </div>
+
+            <div class="carousel-scroll-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><path d="M12 13v6"/><path d="M15 9.5L12 6.5L9 9.5"/>
+              </svg>
+              ${isHebrew ? "גלול כדי לשנות" : "Scroll to change"}
+            </div>
+
+            <div class="carousel-options-container">${optionsHtml}</div>
+
+            <div class="carousel-nav">
+              <button type="button" class="carousel-nav-btn carousel-prev">← ${isHebrew ? "הקודם" : "Prev"}</button>
+              <div class="carousel-dots">
+                ${options.map((_, idx) => `<div class="carousel-dot ${idx === 0 ? "active" : ""}" data-index="${idx}"></div>`).join("")}
+              </div>
+              <button type="button" class="carousel-nav-btn carousel-next">→ ${isHebrew ? "הבא" : "Next"}</button>
+            </div>
+          </div>
         </section>
       `;
     })
@@ -707,103 +731,109 @@ const optionsCarousel = options.length > 0 ? `
 
   resultElement.classList.remove("hidden");
 
-resultElement
-  .querySelectorAll(".nutrition-reroll-food-button")
-    .forEach((rerollButton) => {
-rerollButton.addEventListener("click", async () => {
-  try {
-
-  const mealNumber = Number(
-    rerollButton.dataset.mealNumber
-  );
-
-const optionNumber = Number(
-  rerollButton.dataset.optionNumber
-);
-
-const foodIndex = Number(rerollButton.dataset.foodIndex);
-
-rerollButton.disabled = true;
-rerollButton.classList.add("is-rerolling");
-
-const response = await fetch(
-    "/api/nutrition-builder/reroll-food",
-    {
-      method: "POST",
-      headers: await authHeaders(),
-body: JSON.stringify({
-  mealNumber,
-  optionNumber,
-  foodIndex,
-  plan: window.currentNutritionPlan
-})
-    }
-  );
-
-const data = await response.json();
-
-console.log(data);
-
-const meal = window.currentNutritionPlan.meals.find(
-  (meal) => meal.mealNumber === mealNumber
-);
-
-const optionIndex = meal.options.findIndex(
-  (option) => option.optionNumber === optionNumber
-);
-
-meal.options[optionIndex].foods[foodIndex] = data.food;
-
-renderNutritionPlan(window.currentNutritionPlan);
-
-} finally {
-  rerollButton.disabled = false;
-  rerollButton.classList.remove("is-rerolling");
+// Captures which option each carousel is currently showing, so it can be
+// restored after the re-render triggered by a meal swap.
+function captureActiveOptions() {
+  const map = new Map();
+  resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
+    const options = [...carousel.querySelectorAll(".carousel-option")];
+    const index = options.findIndex((option) => option.classList.contains("active"));
+    map.set(Number(carousel.dataset.mealNumber), Math.max(0, index));
+  });
+  return map;
 }
 
-});  });
+resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollButton) => {
+  rerollButton.addEventListener("click", async () => {
+    const mealNumber = Number(rerollButton.dataset.mealNumber);
+    const optionNumber = Number(rerollButton.dataset.optionNumber);
+
+    rerollButton.disabled = true;
+    rerollButton.classList.add("is-rerolling");
+
+    try {
+      const response = await fetch("/api/nutrition-builder/reroll-meal", {
+        method: "POST",
+        headers: await authHeaders(),
+        body: JSON.stringify({
+          mealNumber,
+          optionNumber,
+          language: isHebrew ? "he" : "en",
+          plan: window.currentNutritionPlan
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.option) {
+        setStatus(
+          data.error ||
+            (isHebrew ? "לא ניתן היה להחליף את הארוחה." : "Could not replace the meal."),
+          true
+        );
+        return;
+      }
+
+      const meal = window.currentNutritionPlan.meals.find(
+        (entry) => entry.mealNumber === mealNumber
+      );
+      const optionIndex = meal?.options.findIndex(
+        (option) => option.optionNumber === optionNumber
+      );
+
+      if (meal && optionIndex !== -1) {
+        meal.options[optionIndex] = data.option;
+        const active = captureActiveOptions();
+        setStatus("");
+        renderNutritionPlan(window.currentNutritionPlan, active);
+      }
+    } catch (error) {
+      console.error("Meal reroll failed:", error);
+      setStatus(
+        isHebrew ? "לא ניתן היה להחליף את הארוחה." : "Could not replace the meal.",
+        true
+      );
+    } finally {
+      rerollButton.disabled = false;
+      rerollButton.classList.remove("is-rerolling");
+    }
+  });
+});
 
 // Setup carousel navigation
 resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
   const mealNumber = Number(carousel.dataset.mealNumber);
-  const options = carousel.querySelectorAll(".carousel-option");
-  const dots = carousel.querySelectorAll(".carousel-dot");
+  const options = [...carousel.querySelectorAll(".carousel-option")];
+  const dots = [...carousel.querySelectorAll(".carousel-dot")];
   const prevBtn = carousel.querySelector(".carousel-prev");
   const nextBtn = carousel.querySelector(".carousel-next");
   const currentCounter = carousel.querySelector(".carousel-current");
 
+  if (!options.length) return;
   let currentIndex = 0;
 
   const showOption = (index) => {
-    options.forEach(opt => opt.classList.remove("active"));
-    dots.forEach(dot => dot.classList.remove("active"));
-    options[index].classList.add("active");
-    dots[index].classList.add("active");
-    currentIndex = index;
-    currentCounter.textContent = index + 1;
-    prevBtn.disabled = index === 0;
-    nextBtn.disabled = index === options.length - 1;
+    const wrappedIndex = ((index % options.length) + options.length) % options.length;
+    options.forEach((option) => option.classList.remove("active"));
+    dots.forEach((dot) => dot.classList.remove("active"));
+    options[wrappedIndex].classList.add("active");
+    dots[wrappedIndex]?.classList.add("active");
+    currentIndex = wrappedIndex;
+    if (currentCounter) currentCounter.textContent = wrappedIndex + 1;
+    if (prevBtn) prevBtn.disabled = false;
+    if (nextBtn) nextBtn.disabled = false;
   };
 
-  prevBtn?.addEventListener("click", () => {
-    if (currentIndex > 0) showOption(currentIndex - 1);
+  prevBtn?.addEventListener("click", () => showOption(currentIndex - 1));
+  nextBtn?.addEventListener("click", () => showOption(currentIndex + 1));
+  dots.forEach((dot, idx) => dot.addEventListener("click", () => showOption(idx)));
+
+  carousel.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") showOption(currentIndex - 1);
+    if (event.key === "ArrowRight") showOption(currentIndex + 1);
   });
 
-  nextBtn?.addEventListener("click", () => {
-    if (currentIndex < options.length - 1) showOption(currentIndex + 1);
-  });
-
-  dots.forEach((dot, idx) => {
-    dot.addEventListener("click", () => showOption(idx));
-  });
-
-  // Keyboard navigation
-  carousel.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowLeft" && currentIndex > 0) showOption(currentIndex - 1);
-    if (e.key === "ArrowRight" && currentIndex < options.length - 1) showOption(currentIndex + 1);
-  });
-
-  showOption(0);
+  showOption(activeOptions?.get(mealNumber) ?? 0);
 });
 
 }
