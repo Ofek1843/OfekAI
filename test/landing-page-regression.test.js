@@ -45,6 +45,10 @@ test("landing contains both verified transformation stories and comparison label
   assert.match(html, /landingResultTwoTitle/);
   assert.match(html, /Individual results vary/);
   assert.equal((html.match(/data-comparison-slider/g) || []).length, 2);
+  assert.equal((html.match(/class="comparison-range"/g) || []).length, 2);
+  assert.equal((html.match(/value="50"/g) || []).length, 2);
+  assert.equal((html.match(/comparison-hint/g) || []).length, 2);
+  assert.match(html, /landingCompareHint/);
 });
 
 test("dashboard public progress teaser markup was removed", () => {
@@ -75,4 +79,48 @@ test("new landing translation keys exist in English and Hebrew fallbacks", () =>
 
   assert.match(landingJs, /2-month transformation/);
   assert.match(landingJs, /שינוי במשך חודשיים/);
+});
+
+test("landing transformation community CTA exists in English and Hebrew", () => {
+  const html = read("public/index.html");
+  const landingJs = read("public/js/landing.js");
+  const i18n = read("public/js/i18n.js");
+
+  assert.match(html, /class="transformation-invite"/);
+  assert.match(html, /href="\/transformation-submit\.html"/);
+  assert.match(html, /landingTransformationInviteTitle/);
+  assert.match(html, /landingTransformationInviteButton/);
+  assert.match(landingJs, /Have you documented a body transformation while using FuelPhysique tools\?/);
+  assert.match(landingJs, /יש לכם שינוי בגוף שתיעדתם בעזרת כלי FuelPhysique\?/);
+  assert.match(i18n, /Submit my transformation/);
+  assert.match(i18n, /שליחת התהליך שלי/);
+});
+
+test("transformation submission form requires files duration process and consent", () => {
+  const html = read("public/transformation-submit.html");
+
+  assert.match(html, /id="transformationSubmissionForm"/);
+  assert.match(html, /id="beforePhoto"[^>]+type="file"[^>]+required/);
+  assert.match(html, /id="afterPhoto"[^>]+type="file"[^>]+required/);
+  assert.match(html, /id="durationValue"[^>]+type="number"[^>]+required/);
+  assert.match(html, /id="processType"[^>]+required/);
+  assert.match(html, /data-consent="ownsPhotos"[^>]+required/);
+  assert.match(html, /data-consent="adultsOnly"[^>]+required/);
+  assert.match(html, /data-consent="notAutomatic"[^>]+required/);
+  assert.match(html, /data-consent="explicitPublication"[^>]+required/);
+  assert.match(html, /id="anonymousDisplay"[^>]+checked/);
+});
+
+test("transformation submission stores private pending metadata and never auto-publishes", () => {
+  const submitJs = read("public/js/transformation-submit.js");
+
+  assert.match(submitJs, /status: "pending"/);
+  assert.match(submitJs, /publicationStatus: "private"/);
+  assert.match(submitJs, /moderationStatus: "pending"/);
+  assert.match(submitJs, /autoPublish: false/);
+  assert.match(submitJs, /publicPublicationApproved: false/);
+  assert.match(submitJs, /publicPublicationRequiresExplicitConsent: true/);
+  assert.match(submitJs, /users\/\$\{userId\}\/transformationSubmissions\/\$\{submissionId\}/);
+  assert.doesNotMatch(submitJs, /public\/images/);
+  assert.doesNotMatch(submitJs, /images\/demo/);
 });

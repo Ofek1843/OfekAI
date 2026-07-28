@@ -161,16 +161,17 @@
                         <h3 data-i18n="landingResultThreeTitle">3-month transformation</h3>
                         <p data-i18n="landingResultTracked">Tracked while using FuelPhysique tools</p>
                     </header>
-                    <div class="comparison-slider" data-comparison-slider>
-                        <figure class="comparison-image comparison-before">
+                    <div class="comparison-slider comparison-slider--story-one" data-comparison-slider>
+                        <figure class="comparison-image comparison-before" style="--image-scale: 1; --image-x: 0%; --image-y: 0%; --image-position-x: 50%; --image-position-y: 50%;">
                             <img src="/images/demo/progress-bulk.jpg" width="1035" height="1536" loading="lazy" alt="Before progress photo, face blurred">
                             <figcaption data-i18n="landingBeforeLabel">BEFORE</figcaption>
                         </figure>
-                        <figure class="comparison-image comparison-after" style="--comparison-position: 54%;">
+                        <figure class="comparison-image comparison-after" style="--comparison-position: 50%; --image-scale: 1; --image-x: 0%; --image-y: 0%; --image-position-x: 50%; --image-position-y: 50%;">
                             <img src="/images/demo/progress-cutting.jpg" width="1035" height="1536" loading="lazy" alt="After progress photo, face blurred">
                             <figcaption data-i18n="landingAfterLabel">AFTER</figcaption>
                         </figure>
-                        <input class="comparison-range" type="range" min="0" max="100" value="54" aria-label="Compare before and after progress photos" data-i18n-title="landingCompareSliderLabel">
+                        <span class="comparison-hint" data-i18n="landingCompareHint">Drag to compare</span>
+                        <input class="comparison-range" type="range" min="0" max="100" value="50" aria-label="Compare before and after progress photos" data-i18n-title="landingCompareSliderLabel">
                         <span class="comparison-handle" aria-hidden="true"></span>
                     </div>
                 </article>
@@ -180,16 +181,17 @@
                         <h3 data-i18n="landingResultTwoTitle">2-month transformation</h3>
                         <p data-i18n="landingResultTracked">Tracked while using FuelPhysique tools</p>
                     </header>
-                    <div class="comparison-slider comparison-slider--wide" data-comparison-slider>
-                        <figure class="comparison-image comparison-before">
+                    <div class="comparison-slider comparison-slider--wide comparison-slider--story-two" data-comparison-slider>
+                        <figure class="comparison-image comparison-before" style="--image-scale: 1.34; --image-x: -8%; --image-y: 1%; --image-position-x: 18%; --image-position-y: 52%;">
                             <img src="/images/demo/before2.jpeg" width="1086" height="766" loading="lazy" alt="Second before progress photo, face blurred">
                             <figcaption data-i18n="landingBeforeLabel">BEFORE</figcaption>
                         </figure>
-                        <figure class="comparison-image comparison-after" style="--comparison-position: 54%;">
+                        <figure class="comparison-image comparison-after" style="--comparison-position: 50%; --image-scale: 1.12; --image-x: -6%; --image-y: 0%; --image-position-x: 19%; --image-position-y: 51%;">
                             <img src="/images/demo/after2.jpeg" width="1086" height="608" loading="lazy" alt="Second after progress photo, face blurred">
                             <figcaption data-i18n="landingAfterLabel">AFTER</figcaption>
                         </figure>
-                        <input class="comparison-range" type="range" min="0" max="100" value="54" aria-label="Compare before and after progress photos" data-i18n-title="landingCompareSliderLabel">
+                        <span class="comparison-hint" data-i18n="landingCompareHint">Drag to compare</span>
+                        <input class="comparison-range" type="range" min="0" max="100" value="50" aria-label="Compare before and after progress photos" data-i18n-title="landingCompareSliderLabel">
                         <span class="comparison-handle" aria-hidden="true"></span>
                     </div>
                 </article>
@@ -198,6 +200,14 @@
             <p class="results-disclaimer" data-i18n="landingResultsDisclaimer">
                 Individual results vary. Training consistency, nutrition, recovery and personal circumstances affect outcomes.
             </p>
+
+            <section class="transformation-invite" aria-labelledby="transformationInviteTitle">
+                <span class="section-kicker" data-i18n="landingTransformationInviteKicker">COMMUNITY RESULTS</span>
+                <h3 id="transformationInviteTitle" data-i18n="landingTransformationInviteTitle">Have you documented a body transformation while using FuelPhysique tools?</h3>
+                <p data-i18n="landingTransformationInviteText">Want to be featured here? Submit your before-and-after photos and a few details about your process.</p>
+                <a class="hero-btn primary transformation-invite-button" href="/transformation-submit.html" data-i18n="landingTransformationInviteButton">Submit my transformation</a>
+                <small data-i18n="landingTransformationInvitePrivacy">Submissions stay private, pending manual review, and are never published automatically.</small>
+            </section>
         </section>
 
         <section class="landing-section how-section reveal-on-scroll" aria-labelledby="howSectionTitle">

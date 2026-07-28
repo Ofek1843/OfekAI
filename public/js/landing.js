@@ -67,8 +67,17 @@ const LANDING_FALLBACKS = {
     landingBeforeLabel: "BEFORE",
     landingAfterLabel: "AFTER",
     landingCompareSliderLabel: "Compare before and after progress photos",
+    landingCompareHint: "Drag to compare",
     landingResultsDisclaimer:
       "Individual results vary. Training consistency, nutrition, recovery and personal circumstances affect outcomes.",
+    landingTransformationInviteKicker: "COMMUNITY RESULTS",
+    landingTransformationInviteTitle:
+      "Have you documented a body transformation while using FuelPhysique tools?",
+    landingTransformationInviteText:
+      "Want to be featured here? Submit your before-and-after photos and a few details about your process.",
+    landingTransformationInviteButton: "Submit my transformation",
+    landingTransformationInvitePrivacy:
+      "Submissions stay private, pending manual review, and are never published automatically.",
     landingHowKicker: "HOW IT WORKS",
     landingHowTitle: "Build, follow, measure and adjust",
     landingStepBuild: "Build",
@@ -143,8 +152,17 @@ const LANDING_FALLBACKS = {
     landingBeforeLabel: "לפני",
     landingAfterLabel: "אחרי",
     landingCompareSliderLabel: "השוואה בין תמונת לפני ותמונת אחרי",
+    landingCompareHint: "גררו להשוואה",
     landingResultsDisclaimer:
       "התוצאות משתנות מאדם לאדם ותלויות בעקביות, תזונה, התאוששות ונסיבות אישיות.",
+    landingTransformationInviteKicker: "תוצאות מהקהילה",
+    landingTransformationInviteTitle:
+      "יש לכם שינוי בגוף שתיעדתם בעזרת כלי FuelPhysique?",
+    landingTransformationInviteText:
+      "רוצים שיופיע גם כאן? שלחו תמונות לפני ואחרי ופרטים קצרים על התהליך שעברתם.",
+    landingTransformationInviteButton: "שליחת התהליך שלי",
+    landingTransformationInvitePrivacy:
+      "ההגשה נשארת פרטית, ממתינה לבדיקה ידנית, ולא מתפרסמת אוטומטית.",
     landingHowKicker: "איך זה עובד",
     landingHowTitle: "בונים, מבצעים, מודדים ומשפרים",
     landingStepBuild: "בונים",
@@ -334,7 +352,15 @@ function wireComparisonSliders() {
       handle.style.left = value;
     };
 
-    range.addEventListener("input", update);
+    const markInteracted = () => slider.classList.add("comparison-interacted");
+
+    range.addEventListener("input", () => {
+      markInteracted();
+      update();
+    });
+    range.addEventListener("pointerdown", markInteracted);
+    range.addEventListener("keydown", markInteracted);
+    range.addEventListener("touchstart", markInteracted, { passive: true });
     update();
   });
 }
