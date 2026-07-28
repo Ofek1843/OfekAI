@@ -1292,10 +1292,15 @@ async function finishWorkout() {
       console.error("Personal-record check failed:", prError);
     }
   } catch (error) {
-    console.error(error);
-    $("#trackerStatus").textContent = ui.saveError;
+    console.error("Workout save error:", error);
+    const errorMsg = error?.message || error?.code || "Save failed";
+    $("#trackerStatus").textContent = `${ui.saveError} (${errorMsg})`;
     $("#trackerStatus").classList.add("error");
     saveCurrentDraft();
+
+    // Log more details for debugging
+    if (error?.code) console.error("Firebase error code:", error.code);
+    if (error?.details) console.error("Error details:", error.details);
   } finally {
     button.disabled = false;
     button.textContent = ui.finish;

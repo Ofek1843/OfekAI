@@ -44,7 +44,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
-const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 60000);
+const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 120000);
 const mockExternalServices = String(process.env.MOCK_EXTERNAL_SERVICES || "").toLowerCase() === "true";
 const uploadAuthTtlSeconds = Number(process.env.IMAGEKIT_UPLOAD_AUTH_TTL_SECONDS || 1800);
 const imageKitUploadCache = createTtlCache({ maxEntries: 32, ttlMs: 60 * 60 * 1000 });
