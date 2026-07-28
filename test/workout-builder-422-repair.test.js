@@ -124,7 +124,7 @@ test("English locale 422 (still-invalid-after-repair) returns English validation
   // pre-set exerciseId. Repair only fills in a MISSING exerciseId — it
   // never rewrites one already provided — so this stays invalid (Rule 9)
   // even after repair, deterministically forcing this 422 path.
-  const server = await startServer(4201, { MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID: "true" });
+  const server = await startServer(4201, { MOCK_OPENAI_FORCE_EMPTY_SESSION: "true" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
@@ -143,7 +143,7 @@ test("English locale 422 (still-invalid-after-repair) returns English validation
 });
 
 test("Hebrew locale 422 (still-invalid-after-repair) returns Hebrew validation details", async (t) => {
-  const server = await startServer(4202, { MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID: "true" });
+  const server = await startServer(4202, { MOCK_OPENAI_FORCE_EMPTY_SESSION: "true" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {

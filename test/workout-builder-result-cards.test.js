@@ -122,7 +122,10 @@ test("deterministic workout engine stays wired into both workout endpoints", () 
   assert.match(serverSource, /calculateWeeklyVolume\(program, EXERCISE_SETCREDITS\)/);
   assert.match(serverSource, /estimateSessionDuration\(session\)/);
   assert.match(serverSource, /validateWorkoutProgram\(program, \{/);
-  assert.match(serverSource, /repairGeneratedWorkoutProgram\(program, \{ sessionDuration: parsedDuration \}\)/);
+  assert.match(
+    serverSource,
+    /repairGeneratedWorkoutProgram\(program, \{\s*sessionDuration: parsedDuration,\s*equipment\s*\}\)/
+  );
   assert.match(serverSource, /program\.weeklyScheduleDays = \[\]/);
 
   const responseFieldCount = (field) =>

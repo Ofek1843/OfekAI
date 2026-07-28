@@ -36,7 +36,6 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "cable-crunch",
   "cable-lateral-raise",
   "cable-tricep-pushdown",
-  "cable-wood-chopper",
   "cable-woodchopper",
   "chin-up",
   "close-grip-bench-press",
@@ -46,6 +45,7 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "dip",
   "dumbbell-bench-press",
   "dumbbell-bicep-curl",
+  "dumbbell-calf-raise",
   "dumbbell-fly",
   "dumbbell-front-raise",
   "dumbbell-goblet-squat",
@@ -55,6 +55,7 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "dumbbell-row",
   "dumbbell-shoulder-press",
   "dumbbell-shrug",
+  "dumbbell-walking-lunge",
   "face-pull",
   "good-morning",
   "hack-squat",
@@ -122,10 +123,16 @@ const ALIASES = {
   "front-squat": "barbell-front-squat",
   "goblet-squat": "dumbbell-goblet-squat",
   "walking-lunge": "reverse-lunge",
+  "walking-lunges": "reverse-lunge",
   lunge: "reverse-lunge",
   "dumbbell-lunge": "reverse-lunge",
-  "forward-lunge": "reverse-lunge",
+  "dumbbell-lunges": "reverse-lunge",
+  "dumbbell-walking-lunges": "dumbbell-walking-lunge",
+  "walking-dumbbell-lunge": "dumbbell-walking-lunge",
+  "walking-dumbbell-lunges": "dumbbell-walking-lunge",
+  "forward-lunge": "forward-lunge",
   "split-squat": "bulgarian-split-squat",
+  "dumbbell-bulgarian-split-squat": "bulgarian-split-squat",
   "bulgarian-split-squat-dumbbell": "bulgarian-split-squat",
   "step-ups": "step-up",
   "box-step-up": "step-up",
@@ -133,9 +140,13 @@ const ALIASES = {
   "barbell-step-up": "step-up",
 
   // --- Calf raise: generic name must land somewhere ---
-  "calf-raise": "standing-calf-raise",
+  "calf-raise": "calf-raise",
   "standing-calf-raises": "standing-calf-raise",
   "seated-calf-raises": "seated-calf-raise",
+  "dumbbell-calf-raises": "dumbbell-calf-raise",
+  "standing-dumbbell-calf-raise": "dumbbell-calf-raise",
+  "standing-dumbbell-calf-raises": "dumbbell-calf-raise",
+  "standing-calf-raise-machine": "standing-calf-raise",
   "machine-calf-raise": "standing-calf-raise",
   "smith-machine-calf-raise": "standing-calf-raise",
 
@@ -143,8 +154,8 @@ const ALIASES = {
   "hip-thrust": "barbell-hip-thrust",
   "glute-bridge": "barbell-hip-thrust",
   "barbell-glute-bridge": "barbell-hip-thrust",
-  deadlift: "romanian-deadlift",
-  "stiff-leg-deadlift": "romanian-deadlift",
+  deadlift: "deadlift",
+  "stiff-leg-deadlift": "stiff-leg-deadlift",
   "dumbbell-romanian-deadlift": "romanian-deadlift",
   rdl: "romanian-deadlift",
   "lying-leg-curls": "lying-leg-curl",
@@ -176,6 +187,8 @@ const ALIASES = {
   "incline-barbell-bench-press": "incline-bench-press",
   "incline-press": "incline-bench-press",
   "incline-dumbbell-press": "incline-dumbbell-bench-press",
+  "dumbell-incline-bench-press": "incline-dumbbell-bench-press",
+  "dumbell-incline-press": "incline-dumbbell-bench-press",
   "incline-dumbbell-bench-press": "incline-dumbbell-bench-press",
   "incline-db-press": "incline-dumbbell-bench-press",
   "incline-db-bench-press": "incline-dumbbell-bench-press",
@@ -204,7 +217,7 @@ const ALIASES = {
   "suspension-row": "australian-row",
   "pull-ups": "pull-up",
   pullup: "pull-up",
-  "wide-grip-pull-up": "pull-up",
+  "wide-grip-pull-up": "wide-grip-pull-up",
   "chin-ups": "chin-up",
   "neutral-grip-pullup": "neutral-grip-pull-up",
   "assisted-one-arm-pull-up": "one-arm-pull-up",
@@ -220,14 +233,16 @@ const ALIASES = {
   "one-arm-dumbbell-row": "dumbbell-row",
   "single-arm-dumbbell-row": "dumbbell-row",
   "dumbbell-bent-over-row": "dumbbell-row",
-  "chest-supported-row": "seated-cable-row",
-  "seated-row": "seated-cable-row",
+  "chest-supported-row": "chest-supported-row",
+  "seated-row": "seated-row",
+  "seated-machine-row": "seated-machine-row",
+  "seated-row-machine": "seated-row-machine",
   "cable-row": "seated-cable-row",
-  "machine-row": "seated-cable-row",
+  "machine-row": "machine-row",
   "bent-over-barbell-row": "barbell-row",
   "bent-over-row": "barbell-row",
   "pendlay-row": "barbell-row",
-  "conventional-deadlift": "rack-pull",
+  "conventional-deadlift": "conventional-deadlift",
   "straight-arm-pulldown": "close-grip-lat-pulldown",
   "back-extension": "good-morning",
   hyperextension: "good-morning",
@@ -241,15 +256,23 @@ const ALIASES = {
   "dumbbell-overhead-press": "dumbbell-shoulder-press",
   "shoulder-press-machine": "machine-shoulder-press",
   "lateral-raise": "dumbbell-lateral-raise",
+  "dumbell-lateral-raise": "dumbbell-lateral-raise",
+  "dumbell-lateral-raises": "dumbbell-lateral-raise",
   "side-lateral-raise": "dumbbell-lateral-raise",
   "lateral-raises": "dumbbell-lateral-raise",
   "front-raise": "dumbbell-front-raise",
   "rear-delt-fly": "dumbbell-reverse-fly",
-  "reverse-pec-deck": "dumbbell-reverse-fly",
+  "machine-rear-delt-fly": "machine-rear-delt-fly",
+  "rear-delt-machine-fly": "rear-delt-machine-fly",
+  "reverse-pec-deck": "reverse-pec-deck",
   "rear-delt-raise": "dumbbell-reverse-fly",
   "bent-over-lateral-raise": "dumbbell-reverse-fly",
   "reverse-fly": "dumbbell-reverse-fly",
   "upright-row": "barbell-upright-row",
+  "barbell-shrugs": "barbell-shrug",
+  "dumbbell-shrugs": "dumbbell-shrug",
+  "dumbbells-shrug": "dumbbell-shrug",
+  "dumbbells-shrugs": "dumbbell-shrug",
   shrug: "barbell-shrug",
   shrugs: "barbell-shrug",
 
@@ -260,7 +283,7 @@ const ALIASES = {
   "dumbbell-curl": "dumbbell-bicep-curl",
   "dumbbell-biceps-curl": "dumbbell-bicep-curl",
   "alternating-dumbbell-curl": "dumbbell-bicep-curl",
-  "incline-dumbbell-curl": "dumbbell-bicep-curl",
+  "incline-dumbbell-curl": "incline-dumbbell-curl",
   "bicep-curl": "dumbbell-bicep-curl",
   "biceps-curl": "dumbbell-bicep-curl",
   "cable-curl": "cable-bicep-curl",
@@ -269,30 +292,35 @@ const ALIASES = {
   "cable-preacher-curl": "preacher-curl",
   "ez-bar-preacher-curl": "preacher-curl",
   "hammer-curls": "hammer-curl",
+  "dumbbell-hammer-curl": "hammer-curl",
+  "dumbbell-hammer-curls": "hammer-curl",
   "triceps-pushdown": "cable-tricep-pushdown",
   "tricep-pushdown": "cable-tricep-pushdown",
   "rope-triceps-pushdown": "cable-tricep-pushdown",
   "rope-tricep-pushdown": "cable-tricep-pushdown",
   "cable-triceps-pushdown": "cable-tricep-pushdown",
+  "cable-face-pull": "face-pull",
   "overhead-triceps-extension": "overhead-tricep-extension",
-  "cable-overhead-triceps-extension": "overhead-tricep-extension",
+  "cable-overhead-triceps-extension": "cable-overhead-triceps-extension",
   "dumbbell-overhead-triceps-extension": "overhead-tricep-extension",
   "skull-crushers": "skull-crusher",
   "lying-triceps-extension": "skull-crusher",
   "triceps-dip": "tricep-dip",
-  "bench-dip": "tricep-dip",
+  "bench-dip": "bench-dip",
   "parallel-bar-dip": "dip",
   "chest-dip": "dip",
 
   // --- Core ---
   "cable-crunch": "cable-crunch",
   "kneeling-cable-crunch": "cable-crunch",
-  crunch: "russian-twist",
-  "hanging-knee-raise": "hanging-leg-raise",
+  crunch: "crunch",
+  "hanging-knee-raise": "hanging-knee-raise",
   "leg-raise": "hanging-leg-raise",
   "ab-rollout": "ab-wheel-rollout",
   "plank-hold": "plank",
   "woodchopper": "cable-woodchopper",
+  "wood-chopper": "cable-woodchopper",
+  "cable-wood-chopper": "cable-woodchopper",
   "cable-woodchop": "cable-woodchopper"
 };
 
@@ -306,40 +334,76 @@ export function hasExerciseImageSlug(slug = "") {
   return KNOWN_EXERCISE_IMAGE_SLUGS.has(slug);
 }
 
-function warnMissingExerciseImage(source, slug) {
+function exerciseImageSource(exercise = {}) {
+  if (typeof exercise === "string") {
+    return { sourceField: "string", sourceValue: exercise };
+  }
+
+  const candidates = [
+    ["exerciseId", exercise.exerciseId],
+    ["id", exercise.id],
+    ["demoName", exercise.demoName],
+    ["name", exercise.name],
+    ["exercise", exercise.exercise]
+  ];
+
+  for (const [sourceField, rawValue] of candidates) {
+    const sourceValue = String(rawValue || "").trim();
+    if (sourceValue) return { sourceField, sourceValue };
+  }
+
+  return { sourceField: "none", sourceValue: "" };
+}
+
+function warnMissingExerciseImage(details) {
   if (
     typeof window === "undefined" ||
     typeof console === "undefined" ||
     window.location?.hostname !== "localhost" ||
-    missingExerciseImageWarnings.has(slug)
+    missingExerciseImageWarnings.has(details.attemptedSlug)
   ) {
     return;
   }
 
-  missingExerciseImageWarnings.add(slug);
-  console.warn("Missing exercise demo image; using branded fallback.", {
-    source,
-    slug
-  });
+  missingExerciseImageWarnings.add(details.attemptedSlug);
+  console.warn("Missing exercise demo image; using branded fallback.", details);
+}
+
+export function exerciseImageResolutionDetails(exercise = {}) {
+  const { sourceField, sourceValue } = exerciseImageSource(exercise);
+  const attemptedSlug = exerciseImageSlug(sourceValue);
+  const hasDedicatedImage = Boolean(attemptedSlug && hasExerciseImageSlug(attemptedSlug));
+  const imageUrl = hasDedicatedImage
+    ? `/images/exercises/${attemptedSlug}.png`
+    : EXERCISE_FALLBACK_IMAGE_URL;
+
+  return {
+    originalName: typeof exercise === "object" ? exercise.name || "" : String(exercise || ""),
+    demoName: typeof exercise === "object" ? exercise.demoName || "" : "",
+    exerciseId: typeof exercise === "object" ? exercise.exerciseId || exercise.id || "" : "",
+    equipment: typeof exercise === "object" ? exercise.equipment || "" : "",
+    muscle: typeof exercise === "object" ? exercise.muscleGroup || exercise.muscle || "" : "",
+    sourceField,
+    sourceValue,
+    attemptedSlug,
+    imageUrl,
+    usedFallback: !hasDedicatedImage,
+    fallbackReason: hasDedicatedImage
+      ? ""
+      : attemptedSlug
+        ? "resolved slug is not in KNOWN_EXERCISE_IMAGE_SLUGS"
+        : "no usable exercise name, demoName or exerciseId"
+  };
 }
 
 export function exerciseImageUrl(exercise = {}) {
-  const source =
-    typeof exercise === "string"
-      ? exercise
-      : exercise.exerciseId ||
-        exercise.id ||
-        exercise.demoName ||
-        exercise.name ||
-        exercise.exercise ||
-        "";
-  const slug = exerciseImageSlug(source);
-  if (slug && hasExerciseImageSlug(slug)) {
-    return `/images/exercises/${slug}.png`;
+  const details = exerciseImageResolutionDetails(exercise);
+  if (!details.usedFallback) {
+    return details.imageUrl;
   }
 
-  if (slug) {
-    warnMissingExerciseImage(source, slug);
+  if (details.attemptedSlug) {
+    warnMissingExerciseImage(details);
   }
 
   return EXERCISE_FALLBACK_IMAGE_URL;

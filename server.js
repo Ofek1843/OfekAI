@@ -9,6 +9,7 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
+const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
 const { translateValidationMessages } = require("./lib/workout-validation-i18n");
@@ -23,6 +24,10 @@ const {
   isGpt5ChatModel,
   incompleteResponseMessage
 } = require("./lib/openai-diagnostics");
+
+const WORKOUT_DISABLED_EXERCISE_PROMPT_LIST = MISSING_DEDICATED_IMAGE_EXERCISES
+  .map((exercise) => exercise.title)
+  .join(", ");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
@@ -995,6 +1000,7 @@ async function createChatCompletion({
       // that's not "repairing a gap", it's rewriting real AI output). Lets
       // tests force a still-invalid-after-repair 422 deterministically.
       const forceDuplicateExerciseId = String(process.env.MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID || "").toLowerCase() === "true";
+      const forceEmptySession = String(process.env.MOCK_OPENAI_FORCE_EMPTY_SESSION || "").toLowerCase() === "true";
       const stripId = (exercise) => {
         if (!omitExerciseId) return exercise;
         const { exerciseId, ...rest } = exercise;
@@ -1011,6 +1017,9 @@ async function createChatCompletion({
           stripId({ exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." })
         ]
       }));
+      if (forceEmptySession && sessions[0]) {
+        sessions[0].exercises = [];
+      }
       return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
     }
     if (/Return ONLY valid JSON/i.test(systemPrompt) && /meals/.test(systemPrompt)) {
@@ -2316,6 +2325,7 @@ Programming rules:
 - For every exercise, include its primary muscle group.
 - For every exercise, set demoName to the precise canonical English exercise name. Include equipment and position modifiers such as seated, standing, incline, barbell, dumbbell, cable, machine, split or single-leg whenever they change the movement.
 - demoName is hidden technical metadata. Keep it in English even when all visible values are Hebrew.
+- Do not prescribe these exercises because FuelPhysique does not yet have verified dedicated demonstration media for them: ${WORKOUT_DISABLED_EXERCISE_PROMPT_LIST}.
 - Never use vague or non-exercise names such as a general stance or limb position.
 - For every exercise, include the exact equipment required.
 - Keep muscle-group names short, such as Chest, Back, Quads, Hamstrings, Shoulders, Biceps, Triceps or Core.
@@ -2470,7 +2480,10 @@ Injuries, limitations or special requests: ${String(limitations)}
     // lowest-priority accessory exercises if a session still exceeds the
     // duration cap. This makes the DATA satisfy validateWorkoutProgram's
     // existing rules wherever possible; it never loosens or skips a rule.
-    const { repairs } = repairGeneratedWorkoutProgram(program, { sessionDuration: parsedDuration });
+    const { repairs } = repairGeneratedWorkoutProgram(program, {
+      sessionDuration: parsedDuration,
+      equipment
+    });
     if (repairs.length > 0) {
       console.info(`Workout repair applied for user ${user.uid}:`, repairs);
     }
@@ -2634,6 +2647,7 @@ Rules:
 - Use ONLY the selected equipment (if specified).
 - Set exerciseId to a lowercase-hyphenated identifier for the exercise (e.g. "barbell-bench-press").
 - Set demoName to the precise canonical English exercise name, including equipment and position modifiers.
+- Do not return these exercises because FuelPhysique does not yet have verified dedicated demonstration media for them: ${WORKOUT_DISABLED_EXERCISE_PROMPT_LIST}.
 - Return only one exercise.
 - Return valid JSON only.
 - Do not use prohibited equipment or movements.
@@ -2686,18 +2700,28 @@ Required JSON format:
         error: "The AI returned an invalid exercise format"
       });
     }
+    // Same deterministic repair pass used by /api/workout-builder — the
+    // reroll prompt already asks the AI for exerciseId, but this is a
+    // defensive backstop, not the primary fix for it.
+    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
+      { sessions: [{ exercises: [newExercise] }] },
+      {
+        sessionDuration: program.sessionDuration || 60,
+        equipment: selectedEquipment
+      }
+    );
+    if (rerollRepairs.length > 0) {
+      console.info("Reroll repair applied:", rerollRepairs);
+    }
 
-    // Validate equipment constraint using canonical exact matching —
-    // an empty/unrecognized equipment string must never silently pass.
     if (selectedEquipment.length > 0) {
-      const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment));
+      const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment).filter(Boolean));
       const newEquipNorm = normalizeEquipment(newExercise.equipment);
-
       const isAllowed = newEquipNorm !== "" && (newEquipNorm === "bodyweight" || selectedNorm.has(newEquipNorm));
 
       if (!isAllowed) {
         console.warn(
-          `Reroll produced exercise with disallowed equipment: "${newExercise.equipment}", selected: ${selectedEquipment.join(", ")}`
+          `Reroll produced exercise with disallowed equipment after repair: "${newExercise.equipment}", selected: ${selectedEquipment.join(", ")}`
         );
         return res.status(422).json({
           success: false,
@@ -2706,17 +2730,6 @@ Required JSON format:
             : `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
         });
       }
-    }
-
-    // Same deterministic repair pass used by /api/workout-builder — the
-    // reroll prompt already asks the AI for exerciseId, but this is a
-    // defensive backstop, not the primary fix for it.
-    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
-      { sessions: [{ exercises: [newExercise] }] },
-      { sessionDuration: program.sessionDuration || 60 }
-    );
-    if (rerollRepairs.length > 0) {
-      console.info("Reroll repair applied:", rerollRepairs);
     }
 
     // Validate full program with replacement

@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
+const { buildAudit } = require("../scripts/audit-exercise-image-coverage");
 
 const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -26,6 +27,7 @@ function loadBrowserExerciseImageModule() {
   vm.runInNewContext(
     `${source}
     moduleExports.exerciseImageUrl = exerciseImageUrl;
+    moduleExports.exerciseImageResolutionDetails = exerciseImageResolutionDetails;
     moduleExports.fallbackExerciseImageUrl = fallbackExerciseImageUrl;
     moduleExports.exerciseImageSlug = exerciseImageSlug;
     moduleExports.hasExerciseImageSlug = hasExerciseImageSlug;`,
@@ -107,7 +109,20 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Hip Adductor Machine", "adductors.png"],
     ["Incline Dumbbell Press", "incline-dumbbell-bench-press.png"],
     ["Typewriter Pull-up", "typewriter-pull-ups.png"],
-    ["Dumbbell Step-up", "step-up.png"]
+    ["Dumbbell Step-up", "step-up.png"],
+    ["Cable Triceps Pushdown", "cable-tricep-pushdown.png"],
+    ["Dumbbell Calf Raise", "dumbbell-calf-raise.png"],
+    ["Dumbbell Walking Lunge", "dumbbell-walking-lunge.png"],
+    ["Dumbell Lateral Raise", "dumbbell-lateral-raise.png"],
+    ["Dumbbells Shrug", "dumbbell-shrug.png"],
+    ["Barbell Shrugs", "barbell-shrug.png"],
+    ["Cable Wood Chopper", "cable-woodchopper.png"],
+    ["Bulgarian Split Squat", "bulgarian-split-squat.png"],
+    ["Dumbbell Bulgarian Split Squat", "bulgarian-split-squat.png"],
+    ["Triceps Dip", "tricep-dip.png"],
+    ["Dumbbell Hammer Curl", "hammer-curl.png"],
+    ["Hammer Curls", "hammer-curl.png"],
+    ["Cable Face Pull", "face-pull.png"]
   ];
 
   for (const [exerciseName, expectedFile] of cases) {
@@ -119,6 +134,79 @@ test("exercise image resolver maps newly imported images to existing files", asy
     );
     assert.ok(fs.existsSync(publicFile(url)), `Missing resolved demo image: ${url}`);
   }
+});
+
+test("public generated exercise variants resolve to exact real images without frontend fallback", () => {
+  const imageModule = loadBrowserExerciseImageModule();
+  const fixtures = [
+    {
+      name: "Bulgarian Split Squat",
+      demoName: "Bulgarian Split Squat",
+      exerciseId: "bulgarian-split-squat",
+      equipment: "Dumbbell",
+      muscleGroup: "Quads",
+      expectedUrl: "/images/exercises/bulgarian-split-squat.png"
+    },
+    {
+      name: "Seated Leg Curl",
+      demoName: "Seated Leg Curl",
+      exerciseId: "seated-leg-curl",
+      equipment: "Machine",
+      muscleGroup: "Hamstrings",
+      expectedUrl: "/images/exercises/seated-leg-curl.png"
+    },
+    {
+      name: "Dumbbell Hammer Curl",
+      demoName: "Dumbbell Hammer Curl",
+      exerciseId: "dumbbell-hammer-curl",
+      equipment: "Dumbbell",
+      muscleGroup: "Biceps",
+      expectedUrl: "/images/exercises/hammer-curl.png"
+    }
+  ];
+
+  for (const fixture of fixtures) {
+    const details = imageModule.exerciseImageResolutionDetails(fixture);
+    assert.equal(details.usedFallback, false, `${fixture.name} must not use the branded fallback`);
+    assert.equal(details.imageUrl, fixture.expectedUrl);
+    assert.ok(fs.existsSync(publicFile(details.imageUrl)), `Missing resolved image: ${details.imageUrl}`);
+  }
+});
+
+test("unsupported surrogate exercise names no longer pretend to have a different demo", () => {
+  const imageModule = loadBrowserExerciseImageModule();
+  const unsupported = [
+    "Seated Machine Row",
+    "Machine Row",
+    "Reverse Pec Deck",
+    "Machine Rear Delt Fly",
+    "Bench Dip",
+    "Assisted Pull-up",
+    "Hanging Knee Raise",
+    "Incline Dumbbell Curl"
+  ];
+
+  for (const exerciseName of unsupported) {
+    const details = imageModule.exerciseImageResolutionDetails({ name: exerciseName, demoName: exerciseName });
+    assert.equal(details.usedFallback, true, `${exerciseName} should not use a surrogate image`);
+    assert.equal(details.imageUrl, "/images/exercises/fuelphysique-demo-fallback.svg");
+  }
+});
+
+test("exercise image coverage audit has no missing, orphaned, broken or generator fallback mappings", () => {
+  const report = buildAudit();
+
+  assert.deepEqual(report.issues, []);
+  assert.equal(report.totals.canonicalExercisesMissingImages, 0);
+  assert.equal(report.totals.orphanFiles, 0);
+  assert.equal(report.totals.brokenMappings, 0);
+  assert.equal(report.totals.invalidFiles, 0);
+  assert.equal(report.totals.fallbackOnlyAliases, 0);
+  assert.equal(report.totals.generatorVariantsReachingFallback, 0);
+  assert.equal(report.totals.generatorExistingFilesWithBrokenRouting, 0);
+  assert.equal(report.totals.generatorGenuinelyMissingImages, 0);
+  assert.equal(report.totals.generatorCanonicalMismatches, 0);
+  assert.equal(report.totals.publicReleaseImageFailures, 0);
 });
 
 test("unknown exercise images use the branded fallback instead of a broken PNG URL", async () => {
