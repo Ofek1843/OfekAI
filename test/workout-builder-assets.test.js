@@ -117,12 +117,9 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Dumbbells Shrug", "dumbbell-shrug.png"],
     ["Barbell Shrugs", "barbell-shrug.png"],
     ["Cable Wood Chopper", "cable-woodchopper.png"],
-    ["Seated Machine Row", "seated-cable-row.png"],
-    ["Machine Row", "seated-cable-row.png"],
-    ["Seated Row Machine", "seated-cable-row.png"],
-    ["Machine Rear Delt Fly", "dumbbell-reverse-fly.png"],
-    ["Rear Delt Machine Fly", "dumbbell-reverse-fly.png"],
-    ["Reverse Pec Deck", "dumbbell-reverse-fly.png"],
+    ["Bulgarian Split Squat", "bulgarian-split-squat.png"],
+    ["Dumbbell Bulgarian Split Squat", "bulgarian-split-squat.png"],
+    ["Triceps Dip", "tricep-dip.png"],
     ["Dumbbell Hammer Curl", "hammer-curl.png"],
     ["Hammer Curls", "hammer-curl.png"],
     ["Cable Face Pull", "face-pull.png"]
@@ -139,24 +136,24 @@ test("exercise image resolver maps newly imported images to existing files", asy
   }
 });
 
-test("generated exercise variants resolve to real images without frontend fallback", () => {
+test("public generated exercise variants resolve to exact real images without frontend fallback", () => {
   const imageModule = loadBrowserExerciseImageModule();
   const fixtures = [
     {
-      name: "Seated Machine Row",
-      demoName: "Seated Machine Row",
-      exerciseId: "seated-machine-row",
-      equipment: "Machine",
-      muscleGroup: "Back",
-      expectedUrl: "/images/exercises/seated-cable-row.png"
+      name: "Bulgarian Split Squat",
+      demoName: "Bulgarian Split Squat",
+      exerciseId: "bulgarian-split-squat",
+      equipment: "Dumbbell",
+      muscleGroup: "Quads",
+      expectedUrl: "/images/exercises/bulgarian-split-squat.png"
     },
     {
-      name: "Machine Rear Delt Fly",
-      demoName: "Machine Rear Delt Fly",
-      exerciseId: "machine-rear-delt-fly",
+      name: "Seated Leg Curl",
+      demoName: "Seated Leg Curl",
+      exerciseId: "seated-leg-curl",
       equipment: "Machine",
-      muscleGroup: "Rear Delts",
-      expectedUrl: "/images/exercises/dumbbell-reverse-fly.png"
+      muscleGroup: "Hamstrings",
+      expectedUrl: "/images/exercises/seated-leg-curl.png"
     },
     {
       name: "Dumbbell Hammer Curl",
@@ -176,6 +173,26 @@ test("generated exercise variants resolve to real images without frontend fallba
   }
 });
 
+test("unsupported surrogate exercise names no longer pretend to have a different demo", () => {
+  const imageModule = loadBrowserExerciseImageModule();
+  const unsupported = [
+    "Seated Machine Row",
+    "Machine Row",
+    "Reverse Pec Deck",
+    "Machine Rear Delt Fly",
+    "Bench Dip",
+    "Assisted Pull-up",
+    "Hanging Knee Raise",
+    "Incline Dumbbell Curl"
+  ];
+
+  for (const exerciseName of unsupported) {
+    const details = imageModule.exerciseImageResolutionDetails({ name: exerciseName, demoName: exerciseName });
+    assert.equal(details.usedFallback, true, `${exerciseName} should not use a surrogate image`);
+    assert.equal(details.imageUrl, "/images/exercises/fuelphysique-demo-fallback.svg");
+  }
+});
+
 test("exercise image coverage audit has no missing, orphaned, broken or generator fallback mappings", () => {
   const report = buildAudit();
 
@@ -189,6 +206,7 @@ test("exercise image coverage audit has no missing, orphaned, broken or generato
   assert.equal(report.totals.generatorExistingFilesWithBrokenRouting, 0);
   assert.equal(report.totals.generatorGenuinelyMissingImages, 0);
   assert.equal(report.totals.generatorCanonicalMismatches, 0);
+  assert.equal(report.totals.publicReleaseImageFailures, 0);
 });
 
 test("unknown exercise images use the branded fallback instead of a broken PNG URL", async () => {

@@ -1,0 +1,183 @@
+{
+  "generatedAt": "2026-07-28",
+  "scope": "analysis-only",
+  "totals": {
+    "totalGeneratedNamesReviewed": 106,
+    "totalSurrogateRoutesReviewed": 53,
+    "totalSafeAliasRoutes": 22,
+    "totalExistingImageRoutingBugRoutes": 5,
+    "totalDistinctExistingImageRoutingBugs": 4,
+    "totalInaccurateSurrogateRoutesRequiringImageWork": 22,
+    "totalDistinctNewOrReplacementImagesRequired": 12,
+    "totalAmbiguousRoutes": 4,
+    "totalDedicatedImagesAlreadyAvailableExcludingFallback": 85
+  },
+  "newImagesRequired": [
+    {
+      "exactExerciseName": "Assisted Pull Up / Pull Up Assisted If Needed",
+      "suggestedFilename": "assisted-pull-up.png",
+      "muscleGroup": "Back",
+      "equipment": "Assisted pull-up machine or band + pull-up bar",
+      "currentSurrogateImage": "pull-up.png",
+      "whyInaccurate": "A normal pull-up does not show assistance, counterweight, band, or assisted setup.",
+      "priority": "High"
+    },
+    {
+      "exactExerciseName": "Chin Up Assisted If Needed",
+      "suggestedFilename": "assisted-chin-up.png",
+      "muscleGroup": "Back / biceps",
+      "equipment": "Assisted pull-up machine or band + supinated grip",
+      "currentSurrogateImage": "chin-up.png",
+      "whyInaccurate": "A normal chin-up does not show assistance, and the grip differs from assisted pull-up.",
+      "priority": "Medium"
+    },
+    {
+      "exactExerciseName": "Bench Dip",
+      "suggestedFilename": "bench-dip.png",
+      "muscleGroup": "Triceps / chest",
+      "equipment": "Bench / bodyweight",
+      "currentSurrogateImage": "dip.png",
+      "whyInaccurate": "Parallel-bar chest dip is a different setup and torso/body path than a bench dip.",
+      "priority": "High"
+    },
+    {
+      "exactExerciseName": "Hip Thrust Machine / Barbell Hip Thrust Machine",
+      "suggestedFilename": "hip-thrust-machine.png",
+      "muscleGroup": "Glutes",
+      "equipment": "Hip thrust machine",
+      "currentSurrogateImage": "barbell-hip-thrust.png",
+      "whyInaccurate": "Machine hip thrust setup is meaningfully different from a barbell-on-hips setup.",
+      "priority": "Medium"
+    },
+    {
+      "exactExerciseName": "Chest Supported Row",
+      "suggestedFilename": "chest-supported-row.png",
+      "muscleGroup": "Back",
+      "equipment": "Chest-supported machine, incline bench, or T-bar row setup",
+      "currentSurrogateImage": "seated-cable-row.png",
+      "whyInaccurate": "Chest support and torso angle change setup and body position; cable seated row is not the same exercise.",
+      "priority": "High"
+    },
+    {
+      "exactExerciseName": "Seated Machine Row / Machine Row / Seated Row Machine",
+      "suggestedFilename": "seated-machine-row.png",
+      "muscleGroup": "Back",
+      "equipment": "Machine row",
+      "currentSurrogateImage": "seated-cable-row.png",
+      "whyInaccurate": "A plate/selectorized machine row is not the same setup as a cable row.",
+      "priority": "High"
+    },
+    {
+      "exactExerciseName": "Machine Rear Delt Fly / Rear Delt Machine Fly / Reverse Pec Deck",
+      "suggestedFilename": "reverse-pec-deck.png",
+      "muscleGroup": "Rear delts / shoulders",
+      "equipment": "Reverse pec deck machine",
+      "currentSurrogateImage": "dumbbell-reverse-fly.png",
+      "whyInaccurate": "Machine reverse fly has different equipment, support, path, and setup from dumbbell reverse fly.",
+      "priority": "High"
+    },
+    {
+      "exactExerciseName": "Single Arm Cable Row",
+      "suggestedFilename": "single-arm-cable-row.png",
+      "muscleGroup": "Back",
+      "equipment": "Cable",
+      "currentSurrogateImage": "seated-cable-row.png",
+      "whyInaccurate": "Single-arm cable row has unilateral setup and torso/handle position not shown in bilateral seated cable row.",
+      "priority": "Medium"
+    },
+    {
+      "exactExerciseName": "Cable Overhead Triceps Extension",
+      "suggestedFilename": "cable-overhead-triceps-extension.png",
+      "muscleGroup": "Triceps",
+      "equipment": "Cable",
+      "currentSurrogateImage": "overhead-tricep-extension.png",
+      "whyInaccurate": "Current image shows dumbbell overhead extension; cable path and setup are different.",
+      "priority": "Medium"
+    },
+    {
+      "exactExerciseName": "Hanging Knee Raise",
+      "suggestedFilename": "hanging-knee-raise.png",
+      "muscleGroup": "Core",
+      "equipment": "Pull-up bar",
+      "currentSurrogateImage": "hanging-leg-raise.png",
+      "whyInaccurate": "Knee raise uses bent knees and different range/body position than straight-leg hanging leg raise.",
+      "priority": "Low"
+    },
+    {
+      "exactExerciseName": "Incline Dumbbell Curl",
+      "suggestedFilename": "incline-dumbbell-curl.png",
+      "muscleGroup": "Biceps",
+      "equipment": "Dumbbells + incline bench",
+      "currentSurrogateImage": "dumbbell-bicep-curl.png",
+      "whyInaccurate": "Incline bench body position and shoulder extension are not shown in a standard dumbbell curl.",
+      "priority": "Medium"
+    },
+    {
+      "exactExerciseName": "Standing Calf Raise / Standing Calf Raise Machine",
+      "suggestedFilename": "standing-calf-raise.png or standing-calf-raise-machine.png",
+      "muscleGroup": "Calves",
+      "equipment": "Standing calf raise machine or standing setup",
+      "currentSurrogateImage": "standing-calf-raise.png",
+      "whyInaccurate": "The file name exists, but the physical image content is seated calf raise, so standing calf raise still lacks an accurate dedicated image.",
+      "priority": "High"
+    }
+  ],
+  "existingImageRoutingBugs": [
+    {
+      "exerciseName": "Bulgarian Split Squat",
+      "existingCorrectFilename": "bulgarian-split-squat.png",
+      "currentIncorrectImage": "dumbbell-goblet-squat.png",
+      "mappingToRepairLater": "bulgarian-split-squat should resolve to bulgarian-split-squat"
+    },
+    {
+      "exerciseName": "Dumbbell Bulgarian Split Squat",
+      "existingCorrectFilename": "bulgarian-split-squat.png",
+      "currentIncorrectImage": "dumbbell-goblet-squat.png",
+      "mappingToRepairLater": "dumbbell-bulgarian-split-squat should resolve to bulgarian-split-squat"
+    },
+    {
+      "exerciseName": "Incline Dumbbell Press",
+      "existingCorrectFilename": "incline-dumbbell-bench-press.png",
+      "currentIncorrectImage": "dumbbell-bench-press.png",
+      "mappingToRepairLater": "incline-dumbbell-press should resolve to incline-dumbbell-bench-press"
+    },
+    {
+      "exerciseName": "Seated Leg Curl",
+      "existingCorrectFilename": "seated-leg-curl.png",
+      "currentIncorrectImage": "lying-leg-curl.png",
+      "mappingToRepairLater": "seated-leg-curl should resolve to seated-leg-curl"
+    },
+    {
+      "exerciseName": "Triceps Dip",
+      "existingCorrectFilename": "tricep-dip.png",
+      "currentIncorrectImage": "dip.png",
+      "mappingToRepairLater": "triceps-dip should resolve to tricep-dip"
+    }
+  ],
+  "ambiguousReviewRequired": [
+    {
+      "generatedName": "Bicep Curl",
+      "currentImage": "dumbbell-bicep-curl.png",
+      "possibleInterpretations": ["dumbbell curl", "barbell curl", "cable curl", "preacher curl", "machine curl"],
+      "recommendedDecision": "Avoid generic curl names; require equipment-specific names."
+    },
+    {
+      "generatedName": "Biceps Curl",
+      "currentImage": "dumbbell-bicep-curl.png",
+      "possibleInterpretations": ["dumbbell curl", "barbell curl", "cable curl", "preacher curl", "machine curl"],
+      "recommendedDecision": "Avoid generic curl names; require equipment-specific names."
+    },
+    {
+      "generatedName": "Dumbbell Shoulder Press Seated Or Standing",
+      "currentImage": "dumbbell-shoulder-press.png",
+      "possibleInterpretations": ["seated dumbbell shoulder press", "standing dumbbell shoulder press"],
+      "recommendedDecision": "Generate either seated or standing explicitly."
+    },
+    {
+      "generatedName": "Seated Row",
+      "currentImage": "seated-cable-row.png",
+      "possibleInterpretations": ["seated cable row", "seated machine row"],
+      "recommendedDecision": "Keep as cable row only if equipment is cable; machine wording should use dedicated machine row image."
+    }
+  ]
+}

@@ -8,6 +8,11 @@ const { EXERCISE_SETCREDITS } = require("../lib/workout-setcredits-map");
 const { EXERCISE_NAME_ALIASES } = require("../lib/workout-exercise-aliases");
 const { resolveExerciseId } = require("../lib/workout-repair");
 const { slugifyExerciseId } = require("../lib/workout-volume");
+const {
+  MISSING_DEDICATED_IMAGE_EXERCISES,
+  getPublicExerciseImageMap,
+  isPublicExerciseEnabled
+} = require("../lib/workout-exercise-catalog");
 
 const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -17,12 +22,10 @@ const JSON_REPORT = path.join(ROOT, "outputs", "exercise-image-coverage.json");
 const MARKDOWN_REPORT = path.join(ROOT, "docs", "exercise-image-coverage-report.md");
 
 const KNOWN_GENERATED_EXERCISE_VARIANTS = [
-  { name: "Seated Machine Row", demoName: "Seated Machine Row", equipment: "Machine", muscleGroup: "Back", expectedCanonical: "seated-cable-row", dedicatedExactImage: false },
-  { name: "Machine Row", demoName: "Machine Row", equipment: "Machine", muscleGroup: "Back", expectedCanonical: "seated-cable-row", dedicatedExactImage: false },
-  { name: "Seated Row Machine", demoName: "Seated Row Machine", equipment: "Machine", muscleGroup: "Back", expectedCanonical: "seated-cable-row", dedicatedExactImage: false },
-  { name: "Machine Rear Delt Fly", demoName: "Machine Rear Delt Fly", equipment: "Machine", muscleGroup: "Rear Delts", expectedCanonical: "dumbbell-reverse-fly", dedicatedExactImage: false },
-  { name: "Rear Delt Machine Fly", demoName: "Rear Delt Machine Fly", equipment: "Machine", muscleGroup: "Rear Delts", expectedCanonical: "dumbbell-reverse-fly", dedicatedExactImage: false },
-  { name: "Reverse Pec Deck", demoName: "Reverse Pec Deck", equipment: "Machine", muscleGroup: "Rear Delts", expectedCanonical: "dumbbell-reverse-fly", dedicatedExactImage: false },
+  { name: "Bulgarian Split Squat", demoName: "Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "bulgarian-split-squat", dedicatedExactImage: true },
+  { name: "Incline Dumbbell Press", demoName: "Incline Dumbbell Press", equipment: "Dumbbell", muscleGroup: "Chest", expectedCanonical: "incline-dumbbell-bench-press", dedicatedExactImage: true },
+  { name: "Seated Leg Curl", demoName: "Seated Leg Curl", equipment: "Machine", muscleGroup: "Hamstrings", expectedCanonical: "seated-leg-curl", dedicatedExactImage: true },
+  { name: "Triceps Dip", demoName: "Triceps Dip", equipment: "Parallel Bars", muscleGroup: "Triceps", expectedCanonical: "tricep-dip", dedicatedExactImage: true },
   { name: "Dumbbell Hammer Curl", demoName: "Dumbbell Hammer Curl", equipment: "Dumbbell", muscleGroup: "Biceps", expectedCanonical: "hammer-curl", dedicatedExactImage: true },
   { name: "Hammer Curls", demoName: "Hammer Curls", equipment: "Dumbbell", muscleGroup: "Biceps", expectedCanonical: "hammer-curl", dedicatedExactImage: true },
   { name: "Cable Triceps Pushdown", demoName: "Cable Triceps Pushdown", equipment: "Cable", muscleGroup: "Triceps", expectedCanonical: "cable-tricep-pushdown", dedicatedExactImage: true },
@@ -305,6 +308,7 @@ function buildGeneratorVariantInventory() {
   }
 
   for (const [aliasSlug, canonical] of Object.entries(EXERCISE_NAME_ALIASES)) {
+    if (!isPublicExerciseEnabled(canonical)) continue;
     add(
       {
         name: slugToTitle(aliasSlug),
@@ -480,6 +484,32 @@ function buildAudit() {
   const generatorGenuinelyMissing = generatorToImageCoverage.filter((item) => item.classification === "GENUINELY_MISSING_IMAGE");
   const generatorSurrogateImages = generatorToImageCoverage.filter((item) => item.classification === "COVERED_BY_SURROGATE_IMAGE");
   const generatorCanonicalMismatches = generatorToImageCoverage.filter((item) => !item.expectedCanonicalMatches);
+  const publicImageMap = getPublicExerciseImageMap();
+  const publicReleaseCoverage = Object.entries(publicImageMap)
+    .map(([exerciseId, imageFile]) => {
+      const details = resolver.exerciseImageResolutionDetails({ exerciseId });
+      const actualFile = details.usedFallback ? "" : path.basename(details.imageUrl);
+      const physicalExists = fileSet.has(imageFile);
+      const httpOk = physicalExists;
+      const exactFileMatch = actualFile === imageFile;
+      return {
+        exerciseId,
+        expectedImageFile: imageFile,
+        resolvedImageUrl: details.imageUrl,
+        resolvedImageFile: actualFile,
+        usedFallback: details.usedFallback,
+        physicalExists,
+        httpOk,
+        exactFileMatch,
+        classification:
+          !physicalExists ? "MISSING_FILE" :
+          details.usedFallback ? "FALLBACK" :
+          !exactFileMatch ? "SURROGATE_OR_MISMATCH" :
+          "PUBLIC_READY"
+      };
+    })
+    .sort((a, b) => a.exerciseId.localeCompare(b.exerciseId));
+  const publicReleaseFailures = publicReleaseCoverage.filter((item) => item.classification !== "PUBLIC_READY");
 
   const issues = [
     ...missingCanonical.map((item) => `MISSING_IMAGE ${item.canonicalExerciseId}`),
@@ -490,7 +520,8 @@ function buildAudit() {
     ...caseMismatches.map((pair) => `CASE_MISMATCH ${pair.join(" vs ")}`),
     ...fallbackOnlyAliases.map((item) => `FALLBACK_ONLY ${item.aliasExerciseId}`),
     ...generatorFallbacks.map((item) => `GENERATOR_FALLBACK ${item.originalName} -> ${item.attemptedSlug || "(empty)"}`),
-    ...generatorCanonicalMismatches.map((item) => `GENERATOR_CANONICAL_MISMATCH ${item.originalName}: expected ${item.expectedCanonical}, got ${item.canonicalExerciseId}`)
+    ...generatorCanonicalMismatches.map((item) => `GENERATOR_CANONICAL_MISMATCH ${item.originalName}: expected ${item.expectedCanonical}, got ${item.canonicalExerciseId}`),
+    ...publicReleaseFailures.map((item) => `PUBLIC_RELEASE_IMAGE_FAILURE ${item.exerciseId}: ${item.classification}`)
   ];
 
   const totals = {
@@ -512,7 +543,10 @@ function buildAudit() {
     generatorExistingFilesWithBrokenRouting: generatorBrokenRouting.length,
     generatorGenuinelyMissingImages: generatorGenuinelyMissing.length,
     generatorSurrogateImageRoutes: generatorSurrogateImages.length,
-    generatorCanonicalMismatches: generatorCanonicalMismatches.length
+    generatorCanonicalMismatches: generatorCanonicalMismatches.length,
+    publicEnabledExercises: publicReleaseCoverage.length,
+    publicReleaseImageFailures: publicReleaseFailures.length,
+    disabledUntilDedicatedImages: MISSING_DEDICATED_IMAGE_EXERCISES.length
   };
 
   return {
@@ -527,6 +561,9 @@ function buildAudit() {
     generatorGenuinelyMissing,
     generatorSurrogateImages,
     generatorCanonicalMismatches,
+    publicReleaseCoverage,
+    publicReleaseFailures,
+    disabledUntilDedicatedImages: MISSING_DEDICATED_IMAGE_EXERCISES,
     setCreditAliases,
     physicalInventory,
     orphanFiles,

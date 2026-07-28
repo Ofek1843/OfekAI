@@ -9,6 +9,7 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
+const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
 const { translateValidationMessages } = require("./lib/workout-validation-i18n");
@@ -23,6 +24,10 @@ const {
   isGpt5ChatModel,
   incompleteResponseMessage
 } = require("./lib/openai-diagnostics");
+
+const WORKOUT_DISABLED_EXERCISE_PROMPT_LIST = MISSING_DEDICATED_IMAGE_EXERCISES
+  .map((exercise) => exercise.title)
+  .join(", ");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
@@ -2320,6 +2325,7 @@ Programming rules:
 - For every exercise, include its primary muscle group.
 - For every exercise, set demoName to the precise canonical English exercise name. Include equipment and position modifiers such as seated, standing, incline, barbell, dumbbell, cable, machine, split or single-leg whenever they change the movement.
 - demoName is hidden technical metadata. Keep it in English even when all visible values are Hebrew.
+- Do not prescribe these exercises because FuelPhysique does not yet have verified dedicated demonstration media for them: ${WORKOUT_DISABLED_EXERCISE_PROMPT_LIST}.
 - Never use vague or non-exercise names such as a general stance or limb position.
 - For every exercise, include the exact equipment required.
 - Keep muscle-group names short, such as Chest, Back, Quads, Hamstrings, Shoulders, Biceps, Triceps or Core.
@@ -2641,6 +2647,7 @@ Rules:
 - Use ONLY the selected equipment (if specified).
 - Set exerciseId to a lowercase-hyphenated identifier for the exercise (e.g. "barbell-bench-press").
 - Set demoName to the precise canonical English exercise name, including equipment and position modifiers.
+- Do not return these exercises because FuelPhysique does not yet have verified dedicated demonstration media for them: ${WORKOUT_DISABLED_EXERCISE_PROMPT_LIST}.
 - Return only one exercise.
 - Return valid JSON only.
 - Do not use prohibited equipment or movements.

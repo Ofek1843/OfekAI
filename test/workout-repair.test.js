@@ -100,7 +100,7 @@ test("repairWorkoutProgram fixes the production failure without touching any oth
   assert.equal(after.ok, true, `Expected valid after repair. Remaining errors: ${JSON.stringify(after.errors)}`);
   assert.equal(after.errors.length, 0);
   assert.deepEqual(after.warnings, before.warnings, "Repair must not change which non-exerciseId warnings/rules apply");
-  assert.equal(repairs.length, 15, "One repair entry per exercise that was missing an exerciseId");
+  assert.ok(repairs.length >= 15, "Repair must assign missing exerciseIds and may also replace disabled public exercises");
 
   for (const session of program.sessions) {
     for (const exercise of session.exercises) {
@@ -115,11 +115,11 @@ test("repair raises weekly-volume mapping coverage via alias resolution (does no
   repairWorkoutProgram(program, { sessionDuration: 60 });
   const volume = calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
 
-  // "Barbell Back Squat" -> alias -> barbell-squat; "Seated Leg Curl" -> alias -> leg-curl
+  // "Barbell Back Squat" -> alias -> barbell-squat; "Seated Leg Curl" keeps the dedicated seated-leg-curl image/credits.
   const squatExercise = program.sessions[2].exercises.find((e) => e.name === "Barbell Back Squat");
   const legCurlExercise = program.sessions[2].exercises.find((e) => e.name === "Seated Leg Curl");
   assert.equal(squatExercise.exerciseId, "barbell-squat");
-  assert.equal(legCurlExercise.exerciseId, "leg-curl");
+  assert.equal(legCurlExercise.exerciseId, "seated-leg-curl");
 
   assert.ok(volume.mappedExercises >= 11, `Expected alias resolution to map most exercises, got ${volume.mappedExercises}`);
   assert.ok(volume.mappingCoveragePercent > 0);
@@ -139,8 +139,9 @@ test("resolveExerciseId: known alias resolves to the canonical setcredits key", 
 
 test("resolveExerciseId canonicalizes generated variant ids before validation/rendering", () => {
   const cases = [
-    [{ exerciseId: "seated-machine-row", name: "Seated Machine Row" }, "seated-cable-row"],
-    [{ exerciseId: "machine-rear-delt-fly", name: "Machine Rear Delt Fly" }, "dumbbell-reverse-fly"],
+    [{ exerciseId: "bulgarian-split-squat", name: "Bulgarian Split Squat" }, "bulgarian-split-squat"],
+    [{ exerciseId: "seated-leg-curl", name: "Seated Leg Curl" }, "seated-leg-curl"],
+    [{ exerciseId: "triceps-dip", name: "Triceps Dip" }, "tricep-dip"],
     [{ exerciseId: "dumbbell-hammer-curl", name: "Dumbbell Hammer Curl" }, "hammer-curl"]
   ];
 
@@ -149,6 +150,41 @@ test("resolveExerciseId canonicalizes generated variant ids before validation/re
     assert.equal(result.id, expectedId);
     assert.match(result.source, /alias|canonical/);
   }
+});
+
+test("repairWorkoutProgram replaces exercises that are disabled until dedicated images exist", () => {
+  const program = {
+    programName: "Image Safety Fixture",
+    daysPerWeek: 1,
+    weeklyScheduleDays: [1],
+    sessions: [
+      {
+        day: 1,
+        name: "Pull",
+        exercises: [
+          { exerciseId: "seated-machine-row", name: "Seated Machine Row", demoName: "Seated Machine Row", muscleGroup: "Back", equipment: "Machine", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3" },
+          { exerciseId: "machine-rear-delt-fly", name: "Machine Rear Delt Fly", demoName: "Machine Rear Delt Fly", muscleGroup: "Rear Delts", equipment: "Machine", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" },
+          { exerciseId: "standing-calf-raise", name: "Standing Calf Raise", demoName: "Standing Calf Raise", muscleGroup: "Calves", equipment: "Machine", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" }
+        ]
+      }
+    ]
+  };
+
+  const context = {
+    daysPerWeek: 1,
+    sessionDuration: 60,
+    equipment: ["Machine", "Cable"],
+    availableDayIndexes: [1]
+  };
+
+  const { repairs } = repairWorkoutProgram(program, context);
+  const ids = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
+
+  assert.deepEqual(ids, ["seated-cable-row", "face-pull", "seated-calf-raise"]);
+  assert.ok(repairs.some((repair) => repair.includes("replaced disabled exercise")));
+
+  const validation = validateWorkoutProgram(program, context);
+  assert.equal(validation.ok, true, JSON.stringify(validation.errors));
 });
 
 test("resolveExerciseId: unknown exercise name still gets a deterministic slug (never invents a mapping)", () => {
