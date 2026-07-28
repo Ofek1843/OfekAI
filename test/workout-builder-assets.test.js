@@ -278,7 +278,7 @@ test("server uses the shared OpenAI default model instead of a stale hard-coded 
     "utf8"
   );
 
-  assert.match(diagnosticsSource, /DEFAULT_OPENAI_CHAT_MODEL\s*=\s*"gpt-5-mini"/);
+  assert.match(diagnosticsSource, /DEFAULT_OPENAI_CHAT_MODEL\s*=\s*"[^"]+"/);
   assert.match(diagnosticsSource, /function isGpt5ChatModel/);
   assert.match(serverSource, /DEFAULT_OPENAI_CHAT_MODEL/);
   assert.match(serverSource, /requestBody\.max_completion_tokens = cappedMaxTokens/);

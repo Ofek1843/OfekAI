@@ -251,7 +251,7 @@ test("Internal rate limit 429 remains 429 (not remapped to 502)", async (t) => {
   assert.equal(second.status, 429, `Expected 429. Body: ${JSON.stringify(secondData)}`);
 });
 
-test("Workout Builder uses the dedicated gpt-4.1 workout model fallback", async (t) => {
+test("Workout Builder uses the dedicated workout model fallback", async (t) => {
   const server = await startServer(0, {
     OPENAI_CHAT_MODEL: "",
     OPENAI_WORKOUT_MODEL: ""
@@ -268,7 +268,7 @@ test("Workout Builder uses the dedicated gpt-4.1 workout model fallback", async 
   assert.equal(res.status, 200, `Expected 200. Body: ${JSON.stringify(data)}`);
   assert.equal(data.success, true);
   assert.ok(
-    server.getStdout().includes("\"selectedWorkoutModel\":\"gpt-4.1\""),
+    server.getStdout().includes("\"selectedWorkoutModel\":\"gpt-4.1-mini\""),
     "startup diagnostics should show the safe workout fallback without exposing secrets"
   );
 });

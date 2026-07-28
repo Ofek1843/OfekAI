@@ -87,10 +87,9 @@
       <div class="price-card pro">
         <span class="badge">Most Popular</span>
         <h2>Pro</h2>
-        <div class="price">$4.99<span>/month</span></div>
-        <p class="annual">or $39.99/year (save 33%)</p>
-        <a href="/app.html?settings=open" class="btn btn-primary">Upgrade Now</a>
-        <p class="guarantee">7-day money-back guarantee</p>
+        <div class="price"><span id="proPrice">$8</span><span>/month</span></div>
+        <button type="button" id="waitlistButton" class="btn btn-primary">Join the waitlist</button>
+        <p id="pricingStatus" class="guarantee"></p>
       </div>
     </section>
     <section style="text-align: center;"><h2>Questions?</h2><p style="color: #8a9ab5;">See our <a href="/faq.html">FAQ</a> or <a href="/contact.html">contact support</a></p></section>
@@ -99,5 +98,83 @@
       <p class="footer-copy">© 2026 FuelPhysique.</p>
     </footer>
   </main>
+  <script type="module">
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { doc, getDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { auth, db } from "/js/firebase-config.js";
+
+    const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
+    // Approximate USD→ILS conversion for display only; the waitlist itself
+    // charges nothing and takes no payment details.
+    const USD_TO_ILS = 3.7;
+    const priceUsd = 8;
+    const priceIls = Math.round(priceUsd * USD_TO_ILS * 10) / 10;
+
+    const priceEl = document.getElementById("proPrice");
+    const button = document.getElementById("waitlistButton");
+    const status = document.getElementById("pricingStatus");
+
+    if (priceEl) priceEl.textContent = he ? `₪${priceIls}` : `$${priceUsd}`;
+    if (button) button.textContent = he ? "הצטרפות לרשימת ההמתנה" : "Join the waitlist";
+
+    let activeUser = null;
+    let joined = false;
+
+    function showJoined() {
+      joined = true;
+      if (!button) return;
+      button.textContent = he ? "נרשמת לרשימת ההמתנה ✓" : "Joined the waitlist ✓";
+      button.disabled = true;
+    }
+
+    button?.addEventListener("click", async () => {
+      if (joined) return;
+      if (!activeUser) {
+        location.href = "/auth.html";
+        return;
+      }
+      button.disabled = true;
+      button.textContent = he ? "מצטרף..." : "Joining...";
+      try {
+        const reference = doc(db, "users", activeUser.uid, "waitlists", "pro");
+        const existing = await getDoc(reference);
+        await setDoc(
+          reference,
+          {
+            email: activeUser.email || "",
+            plannedPriceUsd: priceUsd,
+            plannedPriceIls: priceIls,
+            status: "interested",
+            source: "pricing-page",
+            updatedAt: serverTimestamp(),
+            ...(existing.exists() ? {} : { createdAt: serverTimestamp() })
+          },
+          { merge: true }
+        );
+        showJoined();
+        if (status) status.textContent = he
+          ? "נרשמת בהצלחה. לא הזנת כרטיס ולא בוצע חיוב."
+          : "You're on the waitlist. No card was entered and no charge was made.";
+      } catch (error) {
+        console.error("Waitlist signup failed:", error);
+        button.disabled = false;
+        button.textContent = he ? "הצטרפות לרשימת ההמתנה" : "Join the waitlist";
+        if (status) status.textContent = he
+          ? "לא הצלחנו לשמור את ההצטרפות. נסה שוב."
+          : "Could not join the waitlist. Please try again.";
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      activeUser = user;
+      if (!user) return;
+      try {
+        const snapshot = await getDoc(doc(db, "users", user.uid, "waitlists", "pro"));
+        if (snapshot.exists()) showJoined();
+      } catch (error) {
+        console.error("Waitlist status check failed:", error);
+      }
+    });
+  </script>
 </body>
 </html>
