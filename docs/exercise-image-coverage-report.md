@@ -1,6 +1,6 @@
 # Exercise Image Coverage Report
 
-Generated: 2026-07-28T14:47:28.718Z
+Generated: 2026-07-28T16:05:01.621Z
 
 The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.
 
@@ -8,28 +8,28 @@ The workout model may still produce arbitrary free-text exercise names. This aud
 
 | Metric | Value |
 | --- | --- |
-| physicalFiles | 86 |
-| dedicatedExerciseImagesExcludingFallback | 85 |
-| canonicalSupportedExercises | 85 |
-| canonicalExercisesWithDedicatedImages | 85 |
+| physicalFiles | 89 |
+| dedicatedExerciseImagesExcludingFallback | 88 |
+| canonicalSupportedExercises | 88 |
+| canonicalExercisesWithDedicatedImages | 88 |
 | canonicalExercisesMissingImages | 0 |
-| aliasesCovered | 200 |
+| aliasesCovered | 220 |
 | orphanFiles | 0 |
 | brokenMappings | 0 |
 | invalidFiles | 0 |
 | caseMismatches | 0 |
 | fallbackOnlyAliases | 0 |
-| generatorSupportedCanonicalExercises | 88 |
-| generatorKnownNameVariants | 250 |
-| generatorVariantsWithDedicatedOrSurrogateImage | 250 |
+| generatorSupportedCanonicalExercises | 91 |
+| generatorKnownNameVariants | 281 |
+| generatorVariantsWithDedicatedOrSurrogateImage | 281 |
 | generatorVariantsReachingFallback | 0 |
 | generatorExistingFilesWithBrokenRouting | 0 |
 | generatorGenuinelyMissingImages | 0 |
-| generatorSurrogateImageRoutes | 152 |
+| generatorSurrogateImageRoutes | 174 |
 | generatorCanonicalMismatches | 0 |
-| publicEnabledExercises | 90 |
+| publicEnabledExercises | 93 |
 | publicReleaseImageFailures | 0 |
-| disabledUntilDedicatedImages | 15 |
+| disabledUntilDedicatedImages | 12 |
 
 ## A. Resolver-internal coverage
 
@@ -46,8 +46,8 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | exerciseId | English name | resolved URL | physical file | classification | aliases |
 | --- | --- | --- | --- | --- | --- |
 | ab-wheel-rollout | Ab Wheel Rollout | /images/exercises/ab-wheel-rollout.png | ab-wheel-rollout.png | COVERED | ab-rollout |
-| abductors | Abductors | /images/exercises/abductors.png | abductors.png | COVERED | abductor-machine, abductors, hip-abduction-machine, hip-abductor, hip-abductor-machine, seated-hip-abduction |
-| adductors | Adductors | /images/exercises/adductors.png | adductors.png | COVERED | adductor-machine, adductors, hip-adduction-machine, hip-adductor, hip-adductor-machine, seated-hip-adduction |
+| abductors | Abductors | /images/exercises/abductors.png | abductors.png | COVERED | abduction, abduction-machine, abductor-machine, abductors, hip-abduction, hip-abduction-machine, hip-abductor, hip-abductor-machine, seated-hip-abduction |
+| adductors | Adductors | /images/exercises/adductors.png | adductors.png | COVERED | adduction, adduction-machine, adductor-machine, adductors, hip-adduction, hip-adduction-machine, hip-adductor, hip-adductor-machine, seated-hip-adduction |
 | archer-push-up | Archer Push Up | /images/exercises/archer-push-up.png | archer-push-up.png | COVERED |  |
 | arnold-press | Arnold Press | /images/exercises/arnold-press.png | arnold-press.png | COVERED |  |
 | australian-row | Australian Row | /images/exercises/australian-row.png | australian-row.png | COVERED | australian-pull-up, bodyweight-row, inverted-row, ring-row, suspension-row |
@@ -71,6 +71,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | close-grip-bench-press | Close Grip Bench Press | /images/exercises/close-grip-bench-press.png | close-grip-bench-press.png | COVERED |  |
 | close-grip-lat-pulldown | Close Grip Lat Pulldown | /images/exercises/close-grip-lat-pulldown.png | close-grip-lat-pulldown.png | COVERED | neutral-grip-lat-pulldown, straight-arm-pulldown |
 | concentration-curl | Concentration Curl | /images/exercises/concentration-curl.png | concentration-curl.png | COVERED |  |
+| crunch | Crunch | /images/exercises/crunch.png | crunch.png | COVERED | ab-crunch, ab-crunch-machine, crunch, machine-ab-crunch, machine-crunch, seated-ab-crunch |
 | diamond-push-up | Diamond Push Up | /images/exercises/diamond-push-up.png | diamond-push-up.png | COVERED | close-grip-push-up |
 | dip | Dip | /images/exercises/dip.png | dip.png | COVERED | chest-dip, parallel-bar-dip |
 | dumbbell-bench-press | Dumbbell Bench Press | /images/exercises/dumbbell-bench-press.png | dumbbell-bench-press.png | COVERED | dumbbell-press |
@@ -94,7 +95,8 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | handstand-push-up | Handstand Push Up | /images/exercises/handstand-push-up.png | handstand-push-up.png | COVERED |  |
 | hanging-leg-raise | Hanging Leg Raise | /images/exercises/hanging-leg-raise.png | hanging-leg-raise.png | COVERED | leg-raise |
 | incline-bench-press | Incline Bench Press | /images/exercises/incline-bench-press.png | incline-bench-press.png | COVERED | incline-barbell-bench-press, incline-press |
-| incline-dumbbell-bench-press | Incline Dumbbell Bench Press | /images/exercises/incline-dumbbell-bench-press.png | incline-dumbbell-bench-press.png | COVERED | dumbell-incline-bench-press, dumbell-incline-press, incline-db-bench-press, incline-db-press, incline-dumbbell-bench-press, incline-dumbbell-press |
+| incline-dumbbell-bench-press | Incline Dumbbell Bench Press | /images/exercises/incline-dumbbell-bench-press.png | incline-dumbbell-bench-press.png | COVERED | dumbell-incline-bench-press, dumbell-incline-press, incline-db-bench-press, incline-db-press, incline-dumbbell-bench, incline-dumbbell-bench-chest-press, incline-dumbbell-bench-press, incline-dumbbell-chest-press, incline-dumbbell-chest-press-machine, incline-dumbbell-press |
+| incline-dumbbell-curl | Incline Dumbbell Curl | /images/exercises/incline-dumbbell-curl.png | incline-dumbbell-curl.png | COVERED | incline-dumbbell-curl |
 | kettlebell-swing | Kettlebell Swing | /images/exercises/kettlebell-swing.png | kettlebell-swing.png | COVERED |  |
 | l-sit | L-sit | /images/exercises/l-sit.png | l-sit.png | COVERED |  |
 | lat-pulldown | Lat Pulldown | /images/exercises/lat-pulldown.png | lat-pulldown.png | COVERED | cable-lat-pulldown, lat-pulldowns, wide-grip-lat-pulldown |
@@ -116,6 +118,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | push-up | Push Up | /images/exercises/push-up.png | push-up.png | COVERED | push-ups, pushup |
 | rack-pull | Rack Pull | /images/exercises/rack-pull.png | rack-pull.png | COVERED |  |
 | reverse-lunge | Reverse Lunge | /images/exercises/reverse-lunge.png | reverse-lunge.png | COVERED | dumbbell-lunge, dumbbell-lunges, lunge, walking-lunge, walking-lunges |
+| reverse-pec-deck | Reverse Pec Deck | /images/exercises/reverse-pec-deck.png | reverse-pec-deck.png | COVERED | machine-rear-delt-fly, machine-reverse-fly, rear-delt-machine-fly, rear-delt-pec-deck, reverse-machine-fly, reverse-pec-deck, reverse-pec-deck-fly, reverse-pec-deck-machine |
 | romanian-deadlift | Romanian Deadlift | /images/exercises/romanian-deadlift.png | romanian-deadlift.png | COVERED | dumbbell-romanian-deadlift, rdl |
 | russian-twist | Russian Twist | /images/exercises/russian-twist.png | russian-twist.png | COVERED |  |
 | seated-cable-row | Seated Cable Row | /images/exercises/seated-cable-row.png | seated-cable-row.png | COVERED | cable-row |
@@ -138,12 +141,12 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | ab-wheel-rollout.png | 1291247 | tracked | ab-wheel-rollout | yes | COVERED |
 | abductors.png | 1270491 | tracked | abductors | yes | COVERED |
 | adductors.png | 1268975 | tracked | adductors | yes | COVERED |
-| archer-push-up.png | 1674534 | tracked | archer-push-up | yes | COVERED |
+| archer-push-up.png | 1023012 | tracked | archer-push-up | yes | COVERED |
 | arnold-press.png | 1269440 | tracked | arnold-press | yes | COVERED |
 | australian-row.png | 1300427 | tracked | australian-row | yes | COVERED |
 | barbell-bicep-curl.png | 1018407 | tracked | barbell-bicep-curl | yes | COVERED |
-| barbell-front-squat.png | 1577237 | tracked | barbell-front-squat | yes | COVERED |
-| barbell-hip-thrust.png | 1601799 | tracked | barbell-hip-thrust | yes | COVERED |
+| barbell-front-squat.png | 1270755 | tracked | barbell-front-squat | yes | COVERED |
+| barbell-hip-thrust.png | 1418796 | tracked | barbell-hip-thrust | yes | COVERED |
 | barbell-row.png | 1570829 | tracked | barbell-row | yes | COVERED |
 | barbell-shoulder-press.png | 1296830 | tracked | barbell-shoulder-press | yes | COVERED |
 | barbell-shrug.png | 1217377 | tracked | barbell-shrug | yes | COVERED |
@@ -161,15 +164,16 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | close-grip-bench-press.png | 1133049 | tracked | close-grip-bench-press | yes | COVERED |
 | close-grip-lat-pulldown.png | 1505180 | tracked | close-grip-lat-pulldown | yes | COVERED |
 | concentration-curl.png | 1487280 | tracked | concentration-curl | yes | COVERED |
-| diamond-push-up.png | 1665909 | tracked | diamond-push-up | yes | COVERED |
-| dip.png | 1603945 | tracked | dip | yes | COVERED |
+| crunch.png | 1011469 | ?? | crunch | yes | COVERED |
+| diamond-push-up.png | 1141454 | tracked | diamond-push-up | yes | COVERED |
+| dip.png | 1215324 | tracked | dip | yes | COVERED |
 | dumbbell-bench-press.png | 1353888 | tracked | dumbbell-bench-press | yes | COVERED |
 | dumbbell-bicep-curl.png | 943124 | tracked | dumbbell-bicep-curl | yes | COVERED |
 | dumbbell-calf-raise.png | 1098289 | tracked | dumbbell-calf-raise | yes | COVERED |
 | dumbbell-fly.png | 1418851 | tracked | dumbbell-fly | yes | COVERED |
 | dumbbell-front-raise.png | 1127923 | tracked | dumbbell-front-raise | yes | COVERED |
 | dumbbell-goblet-squat.png | 1686351 | tracked | dumbbell-goblet-squat | yes | COVERED |
-| dumbbell-hip-thrust.png | 1633763 | tracked | dumbbell-hip-thrust | yes | COVERED |
+| dumbbell-hip-thrust.png | 1349311 | tracked | dumbbell-hip-thrust | yes | COVERED |
 | dumbbell-lateral-raise.png | 1144244 | tracked | dumbbell-lateral-raise | yes | COVERED |
 | dumbbell-reverse-fly.png | 1502435 | tracked | dumbbell-reverse-fly | yes | COVERED |
 | dumbbell-row.png | 1875335 | tracked | dumbbell-row | yes | COVERED |
@@ -179,20 +183,21 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | face-pull.png | 1300713 | tracked | face-pull | yes | COVERED |
 | fuelphysique-demo-fallback.svg | 1891 | tracked |  | yes | COVERED |
 | good-morning.png | 1385017 | tracked | good-morning | yes | COVERED |
-| hack-squat.png | 1700114 | tracked | hack-squat | yes | COVERED |
+| hack-squat.png | 1134490 | tracked | hack-squat | yes | COVERED |
 | hammer-curl.png | 974428 | tracked | hammer-curl | yes | COVERED |
 | handstand-push-up.png | 201548 | tracked | handstand-push-up | yes | COVERED |
 | handstand.png | 189673 | tracked | handstand | yes | COVERED |
 | hanging-leg-raise.png | 1149960 | tracked | hanging-leg-raise | yes | COVERED |
 | incline-bench-press.png | 1297955 | tracked | incline-bench-press | yes | COVERED |
 | incline-dumbbell-bench-press.png | 1536297 | tracked | incline-dumbbell-bench-press | yes | COVERED |
-| kettlebell-swing.png | 1656935 | tracked | kettlebell-swing | yes | COVERED |
+| incline-dumbbell-curl.png | 1154186 | ?? | incline-dumbbell-curl | yes | COVERED |
+| kettlebell-swing.png | 1328800 | tracked | kettlebell-swing | yes | COVERED |
 | l-sit.png | 1331514 | tracked | l-sit | yes | COVERED |
 | lat-pulldown.png | 1327966 | tracked | lat-pulldown | yes | COVERED |
 | leg-extension.png | 983864 | tracked | leg-extension | yes | COVERED |
-| leg-press.png | 1448844 | tracked | leg-press | yes | COVERED |
+| leg-press.png | 1176564 | tracked | leg-press | yes | COVERED |
 | lying-leg-curl.png | 1487638 | tracked | lying-leg-curl | yes | COVERED |
-| machine-chest-fly.png | 1693795 | tracked | machine-chest-fly | yes | COVERED |
+| machine-chest-fly.png | 1684957 | tracked | machine-chest-fly | yes | COVERED |
 | machine-chest-press.png | 1359035 | tracked | machine-chest-press | yes | COVERED |
 | machine-shoulder-press.png | 1402469 | tracked | machine-shoulder-press | yes | COVERED |
 | muscle-up.png | 1122486 | tracked | muscle-up | yes | COVERED |
@@ -200,13 +205,14 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | one-arm-pull-up.png | 1302630 | tracked | one-arm-pull-up | yes | COVERED |
 | overhead-tricep-extension.png | 1016910 | tracked | overhead-tricep-extension | yes | COVERED |
 | pike-push-up.png | 1153909 | tracked | pike-push-up | yes | COVERED |
-| pistol-squat.png | 1743444 | tracked | pistol-squat | yes | COVERED |
+| pistol-squat.png | 1263303 | tracked | pistol-squat | yes | COVERED |
 | plank.png | 847254 | tracked | plank | yes | COVERED |
 | preacher-curl.png | 1098725 | tracked | preacher-curl | yes | COVERED |
 | pull-up.png | 1297673 | tracked | pull-up | yes | COVERED |
-| push-up.png | 1694045 | tracked | push-up | yes | COVERED |
+| push-up.png | 1142435 | tracked | push-up | yes | COVERED |
 | rack-pull.png | 1360410 | tracked | rack-pull | yes | COVERED |
 | reverse-lunge.png | 1674039 | tracked | reverse-lunge | yes | COVERED |
+| reverse-pec-deck.png | 1158834 | ?? | reverse-pec-deck | yes | COVERED |
 | romanian-deadlift.png | 1185094 | tracked | romanian-deadlift | yes | COVERED |
 | russian-twist.png | 1369448 | tracked | russian-twist | yes | COVERED |
 | seated-cable-row.png | 1181976 | tracked | seated-cable-row | yes | COVERED |
@@ -214,13 +220,13 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | seated-leg-curl.png | 84041 | tracked | seated-leg-curl | yes | COVERED |
 | side-plank.png | 968384 | tracked | side-plank | yes | COVERED |
 | skull-crusher.png | 1024550 | tracked | skull-crusher | yes | COVERED |
-| standing-calf-raise.png | 1584518 | tracked | standing-calf-raise | yes | COVERED |
+| standing-calf-raise.png | 1078765 | tracked | standing-calf-raise | yes | COVERED |
 | step-up.png | 1219330 | tracked | step-up | yes | COVERED |
-| sumo-deadlift.png | 1319675 | tracked | sumo-deadlift | yes | COVERED |
+| sumo-deadlift.png | 1330662 | tracked | sumo-deadlift | yes | COVERED |
 | t-bar-row.png | 949888 | tracked | t-bar-row | yes | COVERED |
 | tricep-dip.png | 966138 | tracked | tricep-dip | yes | COVERED |
 | typewriter-pull-ups.png | 1284498 | tracked | typewriter-pull-ups | yes | COVERED |
-| wide-grip-push-up.png | 1629368 | tracked | wide-grip-push-up | yes | COVERED |
+| wide-grip-push-up.png | 1163178 | tracked | wide-grip-push-up | yes | COVERED |
 
 ## B. Generator-to-image coverage
 
@@ -228,12 +234,21 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 
 | generated name | demoName | provided exerciseId | canonical exerciseId | resolved URL | classification | sources |
 | --- | --- | --- | --- | --- | --- | --- |
+| Ab Crunch | Ab Crunch | ab-crunch | crunch | /images/exercises/crunch.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Ab Crunch Machine | Ab Crunch Machine |  | crunch | /images/exercises/crunch.png | GENERATOR_COVERED | observed-fixture |
+| Ab Crunch Machine | Ab Crunch Machine | ab-crunch-machine | crunch | /images/exercises/crunch.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Ab Rollout | Ab Rollout | ab-rollout | ab-wheel-rollout | /images/exercises/ab-wheel-rollout.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Ab Wheel Rollout | Ab Wheel Rollout | ab-wheel-rollout | ab-wheel-rollout | /images/exercises/ab-wheel-rollout.png | GENERATOR_COVERED | setcredits |
+| Abduction | Abduction | abduction | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Abduction Machine | Abduction Machine |  | abductors | /images/exercises/abductors.png | GENERATOR_COVERED | observed-fixture |
+| Abduction Machine | Abduction Machine | abduction-machine | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Abductor Machine | Abductor Machine | abductor-machine | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
-| Abductors | Abductors | abductors | abductors | /images/exercises/abductors.png | GENERATOR_COVERED | setcredits |
+| Abductors | Abductors | abductors | abductors | /images/exercises/abductors.png | GENERATOR_COVERED | backend-alias, setcredits |
+| Adduction | Adduction | adduction | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Adduction Machine | Adduction Machine |  | adductors | /images/exercises/adductors.png | GENERATOR_COVERED | observed-fixture |
+| Adduction Machine | Adduction Machine | adduction-machine | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Adductor Machine | Adductor Machine | adductor-machine | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
-| Adductors | Adductors | adductors | adductors | /images/exercises/adductors.png | GENERATOR_COVERED | setcredits |
+| Adductors | Adductors | adductors | adductors | /images/exercises/adductors.png | GENERATOR_COVERED | backend-alias, setcredits |
 | Alternating Dumbbell Curl | Alternating Dumbbell Curl | alternating-dumbbell-curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Archer Push Up | Archer Push Up | archer-push-up | archer-push-up | /images/exercises/archer-push-up.png | GENERATOR_COVERED | setcredits |
 | Arnold Press | Arnold Press | arnold-press | arnold-press | /images/exercises/arnold-press.png | GENERATOR_COVERED | setcredits |
@@ -296,6 +311,7 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Close Grip Lat Pulldown | Close Grip Lat Pulldown | close-grip-lat-pulldown | close-grip-lat-pulldown | /images/exercises/close-grip-lat-pulldown.png | GENERATOR_COVERED | setcredits |
 | Close Grip Push Up | Close Grip Push Up | close-grip-push-up | diamond-push-up | /images/exercises/diamond-push-up.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Concentration Curl | Concentration Curl | concentration-curl | concentration-curl | /images/exercises/concentration-curl.png | GENERATOR_COVERED | setcredits |
+| Crunch | Crunch | crunch | crunch | /images/exercises/crunch.png | GENERATOR_COVERED | backend-alias, setcredits |
 | Diamond Push Up | Diamond Push Up | diamond-push-up | diamond-push-up | /images/exercises/diamond-push-up.png | GENERATOR_COVERED | setcredits |
 | Dip | Dip | dip | dip | /images/exercises/dip.png | GENERATOR_COVERED | setcredits |
 | Dumbbell Bench Press | Dumbbell Bench Press | dumbbell-bench-press | dumbbell-bench-press | /images/exercises/dumbbell-bench-press.png | GENERATOR_COVERED | setcredits |
@@ -351,9 +367,11 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Hanging Leg Raise | Hanging Leg Raise | hanging-leg-raise | hanging-leg-raise | /images/exercises/hanging-leg-raise.png | GENERATOR_COVERED | setcredits |
 | High Bar Squat | High Bar Squat | high-bar-squat | barbell-squat | /images/exercises/barbell-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | High To Low Cable Fly | High To Low Cable Fly | high-to-low-cable-fly | cable-crossover | /images/exercises/cable-crossover.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Hip Abduction | Hip Abduction | hip-abduction | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Hip Abduction Machine | Hip Abduction Machine | hip-abduction-machine | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Hip Abductor | Hip Abductor | hip-abductor | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Hip Abductor Machine | Hip Abductor Machine | hip-abductor-machine | abductors | /images/exercises/abductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Hip Adduction | Hip Adduction | hip-adduction | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Hip Adduction Machine | Hip Adduction Machine | hip-adduction-machine | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Hip Adductor | Hip Adductor | hip-adductor | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Hip Adductor Machine | Hip Adductor Machine | hip-adductor-machine | adductors | /images/exercises/adductors.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -362,7 +380,13 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Incline Bench Press | Incline Bench Press | incline-bench-press | incline-bench-press | /images/exercises/incline-bench-press.png | GENERATOR_COVERED | setcredits |
 | Incline Db Bench Press | Incline Db Bench Press | incline-db-bench-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Incline Db Press | Incline Db Press | incline-db-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Incline Dumbbell Bench | Incline Dumbbell Bench | incline-dumbbell-bench | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Incline Dumbbell Bench Chest Press | Incline Dumbbell Bench Chest Press | incline-dumbbell-bench-chest-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Incline Dumbbell Bench Press | Incline Dumbbell Bench Press | incline-dumbbell-bench-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | GENERATOR_COVERED | setcredits |
+| Incline Dumbbell Chest Press | Incline Dumbbell Chest Press |  | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | GENERATOR_COVERED | observed-fixture |
+| Incline Dumbbell Chest Press | Incline Dumbbell Chest Press | incline-dumbbell-chest-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Incline Dumbbell Chest Press Machine | Incline Dumbbell Chest Press Machine | incline-dumbbell-chest-press-machine | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Incline Dumbbell Curl | Incline Dumbbell Curl | incline-dumbbell-curl | incline-dumbbell-curl | /images/exercises/incline-dumbbell-curl.png | GENERATOR_COVERED | backend-alias, setcredits |
 | Incline Dumbbell Press | Incline Dumbbell Press |  | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | GENERATOR_COVERED | observed-fixture |
 | Incline Dumbbell Press | Incline Dumbbell Press | incline-dumbbell-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Incline Press | Incline Press | incline-press | incline-bench-press | /images/exercises/incline-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -387,11 +411,15 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Lying Leg Curl | Lying Leg Curl | lying-leg-curl | lying-leg-curl | /images/exercises/lying-leg-curl.png | GENERATOR_COVERED | setcredits |
 | Lying Leg Curls | Lying Leg Curls | lying-leg-curls | lying-leg-curl | /images/exercises/lying-leg-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Lying Triceps Extension | Lying Triceps Extension | lying-triceps-extension | skull-crusher | /images/exercises/skull-crusher.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Machine Ab Crunch | Machine Ab Crunch | machine-ab-crunch | crunch | /images/exercises/crunch.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Machine Calf Raise | Machine Calf Raise | machine-calf-raise | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Machine Chest Fly | Machine Chest Fly | machine-chest-fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | GENERATOR_COVERED | setcredits |
 | Machine Chest Press | Machine Chest Press | machine-chest-press | machine-chest-press | /images/exercises/machine-chest-press.png | GENERATOR_COVERED | setcredits |
+| Machine Crunch | Machine Crunch | machine-crunch | crunch | /images/exercises/crunch.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Machine Fly | Machine Fly | machine-fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Machine Preacher Curl | Machine Preacher Curl | machine-preacher-curl | preacher-curl | /images/exercises/preacher-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Machine Rear Delt Fly | Machine Rear Delt Fly | machine-rear-delt-fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Machine Reverse Fly | Machine Reverse Fly | machine-reverse-fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Machine Shoulder Press | Machine Shoulder Press | machine-shoulder-press | machine-shoulder-press | /images/exercises/machine-shoulder-press.png | GENERATOR_COVERED | setcredits |
 | Military Press | Military Press | military-press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Muscle Up | Muscle Up | muscle-up | muscle-up | /images/exercises/muscle-up.png | GENERATOR_COVERED | setcredits |
@@ -422,15 +450,24 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Rack Pull | Rack Pull | rack-pull | rack-pull | /images/exercises/rack-pull.png | GENERATOR_COVERED | setcredits |
 | Rdl | Rdl | rdl | romanian-deadlift | /images/exercises/romanian-deadlift.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Rear Delt Fly | Rear Delt Fly | rear-delt-fly | dumbbell-reverse-fly | /images/exercises/dumbbell-reverse-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Rear Delt Machine Fly | Rear Delt Machine Fly | rear-delt-machine-fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Rear Delt Pec Deck | Rear Delt Pec Deck | rear-delt-pec-deck | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Rear Delt Raise | Rear Delt Raise | rear-delt-raise | dumbbell-reverse-fly | /images/exercises/dumbbell-reverse-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Reverse Fly | Reverse Fly | reverse-fly | dumbbell-reverse-fly | /images/exercises/dumbbell-reverse-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Reverse Lunge | Reverse Lunge | reverse-lunge | reverse-lunge | /images/exercises/reverse-lunge.png | GENERATOR_COVERED | setcredits |
+| Reverse Machine Fly | Reverse Machine Fly |  | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | GENERATOR_COVERED | observed-fixture |
+| Reverse Machine Fly | Reverse Machine Fly | reverse-machine-fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Reverse Pec Deck | Reverse Pec Deck |  | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | GENERATOR_COVERED | observed-fixture |
+| Reverse Pec Deck | Reverse Pec Deck | reverse-pec-deck | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | GENERATOR_COVERED | backend-alias, setcredits |
+| Reverse Pec Deck Fly | Reverse Pec Deck Fly | reverse-pec-deck-fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Reverse Pec Deck Machine | Reverse Pec Deck Machine | reverse-pec-deck-machine | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Ring Row | Ring Row | ring-row | australian-row | /images/exercises/australian-row.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Romanian Deadlift | Romanian Deadlift | romanian-deadlift | romanian-deadlift | /images/exercises/romanian-deadlift.png | GENERATOR_COVERED | setcredits |
 | Romanian Deadlift Rdl | Romanian Deadlift Rdl | romanian-deadlift-rdl | romanian-deadlift | /images/exercises/romanian-deadlift.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Rope Tricep Pushdown | Rope Tricep Pushdown | rope-tricep-pushdown | cable-tricep-pushdown | /images/exercises/cable-tricep-pushdown.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Rope Triceps Pushdown | Rope Triceps Pushdown | rope-triceps-pushdown | cable-tricep-pushdown | /images/exercises/cable-tricep-pushdown.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Russian Twist | Russian Twist | russian-twist | russian-twist | /images/exercises/russian-twist.png | GENERATOR_COVERED | setcredits |
+| Seated Ab Crunch | Seated Ab Crunch | seated-ab-crunch | crunch | /images/exercises/crunch.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Seated Barbell Shoulder Press | Seated Barbell Shoulder Press | seated-barbell-shoulder-press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Seated Cable Row | Seated Cable Row | seated-cable-row | seated-cable-row | /images/exercises/seated-cable-row.png | GENERATOR_COVERED | setcredits |
 | Seated Calf Raise | Seated Calf Raise | seated-calf-raise | seated-calf-raise | /images/exercises/seated-calf-raise.png | GENERATOR_COVERED | setcredits |
@@ -489,8 +526,14 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 
 | generated name | canonical exerciseId | resolved URL | exact dedicated file status |
 | --- | --- | --- | --- |
+| Ab Crunch | crunch | /images/exercises/crunch.png | no exact dedicated file |
+| Ab Crunch Machine | crunch | /images/exercises/crunch.png | no exact dedicated file |
 | Ab Rollout | ab-wheel-rollout | /images/exercises/ab-wheel-rollout.png | no exact dedicated file |
+| Abduction | abductors | /images/exercises/abductors.png | no exact dedicated file |
+| Abduction Machine | abductors | /images/exercises/abductors.png | no exact dedicated file |
 | Abductor Machine | abductors | /images/exercises/abductors.png | no exact dedicated file |
+| Adduction | adductors | /images/exercises/adductors.png | no exact dedicated file |
+| Adduction Machine | adductors | /images/exercises/adductors.png | no exact dedicated file |
 | Adductor Machine | adductors | /images/exercises/adductors.png | no exact dedicated file |
 | Alternating Dumbbell Curl | dumbbell-curl | /images/exercises/dumbbell-bicep-curl.png | no exact dedicated file |
 | Australian Pull Up | australian-row | /images/exercises/australian-row.png | no exact dedicated file |
@@ -558,9 +601,11 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Hamstring Curl | lying-leg-curl | /images/exercises/lying-leg-curl.png | no exact dedicated file |
 | High Bar Squat | barbell-squat | /images/exercises/barbell-squat.png | no exact dedicated file |
 | High To Low Cable Fly | cable-crossover | /images/exercises/cable-crossover.png | no exact dedicated file |
+| Hip Abduction | abductors | /images/exercises/abductors.png | no exact dedicated file |
 | Hip Abduction Machine | abductors | /images/exercises/abductors.png | no exact dedicated file |
 | Hip Abductor | abductors | /images/exercises/abductors.png | no exact dedicated file |
 | Hip Abductor Machine | abductors | /images/exercises/abductors.png | no exact dedicated file |
+| Hip Adduction | adductors | /images/exercises/adductors.png | no exact dedicated file |
 | Hip Adduction Machine | adductors | /images/exercises/adductors.png | no exact dedicated file |
 | Hip Adductor | adductors | /images/exercises/adductors.png | no exact dedicated file |
 | Hip Adductor Machine | adductors | /images/exercises/adductors.png | no exact dedicated file |
@@ -568,6 +613,10 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Incline Barbell Bench Press | incline-bench-press | /images/exercises/incline-bench-press.png | no exact dedicated file |
 | Incline Db Bench Press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
 | Incline Db Press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
+| Incline Dumbbell Bench | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
+| Incline Dumbbell Bench Chest Press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
+| Incline Dumbbell Chest Press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
+| Incline Dumbbell Chest Press Machine | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
 | Incline Dumbbell Press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | no exact dedicated file |
 | Incline Press | incline-bench-press | /images/exercises/incline-bench-press.png | no exact dedicated file |
 | Inverted Row | australian-row | /images/exercises/australian-row.png | no exact dedicated file |
@@ -584,9 +633,13 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Low Bar Squat | barbell-squat | /images/exercises/barbell-squat.png | no exact dedicated file |
 | Lying Leg Curls | lying-leg-curl | /images/exercises/lying-leg-curl.png | no exact dedicated file |
 | Lying Triceps Extension | skull-crusher | /images/exercises/skull-crusher.png | no exact dedicated file |
+| Machine Ab Crunch | crunch | /images/exercises/crunch.png | no exact dedicated file |
 | Machine Calf Raise | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | no exact dedicated file |
+| Machine Crunch | crunch | /images/exercises/crunch.png | no exact dedicated file |
 | Machine Fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | no exact dedicated file |
 | Machine Preacher Curl | preacher-curl | /images/exercises/preacher-curl.png | no exact dedicated file |
+| Machine Rear Delt Fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
+| Machine Reverse Fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
 | Military Press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | no exact dedicated file |
 | Neutral Grip Lat Pulldown | close-grip-lat-pulldown | /images/exercises/close-grip-lat-pulldown.png | no exact dedicated file |
 | Neutral Grip Pullup | neutral-grip-pull-up | /images/exercises/neutral-grip-pull-up.png | no exact dedicated file |
@@ -603,12 +656,18 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Pushup | push-up | /images/exercises/push-up.png | no exact dedicated file |
 | Rdl | romanian-deadlift | /images/exercises/romanian-deadlift.png | no exact dedicated file |
 | Rear Delt Fly | dumbbell-reverse-fly | /images/exercises/dumbbell-reverse-fly.png | no exact dedicated file |
+| Rear Delt Machine Fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
+| Rear Delt Pec Deck | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
 | Rear Delt Raise | dumbbell-reverse-fly | /images/exercises/dumbbell-reverse-fly.png | no exact dedicated file |
 | Reverse Fly | dumbbell-reverse-fly | /images/exercises/dumbbell-reverse-fly.png | no exact dedicated file |
+| Reverse Machine Fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
+| Reverse Pec Deck Fly | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
+| Reverse Pec Deck Machine | reverse-pec-deck | /images/exercises/reverse-pec-deck.png | no exact dedicated file |
 | Ring Row | australian-row | /images/exercises/australian-row.png | no exact dedicated file |
 | Romanian Deadlift Rdl | romanian-deadlift | /images/exercises/romanian-deadlift.png | no exact dedicated file |
 | Rope Tricep Pushdown | cable-tricep-pushdown | /images/exercises/cable-tricep-pushdown.png | no exact dedicated file |
 | Rope Triceps Pushdown | cable-tricep-pushdown | /images/exercises/cable-tricep-pushdown.png | no exact dedicated file |
+| Seated Ab Crunch | crunch | /images/exercises/crunch.png | no exact dedicated file |
 | Seated Barbell Shoulder Press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | no exact dedicated file |
 | Seated Chest Press | machine-chest-press | /images/exercises/machine-chest-press.png | no exact dedicated file |
 | Seated Dumbbell Shoulder Press | dumbbell-shoulder-press | /images/exercises/dumbbell-shoulder-press.png | no exact dedicated file |

@@ -106,8 +106,15 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Seated Leg Curl", "seated-leg-curl.png"],
     ["Cable Crunch", "cable-crunch.png"],
     ["Hip Abductor Machine", "abductors.png"],
+    ["Abduction Machine", "abductors.png"],
     ["Hip Adductor Machine", "adductors.png"],
+    ["Adduction Machine", "adductors.png"],
     ["Incline Dumbbell Press", "incline-dumbbell-bench-press.png"],
+    ["Incline Dumbbell Chest Press", "incline-dumbbell-bench-press.png"],
+    ["Incline Dumbbell Curl", "incline-dumbbell-curl.png"],
+    ["Ab Crunch Machine", "crunch.png"],
+    ["Reverse Pec Deck", "reverse-pec-deck.png"],
+    ["Reverse Machine Fly", "reverse-pec-deck.png"],
     ["Typewriter Pull-up", "typewriter-pull-ups.png"],
     ["Dumbbell Step-up", "step-up.png"],
     ["Cable Triceps Pushdown", "cable-tricep-pushdown.png"],
@@ -162,6 +169,30 @@ test("public generated exercise variants resolve to exact real images without fr
       equipment: "Dumbbell",
       muscleGroup: "Biceps",
       expectedUrl: "/images/exercises/hammer-curl.png"
+    },
+    {
+      name: "Incline Dumbbell Chest Press",
+      demoName: "Incline Dumbbell Chest Press",
+      exerciseId: "incline-dumbbell-bench-press",
+      equipment: "Dumbbell",
+      muscleGroup: "Chest",
+      expectedUrl: "/images/exercises/incline-dumbbell-bench-press.png"
+    },
+    {
+      name: "Ab Crunch Machine",
+      demoName: "Ab Crunch Machine",
+      exerciseId: "crunch",
+      equipment: "Machine",
+      muscleGroup: "Core",
+      expectedUrl: "/images/exercises/crunch.png"
+    },
+    {
+      name: "Reverse Pec Deck",
+      demoName: "Reverse Pec Deck",
+      exerciseId: "reverse-pec-deck",
+      equipment: "Machine",
+      muscleGroup: "Rear Delts",
+      expectedUrl: "/images/exercises/reverse-pec-deck.png"
     }
   ];
 
@@ -178,12 +209,9 @@ test("unsupported surrogate exercise names no longer pretend to have a different
   const unsupported = [
     "Seated Machine Row",
     "Machine Row",
-    "Reverse Pec Deck",
-    "Machine Rear Delt Fly",
     "Bench Dip",
     "Assisted Pull-up",
-    "Hanging Knee Raise",
-    "Incline Dumbbell Curl"
+    "Hanging Knee Raise"
   ];
 
   for (const exerciseName of unsupported) {
