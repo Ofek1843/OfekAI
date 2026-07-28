@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const vm = require("node:vm");
+const { buildAudit } = require("../scripts/audit-exercise-image-coverage");
 
 const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -107,7 +108,14 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Hip Adductor Machine", "adductors.png"],
     ["Incline Dumbbell Press", "incline-dumbbell-bench-press.png"],
     ["Typewriter Pull-up", "typewriter-pull-ups.png"],
-    ["Dumbbell Step-up", "step-up.png"]
+    ["Dumbbell Step-up", "step-up.png"],
+    ["Cable Triceps Pushdown", "cable-tricep-pushdown.png"],
+    ["Dumbbell Calf Raise", "dumbbell-calf-raise.png"],
+    ["Dumbbell Walking Lunge", "dumbbell-walking-lunge.png"],
+    ["Dumbell Lateral Raise", "dumbbell-lateral-raise.png"],
+    ["Dumbbells Shrug", "dumbbell-shrug.png"],
+    ["Barbell Shrugs", "barbell-shrug.png"],
+    ["Cable Wood Chopper", "cable-woodchopper.png"]
   ];
 
   for (const [exerciseName, expectedFile] of cases) {
@@ -119,6 +127,17 @@ test("exercise image resolver maps newly imported images to existing files", asy
     );
     assert.ok(fs.existsSync(publicFile(url)), `Missing resolved demo image: ${url}`);
   }
+});
+
+test("exercise image coverage audit has no missing, orphaned or broken mappings", () => {
+  const report = buildAudit();
+
+  assert.deepEqual(report.issues, []);
+  assert.equal(report.totals.canonicalExercisesMissingImages, 0);
+  assert.equal(report.totals.orphanFiles, 0);
+  assert.equal(report.totals.brokenMappings, 0);
+  assert.equal(report.totals.invalidFiles, 0);
+  assert.equal(report.totals.fallbackOnlyAliases, 0);
 });
 
 test("unknown exercise images use the branded fallback instead of a broken PNG URL", async () => {
