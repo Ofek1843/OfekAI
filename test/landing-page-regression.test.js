@@ -29,16 +29,22 @@ test("landing live counter IDs and primary CTA hooks remain intact", () => {
   assert.match(landingJs, /animateNumber\(document\.getElementById\("publicWorkoutPlans"\)/);
 });
 
-test("landing contains the verified transformation story and comparison labels", () => {
+test("landing contains both verified transformation stories and comparison labels", () => {
   const html = read("public/index.html");
 
   assert.match(html, /data-result-story="user-transformation"/);
+  assert.match(html, /data-result-story="two-month-transformation"/);
   assert.match(html, /progress-bulk\.jpg/);
   assert.match(html, /progress-cutting\.jpg/);
+  assert.match(html, /before2\.jpeg/);
+  assert.match(html, /after2\.jpeg/);
   assert.match(html, /landingBeforeLabel/);
   assert.match(html, /landingAfterLabel/);
   assert.match(html, /landingResultThreeMonths/);
+  assert.match(html, /landingResultTwoMonths/);
+  assert.match(html, /landingResultTwoTitle/);
   assert.match(html, /Individual results vary/);
+  assert.equal((html.match(/data-comparison-slider/g) || []).length, 2);
 });
 
 test("dashboard public progress teaser markup was removed", () => {
@@ -55,6 +61,8 @@ test("new landing translation keys exist in English and Hebrew fallbacks", () =>
     "landingSystemTitle",
     "landingResultsTitle",
     "landingResultThreeTitle",
+    "landingResultTwoMonths",
+    "landingResultTwoTitle",
     "landingResultsDisclaimer",
     "landingFinalTitle",
     "landingFinalButton"
@@ -64,4 +72,7 @@ test("new landing translation keys exist in English and Hebrew fallbacks", () =>
     const occurrences = landingJs.match(new RegExp(`${key}:`, "g")) || [];
     assert.equal(occurrences.length, 2, `${key} should exist in en and he fallbacks`);
   }
+
+  assert.match(landingJs, /2-month transformation/);
+  assert.match(landingJs, /שינוי במשך חודשיים/);
 });
