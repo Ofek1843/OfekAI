@@ -20,7 +20,7 @@ const LANDING_FALLBACKS = {
     landingDescriptionThird:
       "A practical fitness system that can reduce your dependence on scattered apps, generic plans and constant guesswork.",
     landingPreviewWorkoutLabel: "Workout plan",
-    landingPreviewWorkoutTitle: "4-day hypertrophy block",
+    landingPreviewWorkoutTitle: "4-Day Muscle-Building Plan",
     landingPreviewWorkoutText: "Saved, editable and ready for the next session.",
     landingPreviewNutritionLabel: "Nutrition structure",
     landingPreviewNutritionTitle: "Calories, macros and preferences",
@@ -105,7 +105,7 @@ const LANDING_FALLBACKS = {
     landingDescriptionThird:
       "מערכת כושר פרקטית שיכולה לצמצם את התלות באפליקציות מפוזרות, תוכניות כלליות וניחושים.",
     landingPreviewWorkoutLabel: "תוכנית אימון",
-    landingPreviewWorkoutTitle: "בלוק היפרטרופיה ל־4 ימים",
+    landingPreviewWorkoutTitle: "תוכנית לבניית שריר – 4 ימים בשבוע",
     landingPreviewWorkoutText: "שמורה, ניתנת לעריכה ומוכנה לאימון הבא.",
     landingPreviewNutritionLabel: "מסגרת תזונה",
     landingPreviewNutritionTitle: "קלוריות, מאקרו והעדפות",
