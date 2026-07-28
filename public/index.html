@@ -7,10 +7,9 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <script>
         try {
-            const theme = localStorage.getItem("ofek-ai-theme") || "dark";
-            document.documentElement.dataset.theme = theme === "system"
-                ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
-                : theme;
+            document.documentElement.dataset.theme = "dark";
+            document.documentElement.dataset.themePreference = "dark";
+            document.documentElement.style.colorScheme = "dark";
         } catch {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
