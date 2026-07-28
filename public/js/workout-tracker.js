@@ -1,9 +1,7 @@
 import { auth, db } from "./firebase-config.js";
-import { setupExerciseDemos } from "./exercise-demos.js";
 import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-setupExerciseDemos(document);
+import { exerciseImageUrl } from "./exercise-image.js";
 
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
@@ -588,7 +586,7 @@ function renderExercise(exercise, index) {
     <article class="exercise-card" data-exercise-index="${index}">
       <header class="exercise-header">
         <div>
-          <h3>${esc(name)} <button type="button" class="exercise-demo-button" data-exercise-demo="${esc(name)}">▶ Demo</button></h3>
+          <h3>${esc(name)}</h3>
           <div class="prescription">
             <span>${count} ${ui.sets}</span>
             <span>${esc(exercise.reps || "-")} ${ui.reps}</span>
@@ -709,6 +707,30 @@ function adjustFocusNumber(selector, delta, min, max, step = 1) {
   saveCurrentDraft();
 }
 
+function workoutCompletionPercent(session) {
+  const total = totalWorkoutSets(session);
+  if (!total) return 0;
+  const completed = document.querySelectorAll(".set-row .set-complete:checked").length;
+  return Math.max(0, Math.min(100, Math.round((completed / total) * 100)));
+}
+
+function updateFocusExerciseImage(exercise) {
+  const media = $("#focusExerciseMedia");
+  const img = $("#focusExerciseImage");
+  if (!media || !img) return;
+
+  const source = exercise?.demoName || exercise?.name || "";
+  if (!source) {
+    media.classList.add("hidden");
+    img.removeAttribute("src");
+    return;
+  }
+
+  img.onload = () => media.classList.remove("hidden");
+  img.onerror = () => media.classList.add("hidden");
+  img.src = exerciseImageUrl(exercise);
+}
+
 function syncFocusFromRow() {
   const row = document.querySelector(
     `.set-row[data-exercise-index="${focus.exerciseIndex}"][data-set-index="${focus.setIndex}"]`
@@ -770,6 +792,13 @@ function syncFocusFromRow() {
   const session = activeSessionForIndex(sessionIndex);
   const exercise =
     session?.exercises?.[focus.exerciseIndex];
+
+  updateFocusExerciseImage(exercise);
+
+  const percentBadge = $("#focusPercentBadge");
+  if (percentBadge && session) {
+    percentBadge.textContent = `${workoutCompletionPercent(session)}%`;
+  }
 
   const exerciseSets = Math.max(
     1,
@@ -886,6 +915,14 @@ function restSecondsForCurrentSet() {
 function applyCurrentFocus(rowAdvance = false) {
   writeFocusToRow(true);
   saveCurrentDraft();
+
+  const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
+  const session = activeSessionForIndex(sessionIndex);
+  const percentBadge = $("#focusPercentBadge");
+  if (percentBadge && session) {
+    percentBadge.textContent = `${workoutCompletionPercent(session)}%`;
+  }
+
   const restSeconds = restSecondsForCurrentSet();
   startRestTimer(restSeconds);
   if (rowAdvance) {
@@ -1077,7 +1114,10 @@ async function startNextSet() {
       ? "כל הסטים הושלמו. אפשר לשמור את האימון."
       : "All sets are complete. You can save the workout.";
 
-    $("#finishWorkoutButton")
+    $("#focusPanel")?.classList.add("hidden");
+    $("#finishBar")?.classList.remove("hidden");
+
+    $("#finishBar")
       ?.scrollIntoView({
         behavior: "smooth",
         block: "center"
@@ -1130,6 +1170,8 @@ function openWorkout(index, startTime = Date.now()) {
   $("#workoutMeta").textContent = savedPlan.name || savedPlan.plan.programName || "Workout Plan";
   $("#exerciseList").innerHTML = (session.exercises || []).map(renderExercise).join("");
   $("#workoutPanel").dataset.sessionIndex = index;
+  $("#focusPanel")?.classList.remove("hidden");
+  $("#finishBar")?.classList.add("hidden");
   show("#workoutPanel");
   startWorkoutTimer();
   focus = { exerciseIndex: 0, setIndex: 0 };
@@ -1232,6 +1274,23 @@ async function finishWorkout() {
     clearDraft();
     $("#successSummary").textContent = ui.completed(workingSets.filter(set => set.completed).length, workingSets.length, Math.max(1, Math.round(durationSeconds / 60)));
     show("#successPanel");
+
+    // Fire-and-forget: checks for new personal records and pushes a
+    // notification if any are found. Must never block or fail the save flow
+    // above, which is why it's a separate try/catch after the workout is
+    // already saved and the success panel is already shown.
+    try {
+      await fetch("/api/notifications/finish-workout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${await user.getIdToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ exercises })
+      });
+    } catch (prError) {
+      console.error("Personal-record check failed:", prError);
+    }
   } catch (error) {
     console.error(error);
     $("#trackerStatus").textContent = ui.saveError;
@@ -1408,6 +1467,7 @@ $("#anotherWorkoutButton").addEventListener("click", () => {
   renderSetup();
 });
 $("#discardWorkoutButton").addEventListener("click", discardDraft);
+$("#discardWorkoutToolbarButton")?.addEventListener("click", discardDraft);
 
 onAuthStateChanged(auth, async current => {
   if (!current) return location.replace("/auth.html");

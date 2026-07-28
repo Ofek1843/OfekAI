@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">FuelPhysique demo pending</title>
+  <desc id="desc">A branded placeholder used when no verified exercise demonstration image exists yet.</desc>
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity=".28"/>
+      <stop offset="45%" stop-color="#2563eb" stop-opacity=".14"/>
+      <stop offset="100%" stop-color="#020617" stop-opacity="1"/>
+    </radialGradient>
+    <linearGradient id="brand" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#67e8f9"/>
+      <stop offset="1" stop-color="#22c55e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="#06111f"/>
+  <rect width="1200" height="800" fill="url(#glow)"/>
+  <g opacity=".24" stroke="#38bdf8" stroke-width="1">
+    <path d="M0 120H1200M0 240H1200M0 360H1200M0 480H1200M0 600H1200M0 720H1200"/>
+    <path d="M120 0V800M240 0V800M360 0V800M480 0V800M600 0V800M720 0V800M840 0V800M960 0V800M1080 0V800"/>
+  </g>
+  <circle cx="600" cy="340" r="138" fill="#0f172a" stroke="url(#brand)" stroke-width="6"/>
+  <text x="600" y="322" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="92" font-weight="900" fill="url(#brand)">FP</text>
+  <text x="600" y="386" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="800" fill="#dbeafe" letter-spacing="6">FUELPHYSIQUE</text>
+  <text x="600" y="560" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="900" fill="#f8fafc">Demo image pending</text>
+  <text x="600" y="620" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="26" fill="#94a3b8">No verified demonstration is attached to this exercise yet.</text>
+</svg>
