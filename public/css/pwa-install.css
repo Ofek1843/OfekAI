@@ -1,0 +1,15 @@
+.pwa-install-dialog{width:min(400px,calc(100% - 24px));padding:0;border:1px solid rgba(56,189,248,.28);border-radius:22px;color:#f8fafc;background:#0b1220;box-shadow:0 30px 100px #000}
+.pwa-install-dialog::backdrop{background:rgba(2,6,14,.78);backdrop-filter:blur(6px)}
+.pwa-install-shell{position:relative;padding:28px;text-align:center}
+.pwa-install-close{position:absolute;z-index:2;top:12px;inset-inline-end:14px;border:0;color:#94a3b8;background:none;font-size:26px;cursor:pointer;line-height:1}
+.pwa-install-icon{margin:0 auto 14px;font-size:40px}
+.pwa-install-shell h3{margin:0 0 10px;font-size:21px;font-weight:900}
+.pwa-install-shell p{margin:0 0 22px;color:#94a3b8;font-size:14px;line-height:1.6}
+.pwa-install-actions{display:grid;gap:10px}
+.pwa-install-button{padding:14px;border:0;border-radius:12px;color:#fff;background:linear-gradient(135deg,#2563eb,#06b6d4);font-size:15px;font-weight:850;cursor:pointer}
+.pwa-install-button:disabled{opacity:.6;cursor:default}
+.pwa-install-dismiss{padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#cbd5e1;background:transparent;font-size:14px;font-weight:750;cursor:pointer}
+html[data-theme=light] .pwa-install-dialog{color:#172033;background:#f8fbff;box-shadow:0 30px 90px rgba(30,41,59,.25)}
+html[data-theme=light] .pwa-install-shell p{color:#58758a}
+html[data-theme=light] .pwa-install-dismiss{border-color:rgba(23,32,51,.16);color:#17324d}
+@media(max-width:420px){.pwa-install-shell{padding:22px}}

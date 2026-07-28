@@ -48,6 +48,9 @@ const languageTab =
 const appearanceTab =
   document.getElementById("appearanceTab");
 
+const notificationsTab =
+  document.getElementById("notificationsTab");
+
 const profileTitle =
   document.getElementById("profileTitle");
 
@@ -220,6 +223,7 @@ function setLanguage(lang) {
   setElementText(aiPreferencesTab, t(currentLang, "aiPreferences"));
   setElementText(languageTab, t(currentLang, "language"));
   setElementText(appearanceTab, t(currentLang, "appearance"));
+  setElementText(notificationsTab, t(currentLang, "notificationsTab"));
 
   setElementText(profileTitle, t(currentLang, "profile"));
   setElementText(athleteCoreTitle, t(currentLang, "athleteCore"));
@@ -436,6 +440,32 @@ function setLanguage(lang) {
   setElementText(
     document.getElementById("themeLightOption"),
     t(currentLang, "lightTheme")
+  );
+
+  // ===== Notifications =====
+  setElementText(
+    document.getElementById("notificationsTitle"),
+    t(currentLang, "notificationsTab")
+  );
+  setElementText(
+    document.getElementById("notificationsDescription"),
+    t(currentLang, "notificationsDescription")
+  );
+  setElementText(
+    document.getElementById("pushMasterLabel"),
+    t(currentLang, "pushMasterLabel")
+  );
+  setElementText(
+    document.getElementById("pushScheduledLabel"),
+    t(currentLang, "pushScheduledLabel")
+  );
+  setElementText(
+    document.getElementById("pushComebackLabel"),
+    t(currentLang, "pushComebackLabel")
+  );
+  setElementText(
+    document.getElementById("sendTestNotificationBtn"),
+    t(currentLang, "sendTestNotification")
   );
 
   updateWelcomeMessage();

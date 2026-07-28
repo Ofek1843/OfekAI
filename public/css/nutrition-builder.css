@@ -1219,83 +1219,83 @@ html[dir="ltr"] .nutrition-food-table td {
 /* Builder card wider for wizard */
 .builder-card{max-width:900px}
 
-/* Meal Options Carousel */
+/* Meal Options Carousel — one whole catalog meal per option */
 .meal-options-carousel {
-  padding: 24px 0;
+  padding: 4px 0;
+  outline: none;
 }
 
-.carousel-main {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 32px;
-  align-items: start;
-}
-
-.carousel-image-container {
-  position: sticky;
-  top: 20px;
-}
-
-.carousel-image {
-  aspect-ratio: 4/3;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
-
-.carousel-content {
+.meal-slot-header {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
-.carousel-header h3 {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 800;
+.meal-slot-name {
+  display: block;
   color: var(--text);
+  font-size: 24px;
+  font-weight: 950;
+  letter-spacing: -0.5px;
+}
+
+.meal-slot-target {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .carousel-counter {
-  font-size: 14px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.carousel-meta {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  padding: 16px;
-  background: var(--surface);
+  flex: 0 0 auto;
+  padding: 8px 16px;
   border-radius: 12px;
-  border: 1px solid var(--border);
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.meta-label {
-  font-size: 18px;
-}
-
-.meta-value {
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.15), rgba(124, 92, 255, 0.08));
+  border: 1px solid rgba(124, 92, 255, 0.25);
   color: var(--text);
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
 .carousel-options-container {
   position: relative;
-  min-height: 300px;
+  margin-bottom: 24px;
+}
+
+.carousel-scroll-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px 14px;
   border-radius: 12px;
-  overflow: hidden;
+  background: rgba(124, 92, 255, 0.08);
+  border: 1px solid rgba(124, 92, 255, 0.16);
+  color: #b9a8ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.carousel-scroll-hint svg {
+  width: 16px;
+  height: 16px;
+  animation: scrollHintBounce 1.4s ease-in-out infinite;
+}
+
+@keyframes scrollHintBounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
 }
 
 .carousel-option {
@@ -1303,67 +1303,273 @@ html[dir="ltr"] .nutrition-food-table td {
   top: 0;
   left: 0;
   width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 
 .carousel-option.active {
+  position: relative;
   opacity: 1;
   pointer-events: auto;
+}
+
+.meal-option-media {
+  display: grid;
+  gap: 12px;
+}
+
+.meal-photo {
   position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(124, 92, 255, 0.2);
+}
+
+.meal-photo img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Placeholder shown until a real plate photo exists for this meal id. */
+.meal-photo-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+  color: #c9bcff;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  line-height: 1.4;
+}
+
+.meal-photo.no-image .meal-photo-fallback {
+  display: flex;
+}
+
+.meal-prep {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.meal-prep summary {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.meal-prep p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.meal-option-body {
+  display: grid;
+  gap: 16px;
+}
+
+.meal-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 2px;
+}
+
+.meal-option-name {
+  margin: 0;
+  color: var(--text);
+  font-size: 28px;
+  font-weight: 950;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.nutrition-reroll-meal-button {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.nutrition-reroll-meal-button:hover:not(:disabled) {
+  transform: scale(1.08);
+  background: rgba(124, 92, 255, 0.18);
+}
+
+.nutrition-reroll-meal-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.nutrition-reroll-meal-button.is-rerolling {
+  animation: mealRerollSpin 0.8s linear infinite;
+}
+
+@keyframes mealRerollSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.meal-option-macros {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 18px 16px;
+  border: 1px solid rgba(124, 92, 255, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(124, 92, 255, 0.04));
+  text-align: center;
+  margin-top: 18px;
+}
+
+.meal-option-macros span {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.meal-option-macros strong {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 950;
+  letter-spacing: -0.3px;
 }
 
 .carousel-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 18px;
+  margin-top: 20px;
   padding: 16px;
-  background: var(--surface);
-  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(124, 92, 255, 0.04));
+  border: 1px solid rgba(124, 92, 255, 0.15);
+  border-radius: 14px;
 }
 
 .carousel-nav-btn {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 14px;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
 }
 
-.carousel-nav-btn:hover {
-  opacity: 0.9;
+.carousel-nav-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
 }
 
 .carousel-nav-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none;
 }
 
 .carousel-dots {
   display: flex;
   gap: 8px;
+  justify-content: center;
 }
 
 .carousel-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: var(--muted);
-  opacity: 0.4;
+  background: rgba(255, 255, 255, 0.25);
+  opacity: 0.6;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.carousel-dot:hover {
+  opacity: 0.8;
 }
 
 .carousel-dot.active {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   opacity: 1;
-  width: 28px;
-  border-radius: 5px;
+  width: 24px;
+  border-radius: 4px;
+  border-color: rgba(102, 126, 234, 0.5);
+  box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+}
+
+.nutrition-summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  padding: 20px 16px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(124, 92, 255, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.06), rgba(124, 92, 255, 0.02));
+}
+
+.nutrition-summary > div {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+}
+
+.nutrition-summary strong {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: -0.3px;
+}
+
+.nutrition-summary span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.meals-list {
+  display: grid;
+  gap: 28px;
 }
 
 /* Mobile */
@@ -1377,15 +1583,32 @@ html[dir="ltr"] .nutrition-food-table td {
   .wizard-button--back{min-width:0}
   .wizard-button--generate{grid-column:2}
 
-  .carousel-main {
+  .carousel-option {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
-  .carousel-image-container {
-    position: static;
+  .meal-option-name {
+    font-size: 24px;
   }
 
-  .carousel-image {
-    min-height: 220px;
+  .meal-photo {
+    aspect-ratio: 16 / 12;
+  }
+
+  .meal-option-macros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .carousel-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nutrition-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px 12px;
+    margin-bottom: 24px;
   }
 }

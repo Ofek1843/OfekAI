@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="stylesheet" href="/css/dashboard-enhancements.css">
   <link rel="stylesheet" href="/css/theme-toggle.css">
+  <link rel="stylesheet" href="/css/pwa-install.css">
 </head>
 <body>
   <main class="dashboard-shell">
@@ -96,12 +97,17 @@
         </div>
 
         <div class="hero-actions">
+          <button class="theme-toggle hero-notify-toggle" type="button" id="enablePushButton">
+            <span aria-hidden="true">🔔</span>
+            <span id="enablePushButtonLabel">Enable reminders</span>
+          </button>
           <button class="theme-toggle hero-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">
             <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌙</span>
             <span class="theme-toggle-label" data-theme-toggle-label>Dark mode</span>
           </button>
         </div>
       </header>
+      <p id="pushStatus" class="muted hidden"></p>
 
       <nav class="dashboard-primary-actions" aria-label="Quick actions">
         <a class="dashboard-action dashboard-action--coach" id="chatLink" href="/app.html">Ask your coach</a>
@@ -255,32 +261,32 @@
         <!-- Progress photo teaser -->
         <article class="card progress-teaser-card">
           <div class="progress-teaser-header">
-            <span class="progress-teaser-kicker">📸 REAL RESULTS · 3 MONTHS</span>
-            <h2 class="progress-teaser-title">This is what 12 weeks on FuelPhysique looks like</h2>
-            <p class="progress-teaser-sub">Custom workout plan + personalized nutrition plan. Same person. 3 months apart. Track your own transformation the same way.</p>
+            <span class="progress-teaser-kicker" id="teaserKicker" dir="auto">📸 REAL RESULTS · 3 MONTHS</span>
+            <h2 class="progress-teaser-title" id="teaserTitle" dir="auto">This is what 12 weeks on FuelPhysique looks like</h2>
+            <p class="progress-teaser-sub" id="teaserSub" dir="auto">Custom workout plan + personalized nutrition plan. Same person. 3 months apart. Track your own transformation the same way.</p>
           </div>
 
           <div class="progress-teaser-compare">
             <div class="progress-teaser-col">
-              <div class="progress-teaser-date-badge">April 2026 · Start</div>
+              <div class="progress-teaser-date-badge" id="teaserStartBadge" dir="auto">April 2026 · Start</div>
               <div class="progress-teaser-photo">
-                <img src="/images/demo/progress-bulk.jpg" alt="Start — bulk phase" />
+                <img src="/images/demo/progress-bulk.jpg" id="teaserStartImg" alt="Start — bulk phase" />
               </div>
-              <div class="progress-teaser-phase-label">🏋️ Bulk phase</div>
+              <div class="progress-teaser-phase-label" id="teaserStartPhase" dir="auto">🏋️ Bulk phase</div>
             </div>
 
             <div class="progress-teaser-vs">➜</div>
 
             <div class="progress-teaser-col">
-              <div class="progress-teaser-date-badge progress-teaser-date-badge--after">July 2026 · Now</div>
+              <div class="progress-teaser-date-badge progress-teaser-date-badge--after" id="teaserEndBadge" dir="auto">July 2026 · Now</div>
               <div class="progress-teaser-photo">
-                <img src="/images/demo/progress-cutting.jpg" alt="After — cut phase" />
+                <img src="/images/demo/progress-cutting.jpg" id="teaserEndImg" alt="After — cut phase" />
               </div>
-              <div class="progress-teaser-phase-label">🔥 Cut phase</div>
+              <div class="progress-teaser-phase-label" id="teaserEndPhase" dir="auto">🔥 Cut phase</div>
             </div>
           </div>
 
-          <a href="/progress.html#photo-upload" class="progress-teaser-cta">
+          <a href="/progress.html#photo-upload" class="progress-teaser-cta" id="teaserCta" dir="auto">
             Track your own progress — compare photos between dates →
           </a>
         </article>
@@ -292,14 +298,14 @@
 
   <footer style="border-top:1px solid rgba(255,255,255,.08);margin-top:40px;padding:28px 0;text-align:center">
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;margin-bottom:12px">
-      <a href="/faq.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">FAQ</a>
-      <a href="/contact.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Contact</a>
-      <a href="/terms.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Terms of Service</a>
-      <a href="/privacy.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Privacy Policy</a>
-      <a href="/subscription-policy.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Subscription Policy</a>
-      <a href="/refund-policy.html" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Refund Policy</a>
+      <a href="/faq.html" id="footerFaqLink" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">FAQ</a>
+      <a href="/contact.html" id="footerContactLink" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Contact</a>
+      <a href="/terms.html" id="footerTermsLink" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Terms of Service</a>
+      <a href="/privacy.html" id="footerPrivacyLink" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Privacy Policy</a>
+      <a href="/subscription-policy.html" id="footerSubscriptionLink" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Subscription Policy</a>
+      <a href="/refund-policy.html" id="footerRefundLink" style="color:#8a9ab5;font-size:13px;font-weight:600;text-decoration:none">Refund Policy</a>
     </div>
-    <p style="margin:0;font-size:12px;color:#4a5568">© 2026 FuelPhysique. All rights reserved.</p>
+    <p style="margin:0;font-size:12px;color:#4a5568" id="footerCopy">© 2026 FuelPhysique. All rights reserved.</p>
   </footer>
 
   <div id="athleteCorePrompt" class="athlete-core-prompt hidden" role="dialog" aria-modal="true" aria-labelledby="athleteCorePromptTitle">

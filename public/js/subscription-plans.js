@@ -14,7 +14,11 @@ export const SUBSCRIPTION_PLANS = Object.freeze({
   pro: Object.freeze({
     id: "pro",
     name: "FuelPhysique Pro",
-    monthlyPriceIls: 25,
+    monthlyPriceUsd: 8,
+    // Approximate USD->ILS conversion for display only; not used for actual
+    // billing (billing is not live yet — see lib/payplus-billing.js).
+    monthlyPriceIls: 29,
+    trialDays: 3,
     limits: Object.freeze({ workoutPlans: 5, nutritionPlans: 5, aiGenerationsMonthly: 100 }),
     features: Object.freeze([
       "Up to five workout plans",

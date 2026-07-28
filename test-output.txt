@@ -1,0 +1,157 @@
+
+> ofek-ai@1.0.0 test
+> npm run lint && node --test test/fuelphysique-policy.test.js && npm run load:test
+
+
+> ofek-ai@1.0.0 lint
+> node --check server.js && node --check scripts/load-test.js
+
+✔ creator response stays neutral and brand-safe (1.1023ms)
+✔ registered user filter excludes test and private placeholders (0.2698ms)
+✔ analytics sanitizer drops unsupported events and sensitive fields (0.7061ms)
+✔ public stats summary counts only meaningful records (1.8211ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 105.3974
+
+> ofek-ai@1.0.0 load:test
+> node scripts/load-test.js
+
+
+┌─────────┬──────┬──────┬───────┬──────┬──────┬───────┬──────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg  │ Stdev │ Max  │
+├─────────┼──────┼──────┼───────┼──────┼──────┼───────┼──────┤
+│ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │
+└─────────┴──────┴──────┴───────┴──────┴──────┴───────┴──────┘
+┌───────────┬─────┬──────┬─────┬───────┬─────┬───────┬─────┐
+│ Stat      │ 1%  │ 2.5% │ 50% │ 97.5% │ Avg │ Stdev │ Min │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Req/Sec   │ 0   │ 0    │ 0   │ 0     │ 0   │ 0     │ 0   │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Bytes/Sec │ 0 B │ 0 B  │ 0 B │ 0 B   │ 0 B │ 0 B   │ 0 B │
+└───────────┴─────┴──────┴─────┴───────┴─────┴───────┴─────┘
+
+Req/Bytes counts sampled once per second.
+# of samples: 10
+
+3k requests in 10.07s, 0 B read
+3k errors (0 timeouts)
+
+┌─────────┬──────┬──────┬───────┬──────┬──────┬───────┬──────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg  │ Stdev │ Max  │
+├─────────┼──────┼──────┼───────┼──────┼──────┼───────┼──────┤
+│ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │
+└─────────┴──────┴──────┴───────┴──────┴──────┴───────┴──────┘
+┌───────────┬─────┬──────┬─────┬───────┬─────┬───────┬─────┐
+│ Stat      │ 1%  │ 2.5% │ 50% │ 97.5% │ Avg │ Stdev │ Min │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Req/Sec   │ 0   │ 0    │ 0   │ 0     │ 0   │ 0     │ 0   │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Bytes/Sec │ 0 B │ 0 B  │ 0 B │ 0 B   │ 0 B │ 0 B   │ 0 B │
+└───────────┴─────┴──────┴─────┴───────┴─────┴───────┴─────┘
+
+Req/Bytes counts sampled once per second.
+# of samples: 10
+
+7k requests in 10.09s, 0 B read
+7k errors (0 timeouts)
+
+┌─────────┬──────┬──────┬───────┬──────┬──────┬───────┬──────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg  │ Stdev │ Max  │
+├─────────┼──────┼──────┼───────┼──────┼──────┼───────┼──────┤
+│ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │
+└─────────┴──────┴──────┴───────┴──────┴──────┴───────┴──────┘
+┌───────────┬─────┬──────┬─────┬───────┬─────┬───────┬─────┐
+│ Stat      │ 1%  │ 2.5% │ 50% │ 97.5% │ Avg │ Stdev │ Min │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Req/Sec   │ 0   │ 0    │ 0   │ 0     │ 0   │ 0     │ 0   │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Bytes/Sec │ 0 B │ 0 B  │ 0 B │ 0 B   │ 0 B │ 0 B   │ 0 B │
+└───────────┴─────┴──────┴─────┴───────┴─────┴───────┴─────┘
+
+Req/Bytes counts sampled once per second.
+# of samples: 10
+
+7k requests in 10.11s, 0 B read
+7k errors (0 timeouts)
+
+┌─────────┬──────┬──────┬───────┬──────┬──────┬───────┬──────┐
+│ Stat    │ 2.5% │ 50%  │ 97.5% │ 99%  │ Avg  │ Stdev │ Max  │
+├─────────┼──────┼──────┼───────┼──────┼──────┼───────┼──────┤
+│ Latency │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │ 0 ms │ 0 ms  │ 0 ms │
+└─────────┴──────┴──────┴───────┴──────┴──────┴───────┴──────┘
+┌───────────┬─────┬──────┬─────┬───────┬─────┬───────┬─────┐
+│ Stat      │ 1%  │ 2.5% │ 50% │ 97.5% │ Avg │ Stdev │ Min │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Req/Sec   │ 0   │ 0    │ 0   │ 0     │ 0   │ 0     │ 0   │
+├───────────┼─────┼──────┼─────┼───────┼─────┼───────┼─────┤
+│ Bytes/Sec │ 0 B │ 0 B  │ 0 B │ 0 B   │ 0 B │ 0 B   │ 0 B │
+└───────────┴─────┴──────┴─────┴───────┴─────┴───────┴─────┘
+
+Req/Bytes counts sampled once per second.
+# of samples: 10
+
+3k requests in 10.12s, 0 B read
+3k errors (0 timeouts)
+{
+  "target": "http://localhost:3000",
+  "results": [
+    {
+      "name": "static-10",
+      "requests": 0,
+      "throughput": 0,
+      "latency": {
+        "p50": 0,
+        "p99": 0
+      },
+      "errors": 2986,
+      "timeouts": 0,
+      "non2xx": 0,
+      "maxRssMb": 110
+    },
+    {
+      "name": "static-25",
+      "requests": 0,
+      "throughput": 0,
+      "latency": {
+        "p50": 0,
+        "p99": 0
+      },
+      "errors": 7468,
+      "timeouts": 0,
+      "non2xx": 0,
+      "maxRssMb": 110
+    },
+    {
+      "name": "health-25",
+      "requests": 0,
+      "throughput": 0,
+      "latency": {
+        "p50": 0,
+        "p99": 0
+      },
+      "errors": 7450,
+      "timeouts": 0,
+      "non2xx": 0,
+      "maxRssMb": 110
+    },
+    {
+      "name": "exercise-demo",
+      "requests": 0,
+      "throughput": 0,
+      "latency": {
+        "p50": 0,
+        "p99": 0
+      },
+      "errors": 2980,
+      "timeouts": 0,
+      "non2xx": 0,
+      "maxRssMb": 110
+    }
+  ]
+}

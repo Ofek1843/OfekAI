@@ -104,11 +104,18 @@ body::after { right: -140px; bottom: -220px; background: #22c55e; animation-dela
 .brand .subtitle { margin-top: 8px; font-size: 13px; }
 
 .top-actions {
-  display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 9px;
   width: auto;
+}
+
+/* app.html's inline <style> already hides .top-actions below 700px and
+   shows a mobile accordion instead; this file loads after that inline
+   block with equal specificity, so display must stay scoped to desktop
+   widths or it silently wins the cascade at every viewport size. */
+@media (min-width: 701px) {
+  .top-actions { display: flex; }
 }
 
 .top-actions .workout-btn:not(.dashboard-btn),
@@ -157,7 +164,13 @@ body::after { right: -140px; bottom: -220px; background: #22c55e; animation-dela
 .top-actions .settings-btn:hover { transform: rotate(22deg); background: rgba(56,189,248,.13); border-color: rgba(56,189,248,.35); }
 .top-actions .clear-btn:hover { transform: rotate(-30deg); background: rgba(244,63,94,.13); border-color: rgba(251,113,133,.35); }
 
-.app-layout { grid-template-columns: 285px minmax(0, 1fr); gap: 14px; }
+/* Same cascade-order issue as .top-actions above: app.html's inline
+   style collapses .app-layout to a single column below 900px, so this
+   override must stay scoped to desktop or it wins at every width. */
+@media (min-width: 901px) {
+  .app-layout { grid-template-columns: 285px minmax(0, 1fr); gap: 14px; }
+}
+.app-layout { gap: 14px; }
 .conversation-history,
 #chat { border-color: var(--coach-stroke); background: var(--coach-panel); backdrop-filter: blur(14px); }
 .conversation-history { min-height: calc(100vh - 155px); animation: slideInLeft .5s .08s both; }

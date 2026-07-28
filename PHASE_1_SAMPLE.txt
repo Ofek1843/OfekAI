@@ -1,0 +1,226 @@
+﻿// Phase 1 Sample Request/Response Demo
+// This demonstrates the enhanced workout builder with validation and volume tracking
+
+// ==== SAMPLE REQUEST ====
+POST /api/workout-builder
+Content-Type: application/json
+
+{
+  "daysPerWeek": 3,
+  "sessionDuration": 60,
+  "experience": "intermediate",
+  "goal": "Build muscle",
+  "trainingStyle": "Push/Pull/Legs",
+  "equipment": ["barbell", "dumbbell", "cable"],
+  "availableDays": ["monday", "wednesday", "friday"],
+  "priority": "Hypertrophy",
+  "limitations": "Knee-friendly"
+}
+
+// ==== SAMPLE RESPONSE (Success, 200 OK) ====
+{
+  "success": true,
+  "program": {
+    "programName": "PPL-3-Day",
+    "daysPerWeek": 3,
+    "durationWeeks": 8,
+    "goal": "Build muscle",
+    "sessions": [
+      {
+        "day": 1,
+        "name": "Push Day",
+        "exercises": [
+          {
+            "exerciseId": "barbell-bench-press",
+            "name": "Barbell Bench Press",
+            "sets": 4,
+            "reps": "6-10",
+            "restSeconds": 180,
+            "muscleGroup": "Chest",
+            "equipment": "barbell",
+            "rir": "2",
+            "notes": ""
+          },
+          {
+            "exerciseId": "barbell-shoulder-press",
+            "name": "Barbell Shoulder Press",
+            "sets": 3,
+            "reps": "6-10",
+            "restSeconds": 180,
+            "muscleGroup": "Shoulders",
+            "equipment": "barbell",
+            "rir": "2",
+            "notes": ""
+          },
+          {
+            "exerciseId": "cable-tricep-pushdown",
+            "name": "Cable Tricep Pushdown",
+            "sets": 3,
+            "reps": "10-15",
+            "restSeconds": 90,
+            "muscleGroup": "Triceps",
+            "equipment": "cable",
+            "rir": "1",
+            "notes": ""
+          }
+        ]
+      },
+      {
+        "day": 2,
+        "name": "Pull Day",
+        "exercises": [
+          {
+            "exerciseId": "barbell-row",
+            "name": "Barbell Row",
+            "sets": 4,
+            "reps": "6-10",
+            "restSeconds": 180,
+            "muscleGroup": "Back",
+            "equipment": "barbell",
+            "rir": "2",
+            "notes": ""
+          },
+          {
+            "exerciseId": "lat-pulldown",
+            "name": "Lat Pulldown",
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 120,
+            "muscleGroup": "Back",
+            "equipment": "cable",
+            "rir": "1",
+            "notes": ""
+          },
+          {
+            "exerciseId": "dumbbell-curl",
+            "name": "Dumbbell Curl",
+            "sets": 3,
+            "reps": "8-12",
+            "restSeconds": 90,
+            "muscleGroup": "Biceps",
+            "equipment": "dumbbell",
+            "rir": "1",
+            "notes": ""
+          }
+        ]
+      },
+      {
+        "day": 3,
+        "name": "Legs Day",
+        "exercises": [
+          {
+            "exerciseId": "barbell-squat",
+            "name": "Barbell Squat",
+            "sets": 4,
+            "reps": "6-10",
+            "restSeconds": 180,
+            "muscleGroup": "Quads",
+            "equipment": "barbell",
+            "rir": "2",
+            "notes": "Knee-friendly depth"
+          },
+          {
+            "exerciseId": "romanian-deadlift",
+            "name": "Romanian Deadlift",
+            "sets": 3,
+            "reps": "6-10",
+            "restSeconds": 180,
+            "muscleGroup": "Hamstrings",
+            "equipment": "barbell",
+            "rir": "2",
+            "notes": ""
+          },
+          {
+            "exerciseId": "leg-extension",
+            "name": "Leg Extension",
+            "sets": 3,
+            "reps": "10-15",
+            "restSeconds": 90,
+            "muscleGroup": "Quads",
+            "equipment": "cable",
+            "rir": "1",
+            "notes": "Knee-friendly machine"
+          }
+        ]
+      }
+    ],
+    "weeklyScheduleDays": [1, 3, 5],
+    "age": 28,
+    "availableDays": ["monday", "wednesday", "friday"],
+    "availableDayIndexes": [1, 3, 5]
+  },
+  "weeklyVolume": {
+    "perMuscle": {
+      "chest": { direct: 4, fractional: 0.5, total: 4.5 },
+      "triceps": { direct: 3, fractional: 2.5, total: 5.5 },
+      "back": { direct: 10, fractional: 1.5, total: 11.5 },
+      "biceps": { direct: 3, fractional: 0.5, total: 3.5 },
+      "quads": { direct: 7, fractional: 0.75, total: 7.75 },
+      "hamstrings": { direct: 3, fractional: 1, total: 4 },
+      "delts": { direct: 3, fractional: 2, total: 5 }
+    },
+    "totalHardSets": 32
+  },
+  "sessionDurations": [
+    { name: "Push Day", estimatedMinutes: 52 },
+    { name: "Pull Day", estimatedMinutes: 48 },
+    { name: "Legs Day", estimatedMinutes: 56 }
+  ],
+  "validationSummary": {
+    "passed": true,
+    "errors": [],
+    "warnings": []
+  }
+}
+
+// ==== SAMPLE RESPONSE (Validation Failure, 422) ====
+{
+  "success": false,
+  "error": "The generated workout program did not meet requirements.",
+  "details": [
+    "Session 1 estimated at 78min, exceeds 60min limit by 18min.",
+    "Session 1: barbell requires \"barbell\", which is not selected.",
+    "Session 1: 3 reps requires ≥180s rest, has 90s."
+  ]
+}
+
+// ==== REROLL REQUEST ====
+POST /api/workout-builder/reroll-exercise
+Content-Type: application/json
+
+{
+  "sessionIndex": 0,
+  "exerciseIndex": 1,
+  "program": { /* current program */ },
+  "goal": "Build muscle",
+  "experience": "intermediate",
+  "trainingStyle": "Push/Pull/Legs",
+  "equipment": ["barbell", "dumbbell", "cable"],
+  "priority": "Hypertrophy",
+  "limitations": "Knee-friendly"
+}
+
+// ==== REROLL SUCCESS RESPONSE ====
+{
+  "success": true,
+  "exercise": {
+    "exerciseId": "dumbbell-shoulder-press",
+    "name": "Dumbbell Shoulder Press",
+    "sets": 3,
+    "reps": "8-12",
+    "restSeconds": 120,
+    "muscleGroup": "Shoulders",
+    "equipment": "dumbbell",
+    "rir": "1",
+    "notes": ""
+  }
+}
+
+// ==== REROLL FAILURE RESPONSE ====
+{
+  "success": false,
+  "error": "Replacement exercise makes the program invalid.",
+  "details": [
+    "Session 1 estimated at 85min, exceeds 60min limit by 25min."
+  ]
+}

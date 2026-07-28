@@ -93,6 +93,20 @@ en: {
   darkTheme: "Dark",
   lightTheme: "Light",
 
+  notificationsTab: "Notifications",
+  notificationsDescription:
+    "Choose which push notifications FuelPhysique can send to this device.",
+  pushMasterLabel: "Push notifications on this device",
+  pushMasterHintOff: "Notifications are off. Turn this on to allow FuelPhysique to notify you.",
+  pushMasterHintOn: "Notifications are on for this device.",
+  pushMasterHintUnsupported: "This browser does not support push notifications.",
+  pushScheduledLabel: "Workout day reminders",
+  pushComebackLabel: "\"Come back\" reminders after a few inactive days",
+  sendTestNotification: "Send test notification",
+  testNotificationSending: "Sending...",
+  testNotificationSent: "Test notification sent — check this device.",
+  testNotificationError: "Could not send a test notification.",
+
   noSessions: "No saved sessions yet",
   couldNotLoadSessions:
     "Could not load sessions",
@@ -211,6 +225,20 @@ he: {
   systemTheme: "לפי המערכת",
   darkTheme: "כהה",
   lightTheme: "בהירה",
+
+  notificationsTab: "התראות",
+  notificationsDescription:
+    "בחר אילו התראות פוש FuelPhysique יכול לשלוח למכשיר הזה.",
+  pushMasterLabel: "התראות פוש במכשיר הזה",
+  pushMasterHintOff: "ההתראות כבויות. הפעל כדי לאפשר ל-FuelPhysique לשלוח לך התראות.",
+  pushMasterHintOn: "ההתראות פעילות במכשיר הזה.",
+  pushMasterHintUnsupported: "הדפדפן הזה לא תומך בהתראות פוש.",
+  pushScheduledLabel: "תזכורות ליום אימון",
+  pushComebackLabel: "תזכורות \"תחזור\" אחרי כמה ימי חוסר פעילות",
+  sendTestNotification: "שליחת התראת בדיקה",
+  testNotificationSending: "שולח...",
+  testNotificationSent: "התראת בדיקה נשלחה — בדוק את המכשיר הזה.",
+  testNotificationError: "לא ניתן היה לשלוח התראת בדיקה.",
 
   noSessions: "אין עדיין שיחות שמורות",
   couldNotLoadSessions:

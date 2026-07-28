@@ -217,9 +217,63 @@ button, a { font: inherit; }
 
 .editor-exercise-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.6fr) minmax(82px, 0.45fr) minmax(96px, 0.65fr) minmax(110px, 0.65fr) auto;
-  gap: 10px;
+  grid-template-columns: minmax(260px, 380px) 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.editor-exercise-thumb {
+  position: relative;
+  width: 100%;
+  min-height: 360px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.16), rgba(5, 10, 20, 0.6));
+}
+
+.editor-exercise-thumb.no-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, rgba(124, 92, 255, 0.12), rgba(5, 10, 20, 0.55)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 12px, transparent 12px 24px);
+}
+
+.editor-exercise-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #05070d;
+}
+
+.editor-exercise-fields {
+  display: grid;
+  align-content: center;
+  gap: 16px;
+}
+
+.editor-exercise-name-row {
+  display: flex;
   align-items: end;
+  gap: 12px;
+}
+
+.editor-exercise-name-row .editor-exercise-name-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.editor-exercise-name-row .remove-exercise-button {
+  flex: 0 0 auto;
+}
+
+.editor-exercise-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .plan-editor-form label {
@@ -319,6 +373,17 @@ button, a { font: inherit; }
   .editor-session-head,
   .editor-exercise-row {
     grid-template-columns: 1fr;
+  }
+  .editor-exercise-thumb {
+    width: 100%;
+    min-height: 300px;
+  }
+  .editor-exercise-name-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .editor-exercise-numbers {
+    grid-template-columns: 1fr 1fr 1fr;
   }
   .editor-actions { display: grid; }
 }

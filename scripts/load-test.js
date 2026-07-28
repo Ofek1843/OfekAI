@@ -37,8 +37,7 @@ async function main() {
   const runs = [
     run("static-10", { url: `${target}/`, connections: 10, duration: 10 }),
     run("static-25", { url: `${target}/`, connections: 25, duration: 10 }),
-    run("health-25", { url: `${target}/health`, connections: 25, duration: 10 }),
-    run("exercise-demo", { url: `${target}/api/exercise-demo?name=Squat`, connections: 10, duration: 10 })
+    run("health-25", { url: `${target}/health`, connections: 25, duration: 10 })
   ];
 
   const results = await Promise.all(runs);

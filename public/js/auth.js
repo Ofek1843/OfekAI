@@ -243,6 +243,12 @@ authForm.addEventListener(
         );
       }
 
+// Read once by pwa-install.js right after landing on the dashboard, so the
+// "add to home screen" prompt only ever shows on this fresh
+// signup/login arrival — not on every dashboard visit, and not on the
+// "already signed in, bounce to dashboard" redirect below.
+sessionStorage.setItem("fuelphysique-just-authenticated", "1");
+
 window.setTimeout(() => {
   window.location.replace(nextPath);
 }, 800);

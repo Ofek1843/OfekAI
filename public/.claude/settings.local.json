@@ -3,7 +3,9 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(grep -on \"width:\\\\s*[0-9]\\\\{3,\\\\}px\" workout-builder.css nutrition-builder.css workout-tracker.css ai-coach.css dashboard.css)",
+      "Bash(node --check server.js)"
     ]
   }
 }

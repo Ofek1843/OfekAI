@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>FuelPhysique Coach</title>
+  <meta name="theme-color" content="#070b14">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FuelPhysique">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+    }
+  </script>
 
   <script>
     try {
@@ -70,6 +80,64 @@
 
 .top-bar .theme-toggle {
   margin-inline-start: auto;
+}
+
+.user-controls-inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.94);
+}
+
+.user-controls-name {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.user-controls-logout {
+  padding: 8px 12px;
+  min-height: 38px;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 9px;
+  color: #e0f2fe;
+  background: rgba(56, 189, 248, 0.12);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.user-controls-logout:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+.user-controls-logout:disabled {
+  cursor: not-allowed;
+  opacity: .7;
+}
+
+html[data-theme="light"] .user-controls-inline {
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(71, 85, 105, 0.14);
+}
+
+html[data-theme="light"] .user-controls-name {
+  color: #17324d;
+}
+
+@media (max-width: 480px) {
+  .user-controls-name {
+    max-width: 96px;
+  }
 }
 
 html[data-theme="light"] .coach-back-link {
@@ -582,6 +650,39 @@ html[data-theme="light"] .coach-back-link {
       accent-color: #22c55e;
     }
 
+    .settings-hint {
+      margin: -8px 0 18px;
+      color: #7c8aa5;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .settings-hint.error {
+      color: #fda4af;
+    }
+
+    .settings-secondary-button {
+      min-height: 44px;
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      background: #1e293b;
+      color: #e2e8f0;
+      font: inherit;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .settings-secondary-button:hover {
+      background: #263449;
+    }
+
+    .settings-secondary-button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
     @media (max-width: 900px) {
       .container {
         width: calc(100% - 24px);
@@ -951,6 +1052,16 @@ html[data-theme="light"] .coach-back-link {
     color: #58758a;
   }
 
+  html[data-theme="light"] .settings-hint {
+    color: #58758a;
+  }
+
+  html[data-theme="light"] .settings-secondary-button {
+    border-color: rgba(23, 79, 114, 0.16);
+    background: rgba(255, 255, 255, 0.6);
+    color: #17324d;
+  }
+
   html[data-theme="light"] .settings-tab {
     color: #365b73;
   }
@@ -1067,6 +1178,8 @@ html[data-theme="light"] .coach-back-link {
 <button id="languageTab" class="settings-tab" type="button" data-page="languageSettings">Language</button>
 
 <button id="appearanceTab" class="settings-tab" type="button" data-page="appearanceSettings">Appearance</button>
+
+<button id="notificationsTab" class="settings-tab" type="button" data-page="notificationsSettings">Notifications</button>
         </nav>
       </aside>
 
@@ -1467,6 +1580,59 @@ html[data-theme="light"] .coach-back-link {
   </label>
 </section>
 
+<section
+  id="notificationsSettings"
+  class="settings-page"
+>
+  <h3 id="notificationsTitle">Notifications</h3>
+
+  <p
+    id="notificationsDescription"
+    class="settings-description"
+  >
+    Choose which push notifications FuelPhysique can send to this device.
+  </p>
+
+  <label class="settings-switch-row">
+    <span id="pushMasterLabel">Push notifications on this device</span>
+
+    <input
+      id="settingsPushMaster"
+      type="checkbox"
+    />
+  </label>
+  <p id="pushMasterHint" class="settings-hint"></p>
+
+  <label class="settings-switch-row">
+    <span id="pushScheduledLabel">Workout day reminders</span>
+
+    <input
+      id="settingsPushScheduled"
+      type="checkbox"
+      checked
+    />
+  </label>
+
+  <label class="settings-switch-row">
+    <span id="pushComebackLabel">"Come back" reminders after a few inactive days</span>
+
+    <input
+      id="settingsPushComeback"
+      type="checkbox"
+      checked
+    />
+  </label>
+
+  <button
+    id="sendTestNotificationBtn"
+    class="settings-secondary-button"
+    type="button"
+  >
+    Send test notification
+  </button>
+  <p id="testNotificationStatus" class="settings-hint"></p>
+</section>
+
 <footer class="settings-footer">
   <button
     id="cancelSettingsBtn"
@@ -1494,6 +1660,7 @@ html[data-theme="light"] .coach-back-link {
   <script type="module" src="/js/user-profile.js"></script>
   <script type="module" src="/js/theme-toggle.js"></script>
   <script type="module" src="/js/settings.js"></script>
+  <script type="module" src="/js/notification-settings.js"></script>
 <script>
   const mobileHistoryToggle = document.getElementById("mobileHistoryToggle");
   const conversationHistory = document.querySelector(".conversation-history");

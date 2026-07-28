@@ -1,6 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
+import { exerciseImageUrl } from "./exercise-image.js";
 import {
   createWeeklyScheduleDays,
   getWeekdayLabels,
@@ -206,26 +207,44 @@ function getExerciseRestSeconds(exercise = {}) {
   return rest ? Number(rest) : 90;
 }
 
+function exerciseThumbUrl(exercise = {}) {
+  return exerciseImageUrl(exercise);
+}
+
 function renderExerciseRow(exercise = {}, index = 0) {
+  const thumbUrl = exerciseThumbUrl(exercise);
   return `
     <div class="editor-exercise-row" data-exercise-index="${index}">
-      <label>
-        <span>${ui.exerciseName}</span>
-        <input class="editor-exercise-name" value="${escapeHtml(exercise.name || exercise.exercise || "")}" placeholder="${escapeHtml(ui.defaultExercise)}" />
-      </label>
-      <label>
-        <span>${ui.sets}</span>
-        <input class="editor-exercise-sets" type="number" min="1" max="20" value="${escapeHtml(exercise.sets || 3)}" />
-      </label>
-      <label>
-        <span>${ui.reps}</span>
-        <input class="editor-exercise-reps" value="${escapeHtml(exercise.reps || "8-12")}" />
-      </label>
-      <label>
-        <span>${ui.rest}</span>
-        <input class="editor-exercise-rest" type="number" min="0" max="600" step="5" value="${escapeHtml(getExerciseRestSeconds(exercise))}" />
-      </label>
-      <button class="remove-exercise-button" type="button">${ui.remove}</button>
+      <div class="editor-exercise-thumb${thumbUrl ? "" : " no-image"}">
+        ${
+          thumbUrl
+            ? `<img src="${thumbUrl}" alt="" loading="lazy" onerror="this.parentElement.classList.add('no-image');this.remove();">`
+            : ""
+        }
+      </div>
+      <div class="editor-exercise-fields">
+        <div class="editor-exercise-name-row">
+          <label class="editor-exercise-name-field">
+            <span>${ui.exerciseName}</span>
+            <input class="editor-exercise-name" value="${escapeHtml(exercise.name || exercise.exercise || "")}" placeholder="${escapeHtml(ui.defaultExercise)}" />
+          </label>
+          <button class="remove-exercise-button" type="button">${ui.remove}</button>
+        </div>
+        <div class="editor-exercise-numbers">
+          <label>
+            <span>${ui.sets}</span>
+            <input class="editor-exercise-sets" type="number" min="1" max="20" value="${escapeHtml(exercise.sets || 3)}" />
+          </label>
+          <label>
+            <span>${ui.reps}</span>
+            <input class="editor-exercise-reps" value="${escapeHtml(exercise.reps || "8-12")}" />
+          </label>
+          <label>
+            <span>${ui.rest}</span>
+            <input class="editor-exercise-rest" type="number" min="0" max="600" step="5" value="${escapeHtml(getExerciseRestSeconds(exercise))}" />
+          </label>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -387,6 +406,20 @@ function attachEditorRowListeners(root) {
       const list = button.closest(".editor-session-list");
       if (list.querySelectorAll(".editor-session").length <= 1) return;
       button.closest(".editor-session").remove();
+    });
+  });
+
+  root.querySelectorAll(".editor-exercise-name").forEach((input) => {
+    if (input.dataset.thumbBound === "true") return;
+    input.dataset.thumbBound = "true";
+    input.addEventListener("input", () => {
+      const thumb = input.closest(".editor-exercise-row").querySelector(".editor-exercise-thumb");
+      const url = exerciseThumbUrl({ name: input.value });
+      thumb.classList.remove("no-image");
+      thumb.innerHTML = url
+        ? `<img src="${url}" alt="" loading="lazy" onerror="this.parentElement.classList.add('no-image');this.remove();">`
+        : "";
+      if (!url) thumb.classList.add("no-image");
     });
   });
 }

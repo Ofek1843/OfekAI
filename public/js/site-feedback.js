@@ -35,9 +35,13 @@ function injectFeedbackStyles() {
   style.textContent = `
     .site-feedback-widget {
       position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 9998;
+      right: calc(18px + env(safe-area-inset-right));
+      bottom: calc(18px + env(safe-area-inset-bottom));
+      /* Stays below every real modal in the app (settings/shopping-list
+         overlays run at z-index 1200-9999; native <dialog> elements like
+         the exercise guide always render in the browser's top layer
+         regardless of z-index) so this never steals taps from a modal. */
+      z-index: 40;
       font-family: inherit;
       direction: ${feedbackLanguage === "he" ? "rtl" : "ltr"};
     }
@@ -103,7 +107,7 @@ function injectFeedbackStyles() {
       font-weight: 800;
     }
     @media (max-width: 620px) {
-      .site-feedback-widget { right: 10px; bottom: 86px; }
+      .site-feedback-widget { right: calc(10px + env(safe-area-inset-right)); bottom: calc(86px + env(safe-area-inset-bottom)); }
       .site-feedback-trigger {
         width: 46px;
         min-width: 46px;
