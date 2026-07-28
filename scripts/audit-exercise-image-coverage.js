@@ -22,7 +22,7 @@ const JSON_REPORT = path.join(ROOT, "outputs", "exercise-image-coverage.json");
 const MARKDOWN_REPORT = path.join(ROOT, "docs", "exercise-image-coverage-report.md");
 
 const KNOWN_GENERATED_EXERCISE_VARIANTS = [
-  { name: "Bulgarian Split Squat", demoName: "Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "bulgarian-split-squat", dedicatedExactImage: true },
+  { name: "Bulgarian Split Squat", demoName: "Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "dumbbell-bulgarian-split-squat", dedicatedExactImage: true },
   { name: "Dumbbell Bulgarian Split Squat", demoName: "Dumbbell Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "dumbbell-bulgarian-split-squat", dedicatedExactImage: true },
   { name: "Incline Dumbbell Press", demoName: "Incline Dumbbell Press", equipment: "Dumbbell", muscleGroup: "Chest", expectedCanonical: "incline-dumbbell-bench-press", dedicatedExactImage: true },
   { name: "Incline Dumbbell Chest Press", demoName: "Incline Dumbbell Chest Press", equipment: "Dumbbell", muscleGroup: "Chest", expectedCanonical: "incline-dumbbell-bench-press", dedicatedExactImage: true },

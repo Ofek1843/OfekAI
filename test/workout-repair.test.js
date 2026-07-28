@@ -139,7 +139,7 @@ test("resolveExerciseId: known alias resolves to the canonical setcredits key", 
 
 test("resolveExerciseId canonicalizes generated variant ids before validation/rendering", () => {
   const cases = [
-    [{ exerciseId: "bulgarian-split-squat", name: "Bulgarian Split Squat" }, "bulgarian-split-squat"],
+    [{ exerciseId: "bulgarian-split-squat", name: "Bulgarian Split Squat" }, "dumbbell-bulgarian-split-squat"],
     [{ exerciseId: "dumbbell-bulgarian-split-squat", name: "Dumbbell Bulgarian Split Squat" }, "dumbbell-bulgarian-split-squat"],
     [{ exerciseId: "seated-leg-curl", name: "Seated Leg Curl" }, "seated-leg-curl"],
     [{ exerciseId: "triceps-dip", name: "Triceps Dip" }, "tricep-dip"],

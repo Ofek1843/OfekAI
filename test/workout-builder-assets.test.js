@@ -124,7 +124,7 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Dumbbells Shrug", "dumbbell-shrug.png"],
     ["Barbell Shrugs", "barbell-shrug.png"],
     ["Cable Wood Chopper", "cable-woodchopper.png"],
-    ["Bulgarian Split Squat", "bulgarian-split-squat.png"],
+    ["Bulgarian Split Squat", "dumbbell-bulgarian-split-squat.png"],
     ["Dumbbell Bulgarian Split Squat", "dumbbell-bulgarian-split-squat.png"],
     ["Triceps Dip", "tricep-dip.png"],
     ["Dumbbell Hammer Curl", "hammer-curl.png"],
@@ -152,7 +152,7 @@ test("public generated exercise variants resolve to exact real images without fr
       exerciseId: "bulgarian-split-squat",
       equipment: "Dumbbell",
       muscleGroup: "Quads",
-      expectedUrl: "/images/exercises/bulgarian-split-squat.png"
+      expectedUrl: "/images/exercises/dumbbell-bulgarian-split-squat.png"
     },
     {
       name: "Dumbbell Bulgarian Split Squat",
