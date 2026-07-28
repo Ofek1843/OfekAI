@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FuelPhysique</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#070b14">
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+        }
+    </script>
     <script>
         try {
             document.documentElement.dataset.theme = "dark";
@@ -252,5 +259,6 @@
 
     <script type="module" src="js/landing.js?v=20260728-landing-results"></script>
     <script type="module" src="/js/site-feedback.js"></script>
+    <script type="module" src="/js/pwa-install.js"></script>
 </body>
 </html>
