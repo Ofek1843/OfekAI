@@ -180,7 +180,7 @@ test("repairWorkoutProgram replaces exercises that are disabled until dedicated 
   const { repairs } = repairWorkoutProgram(program, context);
   const ids = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
 
-  assert.deepEqual(ids, ["seated-cable-row", "face-pull", "seated-calf-raise"]);
+  assert.deepEqual(ids, ["seated-cable-row", "face-pull", "standing-calf-raise"]);
   assert.ok(repairs.some((repair) => repair.includes("replaced disabled exercise")));
 
   const validation = validateWorkoutProgram(program, context);

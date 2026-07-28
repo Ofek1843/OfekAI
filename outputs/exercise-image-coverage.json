@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-28T11:56:05.610Z",
+  "generatedAt": "2026-07-28T14:47:28.718Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
@@ -8,23 +8,23 @@
     "canonicalSupportedExercises": 85,
     "canonicalExercisesWithDedicatedImages": 85,
     "canonicalExercisesMissingImages": 0,
-    "aliasesCovered": 198,
+    "aliasesCovered": 200,
     "orphanFiles": 0,
     "brokenMappings": 0,
     "invalidFiles": 0,
     "caseMismatches": 0,
     "fallbackOnlyAliases": 0,
-    "generatorSupportedCanonicalExercises": 84,
-    "generatorKnownNameVariants": 242,
-    "generatorVariantsWithDedicatedOrSurrogateImage": 242,
+    "generatorSupportedCanonicalExercises": 88,
+    "generatorKnownNameVariants": 250,
+    "generatorVariantsWithDedicatedOrSurrogateImage": 250,
     "generatorVariantsReachingFallback": 0,
     "generatorExistingFilesWithBrokenRouting": 0,
     "generatorGenuinelyMissingImages": 0,
-    "generatorSurrogateImageRoutes": 148,
+    "generatorSurrogateImageRoutes": 152,
     "generatorCanonicalMismatches": 0,
-    "publicEnabledExercises": 86,
+    "publicEnabledExercises": 90,
     "publicReleaseImageFailures": 0,
-    "disabledUntilDedicatedImages": 17
+    "disabledUntilDedicatedImages": 15
   },
   "canonicalCatalog": [
     {
@@ -1197,6 +1197,9 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
+        "machine-calf-raise",
+        "smith-machine-calf-raise",
+        "standing-calf-raise-machine",
         "standing-calf-raises"
       ]
     },
@@ -2712,6 +2715,31 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Calf Raise",
+      "demoName": "Calf Raise",
+      "providedExerciseId": "calf-raise",
+      "equipment": "machine/bodyweight",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise",
+      "canonicalExerciseId": "standing-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Chest Dip",
@@ -4739,6 +4767,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Kettlebell Swing",
+      "demoName": "Kettlebell Swing",
+      "providedExerciseId": "kettlebell-swing",
+      "equipment": "kettlebell",
+      "muscleGroup": "glutes",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "kettlebell-swing",
+      "canonicalExerciseId": "kettlebell-swing",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "kettlebell-swing",
+      "resolvedImageUrl": "/images/exercises/kettlebell-swing.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "kettlebell-swing.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Knee Extension",
       "demoName": "Knee Extension",
       "providedExerciseId": "knee-extension",
@@ -4787,6 +4840,31 @@
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
       "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "L-sit",
+      "demoName": "L-sit",
+      "providedExerciseId": "l-sit",
+      "equipment": "bodyweight",
+      "muscleGroup": "core",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "l-sit",
+      "canonicalExerciseId": "l-sit",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "l-sit",
+      "resolvedImageUrl": "/images/exercises/l-sit.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "l-sit.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Lat Pulldown",
@@ -5179,6 +5257,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "skull-crusher",
       "resolvedImageUrl": "/images/exercises/skull-crusher.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Machine Calf Raise",
+      "demoName": "Machine Calf Raise",
+      "providedExerciseId": "machine-calf-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise-machine",
+      "canonicalExerciseId": "standing-calf-raise-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -6766,6 +6869,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Smith Machine Calf Raise",
+      "demoName": "Smith Machine Calf Raise",
+      "providedExerciseId": "smith-machine-calf-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise-machine",
+      "canonicalExerciseId": "standing-calf-raise-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Split Squat",
       "demoName": "Split Squat",
       "providedExerciseId": "split-squat",
@@ -6806,6 +6934,82 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-squat",
       "resolvedImageUrl": "/images/exercises/barbell-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Standing Calf Raise",
+      "demoName": "Standing Calf Raise",
+      "providedExerciseId": "standing-calf-raise",
+      "equipment": "machine/bodyweight",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "standing-calf-raise",
+      "canonicalExerciseId": "standing-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "standing-calf-raise.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Standing Calf Raise Machine",
+      "demoName": "Standing Calf Raise Machine",
+      "providedExerciseId": "standing-calf-raise-machine",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "standing-calf-raise-machine",
+      "canonicalExerciseId": "standing-calf-raise-machine",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Standing Calf Raises",
+      "demoName": "Standing Calf Raises",
+      "providedExerciseId": "standing-calf-raises",
+      "equipment": "machine/bodyweight",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise",
+      "canonicalExerciseId": "standing-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -8136,6 +8340,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "cable-woodchopper",
       "resolvedImageUrl": "/images/exercises/cable-woodchopper.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Calf Raise",
+      "demoName": "Calf Raise",
+      "providedExerciseId": "calf-raise",
+      "equipment": "machine/bodyweight",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise",
+      "canonicalExerciseId": "standing-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -9696,6 +9925,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Machine Calf Raise",
+      "demoName": "Machine Calf Raise",
+      "providedExerciseId": "machine-calf-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise-machine",
+      "canonicalExerciseId": "standing-calf-raise-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Machine Fly",
       "demoName": "Machine Fly",
       "providedExerciseId": "machine-fly",
@@ -10646,6 +10900,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Smith Machine Calf Raise",
+      "demoName": "Smith Machine Calf Raise",
+      "providedExerciseId": "smith-machine-calf-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise-machine",
+      "canonicalExerciseId": "standing-calf-raise-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Split Squat",
       "demoName": "Split Squat",
       "providedExerciseId": "split-squat",
@@ -10686,6 +10965,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-squat",
       "resolvedImageUrl": "/images/exercises/barbell-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Standing Calf Raises",
+      "demoName": "Standing Calf Raises",
+      "providedExerciseId": "standing-calf-raises",
+      "equipment": "machine/bodyweight",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "standing-calf-raise",
+      "canonicalExerciseId": "standing-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -11610,6 +11914,28 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "kettlebell-swing",
+      "expectedImageFile": "kettlebell-swing.png",
+      "resolvedImageUrl": "/images/exercises/kettlebell-swing.png",
+      "resolvedImageFile": "kettlebell-swing.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "l-sit",
+      "expectedImageFile": "l-sit.png",
+      "resolvedImageUrl": "/images/exercises/l-sit.png",
+      "resolvedImageFile": "l-sit.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "lat-pulldown",
       "expectedImageFile": "lat-pulldown.png",
       "resolvedImageUrl": "/images/exercises/lat-pulldown.png",
@@ -11929,6 +12255,28 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "standing-calf-raise",
+      "expectedImageFile": "standing-calf-raise.png",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "resolvedImageFile": "standing-calf-raise.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "standing-calf-raise-machine",
+      "expectedImageFile": "standing-calf-raise.png",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
+      "resolvedImageFile": "standing-calf-raise.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "step-up",
       "expectedImageFile": "step-up.png",
       "resolvedImageUrl": "/images/exercises/step-up.png",
@@ -12101,24 +12449,6 @@
       ]
     },
     {
-      "exerciseId": "standing-calf-raise",
-      "title": "Standing Calf Raise",
-      "reason": "current standing-calf-raise image depicts a seated calf raise",
-      "replacementIds": [
-        "seated-calf-raise",
-        "dumbbell-calf-raise"
-      ]
-    },
-    {
-      "exerciseId": "standing-calf-raise-machine",
-      "title": "Standing Calf Raise Machine",
-      "reason": "current standing-calf-raise image depicts a seated calf raise",
-      "replacementIds": [
-        "seated-calf-raise",
-        "dumbbell-calf-raise"
-      ]
-    },
-    {
       "exerciseId": "conventional-deadlift",
       "title": "Conventional Deadlift",
       "reason": "missing dedicated conventional-deadlift image",
@@ -12184,6 +12514,12 @@
       "aliasExerciseId": "pec-deck",
       "resolvedSlug": "machine-chest-fly",
       "resolvedImageUrl": "/images/exercises/machine-chest-fly.png",
+      "classification": "ALIAS_COVERED"
+    },
+    {
+      "aliasExerciseId": "standing-calf-raise-machine",
+      "resolvedSlug": "standing-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-calf-raise.png",
       "classification": "ALIAS_COVERED"
     }
   ],
@@ -13526,6 +13862,9 @@
       "referencedByResolver": true,
       "canonicalExercise": "standing-calf-raise",
       "aliases": [
+        "machine-calf-raise",
+        "smith-machine-calf-raise",
+        "standing-calf-raise-machine",
         "standing-calf-raises"
       ],
       "genericFallback": false,

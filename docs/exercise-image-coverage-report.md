@@ -1,6 +1,6 @@
 # Exercise Image Coverage Report
 
-Generated: 2026-07-28T11:56:05.610Z
+Generated: 2026-07-28T14:47:28.718Z
 
 The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.
 
@@ -13,23 +13,23 @@ The workout model may still produce arbitrary free-text exercise names. This aud
 | canonicalSupportedExercises | 85 |
 | canonicalExercisesWithDedicatedImages | 85 |
 | canonicalExercisesMissingImages | 0 |
-| aliasesCovered | 198 |
+| aliasesCovered | 200 |
 | orphanFiles | 0 |
 | brokenMappings | 0 |
 | invalidFiles | 0 |
 | caseMismatches | 0 |
 | fallbackOnlyAliases | 0 |
-| generatorSupportedCanonicalExercises | 84 |
-| generatorKnownNameVariants | 242 |
-| generatorVariantsWithDedicatedOrSurrogateImage | 242 |
+| generatorSupportedCanonicalExercises | 88 |
+| generatorKnownNameVariants | 250 |
+| generatorVariantsWithDedicatedOrSurrogateImage | 250 |
 | generatorVariantsReachingFallback | 0 |
 | generatorExistingFilesWithBrokenRouting | 0 |
 | generatorGenuinelyMissingImages | 0 |
-| generatorSurrogateImageRoutes | 148 |
+| generatorSurrogateImageRoutes | 152 |
 | generatorCanonicalMismatches | 0 |
-| publicEnabledExercises | 86 |
+| publicEnabledExercises | 90 |
 | publicReleaseImageFailures | 0 |
-| disabledUntilDedicatedImages | 17 |
+| disabledUntilDedicatedImages | 15 |
 
 ## A. Resolver-internal coverage
 
@@ -123,7 +123,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | seated-leg-curl | Seated Leg Curl | /images/exercises/seated-leg-curl.png | seated-leg-curl.png | COVERED | seated-hamstring-curl, seated-leg-curl, seated-leg-curls |
 | side-plank | Side Plank | /images/exercises/side-plank.png | side-plank.png | COVERED |  |
 | skull-crusher | Skull Crusher | /images/exercises/skull-crusher.png | skull-crusher.png | COVERED | lying-triceps-extension, skull-crushers |
-| standing-calf-raise | Standing Calf Raise | /images/exercises/standing-calf-raise.png | standing-calf-raise.png | COVERED | standing-calf-raises |
+| standing-calf-raise | Standing Calf Raise | /images/exercises/standing-calf-raise.png | standing-calf-raise.png | COVERED | machine-calf-raise, smith-machine-calf-raise, standing-calf-raise-machine, standing-calf-raises |
 | step-up | Step Up | /images/exercises/step-up.png | step-up.png | COVERED | barbell-step-up, box-step-up, dumbbell-step-up, step-ups |
 | sumo-deadlift | Sumo Deadlift | /images/exercises/sumo-deadlift.png | sumo-deadlift.png | COVERED |  |
 | t-bar-row | T Bar Row | /images/exercises/t-bar-row.png | t-bar-row.png | COVERED |  |
@@ -285,6 +285,7 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Cable Wood Chopper | Cable Wood Chopper | cable-wood-chopper | cable-woodchopper | /images/exercises/cable-woodchopper.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Cable Woodchop | Cable Woodchop | cable-woodchop | cable-woodchopper | /images/exercises/cable-woodchopper.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Cable Woodchopper | Cable Woodchopper | cable-woodchopper | cable-woodchopper | /images/exercises/cable-woodchopper.png | GENERATOR_COVERED | setcredits |
+| Calf Raise | Calf Raise | calf-raise | standing-calf-raise | /images/exercises/standing-calf-raise.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Chest Dip | Chest Dip | chest-dip | dip | /images/exercises/dip.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Chest Fly | Chest Fly | chest-fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Chest Press | Chest Press | chest-press | machine-chest-press | /images/exercises/machine-chest-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -366,8 +367,10 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Incline Dumbbell Press | Incline Dumbbell Press | incline-dumbbell-press | incline-dumbbell-bench-press | /images/exercises/incline-dumbbell-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Incline Press | Incline Press | incline-press | incline-bench-press | /images/exercises/incline-bench-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Inverted Row | Inverted Row | inverted-row | australian-row | /images/exercises/australian-row.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Kettlebell Swing | Kettlebell Swing | kettlebell-swing | kettlebell-swing | /images/exercises/kettlebell-swing.png | GENERATOR_COVERED | setcredits |
 | Knee Extension | Knee Extension | knee-extension | leg-extension | /images/exercises/leg-extension.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Kneeling Cable Crunch | Kneeling Cable Crunch | kneeling-cable-crunch | cable-crunch | /images/exercises/cable-crunch.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| L-sit | L-sit | l-sit | l-sit | /images/exercises/l-sit.png | GENERATOR_COVERED | setcredits |
 | Lat Pulldown | Lat Pulldown | lat-pulldown | lat-pulldown | /images/exercises/lat-pulldown.png | GENERATOR_COVERED | setcredits |
 | Lat Pulldowns | Lat Pulldowns | lat-pulldowns | lat-pulldown | /images/exercises/lat-pulldown.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Lateral Raise | Lateral Raise | lateral-raise | dumbbell-lateral-raise | /images/exercises/dumbbell-lateral-raise.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -384,6 +387,7 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Lying Leg Curl | Lying Leg Curl | lying-leg-curl | lying-leg-curl | /images/exercises/lying-leg-curl.png | GENERATOR_COVERED | setcredits |
 | Lying Leg Curls | Lying Leg Curls | lying-leg-curls | lying-leg-curl | /images/exercises/lying-leg-curl.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Lying Triceps Extension | Lying Triceps Extension | lying-triceps-extension | skull-crusher | /images/exercises/skull-crusher.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Machine Calf Raise | Machine Calf Raise | machine-calf-raise | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Machine Chest Fly | Machine Chest Fly | machine-chest-fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | GENERATOR_COVERED | setcredits |
 | Machine Chest Press | Machine Chest Press | machine-chest-press | machine-chest-press | /images/exercises/machine-chest-press.png | GENERATOR_COVERED | setcredits |
 | Machine Fly | Machine Fly | machine-fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -447,8 +451,12 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Single Arm Dumbbell Row | Single Arm Dumbbell Row | single-arm-dumbbell-row | dumbbell-row | /images/exercises/dumbbell-row.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Skull Crusher | Skull Crusher | skull-crusher | skull-crusher | /images/exercises/skull-crusher.png | GENERATOR_COVERED | setcredits |
 | Skull Crushers | Skull Crushers | skull-crushers | skull-crusher | /images/exercises/skull-crusher.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Smith Machine Calf Raise | Smith Machine Calf Raise | smith-machine-calf-raise | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Split Squat | Split Squat | split-squat | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Squat | Squat | squat | barbell-squat | /images/exercises/barbell-squat.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
+| Standing Calf Raise | Standing Calf Raise | standing-calf-raise | standing-calf-raise | /images/exercises/standing-calf-raise.png | GENERATOR_COVERED | backend-alias, setcredits |
+| Standing Calf Raise Machine | Standing Calf Raise Machine | standing-calf-raise-machine | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | GENERATOR_COVERED | setcredits |
+| Standing Calf Raises | Standing Calf Raises | standing-calf-raises | standing-calf-raise | /images/exercises/standing-calf-raise.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Standing Overhead Press | Standing Overhead Press | standing-overhead-press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
 | Step Up | Step Up | step-up | step-up | /images/exercises/step-up.png | GENERATOR_COVERED | setcredits |
 | Step Ups | Step Ups | step-ups | step-up | /images/exercises/step-up.png | COVERED_BY_SURROGATE_IMAGE | backend-alias |
@@ -513,6 +521,7 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Cable Triceps Pushdown | cable-tricep-pushdown | /images/exercises/cable-tricep-pushdown.png | no exact dedicated file |
 | Cable Wood Chopper | cable-woodchopper | /images/exercises/cable-woodchopper.png | no exact dedicated file |
 | Cable Woodchop | cable-woodchopper | /images/exercises/cable-woodchopper.png | no exact dedicated file |
+| Calf Raise | standing-calf-raise | /images/exercises/standing-calf-raise.png | no exact dedicated file |
 | Chest Dip | dip | /images/exercises/dip.png | no exact dedicated file |
 | Chest Fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | no exact dedicated file |
 | Chest Press | machine-chest-press | /images/exercises/machine-chest-press.png | no exact dedicated file |
@@ -575,6 +584,7 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Low Bar Squat | barbell-squat | /images/exercises/barbell-squat.png | no exact dedicated file |
 | Lying Leg Curls | lying-leg-curl | /images/exercises/lying-leg-curl.png | no exact dedicated file |
 | Lying Triceps Extension | skull-crusher | /images/exercises/skull-crusher.png | no exact dedicated file |
+| Machine Calf Raise | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | no exact dedicated file |
 | Machine Fly | machine-chest-fly | /images/exercises/machine-chest-fly.png | no exact dedicated file |
 | Machine Preacher Curl | preacher-curl | /images/exercises/preacher-curl.png | no exact dedicated file |
 | Military Press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | no exact dedicated file |
@@ -613,8 +623,10 @@ This starts from names and IDs the Workout Builder backend can plausibly return:
 | Side Lateral Raise | dumbbell-lateral-raise | /images/exercises/dumbbell-lateral-raise.png | no exact dedicated file |
 | Single Arm Dumbbell Row | dumbbell-row | /images/exercises/dumbbell-row.png | no exact dedicated file |
 | Skull Crushers | skull-crusher | /images/exercises/skull-crusher.png | no exact dedicated file |
+| Smith Machine Calf Raise | standing-calf-raise-machine | /images/exercises/standing-calf-raise.png | no exact dedicated file |
 | Split Squat | bulgarian-split-squat | /images/exercises/bulgarian-split-squat.png | no exact dedicated file |
 | Squat | barbell-squat | /images/exercises/barbell-squat.png | no exact dedicated file |
+| Standing Calf Raises | standing-calf-raise | /images/exercises/standing-calf-raise.png | no exact dedicated file |
 | Standing Overhead Press | barbell-shoulder-press | /images/exercises/barbell-shoulder-press.png | no exact dedicated file |
 | Step Ups | step-up | /images/exercises/step-up.png | no exact dedicated file |
 | Straight Arm Pulldown | close-grip-lat-pulldown | /images/exercises/close-grip-lat-pulldown.png | no exact dedicated file |
