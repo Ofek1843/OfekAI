@@ -100,15 +100,36 @@ test("transformation submission form requires files duration process and consent
   const html = read("public/transformation-submit.html");
 
   assert.match(html, /id="transformationSubmissionForm"/);
+  assert.doesNotMatch(html, /<form[^>]+hidden/);
+  assert.match(html, /<noscript>/);
   assert.match(html, /id="beforePhoto"[^>]+type="file"[^>]+required/);
   assert.match(html, /id="afterPhoto"[^>]+type="file"[^>]+required/);
+  assert.match(html, /id="beforePhotoPreview"/);
+  assert.match(html, /id="afterPhotoPreview"/);
   assert.match(html, /id="durationValue"[^>]+type="number"[^>]+required/);
   assert.match(html, /id="processType"[^>]+required/);
+  assert.match(html, /name="toolsUsed"[^>]+value="workout-plans"/);
+  assert.match(html, /name="toolsUsed"[^>]+value="nutrition-plans"/);
+  assert.match(html, /name="toolsUsed"[^>]+value="workout-tracking"/);
   assert.match(html, /data-consent="ownsPhotos"[^>]+required/);
   assert.match(html, /data-consent="adultsOnly"[^>]+required/);
   assert.match(html, /data-consent="notAutomatic"[^>]+required/);
   assert.match(html, /data-consent="explicitPublication"[^>]+required/);
   assert.match(html, /id="anonymousDisplay"[^>]+checked/);
+});
+
+test("transformation submission remains visible before auth and localizes Hebrew copy", () => {
+  const html = read("public/transformation-submit.html");
+  const submitJs = read("public/js/transformation-submit.js");
+
+  assert.match(html, /id="submissionAuthWarning"/);
+  assert.doesNotMatch(html, /id="submissionAuthWarning" hidden/);
+  assert.doesNotMatch(submitJs, /form\.hidden\s*=/);
+  assert.match(submitJs, /authWarning\.hidden = Boolean\(user\)/);
+  assert.match(submitJs, /אפשר למלא את הטופס עכשיו/);
+  assert.match(submitJs, /שליחת התהליך שלך/);
+  assert.match(submitJs, /missingTools/);
+  assert.match(submitJs, /tools\.length === 0/);
 });
 
 test("transformation submission stores private pending metadata and never auto-publishes", () => {

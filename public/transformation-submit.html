@@ -37,11 +37,18 @@
     </section>
 
     <section class="submission-card reveal-on-scroll" aria-labelledby="submissionFormTitle">
-      <div class="submission-auth-warning" id="submissionAuthWarning" hidden>
+      <div class="submission-auth-warning" id="submissionAuthWarning">
         <strong data-submit-i18n="authRequiredTitle">Sign in required</strong>
         <p data-submit-i18n="authRequiredText">Please log in before submitting private progress photos.</p>
         <a class="hero-btn primary" href="/auth.html?next=transformation-submit.html" data-submit-i18n="loginToSubmit">Log in to submit</a>
       </div>
+
+      <noscript>
+        <div class="submission-auth-warning">
+          <strong>JavaScript is required for secure upload.</strong>
+          <p>The form is visible, but signing in, image previews and private upload require JavaScript.</p>
+        </div>
+      </noscript>
 
       <form id="transformationSubmissionForm" novalidate>
         <header class="submission-form-header">
@@ -54,11 +61,13 @@
           <label class="submission-field">
             <span data-submit-i18n="beforePhoto">Before photo</span>
             <input id="beforePhoto" name="beforePhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+            <div class="image-preview" id="beforePhotoPreview" aria-live="polite"></div>
           </label>
 
           <label class="submission-field">
             <span data-submit-i18n="afterPhoto">After photo</span>
             <input id="afterPhoto" name="afterPhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+            <div class="image-preview" id="afterPhotoPreview" aria-live="polite"></div>
           </label>
 
           <label class="submission-field">

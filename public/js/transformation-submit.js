@@ -24,7 +24,8 @@ const COPY = {
       "Share before-and-after photos and a few details. Your submission stays private while the FuelPhysique team reviews it.",
     privacy: "Nothing is published automatically. Public publication requires explicit consent.",
     authRequiredTitle: "Sign in required",
-    authRequiredText: "Please log in before submitting private progress photos.",
+    authRequiredText:
+      "You can fill the form now, but you must log in before submitting private progress photos.",
     loginToSubmit: "Log in to submit",
     formKicker: "PENDING MANUAL REVIEW",
     formTitle: "Transformation details",
@@ -68,6 +69,7 @@ const COPY = {
     invalidImage: "Upload JPEG, PNG or WebP images up to 8MB each.",
     invalidDuration: "Enter a duration greater than zero.",
     invalidProcess: "Choose a process type.",
+    missingTools: "Choose at least one FuelPhysique tool you used.",
     missingConsent: "Please confirm every required consent checkbox.",
     genericError: "Could not complete the submission. Please try again in a moment.",
     placeholderDescription: "What changed in your training, nutrition or consistency?"
@@ -81,10 +83,10 @@ const COPY = {
       "שתפו תמונות לפני ואחרי וכמה פרטים קצרים. ההגשה נשארת פרטית בזמן שצוות FuelPhysique בודק אותה.",
     privacy: "שום דבר לא מתפרסם אוטומטית. פרסום ציבורי דורש הסכמה מפורשת.",
     authRequiredTitle: "נדרשת התחברות",
-    authRequiredText: "כדי לשלוח תמונות התקדמות פרטיות צריך להתחבר לחשבון.",
+    authRequiredText: "אפשר למלא את הטופס עכשיו, אבל כדי לשלוח תמונות התקדמות פרטיות צריך להתחבר לחשבון.",
     loginToSubmit: "כניסה לשליחה",
     formKicker: "ממתין לבדיקה ידנית",
-    formTitle: "פרטי השינוי",
+    formTitle: "פרטי התהליך",
     formDescription: "מומלץ להשתמש בתמונות ברורות מזוויות דומות. ניתן להעלות JPEG, PNG ו-WebP.",
     beforePhoto: "תמונת לפני",
     afterPhoto: "תמונת אחרי",
@@ -125,6 +127,7 @@ const COPY = {
     invalidImage: "ניתן להעלות תמונות JPEG, PNG או WebP עד 8MB לכל תמונה.",
     invalidDuration: "נא להזין משך תהליך גדול מאפס.",
     invalidProcess: "נא לבחור סוג תהליך.",
+    missingTools: "נא לבחור לפחות כלי אחד של FuelPhysique שבו השתמשתם.",
     missingConsent: "נא לאשר את כל סעיפי ההסכמה הנדרשים.",
     genericError: "לא ניתן להשלים את השליחה כרגע. נסו שוב בעוד רגע.",
     placeholderDescription: "מה השתנה באימון, בתזונה או בעקביות?"
@@ -137,6 +140,7 @@ const form = document.getElementById("transformationSubmissionForm");
 const statusElement = document.getElementById("submissionStatus");
 const submitButton = document.getElementById("submitTransformationButton");
 const authWarning = document.getElementById("submissionAuthWarning");
+const authLink = document.getElementById("submissionAuthLink");
 let currentUser = null;
 
 document.documentElement.lang = language;
@@ -154,6 +158,30 @@ function applyCopy() {
 function setStatus(message, isError = false) {
   statusElement.textContent = message;
   statusElement.classList.toggle("is-error", isError);
+}
+
+function updatePreview(inputId, previewId) {
+  const input = document.getElementById(inputId);
+  const preview = document.getElementById(previewId);
+  if (!input || !preview) return;
+
+  input.addEventListener("change", () => {
+    preview.textContent = "";
+    const file = input.files?.[0];
+    if (!file) return;
+
+    if (!VALID_MIME_TYPES.has(file.type) || file.size > MAX_IMAGE_BYTES) {
+      preview.textContent = copy.invalidImage;
+      return;
+    }
+
+    const image = document.createElement("img");
+    const objectUrl = URL.createObjectURL(file);
+    image.src = objectUrl;
+    image.alt = inputId === "beforePhoto" ? copy.beforePhoto : copy.afterPhoto;
+    image.onload = () => URL.revokeObjectURL(objectUrl);
+    preview.appendChild(image);
+  });
 }
 
 async function detectImageMime(file) {
@@ -236,6 +264,7 @@ async function handleSubmit(event) {
   event.preventDefault();
   if (!currentUser) {
     setStatus(copy.authRequiredText, true);
+    document.getElementById("submissionAuthWarning")?.scrollIntoView({ behavior: "smooth", block: "center" });
     return;
   }
 
@@ -244,12 +273,14 @@ async function handleSubmit(event) {
   const durationValue = Number(document.getElementById("durationValue").value);
   const durationUnit = document.getElementById("durationUnit").value;
   const processType = document.getElementById("processType").value;
+  const tools = selectedTools();
   const consents = consentState();
 
   if (!beforeFile || !afterFile) return setStatus(copy.missingPhotos, true);
   if (!(await validateImage(beforeFile)) || !(await validateImage(afterFile))) return setStatus(copy.invalidImage, true);
   if (!Number.isFinite(durationValue) || durationValue <= 0) return setStatus(copy.invalidDuration, true);
   if (!VALID_PROCESS_TYPES.has(processType)) return setStatus(copy.invalidProcess, true);
+  if (tools.length === 0) return setStatus(copy.missingTools, true);
   if (Object.values(consents).some((value) => value !== true)) return setStatus(copy.missingConsent, true);
 
   submitButton.disabled = true;
@@ -275,7 +306,7 @@ async function handleSubmit(event) {
         unit: durationUnit
       },
       processType,
-      toolsUsed: selectedTools(),
+      toolsUsed: tools,
       description: document.getElementById("description").value.trim().slice(0, 800),
       consents,
       publicPublicationRequiresExplicitConsent: true,
@@ -292,6 +323,8 @@ async function handleSubmit(event) {
 
     form.reset();
     document.getElementById("anonymousDisplay").checked = true;
+    document.getElementById("beforePhotoPreview").textContent = "";
+    document.getElementById("afterPhotoPreview").textContent = "";
     setStatus(copy.success);
     trackClick("transformation_submission_created", { source: "landing_transformation_submit" });
   } catch (error) {
@@ -304,13 +337,14 @@ async function handleSubmit(event) {
 }
 
 applyCopy();
+updatePreview("beforePhoto", "beforePhotoPreview");
+updatePreview("afterPhoto", "afterPhotoPreview");
 trackPageView({ page: "transformation_submit" });
 
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
   authWarning.hidden = Boolean(user);
-  form.hidden = !user;
-  document.getElementById("submissionAuthLink").href = user ? "/dashboard.html" : "/auth.html?next=transformation-submit.html";
+  if (authLink) authLink.href = user ? "/dashboard.html" : "/auth.html?next=transformation-submit.html";
 });
 
 form.addEventListener("submit", handleSubmit);
