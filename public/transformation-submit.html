@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit transformation | FuelPhysique</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script>
+    try {
+      const theme = localStorage.getItem("ofek-ai-theme") || "dark";
+      document.documentElement.dataset.theme = theme === "system"
+        ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
+        : theme;
+    } catch {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/transformation-submit.css?v=20260728-visible-submit">
+</head>
+<body>
+  <nav class="navbar" aria-label="Primary">
+    <a href="/" class="logo" aria-label="FuelPhysique home">FuelPhysique</a>
+    <div class="nav-actions">
+      <a href="/#results" class="nav-link" data-submit-i18n="backToResults">Results</a>
+      <a href="/auth.html" class="nav-btn" id="submissionAuthLink" data-submit-i18n="login">Login</a>
+    </div>
+  </nav>
+
+  <main class="submission-page">
+    <section class="submission-hero">
+      <span class="badge" data-submit-i18n="kicker">COMMUNITY SUBMISSION</span>
+      <h1 data-submit-i18n="title">Submit your transformation</h1>
+      <p data-submit-i18n="intro">Share before-and-after photos and a few details. Your submission stays private while the FuelPhysique team reviews it.</p>
+      <p class="submission-privacy-note" data-submit-i18n="privacy">Nothing is published automatically. Public publication requires explicit consent.</p>
+    </section>
+
+    <section class="submission-card" aria-labelledby="submissionFormTitle">
+      <div class="submission-auth-warning" id="submissionAuthWarning">
+        <strong data-submit-i18n="authRequiredTitle">Sign in required</strong>
+        <p data-submit-i18n="authRequiredText">Please log in before submitting private progress photos.</p>
+        <a class="hero-btn primary" href="/auth.html?next=transformation-submit.html" data-submit-i18n="loginToSubmit">Log in to submit</a>
+      </div>
+
+      <noscript>
+        <div class="submission-auth-warning">
+          <strong>JavaScript is required for secure upload.</strong>
+          <p>The form is visible, but signing in, image previews and private upload require JavaScript.</p>
+        </div>
+      </noscript>
+
+      <form id="transformationSubmissionForm" novalidate>
+        <header class="submission-form-header">
+          <span class="section-kicker" data-submit-i18n="formKicker">PENDING MANUAL REVIEW</span>
+          <h2 id="submissionFormTitle" data-submit-i18n="formTitle">Transformation details</h2>
+          <p data-submit-i18n="formDescription">Use clear photos taken from similar angles when possible. Accepted formats: JPEG, PNG and WebP.</p>
+        </header>
+
+        <div class="submission-grid">
+          <label class="submission-field">
+            <span data-submit-i18n="beforePhoto">Before photo</span>
+            <input id="beforePhoto" name="beforePhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+            <div class="image-preview" id="beforePhotoPreview" aria-live="polite"></div>
+          </label>
+
+          <label class="submission-field">
+            <span data-submit-i18n="afterPhoto">After photo</span>
+            <input id="afterPhoto" name="afterPhoto" type="file" accept="image/jpeg,image/png,image/webp" required>
+            <div class="image-preview" id="afterPhotoPreview" aria-live="polite"></div>
+          </label>
+
+          <label class="submission-field">
+            <span data-submit-i18n="durationValue">Duration value</span>
+            <input id="durationValue" name="durationValue" type="number" min="1" step="1" placeholder="2" required>
+          </label>
+
+          <label class="submission-field">
+            <span data-submit-i18n="durationUnit">Duration unit</span>
+            <select id="durationUnit" name="durationUnit" required>
+              <option value="weeks" data-submit-i18n="weeks">Weeks</option>
+              <option value="months" data-submit-i18n="months">Months</option>
+            </select>
+          </label>
+
+          <label class="submission-field">
+            <span data-submit-i18n="processType">Process type</span>
+            <select id="processType" name="processType" required>
+              <option value="" data-submit-i18n="chooseProcess">Choose process</option>
+              <option value="bulk" data-submit-i18n="bulk">Bulk</option>
+              <option value="cut" data-submit-i18n="cut">Cut</option>
+              <option value="body-recomposition" data-submit-i18n="recomposition">Body recomposition</option>
+              <option value="general-fitness-change" data-submit-i18n="generalFitness">General fitness change</option>
+              <option value="other" data-submit-i18n="other">Other</option>
+            </select>
+          </label>
+
+          <label class="submission-field">
+            <span data-submit-i18n="displayName">Optional display name</span>
+            <input id="displayName" name="displayName" type="text" maxlength="60" autocomplete="name" placeholder="Ofek">
+          </label>
+        </div>
+
+        <fieldset class="submission-fieldset">
+          <legend data-submit-i18n="toolsUsed">Which FuelPhysique tools were used?</legend>
+          <label><input type="checkbox" name="toolsUsed" value="workout-plans"> <span data-submit-i18n="toolWorkoutPlans">Workout plans</span></label>
+          <label><input type="checkbox" name="toolsUsed" value="nutrition-plans"> <span data-submit-i18n="toolNutritionPlans">Nutrition plans</span></label>
+          <label><input type="checkbox" name="toolsUsed" value="workout-tracking"> <span data-submit-i18n="toolWorkoutTracking">Workout tracking</span></label>
+          <label><input type="checkbox" name="toolsUsed" value="progress-photos-charts"> <span data-submit-i18n="toolProgressPhotos">Progress photos and charts</span></label>
+        </fieldset>
+
+        <div class="submission-grid">
+          <label class="submission-field submission-field-wide">
+            <span data-submit-i18n="description">Short optional description</span>
+            <textarea id="description" name="description" maxlength="800" rows="5" placeholder="What changed in your training, nutrition or consistency?"></textarea>
+          </label>
+        </div>
+
+        <fieldset class="submission-fieldset">
+          <legend data-submit-i18n="displayOptions">Display options</legend>
+          <label><input id="anonymousDisplay" type="checkbox" checked> <span data-submit-i18n="anonymousDefault">Appear anonymously by default</span></label>
+          <label><input id="blurFacePermission" type="checkbox"> <span data-submit-i18n="blurFace">I allow FuelPhysique to blur my face before any approved publication</span></label>
+        </fieldset>
+
+        <fieldset class="submission-fieldset consent-fieldset">
+          <legend data-submit-i18n="consentTitle">Consent and privacy</legend>
+          <label><input type="checkbox" data-consent="ownsPhotos" required> <span data-submit-i18n="consentOwns">I own these photos or have permission to submit them.</span></label>
+          <label><input type="checkbox" data-consent="adultsOnly" required> <span data-submit-i18n="consentAdults">Everyone shown is at least 18 years old.</span></label>
+          <label><input type="checkbox" data-consent="review" required> <span data-submit-i18n="consentReview">FuelPhysique may review this private submission.</span></label>
+          <label><input type="checkbox" data-consent="notAutomatic" required> <span data-submit-i18n="consentNotAuto">I understand the photos will not be published automatically.</span></label>
+          <label><input type="checkbox" data-consent="explicitPublication" required> <span data-submit-i18n="consentExplicit">Public publication requires explicit consent.</span></label>
+          <label><input type="checkbox" data-consent="removal" required> <span data-submit-i18n="consentRemoval">I may request removal later.</span></label>
+          <label><input type="checkbox" data-consent="notRepresentative" required> <span data-submit-i18n="consentResults">This result is not guaranteed to be representative of other users.</span></label>
+        </fieldset>
+
+        <div id="submissionStatus" class="submission-status" role="status" aria-live="polite"></div>
+
+        <button id="submitTransformationButton" class="hero-btn primary submission-submit" type="submit" data-submit-i18n="submitButton">Submit my transformation</button>
+      </form>
+    </section>
+  </main>
+
+  <script type="module" src="/js/transformation-submit.js?v=20260728-visible-submit"></script>
+  <script type="module" src="/js/site-feedback.js"></script>
+</body>
+</html>

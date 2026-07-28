@@ -100,7 +100,7 @@ test("repairWorkoutProgram fixes the production failure without touching any oth
   assert.equal(after.ok, true, `Expected valid after repair. Remaining errors: ${JSON.stringify(after.errors)}`);
   assert.equal(after.errors.length, 0);
   assert.deepEqual(after.warnings, before.warnings, "Repair must not change which non-exerciseId warnings/rules apply");
-  assert.equal(repairs.length, 15, "One repair entry per exercise that was missing an exerciseId");
+  assert.ok(repairs.length >= 15, "Repair must assign missing exerciseIds and may also replace disabled public exercises");
 
   for (const session of program.sessions) {
     for (const exercise of session.exercises) {
@@ -115,11 +115,11 @@ test("repair raises weekly-volume mapping coverage via alias resolution (does no
   repairWorkoutProgram(program, { sessionDuration: 60 });
   const volume = calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
 
-  // "Barbell Back Squat" -> alias -> barbell-squat; "Seated Leg Curl" -> alias -> leg-curl
+  // "Barbell Back Squat" -> alias -> barbell-squat; "Seated Leg Curl" keeps the dedicated seated-leg-curl image/credits.
   const squatExercise = program.sessions[2].exercises.find((e) => e.name === "Barbell Back Squat");
   const legCurlExercise = program.sessions[2].exercises.find((e) => e.name === "Seated Leg Curl");
   assert.equal(squatExercise.exerciseId, "barbell-squat");
-  assert.equal(legCurlExercise.exerciseId, "leg-curl");
+  assert.equal(legCurlExercise.exerciseId, "seated-leg-curl");
 
   assert.ok(volume.mappedExercises >= 11, `Expected alias resolution to map most exercises, got ${volume.mappedExercises}`);
   assert.ok(volume.mappingCoveragePercent > 0);
@@ -129,18 +129,144 @@ test("repair raises weekly-volume mapping coverage via alias resolution (does no
 
 test("resolveExerciseId: existing valid id is preserved as-is", () => {
   const result = resolveExerciseId({ exerciseId: "custom-id", name: "Something" });
-  assert.deepEqual(result, { id: "custom-id", source: "existing" });
+  assert.deepEqual(result, { id: "custom-id", source: "existing-slug" });
 });
 
 test("resolveExerciseId: known alias resolves to the canonical setcredits key", () => {
   const result = resolveExerciseId({ name: "Barbell Back Squat" });
-  assert.deepEqual(result, { id: "barbell-squat", source: "alias" });
+  assert.deepEqual(result, { id: "barbell-squat", source: "name-alias" });
+});
+
+test("resolveExerciseId canonicalizes generated variant ids before validation/rendering", () => {
+  const cases = [
+    [{ exerciseId: "bulgarian-split-squat", name: "Bulgarian Split Squat" }, "bulgarian-split-squat"],
+    [{ exerciseId: "seated-leg-curl", name: "Seated Leg Curl" }, "seated-leg-curl"],
+    [{ exerciseId: "triceps-dip", name: "Triceps Dip" }, "tricep-dip"],
+    [{ exerciseId: "dumbbell-hammer-curl", name: "Dumbbell Hammer Curl" }, "hammer-curl"]
+  ];
+
+  for (const [exercise, expectedId] of cases) {
+    const result = resolveExerciseId(exercise);
+    assert.equal(result.id, expectedId);
+    assert.match(result.source, /alias|canonical/);
+  }
+});
+
+test("repairWorkoutProgram replaces exercises that are disabled until dedicated images exist", () => {
+  const program = {
+    programName: "Image Safety Fixture",
+    daysPerWeek: 1,
+    weeklyScheduleDays: [1],
+    sessions: [
+      {
+        day: 1,
+        name: "Pull",
+        exercises: [
+          { exerciseId: "seated-machine-row", name: "Seated Machine Row", demoName: "Seated Machine Row", muscleGroup: "Back", equipment: "Machine", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3" },
+          { exerciseId: "machine-rear-delt-fly", name: "Machine Rear Delt Fly", demoName: "Machine Rear Delt Fly", muscleGroup: "Rear Delts", equipment: "Machine", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" },
+          { exerciseId: "standing-calf-raise", name: "Standing Calf Raise", demoName: "Standing Calf Raise", muscleGroup: "Calves", equipment: "Machine", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" }
+        ]
+      }
+    ]
+  };
+
+  const context = {
+    daysPerWeek: 1,
+    sessionDuration: 60,
+    equipment: ["Machine", "Cable"],
+    availableDayIndexes: [1]
+  };
+
+  const { repairs } = repairWorkoutProgram(program, context);
+  const ids = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
+
+  assert.deepEqual(ids, ["seated-cable-row", "face-pull", "standing-calf-raise"]);
+  assert.ok(repairs.some((repair) => repair.includes("replaced disabled exercise")));
+
+  const validation = validateWorkoutProgram(program, context);
+  assert.equal(validation.ok, true, JSON.stringify(validation.errors));
 });
 
 test("resolveExerciseId: unknown exercise name still gets a deterministic slug (never invents a mapping)", () => {
   const result = resolveExerciseId({ name: "Some Brand New Exercise" });
-  assert.equal(result.source, "slug");
+  assert.equal(result.source, "name-slug");
   assert.equal(result.id, "some-brand-new-exercise");
+});
+
+test("repairWorkoutProgram replaces cable exercises when cable equipment is not selected", () => {
+  const program = {
+    programName: "No Cable Fixture",
+    daysPerWeek: 2,
+    weeklyScheduleDays: [1, 3],
+    sessions: [
+      {
+        day: 1,
+        name: "Upper A",
+        exercises: [
+          {
+            name: "Cable Triceps Pushdown",
+            demoName: "Cable Triceps Pushdown",
+            muscleGroup: "Triceps",
+            equipment: "Cable",
+            sets: 3,
+            reps: "10-12",
+            restSeconds: 60,
+            rir: "1-3"
+          },
+          {
+            name: "Cable Face Pull",
+            demoName: "Cable Face Pull",
+            muscleGroup: "Rear Delts",
+            equipment: "Cable",
+            sets: 3,
+            reps: "12-15",
+            restSeconds: 60,
+            rir: "1-3"
+          }
+        ]
+      },
+      {
+        day: 2,
+        name: "Upper B",
+        exercises: [
+          {
+            name: "Cable Triceps Pushdown",
+            demoName: "Cable Triceps Pushdown",
+            muscleGroup: "Triceps",
+            equipment: "Cable",
+            sets: 3,
+            reps: "10-12",
+            restSeconds: 60,
+            rir: "1-3"
+          }
+        ]
+      }
+    ]
+  };
+  const context = {
+    daysPerWeek: 2,
+    sessionDuration: 60,
+    equipment: ["Dumbbells", "Barbell", "Machines"],
+    availableDayIndexes: [1, 3],
+    goalProfile: "hypertrophy"
+  };
+
+  const { repairs } = repairWorkoutProgram(program, context);
+  assert.equal(
+    program.sessions.flatMap((session) => session.exercises).some((exercise) => exercise.equipment === "Cable"),
+    false
+  );
+  assert.ok(repairs.some((repair) => repair.includes("replaced \"Cable Triceps Pushdown\"")));
+  assert.ok(repairs.some((repair) => repair.includes("replaced \"Cable Face Pull\"")));
+
+  const validation = validateWorkoutProgram(program, context);
+  assert.equal(validation.ok, true, JSON.stringify(validation.errors));
+
+  const allExerciseIds = program.sessions.flatMap((session) => session.exercises.map((exercise) => exercise.exerciseId));
+  assert.deepEqual(allExerciseIds, ["overhead-tricep-extension", "dumbbell-reverse-fly", "overhead-tricep-extension"]);
+
+  const volume = calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+  assert.equal(volume.mappingCoveragePercent, 100);
 });
 
 test("assignExerciseIds keeps exerciseId unique within a session on alias/slug collisions", () => {
