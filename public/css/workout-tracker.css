@@ -631,7 +631,7 @@ body.rest-active .finish-button.rest-button-active{
 
 
 /* Focused one-set workout flow */
-.tracker-legacy-fields,#exerciseList,.finish-bar,.quick-mode-button{display:none!important}
+.tracker-legacy-fields,#exerciseList,.quick-mode-button{display:none!important}
 #workoutPanel{min-height:calc(100vh - 48px)}
 .workout-toolbar{position:sticky;top:10px;z-index:20;padding:14px 18px;margin-bottom:12px;backdrop-filter:blur(18px)}
 .workout-toolbar h2{font-size:18px}.workout-toolbar p{margin:4px 0 0;font-size:13px}.toolbar-actions{gap:16px}
