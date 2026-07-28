@@ -233,6 +233,8 @@ const ALIASES = {
   "dumbbell-bent-over-row": "dumbbell-row",
   "chest-supported-row": "seated-cable-row",
   "seated-row": "seated-cable-row",
+  "seated-machine-row": "seated-cable-row",
+  "seated-row-machine": "seated-cable-row",
   "cable-row": "seated-cable-row",
   "machine-row": "seated-cable-row",
   "bent-over-barbell-row": "barbell-row",
@@ -258,6 +260,8 @@ const ALIASES = {
   "lateral-raises": "dumbbell-lateral-raise",
   "front-raise": "dumbbell-front-raise",
   "rear-delt-fly": "dumbbell-reverse-fly",
+  "machine-rear-delt-fly": "dumbbell-reverse-fly",
+  "rear-delt-machine-fly": "dumbbell-reverse-fly",
   "reverse-pec-deck": "dumbbell-reverse-fly",
   "rear-delt-raise": "dumbbell-reverse-fly",
   "bent-over-lateral-raise": "dumbbell-reverse-fly",
@@ -286,11 +290,14 @@ const ALIASES = {
   "cable-preacher-curl": "preacher-curl",
   "ez-bar-preacher-curl": "preacher-curl",
   "hammer-curls": "hammer-curl",
+  "dumbbell-hammer-curl": "hammer-curl",
+  "dumbbell-hammer-curls": "hammer-curl",
   "triceps-pushdown": "cable-tricep-pushdown",
   "tricep-pushdown": "cable-tricep-pushdown",
   "rope-triceps-pushdown": "cable-tricep-pushdown",
   "rope-tricep-pushdown": "cable-tricep-pushdown",
   "cable-triceps-pushdown": "cable-tricep-pushdown",
+  "cable-face-pull": "face-pull",
   "overhead-triceps-extension": "overhead-tricep-extension",
   "cable-overhead-triceps-extension": "overhead-tricep-extension",
   "dumbbell-overhead-triceps-extension": "overhead-tricep-extension",
@@ -325,40 +332,76 @@ export function hasExerciseImageSlug(slug = "") {
   return KNOWN_EXERCISE_IMAGE_SLUGS.has(slug);
 }
 
-function warnMissingExerciseImage(source, slug) {
+function exerciseImageSource(exercise = {}) {
+  if (typeof exercise === "string") {
+    return { sourceField: "string", sourceValue: exercise };
+  }
+
+  const candidates = [
+    ["exerciseId", exercise.exerciseId],
+    ["id", exercise.id],
+    ["demoName", exercise.demoName],
+    ["name", exercise.name],
+    ["exercise", exercise.exercise]
+  ];
+
+  for (const [sourceField, rawValue] of candidates) {
+    const sourceValue = String(rawValue || "").trim();
+    if (sourceValue) return { sourceField, sourceValue };
+  }
+
+  return { sourceField: "none", sourceValue: "" };
+}
+
+function warnMissingExerciseImage(details) {
   if (
     typeof window === "undefined" ||
     typeof console === "undefined" ||
     window.location?.hostname !== "localhost" ||
-    missingExerciseImageWarnings.has(slug)
+    missingExerciseImageWarnings.has(details.attemptedSlug)
   ) {
     return;
   }
 
-  missingExerciseImageWarnings.add(slug);
-  console.warn("Missing exercise demo image; using branded fallback.", {
-    source,
-    slug
-  });
+  missingExerciseImageWarnings.add(details.attemptedSlug);
+  console.warn("Missing exercise demo image; using branded fallback.", details);
+}
+
+export function exerciseImageResolutionDetails(exercise = {}) {
+  const { sourceField, sourceValue } = exerciseImageSource(exercise);
+  const attemptedSlug = exerciseImageSlug(sourceValue);
+  const hasDedicatedImage = Boolean(attemptedSlug && hasExerciseImageSlug(attemptedSlug));
+  const imageUrl = hasDedicatedImage
+    ? `/images/exercises/${attemptedSlug}.png`
+    : EXERCISE_FALLBACK_IMAGE_URL;
+
+  return {
+    originalName: typeof exercise === "object" ? exercise.name || "" : String(exercise || ""),
+    demoName: typeof exercise === "object" ? exercise.demoName || "" : "",
+    exerciseId: typeof exercise === "object" ? exercise.exerciseId || exercise.id || "" : "",
+    equipment: typeof exercise === "object" ? exercise.equipment || "" : "",
+    muscle: typeof exercise === "object" ? exercise.muscleGroup || exercise.muscle || "" : "",
+    sourceField,
+    sourceValue,
+    attemptedSlug,
+    imageUrl,
+    usedFallback: !hasDedicatedImage,
+    fallbackReason: hasDedicatedImage
+      ? ""
+      : attemptedSlug
+        ? "resolved slug is not in KNOWN_EXERCISE_IMAGE_SLUGS"
+        : "no usable exercise name, demoName or exerciseId"
+  };
 }
 
 export function exerciseImageUrl(exercise = {}) {
-  const source =
-    typeof exercise === "string"
-      ? exercise
-      : exercise.exerciseId ||
-        exercise.id ||
-        exercise.demoName ||
-        exercise.name ||
-        exercise.exercise ||
-        "";
-  const slug = exerciseImageSlug(source);
-  if (slug && hasExerciseImageSlug(slug)) {
-    return `/images/exercises/${slug}.png`;
+  const details = exerciseImageResolutionDetails(exercise);
+  if (!details.usedFallback) {
+    return details.imageUrl;
   }
 
-  if (slug) {
-    warnMissingExerciseImage(source, slug);
+  if (details.attemptedSlug) {
+    warnMissingExerciseImage(details);
   }
 
   return EXERCISE_FALLBACK_IMAGE_URL;

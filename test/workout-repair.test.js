@@ -129,18 +129,108 @@ test("repair raises weekly-volume mapping coverage via alias resolution (does no
 
 test("resolveExerciseId: existing valid id is preserved as-is", () => {
   const result = resolveExerciseId({ exerciseId: "custom-id", name: "Something" });
-  assert.deepEqual(result, { id: "custom-id", source: "existing" });
+  assert.deepEqual(result, { id: "custom-id", source: "existing-slug" });
 });
 
 test("resolveExerciseId: known alias resolves to the canonical setcredits key", () => {
   const result = resolveExerciseId({ name: "Barbell Back Squat" });
-  assert.deepEqual(result, { id: "barbell-squat", source: "alias" });
+  assert.deepEqual(result, { id: "barbell-squat", source: "name-alias" });
+});
+
+test("resolveExerciseId canonicalizes generated variant ids before validation/rendering", () => {
+  const cases = [
+    [{ exerciseId: "seated-machine-row", name: "Seated Machine Row" }, "seated-cable-row"],
+    [{ exerciseId: "machine-rear-delt-fly", name: "Machine Rear Delt Fly" }, "dumbbell-reverse-fly"],
+    [{ exerciseId: "dumbbell-hammer-curl", name: "Dumbbell Hammer Curl" }, "hammer-curl"]
+  ];
+
+  for (const [exercise, expectedId] of cases) {
+    const result = resolveExerciseId(exercise);
+    assert.equal(result.id, expectedId);
+    assert.match(result.source, /alias|canonical/);
+  }
 });
 
 test("resolveExerciseId: unknown exercise name still gets a deterministic slug (never invents a mapping)", () => {
   const result = resolveExerciseId({ name: "Some Brand New Exercise" });
-  assert.equal(result.source, "slug");
+  assert.equal(result.source, "name-slug");
   assert.equal(result.id, "some-brand-new-exercise");
+});
+
+test("repairWorkoutProgram replaces cable exercises when cable equipment is not selected", () => {
+  const program = {
+    programName: "No Cable Fixture",
+    daysPerWeek: 2,
+    weeklyScheduleDays: [1, 3],
+    sessions: [
+      {
+        day: 1,
+        name: "Upper A",
+        exercises: [
+          {
+            name: "Cable Triceps Pushdown",
+            demoName: "Cable Triceps Pushdown",
+            muscleGroup: "Triceps",
+            equipment: "Cable",
+            sets: 3,
+            reps: "10-12",
+            restSeconds: 60,
+            rir: "1-3"
+          },
+          {
+            name: "Cable Face Pull",
+            demoName: "Cable Face Pull",
+            muscleGroup: "Rear Delts",
+            equipment: "Cable",
+            sets: 3,
+            reps: "12-15",
+            restSeconds: 60,
+            rir: "1-3"
+          }
+        ]
+      },
+      {
+        day: 2,
+        name: "Upper B",
+        exercises: [
+          {
+            name: "Cable Triceps Pushdown",
+            demoName: "Cable Triceps Pushdown",
+            muscleGroup: "Triceps",
+            equipment: "Cable",
+            sets: 3,
+            reps: "10-12",
+            restSeconds: 60,
+            rir: "1-3"
+          }
+        ]
+      }
+    ]
+  };
+  const context = {
+    daysPerWeek: 2,
+    sessionDuration: 60,
+    equipment: ["Dumbbells", "Barbell", "Machines"],
+    availableDayIndexes: [1, 3],
+    goalProfile: "hypertrophy"
+  };
+
+  const { repairs } = repairWorkoutProgram(program, context);
+  assert.equal(
+    program.sessions.flatMap((session) => session.exercises).some((exercise) => exercise.equipment === "Cable"),
+    false
+  );
+  assert.ok(repairs.some((repair) => repair.includes("replaced \"Cable Triceps Pushdown\"")));
+  assert.ok(repairs.some((repair) => repair.includes("replaced \"Cable Face Pull\"")));
+
+  const validation = validateWorkoutProgram(program, context);
+  assert.equal(validation.ok, true, JSON.stringify(validation.errors));
+
+  const allExerciseIds = program.sessions.flatMap((session) => session.exercises.map((exercise) => exercise.exerciseId));
+  assert.deepEqual(allExerciseIds, ["overhead-tricep-extension", "dumbbell-reverse-fly", "overhead-tricep-extension"]);
+
+  const volume = calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+  assert.equal(volume.mappingCoveragePercent, 100);
 });
 
 test("assignExerciseIds keeps exerciseId unique within a session on alias/slug collisions", () => {

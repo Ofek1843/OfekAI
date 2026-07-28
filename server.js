@@ -995,6 +995,7 @@ async function createChatCompletion({
       // that's not "repairing a gap", it's rewriting real AI output). Lets
       // tests force a still-invalid-after-repair 422 deterministically.
       const forceDuplicateExerciseId = String(process.env.MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID || "").toLowerCase() === "true";
+      const forceEmptySession = String(process.env.MOCK_OPENAI_FORCE_EMPTY_SESSION || "").toLowerCase() === "true";
       const stripId = (exercise) => {
         if (!omitExerciseId) return exercise;
         const { exerciseId, ...rest } = exercise;
@@ -1011,6 +1012,9 @@ async function createChatCompletion({
           stripId({ exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." })
         ]
       }));
+      if (forceEmptySession && sessions[0]) {
+        sessions[0].exercises = [];
+      }
       return JSON.stringify({ programName: "Mock Workout Program", daysPerWeek, durationWeeks: 8, goal: "Mock Goal", sessions });
     }
     if (/Return ONLY valid JSON/i.test(systemPrompt) && /meals/.test(systemPrompt)) {
@@ -2470,7 +2474,10 @@ Injuries, limitations or special requests: ${String(limitations)}
     // lowest-priority accessory exercises if a session still exceeds the
     // duration cap. This makes the DATA satisfy validateWorkoutProgram's
     // existing rules wherever possible; it never loosens or skips a rule.
-    const { repairs } = repairGeneratedWorkoutProgram(program, { sessionDuration: parsedDuration });
+    const { repairs } = repairGeneratedWorkoutProgram(program, {
+      sessionDuration: parsedDuration,
+      equipment
+    });
     if (repairs.length > 0) {
       console.info(`Workout repair applied for user ${user.uid}:`, repairs);
     }
@@ -2686,18 +2693,28 @@ Required JSON format:
         error: "The AI returned an invalid exercise format"
       });
     }
+    // Same deterministic repair pass used by /api/workout-builder — the
+    // reroll prompt already asks the AI for exerciseId, but this is a
+    // defensive backstop, not the primary fix for it.
+    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
+      { sessions: [{ exercises: [newExercise] }] },
+      {
+        sessionDuration: program.sessionDuration || 60,
+        equipment: selectedEquipment
+      }
+    );
+    if (rerollRepairs.length > 0) {
+      console.info("Reroll repair applied:", rerollRepairs);
+    }
 
-    // Validate equipment constraint using canonical exact matching —
-    // an empty/unrecognized equipment string must never silently pass.
     if (selectedEquipment.length > 0) {
-      const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment));
+      const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment).filter(Boolean));
       const newEquipNorm = normalizeEquipment(newExercise.equipment);
-
       const isAllowed = newEquipNorm !== "" && (newEquipNorm === "bodyweight" || selectedNorm.has(newEquipNorm));
 
       if (!isAllowed) {
         console.warn(
-          `Reroll produced exercise with disallowed equipment: "${newExercise.equipment}", selected: ${selectedEquipment.join(", ")}`
+          `Reroll produced exercise with disallowed equipment after repair: "${newExercise.equipment}", selected: ${selectedEquipment.join(", ")}`
         );
         return res.status(422).json({
           success: false,
@@ -2706,17 +2723,6 @@ Required JSON format:
             : `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
         });
       }
-    }
-
-    // Same deterministic repair pass used by /api/workout-builder — the
-    // reroll prompt already asks the AI for exerciseId, but this is a
-    // defensive backstop, not the primary fix for it.
-    const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
-      { sessions: [{ exercises: [newExercise] }] },
-      { sessionDuration: program.sessionDuration || 60 }
-    );
-    if (rerollRepairs.length > 0) {
-      console.info("Reroll repair applied:", rerollRepairs);
     }
 
     // Validate full program with replacement

@@ -27,6 +27,7 @@ function loadBrowserExerciseImageModule() {
   vm.runInNewContext(
     `${source}
     moduleExports.exerciseImageUrl = exerciseImageUrl;
+    moduleExports.exerciseImageResolutionDetails = exerciseImageResolutionDetails;
     moduleExports.fallbackExerciseImageUrl = fallbackExerciseImageUrl;
     moduleExports.exerciseImageSlug = exerciseImageSlug;
     moduleExports.hasExerciseImageSlug = hasExerciseImageSlug;`,
@@ -115,7 +116,16 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Dumbell Lateral Raise", "dumbbell-lateral-raise.png"],
     ["Dumbbells Shrug", "dumbbell-shrug.png"],
     ["Barbell Shrugs", "barbell-shrug.png"],
-    ["Cable Wood Chopper", "cable-woodchopper.png"]
+    ["Cable Wood Chopper", "cable-woodchopper.png"],
+    ["Seated Machine Row", "seated-cable-row.png"],
+    ["Machine Row", "seated-cable-row.png"],
+    ["Seated Row Machine", "seated-cable-row.png"],
+    ["Machine Rear Delt Fly", "dumbbell-reverse-fly.png"],
+    ["Rear Delt Machine Fly", "dumbbell-reverse-fly.png"],
+    ["Reverse Pec Deck", "dumbbell-reverse-fly.png"],
+    ["Dumbbell Hammer Curl", "hammer-curl.png"],
+    ["Hammer Curls", "hammer-curl.png"],
+    ["Cable Face Pull", "face-pull.png"]
   ];
 
   for (const [exerciseName, expectedFile] of cases) {
@@ -129,7 +139,44 @@ test("exercise image resolver maps newly imported images to existing files", asy
   }
 });
 
-test("exercise image coverage audit has no missing, orphaned or broken mappings", () => {
+test("generated exercise variants resolve to real images without frontend fallback", () => {
+  const imageModule = loadBrowserExerciseImageModule();
+  const fixtures = [
+    {
+      name: "Seated Machine Row",
+      demoName: "Seated Machine Row",
+      exerciseId: "seated-machine-row",
+      equipment: "Machine",
+      muscleGroup: "Back",
+      expectedUrl: "/images/exercises/seated-cable-row.png"
+    },
+    {
+      name: "Machine Rear Delt Fly",
+      demoName: "Machine Rear Delt Fly",
+      exerciseId: "machine-rear-delt-fly",
+      equipment: "Machine",
+      muscleGroup: "Rear Delts",
+      expectedUrl: "/images/exercises/dumbbell-reverse-fly.png"
+    },
+    {
+      name: "Dumbbell Hammer Curl",
+      demoName: "Dumbbell Hammer Curl",
+      exerciseId: "dumbbell-hammer-curl",
+      equipment: "Dumbbell",
+      muscleGroup: "Biceps",
+      expectedUrl: "/images/exercises/hammer-curl.png"
+    }
+  ];
+
+  for (const fixture of fixtures) {
+    const details = imageModule.exerciseImageResolutionDetails(fixture);
+    assert.equal(details.usedFallback, false, `${fixture.name} must not use the branded fallback`);
+    assert.equal(details.imageUrl, fixture.expectedUrl);
+    assert.ok(fs.existsSync(publicFile(details.imageUrl)), `Missing resolved image: ${details.imageUrl}`);
+  }
+});
+
+test("exercise image coverage audit has no missing, orphaned, broken or generator fallback mappings", () => {
   const report = buildAudit();
 
   assert.deepEqual(report.issues, []);
@@ -138,6 +185,10 @@ test("exercise image coverage audit has no missing, orphaned or broken mappings"
   assert.equal(report.totals.brokenMappings, 0);
   assert.equal(report.totals.invalidFiles, 0);
   assert.equal(report.totals.fallbackOnlyAliases, 0);
+  assert.equal(report.totals.generatorVariantsReachingFallback, 0);
+  assert.equal(report.totals.generatorExistingFilesWithBrokenRouting, 0);
+  assert.equal(report.totals.generatorGenuinelyMissingImages, 0);
+  assert.equal(report.totals.generatorCanonicalMismatches, 0);
 });
 
 test("unknown exercise images use the branded fallback instead of a broken PNG URL", async () => {

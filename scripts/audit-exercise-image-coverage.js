@@ -5,6 +5,9 @@ const path = require("node:path");
 const vm = require("node:vm");
 const { execFileSync } = require("node:child_process");
 const { EXERCISE_SETCREDITS } = require("../lib/workout-setcredits-map");
+const { EXERCISE_NAME_ALIASES } = require("../lib/workout-exercise-aliases");
+const { resolveExerciseId } = require("../lib/workout-repair");
+const { slugifyExerciseId } = require("../lib/workout-volume");
 
 const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -12,6 +15,19 @@ const EXERCISE_DIR = path.join(PUBLIC, "images", "exercises");
 const FALLBACK_FILE = "fuelphysique-demo-fallback.svg";
 const JSON_REPORT = path.join(ROOT, "outputs", "exercise-image-coverage.json");
 const MARKDOWN_REPORT = path.join(ROOT, "docs", "exercise-image-coverage-report.md");
+
+const KNOWN_GENERATED_EXERCISE_VARIANTS = [
+  { name: "Seated Machine Row", demoName: "Seated Machine Row", equipment: "Machine", muscleGroup: "Back", expectedCanonical: "seated-cable-row", dedicatedExactImage: false },
+  { name: "Machine Row", demoName: "Machine Row", equipment: "Machine", muscleGroup: "Back", expectedCanonical: "seated-cable-row", dedicatedExactImage: false },
+  { name: "Seated Row Machine", demoName: "Seated Row Machine", equipment: "Machine", muscleGroup: "Back", expectedCanonical: "seated-cable-row", dedicatedExactImage: false },
+  { name: "Machine Rear Delt Fly", demoName: "Machine Rear Delt Fly", equipment: "Machine", muscleGroup: "Rear Delts", expectedCanonical: "dumbbell-reverse-fly", dedicatedExactImage: false },
+  { name: "Rear Delt Machine Fly", demoName: "Rear Delt Machine Fly", equipment: "Machine", muscleGroup: "Rear Delts", expectedCanonical: "dumbbell-reverse-fly", dedicatedExactImage: false },
+  { name: "Reverse Pec Deck", demoName: "Reverse Pec Deck", equipment: "Machine", muscleGroup: "Rear Delts", expectedCanonical: "dumbbell-reverse-fly", dedicatedExactImage: false },
+  { name: "Dumbbell Hammer Curl", demoName: "Dumbbell Hammer Curl", equipment: "Dumbbell", muscleGroup: "Biceps", expectedCanonical: "hammer-curl", dedicatedExactImage: true },
+  { name: "Hammer Curls", demoName: "Hammer Curls", equipment: "Dumbbell", muscleGroup: "Biceps", expectedCanonical: "hammer-curl", dedicatedExactImage: true },
+  { name: "Cable Triceps Pushdown", demoName: "Cable Triceps Pushdown", equipment: "Cable", muscleGroup: "Triceps", expectedCanonical: "cable-tricep-pushdown", dedicatedExactImage: true },
+  { name: "Cable Face Pull", demoName: "Cable Face Pull", equipment: "Cable", muscleGroup: "Rear Delts", expectedCanonical: "face-pull", dedicatedExactImage: true }
+];
 
 const MUSCLE_BY_SLUG = {
   "ab-wheel-rollout": "core",
@@ -227,6 +243,7 @@ function loadResolver() {
     moduleExports.KNOWN_EXERCISE_IMAGE_SLUGS = KNOWN_EXERCISE_IMAGE_SLUGS;
     moduleExports.ALIASES = ALIASES;
     moduleExports.exerciseImageUrl = exerciseImageUrl;
+    moduleExports.exerciseImageResolutionDetails = exerciseImageResolutionDetails;
     moduleExports.exerciseImageSlug = exerciseImageSlug;
     moduleExports.hasExerciseImageSlug = hasExerciseImageSlug;
     moduleExports.fallbackExerciseImageUrl = fallbackExerciseImageUrl;`,
@@ -253,6 +270,56 @@ function imageValidity(filePath, file) {
     return { valid: svg, reason: svg ? "" : "invalid-svg" };
   }
   return { valid: false, reason: "unsupported-extension" };
+}
+
+function buildGeneratorVariantInventory() {
+  const byKey = new Map();
+  const add = (variant, source) => {
+    const name = String(variant.name || "").trim();
+    if (!name) return;
+    const key = `${name.toLowerCase()}|${variant.demoName || ""}|${variant.equipment || ""}`;
+    if (!byKey.has(key)) {
+      byKey.set(key, { ...variant, sources: [source] });
+    } else {
+      byKey.get(key).sources.push(source);
+    }
+  };
+
+  for (const variant of KNOWN_GENERATED_EXERCISE_VARIANTS) {
+    add(variant, "observed-fixture");
+  }
+
+  for (const exerciseId of Object.keys(EXERCISE_SETCREDITS)) {
+    add(
+      {
+        name: slugToTitle(exerciseId),
+        demoName: slugToTitle(exerciseId),
+        exerciseId,
+        equipment: EQUIPMENT_BY_SLUG[exerciseId] || "",
+        muscleGroup: MUSCLE_BY_SLUG[exerciseId] || "",
+        expectedCanonical: EXERCISE_NAME_ALIASES[exerciseId] || exerciseId,
+        dedicatedExactImage: true
+      },
+      "setcredits"
+    );
+  }
+
+  for (const [aliasSlug, canonical] of Object.entries(EXERCISE_NAME_ALIASES)) {
+    add(
+      {
+        name: slugToTitle(aliasSlug),
+        demoName: slugToTitle(aliasSlug),
+        exerciseId: aliasSlug,
+        equipment: EQUIPMENT_BY_SLUG[canonical] || "",
+        muscleGroup: MUSCLE_BY_SLUG[canonical] || "",
+        expectedCanonical: canonical,
+        dedicatedExactImage: false
+      },
+      "backend-alias"
+    );
+  }
+
+  return [...byKey.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function buildAudit() {
@@ -305,6 +372,63 @@ function buildAudit() {
     })
     .sort((a, b) => a.aliasExerciseId.localeCompare(b.aliasExerciseId));
 
+  const generatorVariantInventory = buildGeneratorVariantInventory();
+  const generatorToImageCoverage = generatorVariantInventory.map((variant) => {
+    const exercise = {
+      name: variant.name,
+      demoName: variant.demoName,
+      exerciseId: variant.exerciseId || "",
+      equipment: variant.equipment,
+      muscleGroup: variant.muscleGroup
+    };
+    const resolved = resolveExerciseId(exercise);
+    const canonicalExerciseId = resolved.id;
+    const details = resolver.exerciseImageResolutionDetails({
+      ...exercise,
+      exerciseId: canonicalExerciseId
+    });
+    const directSlug = slugifyExerciseId(variant.demoName || variant.name);
+    const directPhysicalFile = directSlug ? `${directSlug}.png` : "";
+    const directPhysicalExists = Boolean(directPhysicalFile && fileSet.has(directPhysicalFile));
+    const canonicalFile = details.usedFallback ? "" : path.basename(details.imageUrl);
+    const exactDedicatedFile = directPhysicalExists && canonicalFile === directPhysicalFile;
+    const usesSurrogateImage =
+      !details.usedFallback &&
+      !variant.dedicatedExactImage &&
+      (!directPhysicalExists || canonicalFile !== directPhysicalFile);
+    const expectedMatches = !variant.expectedCanonical || variant.expectedCanonical === canonicalExerciseId;
+
+    return {
+      originalName: variant.name,
+      demoName: variant.demoName || "",
+      providedExerciseId: variant.exerciseId || "",
+      equipment: variant.equipment || "",
+      muscleGroup: variant.muscleGroup || "",
+      sources: [...new Set(variant.sources)].sort(),
+      expectedCanonical: variant.expectedCanonical || "",
+      canonicalExerciseId,
+      canonicalizationSource: resolved.source,
+      expectedCanonicalMatches: expectedMatches,
+      resolverSourceField: details.sourceField,
+      attemptedSlug: details.attemptedSlug,
+      resolvedImageUrl: details.imageUrl,
+      usedFallback: details.usedFallback,
+      fallbackReason: details.fallbackReason,
+      directPhysicalFile: directPhysicalExists ? directPhysicalFile : "",
+      directPhysicalExists,
+      exactDedicatedFile,
+      usesSurrogateImage,
+      dedicatedExactImageExpected: Boolean(variant.dedicatedExactImage),
+      classification: details.usedFallback
+        ? directPhysicalExists
+          ? "BROKEN_ROUTING_EXISTING_FILE"
+          : "GENUINELY_MISSING_IMAGE"
+        : usesSurrogateImage
+          ? "COVERED_BY_SURROGATE_IMAGE"
+          : "GENERATOR_COVERED"
+    };
+  });
+
   const knownFileSet = new Set(knownSlugs.map((slug) => `${slug}.png`));
   const physicalInventory = files.map((file) => {
     const filePath = path.join(EXERCISE_DIR, file);
@@ -351,6 +475,11 @@ function buildAudit() {
   const badNames = physicalInventory.filter((item) => item.classification === "BROKEN_MAPPING");
   const missingCanonical = canonicalCatalog.filter((item) => item.classification !== "COVERED");
   const fallbackOnlyAliases = setCreditAliases.filter((item) => item.classification === "FALLBACK_ONLY");
+  const generatorFallbacks = generatorToImageCoverage.filter((item) => item.usedFallback);
+  const generatorBrokenRouting = generatorToImageCoverage.filter((item) => item.classification === "BROKEN_ROUTING_EXISTING_FILE");
+  const generatorGenuinelyMissing = generatorToImageCoverage.filter((item) => item.classification === "GENUINELY_MISSING_IMAGE");
+  const generatorSurrogateImages = generatorToImageCoverage.filter((item) => item.classification === "COVERED_BY_SURROGATE_IMAGE");
+  const generatorCanonicalMismatches = generatorToImageCoverage.filter((item) => !item.expectedCanonicalMatches);
 
   const issues = [
     ...missingCanonical.map((item) => `MISSING_IMAGE ${item.canonicalExerciseId}`),
@@ -359,7 +488,9 @@ function buildAudit() {
     ...invalidFiles.map((item) => `INVALID_FILE ${item.filename}: ${item.invalidReason}`),
     ...badNames.map((item) => `BROKEN_FILENAME ${item.filename}`),
     ...caseMismatches.map((pair) => `CASE_MISMATCH ${pair.join(" vs ")}`),
-    ...fallbackOnlyAliases.map((item) => `FALLBACK_ONLY ${item.aliasExerciseId}`)
+    ...fallbackOnlyAliases.map((item) => `FALLBACK_ONLY ${item.aliasExerciseId}`),
+    ...generatorFallbacks.map((item) => `GENERATOR_FALLBACK ${item.originalName} -> ${item.attemptedSlug || "(empty)"}`),
+    ...generatorCanonicalMismatches.map((item) => `GENERATOR_CANONICAL_MISMATCH ${item.originalName}: expected ${item.expectedCanonical}, got ${item.canonicalExerciseId}`)
   ];
 
   const totals = {
@@ -373,7 +504,15 @@ function buildAudit() {
     brokenMappings: brokenMappings.length,
     invalidFiles: invalidFiles.length,
     caseMismatches: caseMismatches.length,
-    fallbackOnlyAliases: fallbackOnlyAliases.length
+    fallbackOnlyAliases: fallbackOnlyAliases.length,
+    generatorSupportedCanonicalExercises: new Set(generatorToImageCoverage.map((item) => item.canonicalExerciseId).filter(Boolean)).size,
+    generatorKnownNameVariants: generatorToImageCoverage.length,
+    generatorVariantsWithDedicatedOrSurrogateImage: generatorToImageCoverage.filter((item) => !item.usedFallback).length,
+    generatorVariantsReachingFallback: generatorFallbacks.length,
+    generatorExistingFilesWithBrokenRouting: generatorBrokenRouting.length,
+    generatorGenuinelyMissingImages: generatorGenuinelyMissing.length,
+    generatorSurrogateImageRoutes: generatorSurrogateImages.length,
+    generatorCanonicalMismatches: generatorCanonicalMismatches.length
   };
 
   return {
@@ -382,6 +521,12 @@ function buildAudit() {
     note: "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
     totals,
     canonicalCatalog,
+    generatorToImageCoverage,
+    generatorFallbacks,
+    generatorBrokenRouting,
+    generatorGenuinelyMissing,
+    generatorSurrogateImages,
+    generatorCanonicalMismatches,
     setCreditAliases,
     physicalInventory,
     orphanFiles,
@@ -435,6 +580,32 @@ function writeMarkdown(report) {
     item.classification
   ]);
 
+  const generatorRows = report.generatorToImageCoverage.map((item) => [
+    item.originalName,
+    item.demoName,
+    item.providedExerciseId,
+    item.canonicalExerciseId,
+    item.resolvedImageUrl,
+    item.classification,
+    item.sources.join(", ")
+  ]);
+
+  const generatorMissingRows = report.generatorFallbacks.map((item) => [
+    item.originalName,
+    item.demoName,
+    item.providedExerciseId,
+    item.attemptedSlug,
+    item.fallbackReason,
+    item.directPhysicalFile || "none"
+  ]);
+
+  const surrogateRows = report.generatorSurrogateImages.map((item) => [
+    item.originalName,
+    item.canonicalExerciseId,
+    item.resolvedImageUrl,
+    item.directPhysicalFile || "no exact dedicated file"
+  ]);
+
   const lines = [
     "# Exercise Image Coverage Report",
     "",
@@ -448,6 +619,10 @@ function writeMarkdown(report) {
       ["Metric", "Value"],
       Object.entries(report.totals).map(([key, value]) => [key, value])
     ),
+    "",
+    "## A. Resolver-internal coverage",
+    "",
+    "This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolver/disk consistency only.",
     "",
     "## Missing canonical exercise images",
     "",
@@ -468,6 +643,29 @@ function writeMarkdown(report) {
     markdownTable(
       ["filename", "size", "git status", "canonical exercise", "referenced by resolver", "classification"],
       imageRows
+    ),
+    "",
+    "## B. Generator-to-image coverage",
+    "",
+    "This starts from names and IDs the Workout Builder backend can plausibly return: set-credit IDs, backend aliases and observed generated fixtures.",
+    "",
+    markdownTable(
+      ["generated name", "demoName", "provided exerciseId", "canonical exerciseId", "resolved URL", "classification", "sources"],
+      generatorRows
+    ),
+    "",
+    "## Generator names reaching fallback",
+    "",
+    markdownTable(
+      ["generated name", "demoName", "provided exerciseId", "attempted slug", "fallback reason", "existing direct file"],
+      generatorMissingRows
+    ),
+    "",
+    "## Generator names routed to surrogate images",
+    "",
+    markdownTable(
+      ["generated name", "canonical exerciseId", "resolved URL", "exact dedicated file status"],
+      surrogateRows
     ),
     "",
     "## Orphan files",
