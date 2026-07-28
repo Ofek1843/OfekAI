@@ -22,7 +22,8 @@ const JSON_REPORT = path.join(ROOT, "outputs", "exercise-image-coverage.json");
 const MARKDOWN_REPORT = path.join(ROOT, "docs", "exercise-image-coverage-report.md");
 
 const KNOWN_GENERATED_EXERCISE_VARIANTS = [
-  { name: "Bulgarian Split Squat", demoName: "Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "bulgarian-split-squat", dedicatedExactImage: true },
+  { name: "Bulgarian Split Squat", demoName: "Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "dumbbell-bulgarian-split-squat", dedicatedExactImage: true },
+  { name: "Dumbbell Bulgarian Split Squat", demoName: "Dumbbell Bulgarian Split Squat", equipment: "Dumbbell", muscleGroup: "Quads", expectedCanonical: "dumbbell-bulgarian-split-squat", dedicatedExactImage: true },
   { name: "Incline Dumbbell Press", demoName: "Incline Dumbbell Press", equipment: "Dumbbell", muscleGroup: "Chest", expectedCanonical: "incline-dumbbell-bench-press", dedicatedExactImage: true },
   { name: "Incline Dumbbell Chest Press", demoName: "Incline Dumbbell Chest Press", equipment: "Dumbbell", muscleGroup: "Chest", expectedCanonical: "incline-dumbbell-bench-press", dedicatedExactImage: true },
   { name: "Seated Leg Curl", demoName: "Seated Leg Curl", equipment: "Machine", muscleGroup: "Hamstrings", expectedCanonical: "seated-leg-curl", dedicatedExactImage: true },
@@ -70,6 +71,7 @@ const MUSCLE_BY_SLUG = {
   dip: "chest",
   "dumbbell-bench-press": "chest",
   "dumbbell-bicep-curl": "arms",
+  "dumbbell-bulgarian-split-squat": "quadriceps",
   "dumbbell-calf-raise": "calves",
   "dumbbell-fly": "chest",
   "dumbbell-front-raise": "shoulders",
@@ -161,6 +163,7 @@ const EQUIPMENT_BY_SLUG = {
   dip: "parallel bars",
   "dumbbell-bench-press": "dumbbells",
   "dumbbell-bicep-curl": "dumbbells",
+  "dumbbell-bulgarian-split-squat": "dumbbells",
   "dumbbell-calf-raise": "dumbbells",
   "dumbbell-fly": "dumbbells",
   "dumbbell-front-raise": "dumbbells",
