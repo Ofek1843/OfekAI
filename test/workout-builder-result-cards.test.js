@@ -85,10 +85,12 @@ test("workout-builder.css defines the card grid, not the removed table styles", 
   assert.doesNotMatch(workoutBuilderCss, /\.workout-table-wrapper\s*\{/);
 });
 
-test("exercise card grid is two columns on desktop and collapses to one column on mobile", () => {
+test("exercise card grid uses a full-width scan-friendly layout on desktop and mobile", () => {
   const gridRuleMatch = workoutBuilderCss.match(/\.exercise-cards\s*\{([^}]*)\}/);
   assert.ok(gridRuleMatch, "base .exercise-cards rule must exist");
-  assert.match(gridRuleMatch[1], /grid-template-columns:\s*repeat\(2,/);
+  assert.match(gridRuleMatch[1], /grid-template-columns:\s*1fr/);
+  assert.match(workoutBuilderCss, /\.muscle-exercise-group\s*\{/);
+  assert.match(workoutBuilderCss, /\.muscle-exercise-group-grid\s*\{/);
 
   const mobileBlockMatch = workoutBuilderCss.match(
     /@media \(max-width: 760px\) \{([\s\S]*?)\n\}/
@@ -97,7 +99,7 @@ test("exercise card grid is two columns on desktop and collapses to one column o
   assert.match(
     mobileBlockMatch[1],
     /\.exercise-cards\{grid-template-columns:1fr/,
-    "mobile breakpoint must collapse the exercise card grid to one column"
+    "mobile breakpoint must keep the exercise card grid to one column"
   );
 });
 
