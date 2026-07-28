@@ -242,29 +242,6 @@ textarea:focus {
   margin: 0 0 16px;
 }
 
-.exercise-list {
-  display: grid;
-  gap: 12px;
-}
-
-.exercise-card {
-  padding: 15px;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  background: rgba(7, 11, 20, 0.45);
-}
-
-.exercise-card strong {
-  display: block;
-  margin-bottom: 6px;
-}
-
-.exercise-card p {
-  margin: 4px 0;
-  color: var(--muted);
-  line-height: 1.45;
-}
-
 .hidden {
   display: none;
 }
@@ -511,91 +488,111 @@ textarea:focus {
   font-weight: 750;
 }
 
-.workout-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+/* ================================
+   Exercise result cards
+================================ */
+
+.exercise-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 20px;
 }
 
-.workout-table {
-  width: 100%;
-  min-width: 0;
-  table-layout: fixed;
-  border-collapse: separate;
-  border-spacing: 0;
+.exercise-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(7, 11, 20, 0.55);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
-.workout-table th {
-  padding: 17px 12px;
-  border-inline-end: 1px solid rgba(255, 255, 255, 0.12);
-  border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+
+.exercise-card:hover {
+  border-color: rgba(124, 92, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28);
+}
+
+.exercise-card-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
   background: rgba(5, 10, 20, 0.72);
+}
+
+.exercise-card-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.exercise-card-number {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  display: grid;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  place-items: center;
+  border-radius: 999px;
   color: #ffffff;
-  font-size: 14px;
+  background: rgba(5, 10, 20, 0.72);
+  backdrop-filter: blur(6px);
+  font-size: 13px;
   font-weight: 900;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-  text-align: center;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-.workout-table td {
-  padding: 18px 12px;
-  border-inline-end: 1px solid rgba(255, 255, 255, 0.09);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-  color: #bec8da;
-  font-size: 14px;
-  line-height: 1.45;
-  text-align: center;
-  vertical-align: middle;
-}
-.workout-table th:last-child,
-.workout-table td:last-child {
-  border-inline-end: 0;
 }
 
-/* # */
-.workout-table th:nth-child(1),
-.workout-table td:nth-child(1) {
-  width: 5%;
+.exercise-demo-button {
+  position: absolute;
+  bottom: 12px;
+  inset-inline-start: 12px;
+  padding: 7px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(5, 10, 20, 0.72);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-/* Exercise */
-.workout-table th:nth-child(2),
-.workout-table td:nth-child(2) {
-  width: 29%;
+.exercise-demo-button:hover {
+  background: rgba(124, 92, 255, 0.35);
+  transform: translateY(-1px);
 }
 
-/* Muscle */
-.workout-table th:nth-child(3),
-.workout-table td:nth-child(3) {
-  width: 11%;
+.exercise-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 18px;
 }
 
-/* Equipment */
-.workout-table th:nth-child(4),
-.workout-table td:nth-child(4) {
-  width: 12%;
+.exercise-card-name {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.3;
 }
 
-/* Sets */
-.workout-table th:nth-child(5),
-.workout-table td:nth-child(5) {
-  width: 8%;
+.exercise-card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
-/* Reps */
-.workout-table th:nth-child(6),
-.workout-table td:nth-child(6) {
-  width: 10%;
-}
-
-/* Rest */
-.workout-table th:nth-child(7),
-.workout-table td:nth-child(7) {
-  width: 10%;
-}
-
-/* RIR */
 .intensity-help {
   display: inline-flex;
   align-items: center;
@@ -610,55 +607,11 @@ textarea:focus {
   outline: 2px solid #60a5fa;
   outline-offset: 3px;
 }
-.workout-table th:nth-child(8),
-.workout-table td:nth-child(8) {
-  width: 7%;
-}
-.workout-table th:nth-child(9),.workout-table td:nth-child(9){width:7%}
-.workout-table-wrapper{overflow-x:visible}
-.workout-table tbody tr {
-  transition:
-    background 0.18s ease,
-    transform 0.18s ease;
-}
-
-.workout-table tbody tr:hover {
-  background: rgba(124, 92, 255, 0.065);
-}
-
-.workout-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.exercise-number {
-  width: 40px;
-  color: #66738a;
-  font-weight: 800;
-}
-
-.exercise-name-cell {
-  min-width: 0;
-  text-align: start !important;
-  overflow-wrap: anywhere;
-}
-.exercise-name-cell strong {
-  display: block;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 900;
-}
-.exercise-name-cell strong {
-  line-height: 1.35;
-}
 
 .exercise-note {
   overflow-wrap: anywhere;
-}
-
-.exercise-note {
   display: block;
-  max-width: 330px;
-  margin-top: 6px;
+  margin: 12px 0 0;
   color: #8794aa;
   font-size: 12px;
   line-height: 1.45;
@@ -686,30 +639,52 @@ textarea:focus {
   color: #62e1c5;
 }
 
-.workout-value {
-  color: #eef2fa !important;
+.exercise-card-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.exercise-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  text-align: center;
+}
+
+.exercise-stat-label {
+  color: #8794ab;
+  font-size: 10px;
   font-weight: 800;
-  white-space: nowrap;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
-.reroll-cell {
-  padding-inline-start: 2px;
-  padding-inline-end: 4px;
-  text-align: start !important;
+
+.exercise-stat-value {
+  color: #eef2fa;
+  font-size: 15px;
+  font-weight: 900;
 }
-.workout-table th.reroll-column,
-.workout-table td.reroll-cell {
-  width: 5.5%;
-}
+
 .reroll-button {
-  width: 42px;
-  height: 42px;
+  position: absolute;
+  top: 12px;
+  inset-inline-end: 12px;
+  width: 38px;
+  height: 38px;
   border: none;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(5, 10, 20, 0.72);
+  backdrop-filter: blur(6px);
   color: #ffffff;
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
-  margin-inline-start: -4px;
   transition:
     transform 0.25s ease,
     background-color 0.25s ease,
@@ -788,18 +763,9 @@ textarea:focus {
 
   .program-actions{display:grid;width:100%;grid-template-columns:1fr 1fr;gap:10px}
   .program-actions button{width:100%;min-height:48px}
-  .workout-table-wrapper{overflow:visible}
-  .workout-table,.workout-table tbody{display:block;width:100%}
-  .workout-table thead{display:none}
-  .workout-table tr{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:12px;border:1px solid rgba(255,255,255,.1);border-radius:15px;overflow:hidden;background:rgba(10,17,30,.58)}
-  .workout-table td,.workout-table td:nth-child(n){display:grid;width:auto;min-width:0;grid-template-columns:1fr auto;align-items:center;gap:10px;padding:11px 13px;border:0;border-bottom:1px solid rgba(255,255,255,.07);text-align:end!important}
-  .workout-table td::before{content:attr(data-label);color:#7f8da3;font-size:10px;font-weight:850;letter-spacing:.06em;text-align:start;text-transform:uppercase}
-  .workout-table .exercise-number{display:none}
-  .workout-table .exercise-name-cell{grid-column:1/-1;display:block;padding:16px;text-align:start!important}
-  .workout-table .exercise-name-cell::before{display:none}
-  .workout-table .exercise-note{max-width:none}
-  .workout-table .reroll-cell{grid-column:1/-1;border-bottom:0}
-  .workout-table .reroll-button{width:46px;height:40px;margin-inline-start:0}
+  .exercise-cards{grid-template-columns:1fr;padding:14px;gap:14px}
+  .exercise-card-media{aspect-ratio:16/11}
+  .exercise-card-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .muscle-badge,.equipment-badge{white-space:normal;text-align:center}
 }
 
@@ -813,24 +779,6 @@ textarea:focus {
   .program-result {
     max-width: 1450px;
   }
-
-  .workout-table-wrapper {
-    overflow-x: visible;
-  }
-
-  .workout-table {
-    min-width: 0;
-    table-layout: fixed;
-  }
-@media (min-width: 1100px) {
-  .workout-table-wrapper {
-    overflow-x: visible;
-  }
-
-  .workout-table {
-    min-width: 0;
-  }
-}
 }
 @media print {
   body {
@@ -867,14 +815,13 @@ textarea:focus {
 
   .program-header h2,
   .workout-day-header h3,
-  .exercise-name-cell strong,
+  .exercise-card-name,
   .summary-item strong,
-  .workout-value {
+  .exercise-stat-value {
     color: #111827 !important;
   }
 
   .program-description,
-  .workout-table td,
   .exercise-note {
     color: #475569 !important;
   }
@@ -883,13 +830,20 @@ textarea:focus {
     display: none;
   }
 
+  .exercise-card {
+    break-inside: avoid;
+    border: 1px solid #e5e7eb !important;
+    background: #ffffff !important;
+  }
+
+  .reroll-button,
+  .exercise-demo-button {
+    display: none;
+  }
+
   .workout-day {
     break-inside: avoid;
     margin-bottom: 18px;
-  }
-
-  .workout-table {
-    min-width: 0;
   }
 }
 
