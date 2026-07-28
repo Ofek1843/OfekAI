@@ -10,9 +10,23 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
+const net = require("node:net");
 const path = require("node:path");
 
-function startServer(port, extraEnv = {}) {
+function getAvailablePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.on("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
+}
+
+async function startServer(port, extraEnv = {}) {
+  const selectedPort = port === 0 ? await getAvailablePort() : port;
   return new Promise((resolve, reject) => {
     const child = spawn(
       process.execPath,
@@ -20,7 +34,7 @@ function startServer(port, extraEnv = {}) {
       {
         env: {
           ...process.env,
-          PORT: String(port),
+          PORT: String(selectedPort),
           MOCK_EXTERNAL_SERVICES: "true",
           OPENAI_API_KEY: "sk-test-not-a-real-key-000000000000",
           ...extraEnv
@@ -34,7 +48,7 @@ function startServer(port, extraEnv = {}) {
     child.stdout.on("data", (chunk) => { stdout += chunk.toString(); });
     child.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
 
-    const baseUrl = `http://127.0.0.1:${port}`;
+    const baseUrl = `http://127.0.0.1:${selectedPort}`;
     const deadline = Date.now() + 15_000;
 
     (async () => {
@@ -51,7 +65,7 @@ function startServer(port, extraEnv = {}) {
         }
         await new Promise((r) => setTimeout(r, 150));
       }
-      reject(new Error(`Server on port ${port} did not become healthy in time. Last error: ${lastError}. Stderr: ${stderr}`));
+      reject(new Error(`Server on port ${selectedPort} did not become healthy in time. Last error: ${lastError}. Stderr: ${stderr}`));
     })();
   });
 }
@@ -235,4 +249,128 @@ test("Internal rate limit 429 remains 429 (not remapped to 502)", async (t) => {
   const secondData = await second.json();
 
   assert.equal(second.status, 429, `Expected 429. Body: ${JSON.stringify(secondData)}`);
+});
+
+test("Workout Builder uses the dedicated gpt-4.1 workout model fallback", async (t) => {
+  const server = await startServer(0, {
+    OPENAI_CHAT_MODEL: "",
+    OPENAI_WORKOUT_MODEL: ""
+  });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload())
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 200, `Expected 200. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.success, true);
+  assert.ok(
+    server.getStdout().includes("\"selectedWorkoutModel\":\"gpt-4.1\""),
+    "startup diagnostics should show the safe workout fallback without exposing secrets"
+  );
+});
+
+test("GPT-5 empty visible content returns the local incomplete-response 502", async (t) => {
+  const server = await startServer(4191, {
+    OPENAI_WORKOUT_MODEL: "gpt-5-mini",
+    MOCK_OPENAI_CHAT_RESPONSE_MODE: "empty-content"
+  });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload({ language: "en" }))
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 502, `Expected 502. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.error, "The workout service returned an incomplete response. Please try again.");
+  assert.ok(server.getStderr().includes("openai_reasoning_exhausted"));
+});
+
+test("finish_reason length is treated as truncated output and returns 502 after one retry", async (t) => {
+  const server = await startServer(4192, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "length" });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload())
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 502, `Expected 502. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.error, "The workout service returned an incomplete response. Please try again.");
+  assert.ok(server.getStderr().includes("openai_truncated"));
+});
+
+test("model refusal is not retried and returns incomplete-response 502", async (t) => {
+  const server = await startServer(4193, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "refusal" });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload())
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 502, `Expected 502. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.error, "The workout service returned an incomplete response. Please try again.");
+  assert.ok(server.getStderr().includes("openai_refusal"));
+  assert.ok(!server.getStderr().includes("retrying once"), "Refusals must not be retried");
+});
+
+test("malformed JSON after visible text returns invalid-format 502 without retry", async (t) => {
+  const server = await startServer(4194, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "malformed-json" });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload())
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 502, `Expected 502. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.error, "The AI returned an invalid workout format");
+  assert.ok(server.getStderr().includes("Workout JSON parsing failed"));
+  assert.ok(!server.getStderr().includes("{ not valid json"), "Full raw model response should not be logged");
+});
+
+test("a transient empty response is retried once and then succeeds", async (t) => {
+  const server = await startServer(4195, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "retry-success" });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload())
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 200, `Expected 200. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.success, true);
+  assert.ok(server.getStderr().includes("retrying once"));
+});
+
+test("a repeated empty response fails with 502 after the single retry", async (t) => {
+  const server = await startServer(4196, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "retry-fail" });
+  t.after(() => stopServer(server));
+
+  const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(buildWorkoutPayload())
+  });
+  const data = await res.json();
+
+  assert.equal(res.status, 502, `Expected 502. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.error, "The workout service returned an incomplete response. Please try again.");
+  const stderr = server.getStderr();
+  assert.equal((stderr.match(/retrying once/g) || []).length, 1, "Only one retry is allowed");
 });

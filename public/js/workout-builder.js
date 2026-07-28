@@ -1,9 +1,10 @@
 import { auth, db } from "./firebase-config.js";
-import { setupExerciseDemos } from "./exercise-demos.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
+import { derivePriorityFromGoal } from "./workout-priority.js";
+import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
 
 import {
   collection,
@@ -40,7 +41,6 @@ const ui = isHebrew
       sessionDuration: "משך האימון בדקות",
       trainingStyle: "סגנון האימון",
       availableEquipment: "ציוד זמין",
-      trainingPriority: "דגש מרכזי באימון",
       limitations: "פציעות או מגבלות",
       limitationsPlaceholder:
         "תאר פציעות, כאבים או מגבלות תנועה.",
@@ -83,7 +83,6 @@ const ui = isHebrew
       sessionDuration: "Session duration in minutes",
       trainingStyle: "Training style",
       availableEquipment: "Available equipment",
-      trainingPriority: "Training priority",
       limitations: "Injuries or limitations",
       limitationsPlaceholder:
         "Describe any injuries, pain, or movement limitations.",
@@ -139,7 +138,6 @@ function translateBuilderInterface() {
   setText('label[for="daysPerWeek"]', ui.trainingDays);
   setText('label[for="sessionDuration"]', ui.sessionDuration);
   setText('label[for="trainingStyle"]', ui.trainingStyle);
-  setText('label[for="priority"]', ui.trainingPriority);
   setText('label[for="limitations"]', ui.limitations);
 
 const equipmentHeading =
@@ -342,7 +340,6 @@ function validateWizardStep(index) {
   if (key === "experience" && !document.querySelector("#experience")?.value) return isHebrew ? "בחר את רמת הניסיון שלך." : "Choose your training experience.";
   if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
   if (key === "equipment" && !document.querySelector('input[name="equipment"]:checked')) return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
-  if (key === "priority" && !document.querySelector("#priority")?.value) return isHebrew ? "בחר דגש מרכזי לאימון." : "Choose a training priority.";
   if (key === "schedule") {
     const age = Number(document.querySelector("#age")?.value);
     const duration = Number(document.querySelector("#sessionDuration")?.value);
@@ -453,6 +450,7 @@ form.addEventListener("submit", async (event) => {
 
   const payload = {
     goal: formData.get("goal"),
+    priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
     age: Number(formData.get("age")),
     daysPerWeek: Number(formData.get("daysPerWeek")),
@@ -462,7 +460,6 @@ form.addEventListener("submit", async (event) => {
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
     availableDays: formData.getAll("availableDays"),
-    priority: formData.get("priority"),
     limitations:
       formData.get("limitations")?.trim() ||
       (isHebrew ? "ללא מגבלות" : "None"),
@@ -691,82 +688,69 @@ function renderProgram(program) {
         ? session.exercises
         : [];
 
-      const exerciseRows = exercises
+      const exerciseCards = exercises
         .map((exercise, exerciseIndex) => {
-          return `
-            <tr data-session="${sessionIndex}" data-exercise="${exerciseIndex}">
-              <td class="exercise-number" data-label="#">
-                ${exerciseIndex + 1}
-              </td>
+          const exerciseName = translateWorkoutValue(exercise.name);
+          const rirTitle = isHebrew
+            ? "RIR — כמה חזרות נוספות נשארו לך לפני כשל. לדוגמה, RIR 2 פירושו שיכולת לבצע עוד כשתי חזרות."
+            : "RIR (Reps In Reserve) — how many more reps you could complete before failure. RIR 2 means about two reps remained.";
 
-              <td class="exercise-name-cell" data-label="${ui.exercise}">
-<strong>
-  ${escapeHtml(translateWorkoutValue(exercise.name))}
-</strong>
-                <button type="button" class="exercise-demo-button" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">▶ Demo</button>
+          return `
+            <article class="exercise-card" data-session="${sessionIndex}" data-exercise="${exerciseIndex}">
+              <div class="exercise-card-media">
+                <img
+                  class="exercise-card-image"
+                  src="${escapeHtml(exerciseImageUrl(exercise))}"
+                  data-fallback-src="${escapeHtml(fallbackExerciseImageUrl())}"
+                  alt="${escapeHtml(exerciseName)}"
+                  loading="lazy"
+                >
+                <span class="exercise-card-number">${exerciseIndex + 1}</span>
+                <button
+                  type="button"
+                  class="reroll-button"
+                  title="${isHebrew ? "החלף תרגיל" : "Replace exercise"}"
+                  data-session="${sessionIndex}"
+                  data-exercise="${exerciseIndex}"
+                >🔄</button>
+                <button type="button" class="exercise-demo-button" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">▶ ${isHebrew ? "הדגמה" : "Demo"}</button>
+              </div>
+
+              <div class="exercise-card-body">
+                <h4 class="exercise-card-name">${escapeHtml(exerciseName)}</h4>
+
+                <div class="exercise-card-badges">
+                  <span class="muscle-badge">${escapeHtml(translateWorkoutValue(exercise.muscleGroup || ui.general))}</span>
+                  <span class="equipment-badge">${escapeHtml(translateWorkoutValue(exercise.equipment || ui.equipmentFallback))}</span>
+                </div>
+
+                <div class="exercise-card-stats">
+                  <div class="exercise-stat">
+                    <span class="exercise-stat-label">${ui.sets}</span>
+                    <span class="exercise-stat-value">${escapeHtml(String(exercise.sets))}</span>
+                  </div>
+                  <div class="exercise-stat">
+                    <span class="exercise-stat-label">${ui.reps}</span>
+                    <span class="exercise-stat-value">${escapeHtml(String(exercise.reps))}</span>
+                  </div>
+                  <div class="exercise-stat">
+                    <span class="exercise-stat-label">${ui.rest}</span>
+                    <span class="exercise-stat-value">${escapeHtml(String(exercise.restSeconds))}s</span>
+                  </div>
+                  <div class="exercise-stat" title="${rirTitle}">
+                    <span class="exercise-stat-label">RIR</span>
+                    <span class="exercise-stat-value">${escapeHtml(String(exercise.rir || "—"))}</span>
+                  </div>
+                </div>
+
                 ${
                   exercise.notes
-                    ? `
-                      <span class="exercise-note">
-                        ${escapeHtml(exercise.notes)}
-                      </span>
-                    `
+                    ? `<p class="exercise-note">${escapeHtml(exercise.notes)}</p>`
                     : ""
                 }
-              </td>
-
-              <td data-label="${ui.muscle}">
-                <span class="muscle-badge">
-                  ${escapeHtml(
-  translateWorkoutValue(
-    exercise.muscleGroup || ui.general
-  )
-)}
-                </span>
-              </td>
-
-              <td data-label="${ui.equipment}">
-                <span class="equipment-badge">
-                  ${escapeHtml(
-  translateWorkoutValue(
-    exercise.equipment || ui.equipmentFallback
-  )
-)}
-                </span>
-              </td>
-
-              <td class="workout-value" data-label="${ui.sets}">
-                ${escapeHtml(String(exercise.sets))}
-              </td>
-
-              <td class="workout-value" data-label="${ui.reps}">
-                ${escapeHtml(String(exercise.reps))}
-              </td>
-
-              <td class="workout-value" data-label="${ui.rest}">
-                ${escapeHtml(String(exercise.restSeconds))}s
-              </td>
-
-<td
-  class="workout-value"
-  data-label="RIR"
-  title="${isHebrew ? "RIR — כמה חזרות נוספות נשארו לך לפני כשל. לדוגמה, RIR 2 פירושו שיכולת לבצע עוד כשתי חזרות." : "RIR (Reps In Reserve) — how many more reps you could complete before failure. RIR 2 means about two reps remained."}"
->
-  ${escapeHtml(String(exercise.rir || "—"))}
-</td>
-
-<td class="workout-value reroll-cell" data-label="${isHebrew ? "החלפה" : "Replace"}">
-<button
-  type="button"
-  class="reroll-button"
-  title="Replace exercise"
-  data-session="${sessionIndex}"
-  data-exercise="${exerciseIndex}"
->
-  🔄
-</button>
-</td>
-</tr>          `;
+              </div>
+            </article>
+          `;
         })
         .join("");
 
@@ -790,32 +774,8 @@ function renderProgram(program) {
             </span>
           </div>
 
-          <div class="workout-table-wrapper">
-            <table class="workout-table">
-              <thead>
-                <tr>
-<th>#</th>
-<th>${ui.exercise}</th>
-<th>${ui.muscle}</th>
-<th>${ui.equipment}</th>
-<th>${ui.sets}</th>
-<th>${ui.reps}</th>
-<th>${ui.rest}</th>
-<th>
-  <span
-    class="intensity-help"
-    tabindex="0"
-    title="${isHebrew ? "RIR — מספר החזרות שנותרו לפני כשל. RIR 0 = כשל; RIR 2 = נשארו בערך שתי חזרות." : "RIR (Reps In Reserve) — reps left before failure. RIR 0 = failure; RIR 2 = about two reps left."}"
-  >RIR <span aria-hidden="true">ⓘ</span></span>
-</th>
-<th class="reroll-column"></th>
-              </tr>
-              </thead>
-
-              <tbody>
-                ${exerciseRows}
-              </tbody>
-            </table>
+          <div class="exercise-cards">
+            ${exerciseCards}
           </div>
         </section>
       `;
@@ -933,6 +893,14 @@ function renderProgram(program) {
   });
 
   resultElement.classList.remove("hidden");
+
+  resultElement.querySelectorAll(".exercise-card-image").forEach((image) => {
+    image.addEventListener("error", () => {
+      image.onerror = null;
+      image.src = image.dataset.fallbackSrc;
+    }, { once: true });
+  });
+
 resultElement
   .querySelectorAll(".reroll-button")
   .forEach((rerollButton) => {
@@ -957,10 +925,10 @@ try {
     exerciseIndex,
     program: window.currentWorkoutProgram,
     goal: formData.get("goal"),
+    priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
-    priority: formData.get("priority"),
     limitations: formData.get("limitations")
   };
 
@@ -980,23 +948,55 @@ try {
     window.currentWorkoutProgram.sessions[sessionIndex].exercises[exerciseIndex] =
   data.exercise;
 
-  const row = resultElement.querySelector(
-    `tr[data-session="${sessionIndex}"][data-exercise="${exerciseIndex}"]`
+  const card = resultElement.querySelector(
+    `.exercise-card[data-session="${sessionIndex}"][data-exercise="${exerciseIndex}"]`
   );
 
-  if (row) {
-    row.querySelector(".exercise-name-cell strong").textContent =
-      translateWorkoutValue(data.exercise.name);
+  if (card) {
+    const exerciseName = translateWorkoutValue(data.exercise.name);
 
-    const demoButton = row.querySelector("[data-exercise-demo]");
+    card.querySelector(".exercise-card-name").textContent = exerciseName;
+
+    const image = card.querySelector(".exercise-card-image");
+    if (image) {
+      image.onerror = null;
+      image.src = exerciseImageUrl(data.exercise);
+      image.alt = exerciseName;
+      image.addEventListener("error", () => {
+        image.onerror = null;
+        image.src = image.dataset.fallbackSrc;
+      }, { once: true });
+    }
+
+    const demoButton = card.querySelector("[data-exercise-demo]");
     if (demoButton) {
       demoButton.dataset.exerciseDemo = data.exercise.demoName || data.exercise.name;
     }
 
-    const note = row.querySelector(".exercise-note");
+    const badges = card.querySelectorAll(".exercise-card-badges span");
+    if (badges[0]) {
+      badges[0].textContent = translateWorkoutValue(data.exercise.muscleGroup || ui.general);
+    }
+    if (badges[1]) {
+      badges[1].textContent = translateWorkoutValue(data.exercise.equipment || ui.equipmentFallback);
+    }
 
-    if (note) {
-      note.textContent = data.exercise.notes || "";
+    const stats = card.querySelectorAll(".exercise-stat-value");
+    if (stats[0]) stats[0].textContent = String(data.exercise.sets);
+    if (stats[1]) stats[1].textContent = String(data.exercise.reps);
+    if (stats[2]) stats[2].textContent = `${data.exercise.restSeconds}s`;
+    if (stats[3]) stats[3].textContent = String(data.exercise.rir || "—");
+
+    let note = card.querySelector(".exercise-note");
+    if (data.exercise.notes) {
+      if (!note) {
+        note = document.createElement("p");
+        note.className = "exercise-note";
+        card.querySelector(".exercise-card-body").appendChild(note);
+      }
+      note.textContent = data.exercise.notes;
+    } else if (note) {
+      note.remove();
     }
   }
 }
@@ -1021,4 +1021,16 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
-setupExerciseDemos(document);
+async function initializeExerciseDemosSafely() {
+  try {
+    const { setupExerciseDemos } = await import("./exercise-demos.js");
+    setupExerciseDemos(document);
+  } catch (error) {
+    console.warn(
+      "Exercise demos are unavailable; the workout builder remains usable.",
+      error
+    );
+  }
+}
+
+initializeExerciseDemosSafely();
