@@ -6,8 +6,28 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/fi
 const LANDING_FALLBACKS = {
   en: {
     landingLogin: "Login",
-    landingBadge: "EARLY ACCESS · PUBLIC BETA",
-    landingBetaNote: "Public beta · early access pricing",
+    landingNavFeatures: "Features",
+    landingNavResults: "Results",
+    landingBadge: "EARLY ACCESS · FULL ACCESS FOR NOW",
+    landingBetaNote: "Everything is currently unlocked during Early Access",
+    landingEyebrow: "YOUR TRAINING, NUTRITION AND PROGRESS — CONNECTED",
+    landingTitleFirst: "Build the body.",
+    landingTitleSecond: "Keep the system.",
+    landingDescriptionFirst:
+      "FuelPhysique gives you personalized workout and nutrition plans, progress photos, body metrics, workout tracking and the ability to update your plan as your body and goals change.",
+    landingDescriptionSecond:
+      "Stop managing your fitness through scattered notes, screenshots and guesswork. Build a clear plan, follow it, measure what changes and adjust when needed.",
+    landingDescriptionThird:
+      "A practical fitness system that can reduce your dependence on scattered apps, generic plans and constant guesswork.",
+    landingPreviewWorkoutLabel: "Workout plan",
+    landingPreviewWorkoutTitle: "4-day hypertrophy block",
+    landingPreviewWorkoutText: "Saved, editable and ready for the next session.",
+    landingPreviewNutritionLabel: "Nutrition structure",
+    landingPreviewNutritionTitle: "Calories, macros and preferences",
+    landingPreviewNutritionText: "Built around your goal, schedule and food choices.",
+    landingPreviewProgressLabel: "Progress loop",
+    landingPreviewProgressTitle: "Photos · charts · workout history",
+    landingPreviewProgressText: "Measure what changes and adjust the system.",
     landingPrimaryCta: "Build my program",
     landingSecondaryCta: "Log in",
     landingFeatureWorkouts: "Workout plans",
@@ -18,12 +38,70 @@ const LANDING_FALLBACKS = {
     landingStatPlans: "Saved workout plans",
     landingChooserTitle: "What would you like to build?",
     landingWorkoutChoice: "Workout plan",
-    landingNutritionChoice: "Nutrition plan"
+    landingNutritionChoice: "Nutrition plan",
+    landingSystemKicker: "THE FULL PROCESS",
+    landingSystemTitle: "One system for the full process",
+    landingSystemDescription:
+      "Every tool connects to the same goal: build a plan, follow it, save your history and make better adjustments over time.",
+    landingCardProgramsTitle: "Personalized programs",
+    landingCardProgramsText:
+      "Build goal-based workout plans and replace or update them when your needs change.",
+    landingCardNutritionTitle: "Nutrition with direction",
+    landingCardNutritionText:
+      "Create a nutrition structure that matches your target, preferences and training.",
+    landingCardProgressTitle: "Track every change",
+    landingCardProgressText:
+      "Compare progress photos between dates and follow body measurements through clear charts.",
+    landingCardHistoryTitle: "Learn what works",
+    landingCardHistoryText:
+      "Save plans, log workouts and use your history to make better adjustments.",
+    landingResultsKicker: "REAL PROGRESS",
+    landingResultsTitle: "Join users who are already building measurable progress",
+    landingResultsDescription:
+      "These transformations were documented while using FuelPhysique tools to manage workout plans, nutrition structure and progress tracking.",
+    landingResultThreeMonths: "3 MONTHS",
+    landingResultThreeTitle: "3-month transformation",
+    landingResultTracked: "Tracked while using FuelPhysique tools",
+    landingBeforeLabel: "BEFORE",
+    landingAfterLabel: "AFTER",
+    landingCompareSliderLabel: "Compare before and after progress photos",
+    landingResultsDisclaimer:
+      "Individual results vary. Training consistency, nutrition, recovery and personal circumstances affect outcomes.",
+    landingHowKicker: "HOW IT WORKS",
+    landingHowTitle: "Build, follow, measure and adjust",
+    landingStepBuild: "Build",
+    landingStepBuildText: "Generate programs or create your own.",
+    landingStepTrack: "Follow",
+    landingStepTrackText: "Log workouts, nutrition and progress in one place.",
+    landingStepImprove: "Measure and adjust",
+    landingStepImproveText: "Use the data to refine the next session.",
+    landingFinalTitle: "Build your plan. Track what changes.",
+    landingFinalButton: "Start with FuelPhysique"
   },
   he: {
     landingLogin: "התחברות",
-    landingBadge: "גישה מוקדמת · בטא ציבורית",
-    landingBetaNote: "בטא ציבורית · מחיר גישה מוקדמת",
+    landingNavFeatures: "יכולות",
+    landingNavResults: "תוצאות",
+    landingBadge: "גישה מוקדמת · כרגע הכל פתוח",
+    landingBetaNote: "במהלך הגישה המוקדמת ניתן להשתמש כרגע בכל הכלים",
+    landingEyebrow: "האימונים, התזונה וההתקדמות שלך — במערכת אחת",
+    landingTitleFirst: "בונים את הגוף.",
+    landingTitleSecond: "שומרים על השיטה.",
+    landingDescriptionFirst:
+      "FuelPhysique מרכז תוכניות אימון ותזונה מותאמות, תמונות התקדמות, מדדי גוף, מעקב אימונים ואפשרות לעדכן את התוכנית כשהמטרה והגוף משתנים.",
+    landingDescriptionSecond:
+      "במקום לנהל את התהליך דרך פתקים, צילומי מסך וניחושים — בונים תוכנית ברורה, מבצעים, מודדים ומשנים כשצריך.",
+    landingDescriptionThird:
+      "מערכת כושר פרקטית שיכולה לצמצם את התלות באפליקציות מפוזרות, תוכניות כלליות וניחושים.",
+    landingPreviewWorkoutLabel: "תוכנית אימון",
+    landingPreviewWorkoutTitle: "בלוק היפרטרופיה ל־4 ימים",
+    landingPreviewWorkoutText: "שמורה, ניתנת לעריכה ומוכנה לאימון הבא.",
+    landingPreviewNutritionLabel: "מסגרת תזונה",
+    landingPreviewNutritionTitle: "קלוריות, מאקרו והעדפות",
+    landingPreviewNutritionText: "בנויה סביב המטרה, הלו״ז והמאכלים שלך.",
+    landingPreviewProgressLabel: "לולאת התקדמות",
+    landingPreviewProgressTitle: "תמונות · גרפים · היסטוריית אימונים",
+    landingPreviewProgressText: "מודדים מה משתנה ומשפרים את השיטה.",
     landingPrimaryCta: "בנו לי תוכנית",
     landingSecondaryCta: "כניסה",
     landingFeatureWorkouts: "תוכניות אימון",
@@ -34,7 +112,45 @@ const LANDING_FALLBACKS = {
     landingStatPlans: "תוכניות אימון שנשמרו",
     landingChooserTitle: "מה תרצו לבנות?",
     landingWorkoutChoice: "תוכנית אימון",
-    landingNutritionChoice: "תפריט תזונה"
+    landingNutritionChoice: "תפריט תזונה",
+    landingSystemKicker: "כל התהליך",
+    landingSystemTitle: "מערכת אחת לכל התהליך",
+    landingSystemDescription:
+      "כל כלי מתחבר לאותה מטרה: לבנות תוכנית, לבצע אותה, לשמור היסטוריה ולבצע התאמות טובות יותר לאורך זמן.",
+    landingCardProgramsTitle: "תוכניות מותאמות",
+    landingCardProgramsText:
+      "בנה תוכניות אימון לפי המטרה והחלף או עדכן אותן כשהצרכים משתנים.",
+    landingCardNutritionTitle: "תזונה עם כיוון",
+    landingCardNutritionText:
+      "צור מסגרת תזונה שמתאימה למטרה, להעדפות ולאימונים שלך.",
+    landingCardProgressTitle: "מעקב אחרי כל שינוי",
+    landingCardProgressText:
+      "השווה תמונות בין תאריכים ועקוב אחר מדדי הגוף באמצעות גרפים ברורים.",
+    landingCardHistoryTitle: "להבין מה עובד",
+    landingCardHistoryText:
+      "שמור תוכניות, תעד אימונים והשתמש בהיסטוריה כדי לבצע התאמות טובות יותר.",
+    landingResultsKicker: "התקדמות אמיתית",
+    landingResultsTitle: "הצטרפו למשתמשים שכבר בונים התקדמות מדידה",
+    landingResultsDescription:
+      "השינויים תועדו במהלך שימוש בכלי FuelPhysique לניהול תוכניות אימון, מסגרת תזונה ומעקב התקדמות.",
+    landingResultThreeMonths: "3 חודשים",
+    landingResultThreeTitle: "שינוי במשך 3 חודשים",
+    landingResultTracked: "תועד תוך שימוש בכלי FuelPhysique",
+    landingBeforeLabel: "לפני",
+    landingAfterLabel: "אחרי",
+    landingCompareSliderLabel: "השוואה בין תמונת לפני ותמונת אחרי",
+    landingResultsDisclaimer:
+      "התוצאות משתנות מאדם לאדם ותלויות בעקביות, תזונה, התאוששות ונסיבות אישיות.",
+    landingHowKicker: "איך זה עובד",
+    landingHowTitle: "בונים, מבצעים, מודדים ומשפרים",
+    landingStepBuild: "בונים",
+    landingStepBuildText: "יוצרים תוכניות או בונים אותן בעצמכם.",
+    landingStepTrack: "מבצעים",
+    landingStepTrackText: "מתעדים אימונים, תזונה והתקדמות במקום אחד.",
+    landingStepImprove: "מודדים ומשפרים",
+    landingStepImproveText: "משתמשים בנתונים כדי לדייק את האימון הבא.",
+    landingFinalTitle: "בנו תוכנית. עקבו אחרי מה שמשתנה.",
+    landingFinalButton: "מתחילים עם FuelPhysique"
   }
 };
 
@@ -103,24 +219,31 @@ function translateLandingPage() {
   document.querySelectorAll("[data-i18n-title]").forEach((element) => {
     const key = element.dataset.i18nTitle;
     const translation = t(language, key);
-    if (translation) {
-      element.title = translation;
+    const fallback = LANDING_FALLBACKS[language]?.[key] || LANDING_FALLBACKS.en[key];
+    if (translation || fallback) {
+      element.title = translation === key ? fallback : translation;
+      element.setAttribute("aria-label", translation === key ? fallback : translation);
     }
   });
+}
 
-  document.querySelector(".scroll")?.remove();
+function toggleBuilderChooser() {
+  const chooser = document.getElementById("builderChooser");
+  if (!chooser) return;
+  chooser.hidden = !chooser.hidden;
+  trackClick("builder_open", { source: "landing" });
 }
 
 function wireBuilderChooser() {
-  const chooser = document.getElementById("builderChooser");
-  const trigger = document.getElementById("buildProgramCta");
-  if (!chooser || !trigger) return;
-
-  trigger.style.pointerEvents = "auto";
-  trigger.addEventListener("click", (event) => {
+  document.getElementById("buildProgramCta")?.addEventListener("click", (event) => {
     event.preventDefault();
-    chooser.hidden = !chooser.hidden;
-    trackClick("builder_open", { source: "landing" });
+    toggleBuilderChooser();
+  });
+
+  document.getElementById("finalBuildProgramCta")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    document.getElementById("buildProgramCta")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(toggleBuilderChooser, 250);
   });
 }
 
@@ -172,11 +295,53 @@ function trackReferralParams() {
   }
 }
 
+function wireRevealAnimations() {
+  const targets = document.querySelectorAll(".reveal-on-scroll");
+  if (!targets.length) return;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)) {
+    targets.forEach((target) => target.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.16 });
+
+  targets.forEach((target) => observer.observe(target));
+}
+
+function wireComparisonSliders() {
+  document.querySelectorAll("[data-comparison-slider]").forEach((slider) => {
+    const range = slider.querySelector(".comparison-range");
+    const after = slider.querySelector(".comparison-after");
+    const handle = slider.querySelector(".comparison-handle");
+    if (!range || !after || !handle) return;
+
+    const update = () => {
+      const value = `${range.value}%`;
+      slider.style.setProperty("--comparison-position", value);
+      after.style.setProperty("--comparison-position", value);
+      handle.style.left = value;
+    };
+
+    range.addEventListener("input", update);
+    update();
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   translateLandingPage();
   wireBuilderChooser();
   wireSmartLoginLinks();
   trackReferralParams();
+  wireRevealAnimations();
+  wireComparisonSliders();
   loadPublicStats();
 
   if (statsPollHandle) clearInterval(statsPollHandle);

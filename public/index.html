@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,45 +18,65 @@
     <link rel="stylesheet" href="css/landing.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">FuelPhysique</div>
+    <nav class="navbar" aria-label="Primary">
+        <a href="/" class="logo" aria-label="FuelPhysique home">FuelPhysique</a>
         <div class="nav-actions">
+            <a href="#features" class="nav-link" data-i18n="landingNavFeatures">Features</a>
+            <a href="#results" class="nav-link" data-i18n="landingNavResults">Results</a>
             <a href="auth.html" class="nav-link" data-i18n="landingSecondaryCta">Log in</a>
             <a href="auth.html" class="nav-btn" data-i18n="landingLogin">Login</a>
         </div>
     </nav>
 
     <main>
-        <section class="hero">
-            <div class="hero-content">
-                <span class="badge" data-i18n="landingBadge">EARLY ACCESS · PUBLIC BETA</span>
+        <section class="hero" aria-labelledby="landingHeroTitle">
+            <div class="hero-shell reveal-on-scroll">
+                <div class="hero-content">
+                    <span class="badge" data-i18n="landingBadge">EARLY ACCESS · FULL ACCESS FOR NOW</span>
 
-                <div class="hero-meta">
-                    <span class="hero-meta-chip" data-i18n="landingBetaNote">Public beta · early access pricing</span>
-                    <span class="hero-meta-chip hero-meta-chip-muted">FuelPhysique.com</span>
+                    <div class="hero-meta">
+                        <span class="hero-meta-chip" data-i18n="landingBetaNote">Everything is currently unlocked during Early Access</span>
+                        <span class="hero-meta-chip hero-meta-chip-muted">FuelPhysique.com</span>
+                    </div>
+
+                    <p class="eyebrow" data-i18n="landingEyebrow">YOUR TRAINING, NUTRITION AND PROGRESS — CONNECTED</p>
+
+                    <h1 id="landingHeroTitle">
+                        <span data-i18n="landingTitleFirst">Build the body.</span>
+                        <br>
+                        <span data-i18n="landingTitleSecond">Keep the system.</span>
+                    </h1>
+
+                    <p class="hero-lede" data-i18n="landingDescriptionFirst">
+                        FuelPhysique gives you personalized workout and nutrition plans, progress photos, body metrics, workout tracking and the ability to update your plan as your body and goals change.
+                    </p>
+
+                    <p class="hero-subcopy" data-i18n="landingDescriptionSecond">
+                        Stop managing your fitness through scattered notes, screenshots and guesswork. Build a clear plan, follow it, measure what changes and adjust when needed.
+                    </p>
+
+                    <p class="hero-support" data-i18n="landingDescriptionThird">
+                        A practical fitness system that can reduce your dependence on scattered apps, generic plans and constant guesswork.
+                    </p>
                 </div>
 
-                <h1>
-                    <span data-i18n="landingTitleFirst">Train with structure.</span>
-                    <br>
-                    <span data-i18n="landingTitleSecond">Eat with purpose.</span>
-                </h1>
-
-                <p data-i18n="landingDescriptionFirst">
-                    FuelPhysique helps you build workouts, nutrition plans, and progress tracking in one place.
-                </p>
-
-                <div class="hero-copy">
-                    <p data-i18n="landingDescriptionSecond">
-                        Made for people who want a clear system instead of scattered notes, chat threads, and guesswork.
-                    </p>
-                    <p data-i18n="landingDescriptionThird">
-                        Track what matters, save what works, and keep your plan ready for the next session.
-                    </p>
-                    <p data-i18n="landingDescriptionFourth">
-                        Built to feel fast on mobile and useful from day one.
-                    </p>
-                </div>
+                <aside class="hero-panel" aria-label="FuelPhysique platform preview">
+                    <div class="system-card system-card-workout">
+                        <span data-i18n="landingPreviewWorkoutLabel">Workout plan</span>
+                        <strong data-i18n="landingPreviewWorkoutTitle">4-day hypertrophy block</strong>
+                        <p data-i18n="landingPreviewWorkoutText">Saved, editable and ready for the next session.</p>
+                    </div>
+                    <div class="system-card system-card-nutrition">
+                        <span data-i18n="landingPreviewNutritionLabel">Nutrition structure</span>
+                        <strong data-i18n="landingPreviewNutritionTitle">Calories, macros and preferences</strong>
+                        <p data-i18n="landingPreviewNutritionText">Built around your goal, schedule and food choices.</p>
+                    </div>
+                    <div class="system-card system-card-progress">
+                        <span data-i18n="landingPreviewProgressLabel">Progress loop</span>
+                        <strong data-i18n="landingPreviewProgressTitle">Photos · charts · workout history</strong>
+                        <p data-i18n="landingPreviewProgressText">Measure what changes and adjust the system.</p>
+                    </div>
+                </aside>
 
                 <section class="landing-stats" aria-label="FuelPhysique usage stats">
                     <div class="landing-stat landing-stat-users">
@@ -78,12 +98,12 @@
                     <p class="builder-chooser-title" data-i18n="landingChooserTitle">What would you like to build?</p>
                     <div class="builder-chooser-actions">
                         <a class="builder-choice" href="auth.html?next=workout-builder.html">
-                            <span aria-hidden="true">&larr;</span>
+                            <span aria-hidden="true">←</span>
                             <strong data-i18n="landingWorkoutChoice">Workout plan</strong>
                         </a>
                         <a class="builder-choice" href="auth.html?next=nutrition-builder.html">
                             <strong data-i18n="landingNutritionChoice">Nutrition plan</strong>
-                            <span aria-hidden="true">&rarr;</span>
+                            <span aria-hidden="true">→</span>
                         </a>
                     </div>
                 </div>
@@ -96,9 +116,112 @@
                 </div>
             </div>
         </section>
+
+        <section class="landing-section feature-section reveal-on-scroll" id="features" aria-labelledby="featureSectionTitle">
+            <div class="section-heading">
+                <span class="section-kicker" data-i18n="landingSystemKicker">THE FULL PROCESS</span>
+                <h2 id="featureSectionTitle" data-i18n="landingSystemTitle">One system for the full process</h2>
+                <p data-i18n="landingSystemDescription">Every tool connects to the same goal: build a plan, follow it, save your history and make better adjustments over time.</p>
+            </div>
+            <div class="feature-card-grid">
+                <article class="premium-card">
+                    <span class="premium-icon" aria-hidden="true">🏋️</span>
+                    <h3 data-i18n="landingCardProgramsTitle">Personalized programs</h3>
+                    <p data-i18n="landingCardProgramsText">Build goal-based workout plans and replace or update them when your needs change.</p>
+                </article>
+                <article class="premium-card">
+                    <span class="premium-icon" aria-hidden="true">🥗</span>
+                    <h3 data-i18n="landingCardNutritionTitle">Nutrition with direction</h3>
+                    <p data-i18n="landingCardNutritionText">Create a nutrition structure that matches your target, preferences and training.</p>
+                </article>
+                <article class="premium-card">
+                    <span class="premium-icon" aria-hidden="true">📈</span>
+                    <h3 data-i18n="landingCardProgressTitle">Track every change</h3>
+                    <p data-i18n="landingCardProgressText">Compare progress photos between dates and follow body measurements through clear charts.</p>
+                </article>
+                <article class="premium-card">
+                    <span class="premium-icon" aria-hidden="true">🧠</span>
+                    <h3 data-i18n="landingCardHistoryTitle">Learn what works</h3>
+                    <p data-i18n="landingCardHistoryText">Save plans, log workouts and use your history to make better adjustments.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="landing-section results-section reveal-on-scroll" id="results" aria-labelledby="resultsSectionTitle">
+            <div class="section-heading">
+                <span class="section-kicker" data-i18n="landingResultsKicker">REAL PROGRESS</span>
+                <h2 id="resultsSectionTitle" data-i18n="landingResultsTitle">Join users who are already building measurable progress</h2>
+                <p data-i18n="landingResultsDescription">These transformations were documented while using FuelPhysique tools to manage workout plans, nutrition structure and progress tracking.</p>
+            </div>
+
+            <div class="results-grid" data-results-grid>
+                <article class="result-story" data-result-story="user-transformation">
+                    <header class="result-story-header">
+                        <span class="result-duration" data-i18n="landingResultThreeMonths">3 MONTHS</span>
+                        <h3 data-i18n="landingResultThreeTitle">3-month transformation</h3>
+                        <p data-i18n="landingResultTracked">Tracked while using FuelPhysique tools</p>
+                    </header>
+                    <div class="comparison-slider" data-comparison-slider>
+                        <figure class="comparison-image comparison-before">
+                            <img src="/images/demo/progress-bulk.jpg" width="1035" height="1536" loading="lazy" alt="Before progress photo, face blurred">
+                            <figcaption data-i18n="landingBeforeLabel">BEFORE</figcaption>
+                        </figure>
+                        <figure class="comparison-image comparison-after" style="--comparison-position: 54%;">
+                            <img src="/images/demo/progress-cutting.jpg" width="1035" height="1536" loading="lazy" alt="After progress photo, face blurred">
+                            <figcaption data-i18n="landingAfterLabel">AFTER</figcaption>
+                        </figure>
+                        <input class="comparison-range" type="range" min="0" max="100" value="54" aria-label="Compare before and after progress photos" data-i18n-title="landingCompareSliderLabel">
+                        <span class="comparison-handle" aria-hidden="true"></span>
+                    </div>
+                </article>
+            </div>
+
+            <p class="results-disclaimer" data-i18n="landingResultsDisclaimer">
+                Individual results vary. Training consistency, nutrition, recovery and personal circumstances affect outcomes.
+            </p>
+        </section>
+
+        <section class="landing-section how-section reveal-on-scroll" aria-labelledby="howSectionTitle">
+            <div class="section-heading">
+                <span class="section-kicker" data-i18n="landingHowKicker">HOW IT WORKS</span>
+                <h2 id="howSectionTitle" data-i18n="landingHowTitle">Build, follow, measure and adjust</h2>
+            </div>
+            <div class="platform-steps">
+                <article class="platform-step">
+                    <span>1</span>
+                    <strong data-i18n="landingStepBuild">Build</strong>
+                    <p data-i18n="landingStepBuildText">Generate programs or create your own.</p>
+                </article>
+                <article class="platform-step">
+                    <span>2</span>
+                    <strong data-i18n="landingStepTrack">Follow</strong>
+                    <p data-i18n="landingStepTrackText">Log workouts, nutrition and progress in one place.</p>
+                </article>
+                <article class="platform-step">
+                    <span>3</span>
+                    <strong data-i18n="landingStepImprove">Measure and adjust</strong>
+                    <p data-i18n="landingStepImproveText">Use the data to refine the next session.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="landing-section final-cta reveal-on-scroll" aria-labelledby="finalCtaTitle">
+            <h2 id="finalCtaTitle" data-i18n="landingFinalTitle">Build your plan. Track what changes.</h2>
+            <button type="button" class="hero-btn primary" id="finalBuildProgramCta" data-i18n="landingFinalButton">Start with FuelPhysique</button>
+        </section>
     </main>
 
-    <script type="module" src="js/landing.js?v=20260722-3"></script>
-  <script type="module" src="/js/site-feedback.js"></script>
+    <footer class="landing-footer">
+        <span>FuelPhysique</span>
+        <nav aria-label="Footer">
+            <a href="/faq.html">FAQ</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/terms.html">Terms</a>
+        </nav>
+    </footer>
+
+    <script type="module" src="js/landing.js?v=20260728-landing-results"></script>
+    <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>
