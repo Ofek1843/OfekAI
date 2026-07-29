@@ -286,6 +286,45 @@ function applyBuilderLanguage() {
     : "Describe any injuries, pain, or movement limitations.";
 }
 
+// Calisthenics style implies bodyweight training is available even if the
+// user never checked the Bodyweight box — the server applies the same rule
+// independently (see server.js's equipmentForGeneration), so this is
+// belt-and-suspenders: it keeps the payload/summary honest about what's
+// actually being used, not the sole source of correctness.
+//
+// Deliberately NOT using the `disabled` attribute to lock the checkbox:
+// disabled form controls are excluded from FormData entirely, which would
+// drop "bodyweight" from the submitted equipment list and could even trip
+// the wizard's own "choose at least one equipment option" check for a user
+// who only wanted bodyweight training. Instead the box stays enabled and
+// checked, and a "change" listener snaps it back to checked if the user
+// tries to uncheck it while Calisthenics is selected.
+function applyCalisthenicsImplicitBodyweight() {
+  const style = document.querySelector("#trainingStyle")?.value;
+  const isCalisthenics = style === "calisthenics";
+  const bodyweightInput = document.querySelector('input[name="equipment"][value="bodyweight"]');
+  const bodyweightCard = bodyweightInput?.closest(".visual-choice-card");
+  const hint = document.querySelector("#calisthenicsBodyweightHint");
+
+  hint?.classList.toggle("hidden", !isCalisthenics);
+  bodyweightCard?.classList.toggle("is-implied", isCalisthenics);
+
+  if (bodyweightInput && isCalisthenics) {
+    bodyweightInput.checked = true;
+  }
+}
+
+function preventUncheckingImpliedBodyweight() {
+  const bodyweightInput = document.querySelector('input[name="equipment"][value="bodyweight"]');
+  if (!bodyweightInput) return;
+  bodyweightInput.addEventListener("change", () => {
+    const isCalisthenics = document.querySelector("#trainingStyle")?.value === "calisthenics";
+    if (isCalisthenics && !bodyweightInput.checked) {
+      bodyweightInput.checked = true;
+    }
+  });
+}
+
 function setupVisualSelections() {
   document.querySelectorAll("[data-sync-select]").forEach(group => {
     const select = document.querySelector(`#${group.dataset.syncSelect}`);
@@ -302,6 +341,9 @@ function setupVisualSelections() {
   document.querySelectorAll('.visual-choice-card input[type="checkbox"]').forEach(input => {
     input.addEventListener("change", clearWizardError);
   });
+  document.querySelector("#trainingStyle")?.addEventListener("change", applyCalisthenicsImplicitBodyweight);
+  preventUncheckingImpliedBodyweight();
+  applyCalisthenicsImplicitBodyweight();
 }
 
 function selectedAvailableDays() {

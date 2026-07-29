@@ -119,11 +119,16 @@ test("Without the repair fix, the same AI response shape would fail validation (
   assert.ok(result.errors.some((e) => e.includes("missing exerciseId")));
 });
 
-test("English locale 422 (still-invalid-after-repair) returns English validation details", async (t) => {
+test("English locale 422 (still-invalid-after-repair) returns a friendly English message, no raw validator lines", async (t) => {
   // MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID forces two exercises to share a
   // pre-set exerciseId. Repair only fills in a MISSING exerciseId — it
   // never rewrites one already provided — so this stays invalid (Rule 9)
   // even after repair, deterministically forcing this 422 path.
+  //
+  // Per the equipment/language hotfix: the 422 response deliberately no
+  // longer includes a `details` array of raw validator lines — those are
+  // internal diagnostics (still logged server-side), not something a user
+  // can act on. Only a friendly, localized `error` message is returned.
   const server = await startServer(4201, { MOCK_OPENAI_FORCE_EMPTY_SESSION: "true" });
   t.after(() => stopServer(server));
 
@@ -135,14 +140,14 @@ test("English locale 422 (still-invalid-after-repair) returns English validation
   const data = await res.json();
 
   assert.equal(res.status, 422, `Expected 422. Body: ${JSON.stringify(data)}`);
-  assert.equal(data.error, "The generated workout program did not meet requirements.");
-  assert.ok(Array.isArray(data.details) && data.details.length > 0);
-  for (const detail of data.details) {
-    assert.ok(!/[֐-׿]/.test(detail), `English details must not contain Hebrew: "${detail}"`);
-  }
+  assert.equal(data.success, false);
+  assert.equal(typeof data.error, "string");
+  assert.ok(data.error.length > 0);
+  assert.equal(data.details, undefined, "422 response must not expose raw validator lines");
+  assert.ok(!/[֐-׿]/.test(data.error), `English error must not contain Hebrew: "${data.error}"`);
 });
 
-test("Hebrew locale 422 (still-invalid-after-repair) returns Hebrew validation details", async (t) => {
+test("Hebrew locale 422 (still-invalid-after-repair) returns a friendly Hebrew message, no raw validator lines", async (t) => {
   const server = await startServer(4202, { MOCK_OPENAI_FORCE_EMPTY_SESSION: "true" });
   t.after(() => stopServer(server));
 
@@ -154,11 +159,10 @@ test("Hebrew locale 422 (still-invalid-after-repair) returns Hebrew validation d
   const data = await res.json();
 
   assert.equal(res.status, 422, `Expected 422. Body: ${JSON.stringify(data)}`);
-  assert.equal(data.error, "תוכנית האימונים שנוצרה אינה עומדת בדרישות.");
-  assert.ok(Array.isArray(data.details) && data.details.length > 0);
-  for (const detail of data.details) {
-    assert.ok(/[֐-׿]/.test(detail), `Hebrew details must contain Hebrew characters: "${detail}"`);
-  }
+  assert.equal(data.success, false);
+  assert.equal(typeof data.error, "string");
+  assert.ok(/[֐-׿]/.test(data.error), `Hebrew error must contain Hebrew characters: "${data.error}"`);
+  assert.equal(data.details, undefined, "422 response must not expose raw validator lines");
 });
 
 test("A valid mocked generation (exerciseId present) still returns 200 with no repairs needed", async (t) => {

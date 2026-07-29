@@ -1033,8 +1033,23 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 
 .meal-card {
+  /* This card is intentionally light (white surface, dark text) even
+     though the rest of the app is a dark theme. Its descendants below use
+     these card-local variables instead of the page-level --text/--muted/
+     --surface/--border (which are tuned for light-text-on-dark-page and
+     would render as white-on-white here) — the card controls its own text
+     theme explicitly rather than inheriting the page's. */
+  --card-text: #0f172a;
+  --card-text-secondary: #334155;
+  --card-text-muted: #64748b;
+  --card-accent: #6d28d9;
+  --card-accent-soft: #f3f0ff;
+  --card-surface: #f4f7fb;
+  --card-border: #e7eaf0;
+
   background: #ffffff;
-  border: 1px solid #e7eaf0;
+  color: var(--card-text);
+  border: 1px solid var(--card-border);
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
@@ -1408,7 +1423,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-slot-name {
   display: block;
-  color: var(--text);
+  color: var(--card-text);
   font-size: 24px;
   font-weight: 950;
   letter-spacing: -0.5px;
@@ -1417,7 +1432,7 @@ html[dir="ltr"] .nutrition-food-table td {
 .meal-slot-target {
   display: block;
   margin-top: 6px;
-  color: var(--muted);
+  color: var(--card-text-muted);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -1428,9 +1443,9 @@ html[dir="ltr"] .nutrition-food-table td {
   flex: 0 0 auto;
   padding: 8px 16px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.15), rgba(124, 92, 255, 0.08));
-  border: 1px solid rgba(124, 92, 255, 0.25);
-  color: var(--text);
+  background: var(--card-accent-soft);
+  border: 1px solid rgba(109, 40, 217, 0.25);
+  color: var(--card-accent);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -1449,9 +1464,9 @@ html[dir="ltr"] .nutrition-food-table td {
   margin-bottom: 16px;
   padding: 10px 14px;
   border-radius: 12px;
-  background: rgba(124, 92, 255, 0.08);
-  border: 1px solid rgba(124, 92, 255, 0.16);
-  color: #b9a8ff;
+  background: var(--card-accent-soft);
+  border: 1px solid rgba(109, 40, 217, 0.16);
+  color: var(--card-accent);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -1538,13 +1553,13 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-prep {
   padding: 14px 16px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
-  background: var(--surface);
+  background: var(--card-surface);
 }
 
 .meal-prep summary {
-  color: var(--text);
+  color: var(--card-text);
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
@@ -1552,7 +1567,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-prep p {
   margin: 10px 0 0;
-  color: var(--muted);
+  color: var(--card-text-secondary);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -1572,7 +1587,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-option-name {
   margin: 0;
-  color: var(--text);
+  color: var(--card-text);
   font-size: 28px;
   font-weight: 950;
   line-height: 1.2;
@@ -1583,10 +1598,10 @@ html[dir="ltr"] .nutrition-food-table td {
   flex: 0 0 auto;
   width: 42px;
   height: 42px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--card-border);
   border-radius: 12px;
-  background: var(--surface);
-  color: var(--text);
+  background: var(--card-surface);
+  color: var(--card-accent);
   font-size: 18px;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s ease;
@@ -1594,7 +1609,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .nutrition-reroll-meal-button:hover:not(:disabled) {
   transform: scale(1.08);
-  background: rgba(124, 92, 255, 0.18);
+  background: var(--card-accent-soft);
 }
 
 .nutrition-reroll-meal-button:disabled {
@@ -1626,7 +1641,7 @@ html[dir="ltr"] .nutrition-food-table td {
 .meal-option-macros span {
   display: grid;
   gap: 4px;
-  color: var(--muted);
+  color: var(--card-text-muted);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.05em;
@@ -1634,7 +1649,7 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 
 .meal-option-macros strong {
-  color: var(--text);
+  color: var(--card-text);
   font-size: 20px;
   font-weight: 950;
   letter-spacing: -0.3px;
@@ -1686,15 +1701,15 @@ html[dir="ltr"] .nutrition-food-table td {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  opacity: 0.6;
+  background: rgba(15, 23, 42, 0.18);
+  opacity: 0.8;
   cursor: pointer;
   transition: all 0.25s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(15, 23, 42, 0.12);
 }
 
 .carousel-dot:hover {
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .carousel-dot.active {

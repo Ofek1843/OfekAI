@@ -13,6 +13,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
+const { normalizeEquipment } = require("../lib/workout-validator");
 
 const PORT = 4173;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -191,14 +192,16 @@ test("POST /api/workout-builder: invalid programs are never returned with succes
   }
 });
 
-test("POST /api/workout-builder/reroll-exercise: bodyweight-only reroll rejects a barbell replacement", async () => {
+test("POST /api/workout-builder/reroll-exercise: bodyweight-only reroll repairs a barbell replacement instead of returning it", async () => {
   // The mock AI reroll branch (see createChatCompletion in server.js)
   // deliberately echoes the CURRENT exercise's equipment rather than
   // honoring the "Selected equipment" constraint — simulating an AI
-  // response that ignores instructions. With a barbell current exercise and
-  // equipment restricted to bodyweight only, this proves the server-side
-  // equipment-validation gate (not AI compliance) is what actually blocks
-  // the disallowed replacement.
+  // response that ignores instructions. Since the equipment hotfix
+  // (lib/workout-repair.js's repairUnmatchedEquipmentViaCatalog), the
+  // reroll endpoint's shared repair pass now deterministically substitutes
+  // a same-muscle, permitted-equipment catalog exercise instead of
+  // surfacing a 422 — equipment constraints are still fully honored, the
+  // disallowed exercise is just repaired rather than rejected.
   const program = {
     daysPerWeek: 1,
     sessionDuration: 60,
@@ -233,9 +236,18 @@ test("POST /api/workout-builder/reroll-exercise: bodyweight-only reroll rejects 
   });
   const data = await res.json();
 
-  assert.equal(res.status, 422, `Expected 422 rejection. Body: ${JSON.stringify(data)}`);
-  assert.equal(data.success, false);
-  assert.notEqual(data.exercise?.equipment?.toLowerCase(), "barbell", "Must never return the disallowed barbell exercise");
+  assert.equal(res.status, 200, `Expected the mismatch to be repaired, not rejected. Body: ${JSON.stringify(data)}`);
+  assert.equal(data.success, true);
+  assert.notEqual(
+    data.exercise?.equipment?.toLowerCase(),
+    "barbell",
+    "Must never return the disallowed barbell exercise, repaired or not"
+  );
+  assert.equal(
+    normalizeEquipment(data.exercise?.equipment),
+    "bodyweight",
+    "Repaired replacement must use the user's actual selected equipment"
+  );
 });
 
 test("POST /api/workout-builder/reroll-exercise: a valid reroll returns 200", async () => {

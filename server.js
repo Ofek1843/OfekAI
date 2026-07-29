@@ -943,6 +943,30 @@ async function createChatCompletion({
       if (mockResponseMode === "malformed-json") {
         fakeData.choices[0].message.content = "{ not valid json";
       }
+      // Reproduces the exact production bug (see
+      // test/workout-equipment-language-hotfix.test.js): a Calisthenics
+      // program where the model wrote a Pull-up exercise (unselected
+      // equipment) and a Hebrew equipment label for an otherwise-permitted
+      // Machine exercise, in an English-language request.
+      if (mockResponseMode === "calisthenics-bad-equipment" && taskName === "workout-builder") {
+        fakeData.choices[0].message.content = JSON.stringify({
+          programName: "Calisthenics Skills Program",
+          daysPerWeek: 1,
+          durationWeeks: 8,
+          goal: "Improve calisthenics skills",
+          sessions: [
+            {
+              day: 1,
+              name: "Day 1",
+              exercises: [
+                { name: "Pull-up", demoName: "Pull-up", muscleGroup: "Back", equipment: "Pull-up Bar", sets: 3, reps: "5-8", restSeconds: 90, rir: "1-3", notes: "" },
+                { name: "Machine Chest Press", demoName: "Machine Chest Press", muscleGroup: "Chest", equipment: "מכונה", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "" },
+                { name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "" }
+              ]
+            }
+          ]
+        });
+      }
 
       const classification = classifyOpenAiContent(fakeData);
       if (classification.ok) return classification.content;
@@ -2133,8 +2157,13 @@ function normalizeNutritionPlan(plan,{targetCalories,targetProtein,targetCarbs,t
   return plan;
 }
 
-async function repairWorkoutProgram({ program, issues, parsedDays, equipment, trainingStyle, outputLanguage }) {
-  if (!issues.length) return program;
+// The single AI correction retry used when deterministic repair still
+// leaves the program invalid: hands the model back its own output plus the
+// exact validator errors and asks for a corrected JSON. Returns null (never
+// throws past its caller) if the model's correction is itself unusable, so
+// the caller keeps the pre-retry program and lets validation report it.
+async function repairWorkoutProgramWithAi({ program, issues, parsedDays, equipment, trainingStyle, outputLanguage }) {
+  if (!issues.length) return null;
 
   const repairPrompt = [
     `The previous workout JSON was close but failed these validation checks:`,
@@ -2181,10 +2210,84 @@ ${repairPrompt}`
 
   const repaired = JSON.parse(cleanedResponse);
   if (!repaired || typeof repaired !== "object" || !Array.isArray(repaired.sessions)) {
-    return program;
+    return null;
   }
   repaired.daysPerWeek = parsedDays;
   return repaired;
+}
+
+const HEBREW_CHAR_RANGE = /[֐-׿]/;
+
+// Reverse of the Hebrew equipment/muscle translation table the generation
+// prompt hands the model (see the "Equipment:"/"Muscle groups:" sections
+// above) — used only to fix language leakage into an English response, not
+// for validation (lib/workout-validator.js's normalizeEquipment covers that
+// with the same Hebrew forms so valid Hebrew-labeled equipment isn't
+// wrongly rejected).
+const HEBREW_TO_ENGLISH_EQUIPMENT = {
+  "משקל גוף": "Bodyweight",
+  מתח: "Pull-up Bar",
+  מכונה: "Machine",
+  מכונות: "Machine",
+  "משקולת יד": "Dumbbell",
+  "משקולות יד": "Dumbbell",
+  מוט: "Barbell",
+  "מוט ומשקולות": "Barbell",
+  כבל: "Cable",
+  כבלים: "Cable",
+  טבעות: "Gymnastic Rings"
+};
+
+const HEBREW_TO_ENGLISH_MUSCLE = {
+  חזה: "Chest",
+  גב: "Back",
+  כתפיים: "Shoulders",
+  "יד קדמית": "Biceps",
+  "יד אחורית": "Triceps",
+  "ארבע ראשי": "Quads",
+  המסטרינג: "Hamstrings",
+  ישבן: "Glutes",
+  תאומים: "Calves",
+  ליבה: "Core"
+};
+
+// Rewrites any Hebrew text left in a program's user-facing fields to its
+// English equivalent, in place. Called only when the user selected English
+// — the generation prompt already asks for English-only output, but models
+// don't always comply (their own Hebrew few-shot examples in the same
+// prompt can leak through), so this is enforced server-side rather than
+// trusted to prompt compliance.
+function sanitizeLanguageLeakage(program) {
+  if (!Array.isArray(program?.sessions)) return;
+
+  for (let i = 0; i < program.sessions.length; i++) {
+    const session = program.sessions[i];
+    if (typeof session?.name === "string" && HEBREW_CHAR_RANGE.test(session.name)) {
+      session.name = `Day ${i + 1}`;
+    }
+    if (!Array.isArray(session?.exercises)) continue;
+
+    for (const exercise of session.exercises) {
+      if (typeof exercise.equipment === "string" && HEBREW_CHAR_RANGE.test(exercise.equipment)) {
+        exercise.equipment = HEBREW_TO_ENGLISH_EQUIPMENT[exercise.equipment.trim()] || exercise.equipment;
+      }
+      if (typeof exercise.muscleGroup === "string" && HEBREW_CHAR_RANGE.test(exercise.muscleGroup)) {
+        exercise.muscleGroup = HEBREW_TO_ENGLISH_MUSCLE[exercise.muscleGroup.trim()] || exercise.muscleGroup;
+      }
+      // demoName is the prompt-guaranteed English name (hidden technical
+      // metadata used for media lookup) — the most reliable English
+      // fallback available if the user-facing name itself leaked Hebrew.
+      if (
+        typeof exercise.name === "string" &&
+        HEBREW_CHAR_RANGE.test(exercise.name) &&
+        typeof exercise.demoName === "string" &&
+        exercise.demoName.trim() &&
+        !HEBREW_CHAR_RANGE.test(exercise.demoName)
+      ) {
+        exercise.name = exercise.demoName.trim();
+      }
+    }
+  }
 }
 
 app.post("/api/workout-builder", async (req, res) => {
@@ -2267,6 +2370,22 @@ app.post("/api/workout-builder", async (req, res) => {
     const canonicalPriority = priority || derivePriorityFromGoal(goal);
 const outputLanguage =
   language === "he" ? "Hebrew" : "English";
+
+    // Calisthenics style implies bodyweight training is available even if
+    // the user never checked the Bodyweight box — the wizard shows this as
+    // automatic (see public/js/workout-builder.js), and the server must
+    // honor the same rule for generation, repair and validation, or every
+    // bodyweight exercise the model correctly generates for this goal gets
+    // rejected as "unselected equipment".
+    const equipmentForGeneration = (() => {
+      const set = new Set(
+        (Array.isArray(equipment) ? equipment : [])
+          .map((item) => String(item || "").trim().toLowerCase())
+          .filter(Boolean)
+      );
+      if (String(trainingStyle).toLowerCase() === "calisthenics") set.add("bodyweight");
+      return [...set];
+    })();
 
     const workoutResponse = await createChatCompletion({
       temperature: 0.3,
@@ -2417,11 +2536,7 @@ Experience: ${String(experience)}
 ${parsedAge ? `Age: ${parsedAge}\n` : ""}Training days per week: ${parsedDays}
 Session duration: ${parsedDuration} minutes
 Training style: ${String(trainingStyle)}
-Available equipment: ${
-            Array.isArray(equipment)
-              ? equipment.join(", ")
-              : String(equipment)
-          }
+Available equipment: ${equipmentForGeneration.join(", ")}
 Priority: ${String(canonicalPriority)}
 Injuries, limitations or special requests: ${String(limitations)}
           `.trim()
@@ -2486,33 +2601,88 @@ Injuries, limitations or special requests: ${String(limitations)}
 
     // Deterministic, non-AI repair pass: assigns exerciseId (via known
     // alias -> canonical id, else a deterministic slug — never invents
-    // muscle credits), fixes minor schema formatting defects, and trims
+    // muscle credits), replaces exercises whose equipment wasn't selected
+    // (first via a small hand-curated map, then via a catalog-wide
+    // same-muscle search), fixes minor schema formatting defects, and trims
     // lowest-priority accessory exercises if a session still exceeds the
     // duration cap. This makes the DATA satisfy validateWorkoutProgram's
     // existing rules wherever possible; it never loosens or skips a rule.
-    const { repairs } = repairGeneratedWorkoutProgram(program, {
+    let repairsAll = repairGeneratedWorkoutProgram(program, {
       sessionDuration: parsedDuration,
-      equipment
-    });
-    if (repairs.length > 0) {
-      console.info(`Workout repair applied for user ${user.uid}:`, repairs);
+      equipment: equipmentForGeneration
+    }).repairs;
+    if (repairsAll.length > 0) {
+      console.info(`Workout repair applied for user ${user.uid}:`, repairsAll);
     }
 
-    // Run the enhanced validator against the (possibly repaired) program
-    const validation = validateWorkoutProgram(program, {
+    let validation = validateWorkoutProgram(program, {
       daysPerWeek: parsedDays,
       sessionDuration: parsedDuration,
-      equipment,
+      equipment: equipmentForGeneration,
       availableDayIndexes,
       goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
     });
 
-    // Log validation issues (internal only, not sent to user verbatim)
     if (!validation.ok) {
-      console.warn(`Workout validation failed for user ${user.uid} (after repair):`, validation.errors);
+      console.warn(`Workout validation failed for user ${user.uid} (after deterministic repair):`, validation.errors);
     }
+
+    // The deterministic repair above only substitutes exercises the catalog
+    // can match; it never invents new session structure or fixes duration
+    // overshoot caused by content it can't safely trim further. If the
+    // program is still invalid, give the model one corrective pass with the
+    // exact validator errors before giving up — this is the only retry.
+    if (!validation.ok) {
+      try {
+        const correctedProgram = await repairWorkoutProgramWithAi({
+          program,
+          issues: validation.errors,
+          parsedDays,
+          equipment: equipmentForGeneration,
+          trainingStyle,
+          outputLanguage
+        });
+        if (correctedProgram) {
+          program = correctedProgram;
+          program.daysPerWeek = parsedDays;
+          program.weeklyScheduleDays = program.weeklyScheduleDays || [];
+
+          repairsAll = repairsAll.concat(
+            repairGeneratedWorkoutProgram(program, {
+              sessionDuration: parsedDuration,
+              equipment: equipmentForGeneration
+            }).repairs
+          );
+
+          validation = validateWorkoutProgram(program, {
+            daysPerWeek: parsedDays,
+            sessionDuration: parsedDuration,
+            equipment: equipmentForGeneration,
+            availableDayIndexes,
+            goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
+          });
+
+          if (!validation.ok) {
+            console.warn(`Workout validation still failed for user ${user.uid} (after AI correction retry):`, validation.errors);
+          }
+        }
+      } catch (retryError) {
+        console.error(`Workout correction retry failed for user ${user.uid}:`, retryError.message);
+      }
+    }
+
     if (validation.warnings.length > 0) {
       console.info(`Workout validation warnings for user ${user.uid}:`, validation.warnings);
+    }
+
+    // Belt-and-suspenders language sanitization: the prompt already asks
+    // the model for English-only output when Hebrew isn't selected, but
+    // models don't always comply (their own few-shot Hebrew examples in
+    // this same prompt can leak through). Never trust prompt compliance —
+    // rewrite any Hebrew text in a user-facing field back to its canonical
+    // English display form so an English UI can never render Hebrew.
+    if (language !== "he") {
+      sanitizeLanguageLeakage(program);
     }
 
     // Deterministic weekly volume, based only on the explicit setCredits map
@@ -2525,15 +2695,19 @@ Injuries, limitations or special requests: ${String(limitations)}
       ...estimateSessionDuration(session)
     }));
 
-    // Only return 422 if the program is STILL invalid after repair —
-    // 422 (not 200) so the client never treats an invalid program as a plan.
+    // Only return 422 if the program is STILL invalid after both the
+    // deterministic repair pass and the one AI correction retry above — 422
+    // (not 200) so the client never treats an invalid program as a plan.
+    // The response deliberately omits raw validator lines: they're internal
+    // diagnostics (already logged server-side above), not something a user
+    // can act on, and translating them verbatim doesn't make them any more
+    // actionable — a friendly message asking to retry is more honest here.
     if (!validation.ok) {
       return res.status(422).json({
         success: false,
         error: language === "he"
-          ? "תוכנית האימונים שנוצרה אינה עומדת בדרישות."
-          : "The generated workout program did not meet requirements.",
-        details: translateValidationMessages(validation.errors.slice(0, 5), language) // Top 5 errors
+          ? "לא הצלחנו להרכיב תוכנית אימונים תקינה עם הציוד שנבחר. נסה שוב, או הרחב את הציוד הזמין."
+          : "We couldn't put together a valid workout program with the selected equipment. Please try again, or widen your available equipment."
       });
     }
 
@@ -2632,8 +2806,18 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
       });
     }
 
-    // Normalize equipment constraint for validation
-    const selectedEquipment = Array.isArray(equipment) ? equipment : [];
+    // Normalize equipment constraint for validation. Same implicit-bodyweight
+    // rule as /api/workout-builder: Calisthenics style makes bodyweight
+    // available even if it wasn't explicitly checked.
+    const selectedEquipment = (() => {
+      const set = new Set(
+        (Array.isArray(equipment) ? equipment : [])
+          .map((item) => String(item || "").trim().toLowerCase())
+          .filter(Boolean)
+      );
+      if (String(trainingStyle).toLowerCase() === "calisthenics") set.add("bodyweight");
+      return [...set];
+    })();
     const canonicalPriority = priority || derivePriorityFromGoal(goal);
 
     const rerollPrompt = `
@@ -2722,6 +2906,10 @@ Required JSON format:
     );
     if (rerollRepairs.length > 0) {
       console.info("Reroll repair applied:", rerollRepairs);
+    }
+
+    if (language !== "he") {
+      sanitizeLanguageLeakage({ sessions: [{ exercises: [newExercise] }] });
     }
 
     if (selectedEquipment.length > 0) {
