@@ -1,30 +1,30 @@
 {
-  "generatedAt": "2026-07-28T17:16:26.973Z",
+  "generatedAt": "2026-07-29T15:04:58.236Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
-    "physicalFiles": 89,
-    "dedicatedExerciseImagesExcludingFallback": 88,
-    "canonicalSupportedExercises": 88,
-    "canonicalExercisesWithDedicatedImages": 88,
+    "physicalFiles": 108,
+    "dedicatedExerciseImagesExcludingFallback": 100,
+    "canonicalSupportedExercises": 100,
+    "canonicalExercisesWithDedicatedImages": 100,
     "canonicalExercisesMissingImages": 0,
     "aliasesCovered": 223,
-    "orphanFiles": 0,
+    "orphanFiles": 7,
     "brokenMappings": 0,
     "invalidFiles": 0,
     "caseMismatches": 0,
     "fallbackOnlyAliases": 0,
-    "generatorSupportedCanonicalExercises": 91,
-    "generatorKnownNameVariants": 284,
-    "generatorVariantsWithDedicatedOrSurrogateImage": 284,
+    "generatorSupportedCanonicalExercises": 103,
+    "generatorKnownNameVariants": 305,
+    "generatorVariantsWithDedicatedOrSurrogateImage": 305,
     "generatorVariantsReachingFallback": 0,
     "generatorExistingFilesWithBrokenRouting": 0,
     "generatorGenuinelyMissingImages": 0,
-    "generatorSurrogateImageRoutes": 175,
+    "generatorSurrogateImageRoutes": 184,
     "generatorCanonicalMismatches": 0,
-    "publicEnabledExercises": 94,
+    "publicEnabledExercises": 106,
     "publicReleaseImageFailures": 0,
-    "disabledUntilDedicatedImages": 12
+    "disabledUntilDedicatedImages": 0
   },
   "canonicalCatalog": [
     {
@@ -105,6 +105,30 @@
       "expectedSlug": "arnold-press",
       "resolvedImageUrl": "/images/exercises/arnold-press.png",
       "physicalFile": "arnold-press.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
+    },
+    {
+      "canonicalExerciseId": "assisted-chin-up",
+      "englishName": "Assisted Chin Up",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "assisted-chin-up",
+      "resolvedImageUrl": "/images/exercises/assisted-chin-up.png",
+      "physicalFile": "assisted-chin-up.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
+    },
+    {
+      "canonicalExerciseId": "assisted-pull-up",
+      "englishName": "Assisted Pull Up",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "assisted-pull-up",
+      "resolvedImageUrl": "/images/exercises/assisted-pull-up.png",
+      "physicalFile": "assisted-pull-up.png",
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": []
@@ -255,6 +279,20 @@
       ]
     },
     {
+      "canonicalExerciseId": "bench-dip",
+      "englishName": "Bench Dip",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "bench-dip",
+      "resolvedImageUrl": "/images/exercises/bench-dip.png",
+      "physicalFile": "bench-dip.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "bench-dip"
+      ]
+    },
+    {
       "canonicalExerciseId": "bench-press",
       "englishName": "Bench Press",
       "muscleGroup": "chest",
@@ -329,6 +367,20 @@
       "aliases": []
     },
     {
+      "canonicalExerciseId": "cable-overhead-triceps-extension",
+      "englishName": "Cable Overhead Triceps Extension",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "cable-overhead-triceps-extension",
+      "resolvedImageUrl": "/images/exercises/cable-overhead-triceps-extension.png",
+      "physicalFile": "cable-overhead-triceps-extension.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "cable-overhead-triceps-extension"
+      ]
+    },
+    {
       "canonicalExerciseId": "cable-tricep-pushdown",
       "englishName": "Cable Tricep Pushdown",
       "muscleGroup": "arms",
@@ -361,6 +413,20 @@
         "cable-woodchop",
         "wood-chopper",
         "woodchopper"
+      ]
+    },
+    {
+      "canonicalExerciseId": "chest-supported-row",
+      "englishName": "Chest Supported Row",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "chest-supported-row",
+      "resolvedImageUrl": "/images/exercises/chest-supported-row.png",
+      "physicalFile": "chest-supported-row.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "chest-supported-row"
       ]
     },
     {
@@ -415,6 +481,20 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": []
+    },
+    {
+      "canonicalExerciseId": "conventional-deadlift",
+      "englishName": "Conventional Deadlift",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "conventional-deadlift",
+      "resolvedImageUrl": "/images/exercises/conventional-deadlift.png",
+      "physicalFile": "conventional-deadlift.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "conventional-deadlift"
+      ]
     },
     {
       "canonicalExerciseId": "crunch",
@@ -698,6 +778,20 @@
       ]
     },
     {
+      "canonicalExerciseId": "forward-lunge",
+      "englishName": "Forward Lunge",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
+      "physicalFile": "forward-lunge.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "forward-lunge"
+      ]
+    },
+    {
       "canonicalExerciseId": "good-morning",
       "englishName": "Good Morning",
       "muscleGroup": "hamstrings",
@@ -767,6 +861,20 @@
       "aliases": []
     },
     {
+      "canonicalExerciseId": "hanging-knee-raise",
+      "englishName": "Hanging Knee Raise",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "hanging-knee-raise",
+      "resolvedImageUrl": "/images/exercises/hanging-knee-raise.png",
+      "physicalFile": "hanging-knee-raise.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "hanging-knee-raise"
+      ]
+    },
+    {
       "canonicalExerciseId": "hanging-leg-raise",
       "englishName": "Hanging Leg Raise",
       "muscleGroup": "core",
@@ -779,6 +887,18 @@
       "aliases": [
         "leg-raise"
       ]
+    },
+    {
+      "canonicalExerciseId": "hip-thrust-machine",
+      "englishName": "Hip Thrust Machine",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "hip-thrust-machine",
+      "resolvedImageUrl": "/images/exercises/hip-thrust-machine.png",
+      "physicalFile": "hip-thrust-machine.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
     },
     {
       "canonicalExerciseId": "incline-bench-press",
@@ -1226,6 +1346,20 @@
       ]
     },
     {
+      "canonicalExerciseId": "seated-machine-row",
+      "englishName": "Seated Machine Row",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "physicalFile": "seated-machine-row.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "seated-machine-row"
+      ]
+    },
+    {
       "canonicalExerciseId": "side-plank",
       "englishName": "Side Plank",
       "muscleGroup": "core",
@@ -1233,6 +1367,18 @@
       "expectedSlug": "side-plank",
       "resolvedImageUrl": "/images/exercises/side-plank.png",
       "physicalFile": "side-plank.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
+    },
+    {
+      "canonicalExerciseId": "single-arm-cable-row",
+      "englishName": "Single Arm Cable Row",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "single-arm-cable-row",
+      "resolvedImageUrl": "/images/exercises/single-arm-cable-row.png",
+      "physicalFile": "single-arm-cable-row.png",
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": []
@@ -1338,6 +1484,20 @@
         "typewriter-pull-up",
         "typewriter-pull-ups",
         "typewriter-pullups"
+      ]
+    },
+    {
+      "canonicalExerciseId": "wide-grip-pull-up",
+      "englishName": "Wide Grip Pull Up",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "wide-grip-pull-up",
+      "resolvedImageUrl": "/images/exercises/wide-grip-pull-up.png",
+      "physicalFile": "wide-grip-pull-up.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "wide-grip-pull-up"
       ]
     },
     {
@@ -1809,6 +1969,58 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Assisted Chin Up",
+      "demoName": "Assisted Chin Up",
+      "providedExerciseId": "assisted-chin-up",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "assisted-chin-up",
+      "canonicalExerciseId": "assisted-chin-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "assisted-chin-up",
+      "resolvedImageUrl": "/images/exercises/assisted-chin-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "assisted-chin-up.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Assisted Pull Up",
+      "demoName": "Assisted Pull Up",
+      "providedExerciseId": "assisted-pull-up",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "assisted-pull-up",
+      "canonicalExerciseId": "assisted-pull-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "assisted-pull-up",
+      "resolvedImageUrl": "/images/exercises/assisted-pull-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "assisted-pull-up.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Australian Pull Up",
       "demoName": "Australian Pull Up",
       "providedExerciseId": "australian-pull-up",
@@ -2085,6 +2297,31 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Barbell Hip Thrust Machine",
+      "demoName": "Barbell Hip Thrust Machine",
+      "providedExerciseId": "barbell-hip-thrust-machine",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "hip-thrust-machine",
+      "canonicalExerciseId": "hip-thrust-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "hip-thrust-machine",
+      "resolvedImageUrl": "/images/exercises/hip-thrust-machine.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Barbell Romanian Deadlift",
       "demoName": "Barbell Romanian Deadlift",
       "providedExerciseId": "barbell-romanian-deadlift",
@@ -2253,6 +2490,32 @@
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "barbell-upright-row.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Bench Dip",
+      "demoName": "Bench Dip",
+      "providedExerciseId": "bench-dip",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "bench-dip",
+      "canonicalExerciseId": "bench-dip",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bench-dip",
+      "resolvedImageUrl": "/images/exercises/bench-dip.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "bench-dip.png",
       "directPhysicalExists": true,
       "exactDedicatedFile": true,
       "usesSurrogateImage": false,
@@ -2860,6 +3123,32 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Cable Overhead Triceps Extension",
+      "demoName": "Cable Overhead Triceps Extension",
+      "providedExerciseId": "cable-overhead-triceps-extension",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "cable-overhead-triceps-extension",
+      "canonicalExerciseId": "cable-overhead-triceps-extension",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "cable-overhead-triceps-extension",
+      "resolvedImageUrl": "/images/exercises/cable-overhead-triceps-extension.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "cable-overhead-triceps-extension.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Cable Preacher Curl",
       "demoName": "Cable Preacher Curl",
       "providedExerciseId": "cable-preacher-curl",
@@ -3185,6 +3474,32 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Chest Supported Row",
+      "demoName": "Chest Supported Row",
+      "providedExerciseId": "chest-supported-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "chest-supported-row",
+      "canonicalExerciseId": "chest-supported-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "chest-supported-row",
+      "resolvedImageUrl": "/images/exercises/chest-supported-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "chest-supported-row.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Chin Up",
       "demoName": "Chin Up",
       "providedExerciseId": "chin-up",
@@ -3208,6 +3523,31 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Chin Up Assisted If Needed",
+      "demoName": "Chin Up Assisted If Needed",
+      "providedExerciseId": "chin-up-assisted-if-needed",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "assisted-chin-up",
+      "canonicalExerciseId": "assisted-chin-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "assisted-chin-up",
+      "resolvedImageUrl": "/images/exercises/assisted-chin-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Chin Ups",
@@ -3328,6 +3668,32 @@
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "concentration-curl.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Conventional Deadlift",
+      "demoName": "Conventional Deadlift",
+      "providedExerciseId": "conventional-deadlift",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "conventional-deadlift",
+      "canonicalExerciseId": "conventional-deadlift",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "conventional-deadlift",
+      "resolvedImageUrl": "/images/exercises/conventional-deadlift.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "conventional-deadlift.png",
       "directPhysicalExists": true,
       "exactDedicatedFile": true,
       "usesSurrogateImage": false,
@@ -3835,6 +4201,56 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Dumbbell Lunge",
+      "demoName": "Dumbbell Lunge",
+      "providedExerciseId": "dumbbell-lunge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Dumbbell Lunges",
+      "demoName": "Dumbbell Lunges",
+      "providedExerciseId": "dumbbell-lunges",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Dumbbell Overhead Press",
@@ -4412,6 +4828,32 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Forward Lunge",
+      "demoName": "Forward Lunge",
+      "providedExerciseId": "forward-lunge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "forward-lunge.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Front Raise",
       "demoName": "Front Raise",
       "providedExerciseId": "front-raise",
@@ -4680,6 +5122,32 @@
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "handstand-push-up.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Hanging Knee Raise",
+      "demoName": "Hanging Knee Raise",
+      "providedExerciseId": "hanging-knee-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "hanging-knee-raise",
+      "canonicalExerciseId": "hanging-knee-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "hanging-knee-raise",
+      "resolvedImageUrl": "/images/exercises/hanging-knee-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "hanging-knee-raise.png",
       "directPhysicalExists": true,
       "exactDedicatedFile": true,
       "usesSurrogateImage": false,
@@ -4960,6 +5428,32 @@
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
       "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Hip Thrust Machine",
+      "demoName": "Hip Thrust Machine",
+      "providedExerciseId": "hip-thrust-machine",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "hip-thrust-machine",
+      "canonicalExerciseId": "hip-thrust-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "hip-thrust-machine",
+      "resolvedImageUrl": "/images/exercises/hip-thrust-machine.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "hip-thrust-machine.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Hyperextension",
@@ -5580,8 +6074,8 @@
       "resolvedImageUrl": "/images/exercises/lying-leg-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
+      "directPhysicalFile": "leg-curl.png",
+      "directPhysicalExists": true,
       "exactDedicatedFile": false,
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
@@ -5605,8 +6099,8 @@
       "resolvedImageUrl": "/images/exercises/lying-leg-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
+      "directPhysicalFile": "leg-curl.png",
+      "directPhysicalExists": true,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -5778,6 +6272,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-squat",
       "resolvedImageUrl": "/images/exercises/barbell-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Lunge",
+      "demoName": "Lunge",
+      "providedExerciseId": "lunge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -6078,6 +6597,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "reverse-pec-deck",
       "resolvedImageUrl": "/images/exercises/reverse-pec-deck.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Machine Row",
+      "demoName": "Machine Row",
+      "providedExerciseId": "machine-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -6613,6 +7157,31 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Pull Up Assisted If Needed",
+      "demoName": "Pull Up Assisted If Needed",
+      "providedExerciseId": "pull-up-assisted-if-needed",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "assisted-pull-up",
+      "canonicalExerciseId": "assisted-pull-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "assisted-pull-up",
+      "resolvedImageUrl": "/images/exercises/assisted-pull-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Pull Ups",
@@ -7591,6 +8160,82 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Seated Machine Row",
+      "demoName": "Seated Machine Row",
+      "providedExerciseId": "seated-machine-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "seated-machine-row.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Seated Row",
+      "demoName": "Seated Row",
+      "providedExerciseId": "seated-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Seated Row Machine",
+      "demoName": "Seated Row Machine",
+      "providedExerciseId": "seated-row-machine",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Shoulder Press Machine",
       "demoName": "Shoulder Press Machine",
       "providedExerciseId": "shoulder-press-machine",
@@ -7709,6 +8354,32 @@
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "side-plank.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Single Arm Cable Row",
+      "demoName": "Single Arm Cable Row",
+      "providedExerciseId": "single-arm-cable-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "single-arm-cable-row",
+      "canonicalExerciseId": "single-arm-cable-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "single-arm-cable-row",
+      "resolvedImageUrl": "/images/exercises/single-arm-cable-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "single-arm-cable-row.png",
       "directPhysicalExists": true,
       "exactDedicatedFile": true,
       "usesSurrogateImage": false,
@@ -8159,8 +8830,8 @@
       "resolvedImageUrl": "/images/exercises/cable-tricep-pushdown.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
+      "directPhysicalFile": "tricep-pushdown.png",
+      "directPhysicalExists": true,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -8365,6 +9036,32 @@
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
       "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Wide Grip Pull Up",
+      "demoName": "Wide Grip Pull Up",
+      "providedExerciseId": "wide-grip-pull-up",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "wide-grip-pull-up",
+      "canonicalExerciseId": "wide-grip-pull-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "wide-grip-pull-up",
+      "resolvedImageUrl": "/images/exercises/wide-grip-pull-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "wide-grip-pull-up.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Wide Grip Push Up",
@@ -8862,6 +9559,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-bicep-curl",
       "resolvedImageUrl": "/images/exercises/barbell-bicep-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Barbell Hip Thrust Machine",
+      "demoName": "Barbell Hip Thrust Machine",
+      "providedExerciseId": "barbell-hip-thrust-machine",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "hip-thrust-machine",
+      "canonicalExerciseId": "hip-thrust-machine",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "hip-thrust-machine",
+      "resolvedImageUrl": "/images/exercises/hip-thrust-machine.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -9597,6 +10319,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Chin Up Assisted If Needed",
+      "demoName": "Chin Up Assisted If Needed",
+      "providedExerciseId": "chin-up-assisted-if-needed",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "assisted-chin-up",
+      "canonicalExerciseId": "assisted-chin-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "assisted-chin-up",
+      "resolvedImageUrl": "/images/exercises/assisted-chin-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Chin Ups",
       "demoName": "Chin Ups",
       "providedExerciseId": "chin-ups",
@@ -9762,6 +10509,56 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "hammer-curl",
       "resolvedImageUrl": "/images/exercises/hammer-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Dumbbell Lunge",
+      "demoName": "Dumbbell Lunge",
+      "providedExerciseId": "dumbbell-lunge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Dumbbell Lunges",
+      "demoName": "Dumbbell Lunges",
+      "providedExerciseId": "dumbbell-lunges",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -10989,8 +11786,8 @@
       "resolvedImageUrl": "/images/exercises/lying-leg-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
+      "directPhysicalFile": "leg-curl.png",
+      "directPhysicalExists": true,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -11112,6 +11909,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-squat",
       "resolvedImageUrl": "/images/exercises/barbell-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Lunge",
+      "demoName": "Lunge",
+      "providedExerciseId": "lunge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "forward-lunge",
+      "canonicalExerciseId": "forward-lunge",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "forward-lunge",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -11347,6 +12169,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Machine Row",
+      "demoName": "Machine Row",
+      "providedExerciseId": "machine-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Military Press",
       "demoName": "Military Press",
       "providedExerciseId": "military-press",
@@ -11562,6 +12409,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "plank",
       "resolvedImageUrl": "/images/exercises/plank.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Pull Up Assisted If Needed",
+      "demoName": "Pull Up Assisted If Needed",
+      "providedExerciseId": "pull-up-assisted-if-needed",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "assisted-pull-up",
+      "canonicalExerciseId": "assisted-pull-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "assisted-pull-up",
+      "resolvedImageUrl": "/images/exercises/assisted-pull-up.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -12247,6 +13119,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Seated Row",
+      "demoName": "Seated Row",
+      "providedExerciseId": "seated-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Seated Row Machine",
+      "demoName": "Seated Row Machine",
+      "providedExerciseId": "seated-row-machine",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "seated-machine-row",
+      "canonicalExerciseId": "seated-machine-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "seated-machine-row",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Shoulder Press Machine",
       "demoName": "Shoulder Press Machine",
       "providedExerciseId": "shoulder-press-machine",
@@ -12614,8 +13536,8 @@
       "resolvedImageUrl": "/images/exercises/cable-tricep-pushdown.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "",
-      "directPhysicalExists": false,
+      "directPhysicalFile": "tricep-pushdown.png",
+      "directPhysicalExists": true,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -12905,6 +13827,28 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "assisted-chin-up",
+      "expectedImageFile": "assisted-chin-up.png",
+      "resolvedImageUrl": "/images/exercises/assisted-chin-up.png",
+      "resolvedImageFile": "assisted-chin-up.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "assisted-pull-up",
+      "expectedImageFile": "assisted-pull-up.png",
+      "resolvedImageUrl": "/images/exercises/assisted-pull-up.png",
+      "resolvedImageFile": "assisted-pull-up.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "australian-row",
       "expectedImageFile": "australian-row.png",
       "resolvedImageUrl": "/images/exercises/australian-row.png",
@@ -13015,6 +13959,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "bench-dip",
+      "expectedImageFile": "bench-dip.png",
+      "resolvedImageUrl": "/images/exercises/bench-dip.png",
+      "resolvedImageFile": "bench-dip.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "bulgarian-split-squat",
       "expectedImageFile": "dumbbell-bulgarian-split-squat.png",
       "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
@@ -13070,6 +14025,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "cable-overhead-triceps-extension",
+      "expectedImageFile": "cable-overhead-triceps-extension.png",
+      "resolvedImageUrl": "/images/exercises/cable-overhead-triceps-extension.png",
+      "resolvedImageFile": "cable-overhead-triceps-extension.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "cable-tricep-pushdown",
       "expectedImageFile": "cable-tricep-pushdown.png",
       "resolvedImageUrl": "/images/exercises/cable-tricep-pushdown.png",
@@ -13085,6 +14051,17 @@
       "expectedImageFile": "cable-woodchopper.png",
       "resolvedImageUrl": "/images/exercises/cable-woodchopper.png",
       "resolvedImageFile": "cable-woodchopper.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "chest-supported-row",
+      "expectedImageFile": "chest-supported-row.png",
+      "resolvedImageUrl": "/images/exercises/chest-supported-row.png",
+      "resolvedImageFile": "chest-supported-row.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -13129,6 +14106,17 @@
       "expectedImageFile": "concentration-curl.png",
       "resolvedImageUrl": "/images/exercises/concentration-curl.png",
       "resolvedImageFile": "concentration-curl.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "conventional-deadlift",
+      "expectedImageFile": "conventional-deadlift.png",
+      "resolvedImageUrl": "/images/exercises/conventional-deadlift.png",
+      "resolvedImageFile": "conventional-deadlift.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -13345,6 +14333,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "forward-lunge",
+      "expectedImageFile": "forward-lunge.png",
+      "resolvedImageUrl": "/images/exercises/forward-lunge.png",
+      "resolvedImageFile": "forward-lunge.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "good-morning",
       "expectedImageFile": "good-morning.png",
       "resolvedImageUrl": "/images/exercises/good-morning.png",
@@ -13400,10 +14399,32 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "hanging-knee-raise",
+      "expectedImageFile": "hanging-knee-raise.png",
+      "resolvedImageUrl": "/images/exercises/hanging-knee-raise.png",
+      "resolvedImageFile": "hanging-knee-raise.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "hanging-leg-raise",
       "expectedImageFile": "hanging-leg-raise.png",
       "resolvedImageUrl": "/images/exercises/hanging-leg-raise.png",
       "resolvedImageFile": "hanging-leg-raise.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "hip-thrust-machine",
+      "expectedImageFile": "hip-thrust-machine.png",
+      "resolvedImageUrl": "/images/exercises/hip-thrust-machine.png",
+      "resolvedImageFile": "hip-thrust-machine.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -13774,10 +14795,32 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "seated-machine-row",
+      "expectedImageFile": "seated-machine-row.png",
+      "resolvedImageUrl": "/images/exercises/seated-machine-row.png",
+      "resolvedImageFile": "seated-machine-row.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "side-plank",
       "expectedImageFile": "side-plank.png",
       "resolvedImageUrl": "/images/exercises/side-plank.png",
       "resolvedImageFile": "side-plank.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "single-arm-cable-row",
+      "expectedImageFile": "single-arm-cable-row.png",
+      "resolvedImageUrl": "/images/exercises/single-arm-cable-row.png",
+      "resolvedImageFile": "single-arm-cable-row.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -13873,6 +14916,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "wide-grip-pull-up",
+      "expectedImageFile": "wide-grip-pull-up.png",
+      "resolvedImageUrl": "/images/exercises/wide-grip-pull-up.png",
+      "resolvedImageFile": "wide-grip-pull-up.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "wide-grip-push-up",
       "expectedImageFile": "wide-grip-push-up.png",
       "resolvedImageUrl": "/images/exercises/wide-grip-push-up.png",
@@ -13885,120 +14939,7 @@
     }
   ],
   "publicReleaseFailures": [],
-  "disabledUntilDedicatedImages": [
-    {
-      "exerciseId": "assisted-pull-up",
-      "title": "Assisted Pull Up",
-      "reason": "missing dedicated assisted-pull-up image",
-      "replacementIds": [
-        "pull-up",
-        "lat-pulldown",
-        "australian-row"
-      ]
-    },
-    {
-      "exerciseId": "assisted-chin-up",
-      "title": "Assisted Chin Up",
-      "reason": "missing dedicated assisted-chin-up image",
-      "replacementIds": [
-        "chin-up",
-        "lat-pulldown"
-      ]
-    },
-    {
-      "exerciseId": "bench-dip",
-      "title": "Bench Dip",
-      "reason": "bench dip is visually distinct from parallel-bar dip",
-      "replacementIds": [
-        "tricep-dip",
-        "cable-tricep-pushdown",
-        "diamond-push-up"
-      ]
-    },
-    {
-      "exerciseId": "hip-thrust-machine",
-      "title": "Hip Thrust Machine",
-      "reason": "missing dedicated hip-thrust-machine image",
-      "replacementIds": [
-        "barbell-hip-thrust",
-        "dumbbell-hip-thrust"
-      ]
-    },
-    {
-      "exerciseId": "chest-supported-row",
-      "title": "Chest Supported Row",
-      "reason": "missing dedicated chest-supported-row image",
-      "replacementIds": [
-        "seated-cable-row",
-        "dumbbell-row",
-        "barbell-row"
-      ]
-    },
-    {
-      "exerciseId": "seated-machine-row",
-      "title": "Seated Machine Row",
-      "reason": "missing dedicated seated-machine-row image",
-      "replacementIds": [
-        "seated-cable-row",
-        "dumbbell-row",
-        "t-bar-row"
-      ]
-    },
-    {
-      "exerciseId": "single-arm-cable-row",
-      "title": "Single Arm Cable Row",
-      "reason": "missing dedicated single-arm-cable-row image",
-      "replacementIds": [
-        "seated-cable-row",
-        "dumbbell-row"
-      ]
-    },
-    {
-      "exerciseId": "cable-overhead-triceps-extension",
-      "title": "Cable Overhead Triceps Extension",
-      "reason": "missing dedicated cable-overhead-triceps-extension image",
-      "replacementIds": [
-        "overhead-tricep-extension",
-        "cable-tricep-pushdown"
-      ]
-    },
-    {
-      "exerciseId": "hanging-knee-raise",
-      "title": "Hanging Knee Raise",
-      "reason": "missing dedicated hanging-knee-raise image",
-      "replacementIds": [
-        "hanging-leg-raise",
-        "plank"
-      ]
-    },
-    {
-      "exerciseId": "conventional-deadlift",
-      "title": "Conventional Deadlift",
-      "reason": "missing dedicated conventional-deadlift image",
-      "replacementIds": [
-        "romanian-deadlift",
-        "sumo-deadlift"
-      ]
-    },
-    {
-      "exerciseId": "wide-grip-pull-up",
-      "title": "Wide Grip Pull Up",
-      "reason": "missing dedicated wide-grip-pull-up image",
-      "replacementIds": [
-        "pull-up",
-        "lat-pulldown"
-      ]
-    },
-    {
-      "exerciseId": "forward-lunge",
-      "title": "Forward Lunge",
-      "reason": "missing dedicated forward-lunge image",
-      "replacementIds": [
-        "dumbbell-walking-lunge",
-        "reverse-lunge"
-      ]
-    }
-  ],
+  "disabledUntilDedicatedImages": [],
   "setCreditAliases": [
     {
       "aliasExerciseId": "barbell-bench-press",
@@ -14137,6 +15078,34 @@
       "classification": "COVERED"
     },
     {
+      "filename": "assisted-chin-up.png",
+      "extension": ".png",
+      "exactCase": "assisted-chin-up.png",
+      "size": 1001681,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "assisted-chin-up",
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "assisted-pull-up.png",
+      "extension": ".png",
+      "exactCase": "assisted-pull-up.png",
+      "size": 1381540,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "assisted-pull-up",
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "australian-row.png",
       "extension": ".png",
       "exactCase": "australian-row.png",
@@ -14268,7 +15237,7 @@
       "extension": ".png",
       "exactCase": "barbell-squat.png",
       "size": 1611817,
-      "gitStatus": "M",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "barbell-squat",
       "aliases": [
@@ -14293,6 +15262,22 @@
       "canonicalExercise": "barbell-upright-row",
       "aliases": [
         "upright-row"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "bench-dip.png",
+      "extension": ".png",
+      "exactCase": "bench-dip.png",
+      "size": 1297995,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "bench-dip",
+      "aliases": [
+        "bench-dip"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -14384,6 +15369,22 @@
       "classification": "COVERED"
     },
     {
+      "filename": "cable-overhead-triceps-extension.png",
+      "extension": ".png",
+      "exactCase": "cable-overhead-triceps-extension.png",
+      "size": 1156406,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "cable-overhead-triceps-extension",
+      "aliases": [
+        "cable-overhead-triceps-extension"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "cable-tricep-pushdown.png",
       "extension": ".png",
       "exactCase": "cable-tricep-pushdown.png",
@@ -14416,6 +15417,22 @@
         "cable-woodchop",
         "wood-chopper",
         "woodchopper"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "chest-supported-row.png",
+      "extension": ".png",
+      "exactCase": "chest-supported-row.png",
+      "size": 1510074,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "chest-supported-row",
+      "aliases": [
+        "chest-supported-row"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -14478,6 +15495,22 @@
       "referencedByResolver": true,
       "canonicalExercise": "concentration-curl",
       "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "conventional-deadlift.png",
+      "extension": ".png",
+      "exactCase": "conventional-deadlift.png",
+      "size": 1159314,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "conventional-deadlift",
+      "aliases": [
+        "conventional-deadlift"
+      ],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -14649,7 +15682,7 @@
       "extension": ".png",
       "exactCase": "dumbbell-goblet-squat.png",
       "size": 1315053,
-      "gitStatus": "M",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "dumbbell-goblet-squat",
       "aliases": [
@@ -14736,7 +15769,7 @@
       "extension": ".png",
       "exactCase": "dumbbell-shoulder-press.png",
       "size": 1445782,
-      "gitStatus": "M",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "dumbbell-shoulder-press",
       "aliases": [
@@ -14767,6 +15800,20 @@
       "classification": "COVERED"
     },
     {
+      "filename": "dumbbell-skullcrusher.png",
+      "extension": ".png",
+      "exactCase": "dumbbell-skullcrusher.png",
+      "size": 1479201,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
       "filename": "dumbbell-walking-lunge.png",
       "extension": ".png",
       "exactCase": "dumbbell-walking-lunge.png",
@@ -14785,6 +15832,20 @@
       "classification": "COVERED"
     },
     {
+      "filename": "dumbell-rear-delt-fly.png",
+      "extension": ".png",
+      "exactCase": "dumbell-rear-delt-fly.png",
+      "size": 1452831,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
       "filename": "face-pull.png",
       "extension": ".png",
       "exactCase": "face-pull.png",
@@ -14794,6 +15855,22 @@
       "canonicalExercise": "face-pull",
       "aliases": [
         "cable-face-pull"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "forward-lunge.png",
+      "extension": ".png",
+      "exactCase": "forward-lunge.png",
+      "size": 1078371,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "forward-lunge",
+      "aliases": [
+        "forward-lunge"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -14894,6 +15971,22 @@
       "classification": "COVERED"
     },
     {
+      "filename": "hanging-knee-raise.png",
+      "extension": ".png",
+      "exactCase": "hanging-knee-raise.png",
+      "size": 1166234,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "hanging-knee-raise",
+      "aliases": [
+        "hanging-knee-raise"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "hanging-leg-raise.png",
       "extension": ".png",
       "exactCase": "hanging-leg-raise.png",
@@ -14904,6 +15997,20 @@
       "aliases": [
         "leg-raise"
       ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "hip-thrust-machine.png",
+      "extension": ".png",
+      "exactCase": "hip-thrust-machine.png",
+      "size": 1350923,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "hip-thrust-machine",
+      "aliases": [],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -14925,6 +16032,20 @@
       "validImage": true,
       "invalidReason": "",
       "classification": "COVERED"
+    },
+    {
+      "filename": "incline-chest-press.png",
+      "extension": ".png",
+      "exactCase": "incline-chest-press.png",
+      "size": 1503558,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
     },
     {
       "filename": "incline-dumbbell-bench-press.png",
@@ -15014,6 +16135,34 @@
       "classification": "COVERED"
     },
     {
+      "filename": "leg-curl-machine.png",
+      "extension": ".png",
+      "exactCase": "leg-curl-machine.png",
+      "size": 84041,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "leg-curl.png",
+      "extension": ".png",
+      "exactCase": "leg-curl.png",
+      "size": 84041,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
       "filename": "leg-extension.png",
       "extension": ".png",
       "exactCase": "leg-extension.png",
@@ -15050,7 +16199,7 @@
       "extension": ".png",
       "exactCase": "lying-leg-curl.png",
       "size": 1284696,
-      "gitStatus": "M",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "lying-leg-curl",
       "aliases": [
@@ -15098,6 +16247,20 @@
       "validImage": true,
       "invalidReason": "",
       "classification": "COVERED"
+    },
+    {
+      "filename": "machine-lateral-raise.png",
+      "extension": ".png",
+      "exactCase": "machine-lateral-raise.png",
+      "size": 1594715,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
     },
     {
       "filename": "machine-shoulder-press.png",
@@ -15295,7 +16458,7 @@
       "extension": ".png",
       "exactCase": "reverse-lunge.png",
       "size": 1205732,
-      "gitStatus": "M",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "reverse-lunge",
       "aliases": [
@@ -15415,6 +16578,22 @@
       "classification": "COVERED"
     },
     {
+      "filename": "seated-machine-row.png",
+      "extension": ".png",
+      "exactCase": "seated-machine-row.png",
+      "size": 1434221,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "seated-machine-row",
+      "aliases": [
+        "seated-machine-row"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "side-plank.png",
       "extension": ".png",
       "exactCase": "side-plank.png",
@@ -15422,6 +16601,20 @@
       "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "side-plank",
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "single-arm-cable-row.png",
+      "extension": ".png",
+      "exactCase": "single-arm-cable-row.png",
+      "size": 1475588,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "single-arm-cable-row",
       "aliases": [],
       "genericFallback": false,
       "validImage": true,
@@ -15528,6 +16721,20 @@
       "classification": "COVERED"
     },
     {
+      "filename": "tricep-pushdown.png",
+      "extension": ".png",
+      "exactCase": "tricep-pushdown.png",
+      "size": 1363681,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
       "filename": "typewriter-pull-ups.png",
       "extension": ".png",
       "exactCase": "typewriter-pull-ups.png",
@@ -15539,6 +16746,22 @@
         "typewriter-pull-up",
         "typewriter-pull-ups",
         "typewriter-pullups"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "wide-grip-pull-up.png",
+      "extension": ".png",
+      "exactCase": "wide-grip-pull-up.png",
+      "size": 1134115,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "wide-grip-pull-up",
+      "aliases": [
+        "wide-grip-pull-up"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -15562,12 +16785,119 @@
       "classification": "COVERED"
     }
   ],
-  "orphanFiles": [],
+  "orphanFiles": [
+    {
+      "filename": "dumbbell-skullcrusher.png",
+      "extension": ".png",
+      "exactCase": "dumbbell-skullcrusher.png",
+      "size": 1479201,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "dumbell-rear-delt-fly.png",
+      "extension": ".png",
+      "exactCase": "dumbell-rear-delt-fly.png",
+      "size": 1452831,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "incline-chest-press.png",
+      "extension": ".png",
+      "exactCase": "incline-chest-press.png",
+      "size": 1503558,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "leg-curl-machine.png",
+      "extension": ".png",
+      "exactCase": "leg-curl-machine.png",
+      "size": 84041,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "leg-curl.png",
+      "extension": ".png",
+      "exactCase": "leg-curl.png",
+      "size": 84041,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "machine-lateral-raise.png",
+      "extension": ".png",
+      "exactCase": "machine-lateral-raise.png",
+      "size": 1594715,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    },
+    {
+      "filename": "tricep-pushdown.png",
+      "extension": ".png",
+      "exactCase": "tricep-pushdown.png",
+      "size": 1363681,
+      "gitStatus": "??",
+      "referencedByResolver": false,
+      "canonicalExercise": null,
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "ORPHAN_FILE"
+    }
+  ],
   "invalidFiles": [],
   "badNames": [],
   "brokenMappings": [],
   "caseMismatches": [],
   "fallbackOnlyAliases": [],
   "missingCanonical": [],
-  "issues": []
+  "issues": [
+    "ORPHAN_FILE dumbbell-skullcrusher.png",
+    "ORPHAN_FILE dumbell-rear-delt-fly.png",
+    "ORPHAN_FILE incline-chest-press.png",
+    "ORPHAN_FILE leg-curl-machine.png",
+    "ORPHAN_FILE leg-curl.png",
+    "ORPHAN_FILE machine-lateral-raise.png",
+    "ORPHAN_FILE tricep-pushdown.png"
+  ]
 }
