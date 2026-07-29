@@ -151,6 +151,8 @@ const ALIASES = {
   "dumbbell-calf-raises": "dumbbell-calf-raise",
   "standing-dumbbell-calf-raise": "dumbbell-calf-raise",
   "standing-dumbbell-calf-raises": "dumbbell-calf-raise",
+  "dumbbell-standing-calf-raise": "dumbbell-calf-raise",
+  "dumbbell-standing-calf-raises": "dumbbell-calf-raise",
   "standing-calf-raise-machine": "standing-calf-raise",
   "machine-calf-raise": "standing-calf-raise",
   "smith-machine-calf-raise": "standing-calf-raise",
