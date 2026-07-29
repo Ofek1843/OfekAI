@@ -1038,4 +1038,8 @@ textarea:focus {
 @keyframes wizardStepIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:820px){.visual-choice-grid,.visual-choice-grid--three,.visual-choice-grid--equipment{grid-template-columns:1fr 1fr}.wizard-fields-grid{grid-template-columns:1fr}.weekday-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.wizard-step{min-height:0}}
 @media(max-width:560px){.visual-choice-grid,.visual-choice-grid--three,.visual-choice-grid--equipment{grid-template-columns:1fr}.visual-choice-card--wide{grid-column:auto}.visual-choice-card{min-height:185px}.visual-choice-card--equipment{min-height:165px}.wizard-progress-topline{align-items:flex-start;flex-direction:column;gap:4px}.wizard-actions{grid-template-columns:1fr 1fr}.wizard-button--back{min-width:0}.wizard-button--generate{grid-column:2}.weekday-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.wizard-hint{margin:-6px 0 14px;padding:10px 14px;border-radius:10px;background:rgba(124,92,255,.1);border:1px solid rgba(124,92,255,.25);color:#c9bcff;font-size:13px;font-weight:700}
+.wizard-hint.hidden{display:none!important}
+.visual-choice-card--equipment.is-implied{opacity:.85}
+.visual-choice-card--equipment.is-implied .visual-choice-check{background:#7c5cff}
 
