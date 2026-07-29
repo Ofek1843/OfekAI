@@ -40,6 +40,7 @@ const WORKOUT_DISABLED_EXERCISE_PROMPT_LIST = MISSING_DEDICATED_IMAGE_EXERCISES
   .join(", ");
 const { COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
 const { getPublicStats } = require("./lib/public-stats");
+const { getUsdToIlsRate } = require("./lib/fx-rate");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
 const {
   clientIp,
@@ -212,6 +213,20 @@ app.get("/api/public-stats", async (req, res) => {
   } catch (error) {
     console.error("Public stats error:", error.message);
     res.status(503).json({ error: "Public stats are temporarily unavailable." });
+  }
+});
+
+// Live USD->ILS rate for converting displayed prices for Hebrew users.
+// Cached server-side (see lib/fx-rate.js), so this is cheap to call on
+// every pricing page load.
+app.get("/api/fx-rate", async (req, res) => {
+  try {
+    const { rate, source, updatedAt } = await getUsdToIlsRate();
+    res.setHeader("Cache-Control", "public, max-age=1800");
+    res.json({ usdToIls: rate, source, updatedAt });
+  } catch (error) {
+    console.error("FX rate error:", error.message);
+    res.status(503).json({ error: "Exchange rate is temporarily unavailable." });
   }
 });
 
