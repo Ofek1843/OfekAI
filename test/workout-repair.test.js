@@ -156,7 +156,15 @@ test("resolveExerciseId canonicalizes generated variant ids before validation/re
   }
 });
 
-test("repairWorkoutProgram replaces disabled exercises while preserving newly supported exact images", () => {
+test("repairWorkoutProgram preserves exercises that now have dedicated images instead of substituting them away", () => {
+  // seated-machine-row used to be in DISABLED_EXERCISES (no dedicated image
+  // yet) and this fixture originally asserted repair substituted it away to
+  // seated-cable-row. It now has real art (public/images/exercises/
+  // seated-machine-row.png) and was moved into PUBLIC_EXERCISES, so the
+  // correct behavior flipped: repair must leave it alone. machine-rear-delt-fly
+  // is a plain SAFE_ALIASES rename (not a disabled-exercise substitution) and
+  // is unaffected either way — kept here to prove alias resolution still
+  // works alongside the now-enabled exercise in the same session.
   const program = {
     programName: "Image Safety Fixture",
     daysPerWeek: 1,
@@ -184,8 +192,8 @@ test("repairWorkoutProgram replaces disabled exercises while preserving newly su
   const { repairs } = repairWorkoutProgram(program, context);
   const ids = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
 
-  assert.deepEqual(ids, ["seated-cable-row", "reverse-pec-deck", "standing-calf-raise"]);
-  assert.ok(repairs.some((repair) => repair.includes("replaced disabled exercise")));
+  assert.deepEqual(ids, ["seated-machine-row", "reverse-pec-deck", "standing-calf-raise"]);
+  assert.ok(!repairs.some((repair) => repair.includes("replaced disabled exercise")), "no exercise here is disabled anymore");
 
   const validation = validateWorkoutProgram(program, context);
   assert.equal(validation.ok, true, JSON.stringify(validation.errors));

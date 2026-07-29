@@ -102,7 +102,20 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "t-bar-row",
   "tricep-dip",
   "typewriter-pull-ups",
-  "wide-grip-push-up"
+  "wide-grip-push-up",
+  // --- Newly imaged (previously routed to the branded fallback) ---
+  "assisted-pull-up",
+  "assisted-chin-up",
+  "bench-dip",
+  "hip-thrust-machine",
+  "chest-supported-row",
+  "seated-machine-row",
+  "single-arm-cable-row",
+  "cable-overhead-triceps-extension",
+  "hanging-knee-raise",
+  "conventional-deadlift",
+  "wide-grip-pull-up",
+  "forward-lunge"
 ]);
 
 const missingExerciseImageWarnings = new Set();
