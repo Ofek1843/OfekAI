@@ -437,7 +437,7 @@ function renderShoppingList(plan = {}) {
         <h3>${escapeHtml(category)}</h3>
         <ul>
           ${items
-            .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#94a3b8">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
+            .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#8e9d99">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
             .join("")}
         </ul>
       </section>

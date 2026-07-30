@@ -52,8 +52,8 @@ function injectFeedbackStyles() {
       color: #e0f2fe;
       font-weight: 900;
       cursor: pointer;
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(14, 116, 144, 0.86));
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34), 0 0 24px rgba(56, 189, 248, 0.12);
+      background: linear-gradient(135deg, rgba(32, 43, 44, 0.94), rgba(14, 116, 144, 0.86));
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34), 0 0 24px rgba(110, 159, 194, 0.12);
       backdrop-filter: blur(12px);
     }
     .site-feedback-panel {
@@ -64,8 +64,8 @@ function injectFeedbackStyles() {
       padding: 16px;
       border: 1px solid rgba(125, 211, 252, 0.22);
       border-radius: 20px;
-      background: rgba(8, 18, 35, 0.96);
-      color: #e5f2ff;
+      background: rgba(26, 35, 36, 0.96);
+      color: #f3f0e8;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
       transform-origin: bottom right;
     }
@@ -78,9 +78,9 @@ function injectFeedbackStyles() {
       resize: vertical;
       padding: 12px;
       border-radius: 14px;
-      color: #f8fafc;
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #f3f0e8;
+      background: rgba(32, 43, 44, 0.92);
+      border: 1px solid rgba(142, 157, 153, 0.22);
       font: inherit;
       box-sizing: border-box;
     }
@@ -93,12 +93,12 @@ function injectFeedbackStyles() {
       font-weight: 900;
       cursor: pointer;
     }
-    .site-feedback-send { color: #06211a; background: linear-gradient(135deg, #34d399, #38bdf8); }
-    .site-feedback-close { color: #dbeafe; background: rgba(255, 255, 255, 0.06); }
+    .site-feedback-send { color: #06211a; background: linear-gradient(135deg, #65b89f, #6e9fc2); }
+    .site-feedback-close { color: #bcc6c2; background: rgba(255, 255, 255, 0.06); }
     .site-feedback-error {
       min-height: 18px;
       margin-top: 8px;
-      color: #fda4af;
+      color: #e39a9a;
       font-size: 13px;
       font-weight: 800;
     }

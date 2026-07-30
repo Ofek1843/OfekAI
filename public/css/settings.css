@@ -51,7 +51,7 @@
 .settings-tab{
   border:none;
   background:none;
-  color:#cbd5e1;
+  color:#bcc6c2;
   text-align:left;
   padding:12px 14px;
   border-radius:10px;
@@ -65,7 +65,7 @@
 }
 
 .settings-tab.active{
-  background:#2563eb;
+  background:#6e9fc2;
   color:white;
 }
 
@@ -104,6 +104,6 @@
 }
 
 .save-settings{
-  background:#22c55e;
-  color:white;
+  background:#59ad78;
+  color:var(--fp-text-inverse);
 }

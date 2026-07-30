@@ -65,7 +65,7 @@ function createUserControls(user, visibleName) {
     "1px solid rgba(255, 255, 255, 0.12)";
   container.style.borderRadius = "14px";
   container.style.background =
-    "rgba(15, 23, 42, 0.94)";
+    "rgba(32, 43, 44, 0.94)";
   container.style.boxShadow =
     "0 10px 30px rgba(0, 0, 0, 0.3)";
   container.style.fontFamily =
@@ -80,7 +80,7 @@ function createUserControls(user, visibleName) {
   nameElement.style.overflow = "hidden";
   nameElement.style.textOverflow = "ellipsis";
   nameElement.style.whiteSpace = "nowrap";
-  nameElement.style.color = "#dbeafe";
+  nameElement.style.color = "#bcc6c2";
   nameElement.style.fontSize = "13px";
   nameElement.style.fontWeight = "700";
 
@@ -93,7 +93,7 @@ function createUserControls(user, visibleName) {
   logoutButton.style.border = "0";
   logoutButton.style.borderRadius = "9px";
   logoutButton.style.color = "white";
-  logoutButton.style.background = "#2563eb";
+  logoutButton.style.background = "#6e9fc2";
   logoutButton.style.fontSize = "13px";
   logoutButton.style.fontWeight = "700";
   logoutButton.style.cursor = "pointer";
@@ -113,7 +113,7 @@ function createUserControls(user, visibleName) {
     () => {
       if (!logoutButton.disabled) {
         logoutButton.style.background =
-          "#2563eb";
+          "#6e9fc2";
       }
     }
   );
@@ -146,7 +146,7 @@ function createUserControls(user, visibleName) {
           "pointer";
         logoutButton.style.opacity = "1";
         logoutButton.style.background =
-          "#2563eb";
+          "#6e9fc2";
 
         alert(
           "Logout failed. Please try again."

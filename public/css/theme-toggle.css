@@ -1,8 +1,8 @@
 .theme-toggle {
   --theme-toggle-bg: rgba(255, 255, 255, 0.06);
-  --theme-toggle-border: rgba(148, 163, 184, 0.18);
+  --theme-toggle-border: rgba(142, 157, 153, 0.18);
   --theme-toggle-text: #e5eefb;
-  --theme-toggle-shadow: 0 16px 38px rgba(2, 6, 23, 0.16);
+  --theme-toggle-shadow: 0 16px 38px rgba(8, 13, 13, 0.16);
 
   display: inline-flex;
   align-items: center;
@@ -31,14 +31,14 @@
 
 .theme-toggle:hover {
   transform: translateY(-1px);
-  border-color: rgba(96, 165, 250, 0.34);
-  box-shadow: 0 18px 44px rgba(2, 6, 23, 0.2);
+  border-color: rgba(110, 159, 194, 0.34);
+  box-shadow: 0 18px 44px rgba(8, 13, 13, 0.2);
 }
 
 .theme-toggle:focus-visible {
   outline: none;
-  border-color: rgba(96, 165, 250, 0.52);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.16), var(--theme-toggle-shadow);
+  border-color: rgba(110, 159, 194, 0.52);
+  box-shadow: 0 0 0 3px rgba(110, 159, 194, 0.16), var(--theme-toggle-shadow);
 }
 
 .theme-toggle-icon {
@@ -72,16 +72,16 @@
 
 html[data-theme="light"] .theme-toggle {
   --theme-toggle-bg: rgba(255, 255, 255, 0.86);
-  --theme-toggle-border: rgba(71, 85, 105, 0.16);
+  --theme-toggle-border: rgba(52, 69, 70, 0.16);
   --theme-toggle-text: #13233a;
-  --theme-toggle-shadow: 0 18px 34px rgba(71, 85, 105, 0.14);
+  --theme-toggle-shadow: 0 18px 34px rgba(52, 69, 70, 0.14);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(244, 248, 253, 0.78)),
     var(--theme-toggle-bg);
 }
 
 html[data-theme="light"] .theme-toggle:hover {
-  border-color: rgba(37, 99, 235, 0.24);
+  border-color: rgba(110, 159, 194, 0.24);
 }
 
 @media (max-width: 700px) {
