@@ -212,6 +212,12 @@ const ALIASES = {
   "flat-barbell-bench-press": "bench-press",
   "incline-barbell-bench-press": "incline-bench-press",
   "incline-press": "incline-bench-press",
+  // The generator says "chest press" as often as "bench press" for this
+  // movement; without these the card fell back despite the image existing.
+  "incline-barbell-chest-press": "incline-bench-press",
+  "incline-chest-press-barbell": "incline-bench-press",
+  "barbell-incline-chest-press": "incline-bench-press",
+  "barbell-incline-bench-press": "incline-bench-press",
   "incline-dumbbell-press": "incline-dumbbell-bench-press",
   "incline-dumbbell-chest-press": "incline-dumbbell-bench-press",
   "incline-dumbbell-bench-chest-press": "incline-dumbbell-bench-press",
@@ -257,6 +263,11 @@ const ALIASES = {
   "typewriter-pullups": "typewriter-pull-ups",
   "typewriter-pull-ups": "typewriter-pull-ups",
   "lat-pulldowns": "lat-pulldown",
+  // The generator frequently appends the equipment word ("Lat Pulldown
+  // Machine"), which slugged to an unmapped id and fell back.
+  "lat-pulldown-machine": "lat-pulldown",
+  "machine-lat-pulldown": "lat-pulldown",
+  "front-lat-pulldown": "lat-pulldown",
   "neutral-grip-lat-pulldown": "close-grip-lat-pulldown",
   "wide-grip-lat-pulldown": "lat-pulldown",
   "cable-lat-pulldown": "lat-pulldown",
@@ -271,6 +282,11 @@ const ALIASES = {
   "machine-row": "machine-row",
   "bent-over-barbell-row": "barbell-row",
   "bent-over-row": "barbell-row",
+  // Same movement, different word order -- only the "bent-over-barbell-row"
+  // ordering was aliased, so "Barbell Bent Over Row" fell back.
+  "barbell-bent-over-row": "barbell-row",
+  "barbell-bent-over-rows": "barbell-row",
+  "bent-over-row-barbell": "barbell-row",
   "pendlay-row": "barbell-row",
   "conventional-deadlift": "conventional-deadlift",
   "straight-arm-pulldown": "close-grip-lat-pulldown",
@@ -338,6 +354,13 @@ const ALIASES = {
   "overhead-triceps-extension": "overhead-tricep-extension",
   "cable-overhead-triceps-extension": "cable-overhead-triceps-extension",
   "dumbbell-overhead-triceps-extension": "overhead-tricep-extension",
+  // The generator uses singular "tricep" and plural "triceps" interchangeably;
+  // only the plural spellings were aliased.
+  "dumbbell-overhead-tricep-extension": "overhead-tricep-extension",
+  "overhead-dumbbell-triceps-extension": "overhead-tricep-extension",
+  "overhead-dumbbell-tricep-extension": "overhead-tricep-extension",
+  "seated-overhead-triceps-extension": "overhead-tricep-extension",
+  "seated-overhead-tricep-extension": "overhead-tricep-extension",
   "skull-crushers": "skull-crusher",
   "lying-triceps-extension": "skull-crusher",
   "triceps-dip": "tricep-dip",
@@ -364,10 +387,46 @@ const ALIASES = {
   "cable-woodchop": "cable-woodchopper"
 };
 
+// Deterministic rewrites applied only when a slug matches nothing, so a
+// wording difference that does not change the movement still finds its
+// demo. Each rewrite is semantically neutral: dropping the equipment word
+// ("Lat Pulldown Machine"), or swapping an exact synonym for the same lift
+// ("chest press" is the same movement as "bench press"). Applied one at a
+// time and kept only if the result is a real known slug or alias, so these
+// can never invent a mapping or hand over another exercise's photo.
+const NEUTRAL_SLUG_REWRITES = [
+  slug => slug.replace(/-machine$/, ""),
+  slug => slug.replace(/^machine-/, ""),
+  slug => slug.replace(/-chest-press$/, "-bench-press"),
+  slug => slug.replace(/^chest-press-/, "bench-press-"),
+  slug => slug.replace(/tricep(?!s)/g, "triceps"),
+  slug => slug.replace(/triceps/g, "tricep"),
+  slug => slug.replace(/bicep(?!s)/g, "biceps"),
+  slug => slug.replace(/biceps/g, "bicep")
+];
+
+function resolveKnownSlug(slug) {
+  if (!slug) return "";
+  if (ALIASES[slug]) return ALIASES[slug];
+  if (KNOWN_EXERCISE_IMAGE_SLUGS.has(slug)) return slug;
+  return "";
+}
+
 export function exerciseImageSlug(name = "") {
   const slug = slugifyExerciseName(name);
   if (!slug) return "";
-  return ALIASES[slug] || slug;
+
+  const direct = resolveKnownSlug(slug);
+  if (direct) return direct;
+
+  for (const rewrite of NEUTRAL_SLUG_REWRITES) {
+    const rewritten = rewrite(slug);
+    if (rewritten === slug) continue;
+    const resolved = resolveKnownSlug(rewritten);
+    if (resolved) return resolved;
+  }
+
+  return slug;
 }
 
 export function hasExerciseImageSlug(slug = "") {
