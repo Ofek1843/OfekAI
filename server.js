@@ -77,6 +77,7 @@ const telemetry = createTelemetryAgent({
 // OPENAI_API_KEY/OPENAI_CHAT_MODEL is visible in the startup logs instead
 // of only surfacing as a 403 on the first user-facing request.
 logOpenAiStartupDiagnostics();
+logPhotoStorageStartupDiagnostics();
 
 app.disable("x-powered-by");
 app.use((req, res, next) => {
@@ -420,6 +421,22 @@ function imageKitConfig() {
   return publicKey && privateKey && urlEndpoint ? { publicKey, privateKey, urlEndpoint } : null;
 }
 
+// Progress photos are a paid-tier feature that fails as a wall of "photo
+// operation failed" if the storage credentials are absent. The values are
+// never logged -- only which names are missing -- so a misconfigured deploy is
+// visible in the server log instead of only as a user-facing error.
+function logPhotoStorageStartupDiagnostics() {
+  const required = ["IMAGEKIT_PUBLIC_KEY", "IMAGEKIT_PRIVATE_KEY", "IMAGEKIT_URL_ENDPOINT"];
+  const missing = required.filter((name) => !process.env[name]?.trim());
+  if (missing.length) {
+    console.error(
+      `[photo-storage] DISABLED — progress photo upload, signing and deletion will fail. Missing env: ${missing.join(", ")}`
+    );
+  } else {
+    console.log("[photo-storage] configured: progress photo upload/signing enabled.");
+  }
+}
+
 function imageKitClient() {
   const config = imageKitConfig();
   if (!config) return null;
@@ -487,7 +504,7 @@ app.get("/api/imagekit/upload-auth", async (req, res) => {
   try {
     rateLimiters.auth(req, user.uid);
     const client = imageKitClient();
-    if (!client) return res.status(503).json({ error: "ImageKit is not fully configured." });
+    if (!client) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
     const token = crypto.randomUUID();
     const expire = Math.floor(Date.now() / 1000) + uploadAuthTtlSeconds;
     const auth = client.getAuthenticationParameters(token, expire);
@@ -587,7 +604,7 @@ app.get("/api/admin/openai-diagnostics", async (req, res) => {
 
 app.post("/api/progress-photos/upload", async (req, res) => {
   res.status(410).json({
-    error: "Progress photo uploads now use direct browser-to-ImageKit upload. Please refresh and try again."
+    error: "This upload method is out of date. Please refresh the page and try again."
   });
 });
 
@@ -595,7 +612,7 @@ app.post("/api/progress-photos/sign", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   const config = imageKitConfig();
-  if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
+  if (!config) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
   const urls = Array.isArray(req.body?.urls) ? req.body.urls.slice(0, 30) : [];
   const expectedPrefix = `${config.urlEndpoint}${userImageKitPath(user.uid)}/`;
   try {
@@ -610,7 +627,7 @@ app.delete("/api/progress-photos/:fileId", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   const config = imageKitConfig();
-  if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
+  if (!config) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
   const fileId = String(req.params.fileId || "");
   if (!/^[a-zA-Z0-9_-]+$/.test(fileId)) return res.status(400).json({ error: "Invalid file ID." });
 
@@ -633,7 +650,7 @@ app.delete("/api/progress-photos/:fileId", async (req, res) => {
 
 app.post("/api/leaderboard/video/:submissionId", async (req, res) => {
   res.status(410).json({
-    error: "Verification video uploads now use direct browser-to-ImageKit upload. Please refresh and try again."
+    error: "This upload method is out of date. Please refresh the page and try again."
   });
 });
 
@@ -641,7 +658,7 @@ app.delete("/api/leaderboard/video/:fileId", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   const config = imageKitConfig();
-  if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
+  if (!config) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
   const fileId = String(req.params.fileId || "");
   if (!/^[a-zA-Z0-9_-]+$/.test(fileId)) return res.status(400).json({ error: "Invalid file ID." });
   try {
@@ -664,7 +681,7 @@ app.post("/api/leaderboard/admin/sign-video", async (req, res) => {
   if (!user) return;
   if (!isLeaderboardAdmin(user)) return res.status(403).json({ error: "Admin access is required." });
   const config = imageKitConfig();
-  if (!config) return res.status(503).json({ error: "ImageKit is not fully configured." });
+  if (!config) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
   const sourceUrl = String(req.body?.url || "");
   const expectedPrefix = `${config.urlEndpoint}/fuelphysique/users/`;
   if (!sourceUrl.startsWith(expectedPrefix) || !sourceUrl.includes("/leaderboard/")) {

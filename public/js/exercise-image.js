@@ -277,6 +277,8 @@ const ALIASES = {
   "chest-supported-row": "chest-supported-row",
   "seated-row": "seated-row",
   "seated-machine-row": "seated-machine-row",
+  // Same movement, equipment word first ("Machine Seated Row").
+  "machine-seated-row": "seated-machine-row",
   "seated-row-machine": "seated-row-machine",
   "cable-row": "seated-cable-row",
   "machine-row": "machine-row",
