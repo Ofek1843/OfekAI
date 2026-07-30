@@ -402,7 +402,18 @@ const NEUTRAL_SLUG_REWRITES = [
   slug => slug.replace(/tricep(?!s)/g, "triceps"),
   slug => slug.replace(/triceps/g, "tricep"),
   slug => slug.replace(/bicep(?!s)/g, "biceps"),
-  slug => slug.replace(/biceps/g, "bicep")
+  slug => slug.replace(/biceps/g, "bicep"),
+  // The generator often appends a posture or grip qualifier that the catalog
+  // carries at the front, or not at all ("Barbell Shoulder Press Seated",
+  // "Cable Lat Pulldown Wide Grip"). Drop a trailing qualifier, or move it to
+  // the front, and keep the result only if it names a real exercise.
+  slug => slug.replace(/-(seated|standing|lying|kneeling|incline|decline|flat)$/, ""),
+  slug => slug.replace(/^(seated|standing|lying|kneeling)-/, ""),
+  slug => slug.replace(/^(.*)-(seated|standing|lying|kneeling|incline|decline)$/, "$2-$1"),
+  slug => slug.replace(/-(wide|close|neutral|reverse|underhand|overhand)-grip$/, ""),
+  slug => slug.replace(/^(.*)-(wide|close|neutral|underhand|overhand)-grip$/, "$2-grip-$1"),
+  slug => slug.replace(/^reverse-/, ""),
+  slug => slug.replace(/-reverse-/, "-")
 ];
 
 function resolveKnownSlug(slug) {
@@ -438,17 +449,33 @@ function exerciseImageSource(exercise = {}) {
     return { sourceField: "string", sourceValue: exercise };
   }
 
+  // Canonical identity first, display text only as a recovery path.
   const candidates = [
     ["exerciseId", exercise.exerciseId],
     ["id", exercise.id],
     ["demoName", exercise.demoName],
     ["name", exercise.name],
     ["exercise", exercise.exercise]
-  ];
+  ].map(([sourceField, rawValue]) => [sourceField, String(rawValue || "").trim()])
+    .filter(([, sourceValue]) => sourceValue);
 
-  for (const [sourceField, rawValue] of candidates) {
-    const sourceValue = String(rawValue || "").trim();
-    if (sourceValue) return { sourceField, sourceValue };
+  // Take the first candidate that actually resolves to a known demo image,
+  // not merely the first that is non-empty. The generator sometimes emits a
+  // placeholder exerciseId copied from the prompt's schema example
+  // ("exercise-2-0") alongside a perfectly good name ("Barbell Bent Over
+  // Row"); stopping at the first non-empty field meant that placeholder won
+  // and the card fell back even though the image existed. Live generation
+  // showed 11 of 16 exercises failing this way in a single program.
+  for (const [sourceField, sourceValue] of candidates) {
+    const slug = exerciseImageSlug(sourceValue);
+    if (slug && hasExerciseImageSlug(slug)) return { sourceField, sourceValue };
+  }
+
+  // Nothing resolved: keep the first candidate so the reported details still
+  // describe what was attempted, and let the caller use the branded fallback.
+  if (candidates.length) {
+    const [sourceField, sourceValue] = candidates[0];
+    return { sourceField, sourceValue };
   }
 
   return { sourceField: "none", sourceValue: "" };

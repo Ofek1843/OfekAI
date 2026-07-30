@@ -2117,79 +2117,7 @@ ${repairPrompt}`
   return repaired;
 }
 
-const HEBREW_CHAR_RANGE = /[֐-׿]/;
-
-// Reverse of the Hebrew equipment/muscle translation table the generation
-// prompt hands the model (see the "Equipment:"/"Muscle groups:" sections
-// above) — used only to fix language leakage into an English response, not
-// for validation (lib/workout-validator.js's normalizeEquipment covers that
-// with the same Hebrew forms so valid Hebrew-labeled equipment isn't
-// wrongly rejected).
-const HEBREW_TO_ENGLISH_EQUIPMENT = {
-  "משקל גוף": "Bodyweight",
-  מתח: "Pull-up Bar",
-  מכונה: "Machine",
-  מכונות: "Machine",
-  "משקולת יד": "Dumbbell",
-  "משקולות יד": "Dumbbell",
-  מוט: "Barbell",
-  "מוט ומשקולות": "Barbell",
-  כבל: "Cable",
-  כבלים: "Cable",
-  טבעות: "Gymnastic Rings"
-};
-
-const HEBREW_TO_ENGLISH_MUSCLE = {
-  חזה: "Chest",
-  גב: "Back",
-  כתפיים: "Shoulders",
-  "יד קדמית": "Biceps",
-  "יד אחורית": "Triceps",
-  "ארבע ראשי": "Quads",
-  המסטרינג: "Hamstrings",
-  ישבן: "Glutes",
-  תאומים: "Calves",
-  ליבה: "Core"
-};
-
-// Rewrites any Hebrew text left in a program's user-facing fields to its
-// English equivalent, in place. Called only when the user selected English
-// — the generation prompt already asks for English-only output, but models
-// don't always comply (their own Hebrew few-shot examples in the same
-// prompt can leak through), so this is enforced server-side rather than
-// trusted to prompt compliance.
-function sanitizeLanguageLeakage(program) {
-  if (!Array.isArray(program?.sessions)) return;
-
-  for (let i = 0; i < program.sessions.length; i++) {
-    const session = program.sessions[i];
-    if (typeof session?.name === "string" && HEBREW_CHAR_RANGE.test(session.name)) {
-      session.name = `Day ${i + 1}`;
-    }
-    if (!Array.isArray(session?.exercises)) continue;
-
-    for (const exercise of session.exercises) {
-      if (typeof exercise.equipment === "string" && HEBREW_CHAR_RANGE.test(exercise.equipment)) {
-        exercise.equipment = HEBREW_TO_ENGLISH_EQUIPMENT[exercise.equipment.trim()] || exercise.equipment;
-      }
-      if (typeof exercise.muscleGroup === "string" && HEBREW_CHAR_RANGE.test(exercise.muscleGroup)) {
-        exercise.muscleGroup = HEBREW_TO_ENGLISH_MUSCLE[exercise.muscleGroup.trim()] || exercise.muscleGroup;
-      }
-      // demoName is the prompt-guaranteed English name (hidden technical
-      // metadata used for media lookup) — the most reliable English
-      // fallback available if the user-facing name itself leaked Hebrew.
-      if (
-        typeof exercise.name === "string" &&
-        HEBREW_CHAR_RANGE.test(exercise.name) &&
-        typeof exercise.demoName === "string" &&
-        exercise.demoName.trim() &&
-        !HEBREW_CHAR_RANGE.test(exercise.demoName)
-      ) {
-        exercise.name = exercise.demoName.trim();
-      }
-    }
-  }
-}
+const { sanitizeLanguageLeakage, findLanguageLeaks } = require("./lib/workout-language-sanitizer");
 
 app.post("/api/workout-builder", async (req, res) => {
   let dedupeKey = null;
@@ -2583,7 +2511,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     // rewrite any Hebrew text in a user-facing field back to its canonical
     // English display form so an English UI can never render Hebrew.
     if (language !== "he") {
-      sanitizeLanguageLeakage(program);
+      sanitizeLanguageLeakage(program, goal);
     }
 
     // Deterministic weekly volume, based only on the explicit setCredits map

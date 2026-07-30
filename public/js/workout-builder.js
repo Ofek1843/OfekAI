@@ -849,8 +849,15 @@ function renderProgram(program) {
     <section class="program-card">
       <header class="program-header">
         <div>
+          <!--
+            ui.personalizedPlan already contains the brand name in both
+            locales ("FuelPhysique Personalized Plan" / "תוכנית אישית של
+            FuelPhysique"), so prefixing it printed the brand twice -- the
+            uppercase style rendered it as "FUELPHYSIQUE FUELPHYSIQUE
+            PERSONALIZED PLAN".
+          -->
           <span class="program-eyebrow">
-            FuelPhysique ${ui.personalizedPlan}
+            ${ui.personalizedPlan}
           </span>
 
           <h2>
@@ -859,9 +866,15 @@ function renderProgram(program) {
   )}
 </h2>
 
+          <!--
+            ui.programDescription is already a complete sentence in both
+            locales. The trailing literal repeated the end of the English
+            sentence ("... available equipment. around your goal, experience
+            and available equipment.") and, in Hebrew mode, appended untranslated
+            English to a Hebrew paragraph.
+          -->
           <p class="program-description">
             ${ui.programDescription}
-            around your goal, experience and available equipment.
           </p>
         </div>
 
