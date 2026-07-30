@@ -167,10 +167,19 @@ test("the endpoint refuses to return a plan that is outside tolerance", () => {
     "an out-of-tolerance or implausible plan must not be returned"
   );
   assert.match(guard.slice(0, 1400), /return res\.status\(422\)/, "it must return a controlled error");
-  // The friendly message must not leak optimizer internals.
-  const message = guard.slice(0, 1600);
-  for (const leak of ["tolerance", "optimiz", "balancer", "coordinate", "deviation"]) {
-    assert.ok(!new RegExp(leak, "i").test(message.split("return res.status(422)")[1] || ""), `error text should not mention "${leak}"`);
+
+  // The friendly message must not leak optimizer internals. Inspect the
+  // user-facing strings themselves rather than the surrounding code, whose
+  // comments legitimately discuss tolerances.
+  const messages = [...guard.slice(0, 2000).matchAll(/[?:]\s*"([^"]{20,})"/g)].map(m => m[1]);
+  assert.ok(messages.length >= 2, "expected an English and a Hebrew message");
+  for (const message of messages) {
+    for (const leak of ["tolerance", "optimiz", "balancer", "coordinate", "deviation", "macro error"]) {
+      assert.ok(
+        !new RegExp(leak, "i").test(message),
+        `user-facing error must not mention "${leak}": ${message}`
+      );
+    }
   }
 });
 

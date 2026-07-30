@@ -1469,7 +1469,8 @@ const {
 } = require("./lib/nutrition-totals");
 const {
   balancePlanWithMealSearch,
-  findImplausibleServings
+  findImplausibleServings,
+  markSelectableOptions
 } = require("./lib/nutrition-portion-balancer");
 const foodImageCache = new Map();
 async function getFoodImage(foodName) {
@@ -3539,6 +3540,17 @@ ${slots
           : "We couldn't build a menu that meets your targets with these preferences. Try adjusting the number of meals, your dietary preference, or your restrictions."
       });
     }
+
+    // Only the opening option was balanced against the targets, so switching
+    // to an alternative could silently move the plan out of tolerance. Balance
+    // each alternative too and flag any that still cannot be made valid, so
+    // the UI can keep the user out of an invalid plan.
+    plan.totalsSummary.optionSelectability = markSelectableOptions(
+      plan,
+      { calories: targetCalories, proteinGrams: targetProtein, carbsGrams: targetCarbs, fatGrams: targetFat },
+      { isHebrew }
+    );
+    attachActualTotals(plan);
 
     return res.json({
       success: true,

@@ -542,7 +542,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
             .join("");
 
           return `
-            <div class="carousel-option ${idx === 0 ? "active" : ""}" data-option-number="${option.optionNumber}">
+            <div class="carousel-option ${idx === 0 ? "active" : ""}" data-option-number="${option.optionNumber}" data-keeps-plan-valid="${option.keepsPlanValid === false ? "false" : "true"}">
               <div class="meal-option-media">
                 <div class="meal-photo${option.mealImage ? "" : " no-image"}">
                   ${
@@ -845,8 +845,23 @@ const refreshVisibleTotals = () => {
 // Setup carousel navigation
 resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
   const mealNumber = Number(carousel.dataset.mealNumber);
-  const options = [...carousel.querySelectorAll(".carousel-option")];
-  const dots = [...carousel.querySelectorAll(".carousel-dot")];
+  // The server balances each alternative against the plan's targets and flags
+  // any that cannot be made to fit. Those are removed from the carousel so a
+  // user cannot switch the plan into a state that no longer meets their
+  // targets -- the totals would still add up, but they would be the wrong
+  // totals.
+  const allOptions = [...carousel.querySelectorAll(".carousel-option")];
+  const invalidOptions = allOptions.filter(
+    (option) => option.dataset.keepsPlanValid === "false"
+  );
+  invalidOptions.forEach((option) => option.remove());
+  const options = allOptions.filter((option) => !invalidOptions.includes(option));
+  const allDots = [...carousel.querySelectorAll(".carousel-dot")];
+  // Keep one dot per remaining option.
+  allDots.slice(options.length).forEach((dot) => dot.remove());
+  const dots = allDots.slice(0, options.length);
+  const totalCounter = carousel.querySelector(".carousel-total");
+  if (totalCounter) totalCounter.textContent = String(options.length);
   const prevBtn = carousel.querySelector(".carousel-prev");
   const nextBtn = carousel.querySelector(".carousel-next");
   const currentCounter = carousel.querySelector(".carousel-current");
