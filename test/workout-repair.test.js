@@ -137,6 +137,13 @@ test("resolveExerciseId: known alias resolves to the canonical setcredits key", 
   assert.deepEqual(result, { id: "barbell-squat", source: "name-alias" });
 });
 
+test("resolveExerciseId: common AI-phrased bodyweight variants alias to their catalog exercise", () => {
+  // Live testing surfaced gpt-4.1-mini generating these exact phrasings for
+  // a Calisthenics program with no exerciseId match, losing their images.
+  assert.deepEqual(resolveExerciseId({ name: "Knee Push-up" }), { id: "push-up", source: "name-alias" });
+  assert.deepEqual(resolveExerciseId({ name: "Forearm Plank" }), { id: "plank", source: "name-alias" });
+});
+
 test("resolveExerciseId canonicalizes generated variant ids before validation/rendering", () => {
   const cases = [
     [{ exerciseId: "bulgarian-split-squat", name: "Bulgarian Split Squat" }, "dumbbell-bulgarian-split-squat"],
