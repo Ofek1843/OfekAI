@@ -1467,6 +1467,10 @@ const {
   evaluatePlanTotals,
   verifyDisplayedArithmetic
 } = require("./lib/nutrition-totals");
+const {
+  balancePlanWithOptionSearch,
+  findImplausibleServings
+} = require("./lib/nutrition-portion-balancer");
 const foodImageCache = new Map();
 async function getFoodImage(foodName) {
     const cacheKey = String(foodName || "")
@@ -3456,6 +3460,19 @@ ${slots
     // construction the exact sum of the visible cards instead of a target
     // that reads like a broken total.
     applyBestFittingOptions(plan);
+
+    // Choosing the best-fitting option only picks between whole meals, which
+    // cannot change a meal's macro RATIO -- a plan could land within 0.4% on
+    // calories while sitting +48 g protein and -62 g carbs. Adjust individual
+    // ingredient amounts, inside realistic serving ranges, until the actual
+    // plate matches the calculated targets. Every row is recomputed from the
+    // canonical per-100 g data, so nothing here is display-only.
+    const balanceResult = balancePlanWithOptionSearch(
+      plan,
+      { calories: targetCalories, proteinGrams: targetProtein, carbsGrams: targetCarbs, fatGrams: targetFat },
+      { isHebrew }
+    );
+
     attachActualTotals(plan);
 
     const totalsCheck = evaluatePlanTotals(plan, null);
@@ -3465,7 +3482,14 @@ ${slots
       actual: totalsCheck.actual,
       deviations: totalsCheck.deviations,
       withinTolerance: totalsCheck.withinTolerance,
-      displayedArithmeticExact: arithmeticCheck.exact
+      displayedArithmeticExact: arithmeticCheck.exact,
+      portionBalancing: {
+        applied: true,
+        passes: balanceResult.passes,
+        optionSearchUsed: balanceResult.optionSearchUsed,
+        reachedTarget: balanceResult.ok,
+        implausibleServings: findImplausibleServings(plan)
+      }
     };
 
     if (!arithmeticCheck.exact) {
