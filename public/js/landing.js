@@ -20,7 +20,7 @@ const LANDING_FALLBACKS = {
     landingDescriptionThird:
       "A practical fitness system that can reduce your dependence on scattered apps, generic plans and constant guesswork.",
     landingPreviewWorkoutLabel: "Workout plan",
-    landingPreviewWorkoutTitle: "4-Day Muscle-Building Plan",
+    landingPreviewWorkoutTitle: "Workout Program Based on Every Detail of Your Goals",
     landingPreviewWorkoutText: "Saved, editable and ready for the next session.",
     landingPreviewNutritionLabel: "Nutrition structure",
     landingPreviewNutritionTitle: "Calories, macros and preferences",
