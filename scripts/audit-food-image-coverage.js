@@ -15,7 +15,7 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const FOODS_DIR = path.join(ROOT, "public", "images", "foods");
 const { FOOD_IMAGE_MAP, resolveFoodImage } = require("../lib/food-image-map");
-const { FOODS } = require("../lib/meal-catalog");
+const { FOODS, MEALS_PENDING_IMAGE, getMealById, filterMeals } = require("../lib/meal-catalog");
 
 // Catalog foods that are knowingly shipping without a dedicated photo and
 // intentionally render the placeholder. Every entry here is a content gap
@@ -184,8 +184,23 @@ function main() {
   console.log(JSON.stringify(summary, null, 2));
 
   if (knownMissingStillMissing.length) {
-    console.log("\nKnown missing food photos (intentional placeholder, needs a real image):");
+    console.log("\nKnown missing food photos (needs a real image):");
     knownMissingStillMissing.forEach((f) => console.log(`  - ${f}`));
+    console.log("  Meals using them are withheld from public selection:");
+    MEALS_PENDING_IMAGE.forEach((id) => {
+      const meal = getMealById(id);
+      console.log(`    - ${id} (${meal ? meal.en : "unknown"})`);
+    });
+  }
+
+  // A food without a photo must not be reachable by any publicly selectable
+  // meal, or a user still sees the placeholder in a generated plan.
+  const selectableIds = new Set(filterMeals({ diet: "omnivore" }).map((m) => m.id));
+  const reachableWithoutPhoto = MEALS_PENDING_IMAGE.filter((id) => selectableIds.has(id));
+  if (reachableWithoutPhoto.length) {
+    reachableWithoutPhoto.forEach((id) =>
+      issues.push(`PENDING_IMAGE_MEAL_SELECTABLE ${id} can still be chosen but has an ingredient with no photo`)
+    );
   }
 
   if (catalogFallbacks.length) {
