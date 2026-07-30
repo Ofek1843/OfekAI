@@ -1,34 +1,33 @@
-// Audits the food-image pipeline: the localFoodImages dictionary in
-// server.js (the single source of truth the nutrition builder and its
-// reroll-food endpoint both read from) against the physical files in
-// public/images/foods/.
+// Audits the food-image pipeline: the shared map in lib/food-image-map.js
+// (the single source of truth the nutrition builder, its reroll-food
+// endpoint and lib/meal-catalog.js all resolve through) against the physical
+// files in public/images/foods/ AND against every food in the meal catalog.
 //
 // Exits non-zero for anything that would actually break a food image at
 // runtime (missing mapped file, invalid image, case mismatch, broken URL
-// shape). Orphan files and duplicate-target aliases are reported but do
-// not fail the build — an unused photo or two keys sharing one photo are
-// not bugs.
+// shape, or a catalog food that resolves to the placeholder). Orphan files
+// and duplicate-target aliases are reported but do not fail the build — an
+// unused photo or two keys sharing one photo are not bugs.
 
 const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const FOODS_DIR = path.join(ROOT, "public", "images", "foods");
-const SERVER_JS = path.join(ROOT, "server.js");
+const { FOOD_IMAGE_MAP, resolveFoodImage } = require("../lib/food-image-map");
+const { FOODS } = require("../lib/meal-catalog");
+
+// Catalog foods that are knowingly shipping without a dedicated photo and
+// intentionally render the placeholder. Every entry here is a content gap
+// awaiting a real image, NOT a routing bug -- keep this list empty when you
+// can. Anything that reaches the placeholder and is not listed here fails
+// the audit.
+const KNOWN_MISSING_FOOD_PHOTOS = new Set(["asparagus"]);
 
 function loadLocalFoodImages() {
-  const source = fs.readFileSync(SERVER_JS, "utf8");
-  const match = source.match(/const localFoodImages = \{([\s\S]*?)\n\};/);
-  if (!match) {
-    throw new Error("Could not find `const localFoodImages = { ... };` in server.js");
-  }
-  const body = match[1];
-  const entries = [...body.matchAll(/"([^"]+)":\s*"([^"]+)"/g)].map(([, key, urlPath]) => ({
-    key,
-    urlPath
-  }));
+  const entries = Object.entries(FOOD_IMAGE_MAP).map(([key, urlPath]) => ({ key, urlPath }));
   if (!entries.length) {
-    throw new Error("localFoodImages block found but no entries parsed — regex may be stale.");
+    throw new Error("lib/food-image-map.js exported an empty FOOD_IMAGE_MAP.");
   }
   return entries;
 }
@@ -140,6 +139,30 @@ function main() {
     (name) => !entries.some((e) => e.key === name.toLowerCase().trim())
   );
 
+  // Every food the meal catalog can actually put on a plate must resolve to
+  // a real image. This is the check that was missing when cinnamon shipped
+  // with a photo on disk but no mapping entry.
+  const catalogFallbacks = [];
+  const knownMissingStillMissing = [];
+  for (const [foodKey, food] of Object.entries(FOODS)) {
+    const resolved = food.img ? resolveFoodImage(food.img) : null;
+    if (resolved) continue;
+    if (KNOWN_MISSING_FOOD_PHOTOS.has(foodKey)) {
+      knownMissingStillMissing.push(`${foodKey} (img="${food.img}")`);
+      continue;
+    }
+    catalogFallbacks.push(`${foodKey} (img="${food.img}")`);
+    issues.push(`CATALOG_FOOD_FALLBACK ${foodKey} -> img="${food.img}" resolves to the placeholder`);
+  }
+
+  // Explicit named regression: the reported release bug.
+  const cinnamonUrl = resolveFoodImage("cinnamon");
+  const cinnamonVariants = ["cinnamon", "Ground Cinnamon", "cinnamon powder"];
+  const cinnamonFailures = cinnamonVariants.filter((v) => !resolveFoodImage(v));
+  if (cinnamonFailures.length) {
+    issues.push(`CINNAMON_FALLBACK unresolved variants: ${cinnamonFailures.join(", ")}`);
+  }
+
   const summary = {
     totalPhysicalFiles: physicalFiles.length,
     totalMappingEntries: entries.length,
@@ -150,11 +173,25 @@ function main() {
     orphanFiles: orphanFiles.length,
     duplicateAliasGroups: aliasesWithDuplicates.length,
     unresolvedTestMealNames: unresolvedTestMeals.length,
-    brokenUrlShapes: brokenUrlShapes.length
+    brokenUrlShapes: brokenUrlShapes.length,
+    catalogFoods: Object.keys(FOODS).length,
+    catalogFoodsReachingFallback: catalogFallbacks.length,
+    knownMissingFoodPhotos: knownMissingStillMissing.length,
+    cinnamonResolvesTo: cinnamonUrl || "FALLBACK"
   };
 
   console.log("Food image coverage audit");
   console.log(JSON.stringify(summary, null, 2));
+
+  if (knownMissingStillMissing.length) {
+    console.log("\nKnown missing food photos (intentional placeholder, needs a real image):");
+    knownMissingStillMissing.forEach((f) => console.log(`  - ${f}`));
+  }
+
+  if (catalogFallbacks.length) {
+    console.log("\nCatalog foods reaching the placeholder (BLOCKING):");
+    catalogFallbacks.forEach((f) => console.log(`  - ${f}`));
+  }
 
   if (orphanFiles.length) {
     console.log("\nOrphan files (on disk, not referenced by any mapping — not a failure):");
