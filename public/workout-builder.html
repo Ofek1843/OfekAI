@@ -11,6 +11,18 @@
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preload" as="image" href="/images/workout-builder/goals/build-muscle.webp" type="image/webp">
+<!--
+  Wizard steps are display:none until reached, and these card images are CSS
+  backgrounds, so the browser did not begin fetching them until the step was
+  revealed -- the three training-style cards showed only their gradient for
+  several seconds. Preloading starts the requests during the initial document
+  load instead. Only the style step is preloaded: it is the first step whose
+  images are not already visible, and preloading every step would compete with
+  the images actually on screen.
+-->
+<link rel="preload" as="image" href="/images/workout-builder/styles/gym.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="/images/workout-builder/styles/calishtenics.webp" type="image/webp" fetchpriority="high">
+<link rel="preload" as="image" href="/images/workout-builder/styles/hybrid.webp" type="image/webp" fetchpriority="high">
 <link rel="stylesheet" href="/css/workout-builder.css?v=20260728-cards-1">
 <link rel="stylesheet" href="/css/exercise-demo.css">
 <link rel="stylesheet" href="/css/exercise-demo-theme.css">
