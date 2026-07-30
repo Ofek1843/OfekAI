@@ -1468,7 +1468,7 @@ const {
   verifyDisplayedArithmetic
 } = require("./lib/nutrition-totals");
 const {
-  balancePlanWithOptionSearch,
+  balancePlanWithMealSearch,
   findImplausibleServings
 } = require("./lib/nutrition-portion-balancer");
 const foodImageCache = new Map();
@@ -3467,10 +3467,26 @@ ${slots
     // ingredient amounts, inside realistic serving ranges, until the actual
     // plate matches the calculated targets. Every row is recomputed from the
     // canonical per-100 g data, so nothing here is display-only.
-    const balanceResult = balancePlanWithOptionSearch(
+    // When no arrangement of the chosen meals can reach the targets inside
+    // safe serving ranges, swap in a different compatible meal. The candidate
+    // pool comes from the same filterMeals() call used for the initial
+    // selection, so a replacement always respects diet, allergens, excluded
+    // foods and pending-image exclusions -- a macro failure is never solved by
+    // serving something the user cannot eat.
+    const balanceResult = balancePlanWithMealSearch(
       plan,
       { calories: targetCalories, proteinGrams: targetProtein, carbsGrams: targetCarbs, fatGrams: targetFat },
-      { isHebrew }
+      {
+        isHebrew,
+        candidatesForSlot: (meal) =>
+          filterMeals({ diet: catalogDiet, excludeAllergens, slot: meal.slot }),
+        buildOption: (mealId, meal) =>
+          buildMealOption(mealId, {
+            targetCalories: meal.targetCalories,
+            isHebrew,
+            optionNumber: 1
+          })
+      }
     );
 
     attachActualTotals(plan);
@@ -3487,6 +3503,7 @@ ${slots
         applied: true,
         passes: balanceResult.passes,
         optionSearchUsed: balanceResult.optionSearchUsed,
+        mealSearchUsed: balanceResult.mealSearchUsed === true,
         reachedTarget: balanceResult.ok,
         implausibleServings: findImplausibleServings(plan)
       }
@@ -3502,11 +3519,25 @@ ${slots
       });
     }
 
-    if (!totalsCheck.withinTolerance) {
+    // A plan outside tolerance is not a plan. Portion balancing and the
+    // option/meal search have already run, so reaching here means no
+    // compatible combination could hit the targets inside safe serving
+    // ranges. Returning it anyway would show the user macro totals that do
+    // not meet the plan they asked for, under a successful response --
+    // previously this only produced a server-side warning.
+    const implausible = findImplausibleServings(plan);
+    if (!totalsCheck.withinTolerance || implausible.length) {
       console.warn(
-        `Nutrition plan outside target tolerance for uid=${user.uid}:`,
-        totalsCheck.failures.join("; ")
+        `Nutrition plan rejected for uid=${user.uid}:`,
+        totalsCheck.failures.join("; "),
+        implausible.length ? `| implausible: ${implausible.join("; ")}` : "",
+        `| evaluations=${balanceResult.evaluations ?? "n/a"}`
       );
+      return res.status(422).json({
+        error: isHebrew
+          ? "לא הצלחנו לבנות תפריט שמתאים ליעדים שלך עם ההעדפות האלה. נסו לשנות מספר ארוחות, העדפה תזונתית או מגבלות."
+          : "We couldn't build a menu that meets your targets with these preferences. Try adjusting the number of meals, your dietary preference, or your restrictions."
+      });
     }
 
     return res.json({
