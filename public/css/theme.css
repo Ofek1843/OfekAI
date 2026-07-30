@@ -1,0 +1,210 @@
+/* ==========================================================================
+   FuelPhysique global theme — the single source of colour for the product.
+   ==========================================================================
+
+   Loaded FIRST on every page, before any page stylesheet, so the palette is
+   available from the first paint and no page can flash the old theme.
+
+   This file changes COLOUR ONLY. It defines no layout, spacing, sizing,
+   typography, radius or animation property, so it cannot move anything on the
+   page.
+
+   Identity: warm deep graphite foundation, calm sage/teal primary accent,
+   restrained warm copper secondary, comfortable off-white text. Replaces the
+   previous dark-navy + saturated purple/blue palette, which read as a generic
+   AI-SaaS template.
+
+   Structure:
+     1. --fp-*  semantic tokens (the real palette; reference these in new work)
+     2. legacy aliases -- the shared variable names existing stylesheets
+        already consume (--bg, --text, --surface ...). Pointing them here
+        re-themes those pages without touching their rules.
+     3. category accents, harmonised with the palette
+   ========================================================================== */
+
+:root {
+  /* ---- 1. surface hierarchy: deepest page → raised modal ---- */
+  --fp-bg-deep: #101516;
+  --fp-bg-page: #151c1d;
+  --fp-bg-section: #1a2324;
+  --fp-surface: #202b2c;
+  --fp-surface-raised: #263334;
+  --fp-surface-soft: #2c3a3b;
+  --fp-surface-input: #182122;
+
+  /* ---- borders ---- */
+  --fp-border: #344546;
+  --fp-border-strong: #49605f;
+
+  /* ---- text ---- */
+  --fp-text-primary: #f3f0e8;
+  --fp-text-secondary: #bcc6c2;
+  --fp-text-muted: #8e9d99;
+  --fp-text-inverse: #121817;
+
+  /* ---- brand ---- */
+  --fp-brand-primary: #65b89f;
+  --fp-brand-primary-hover: #78c8af;
+  --fp-brand-primary-active: #4f9f88;
+  --fp-brand-secondary: #d48c61;
+  --fp-brand-secondary-hover: #e09c70;
+
+  /* Tinted fills for soft brand backgrounds, so components do not invent
+     their own low-opacity variants. */
+  --fp-brand-primary-soft: rgba(101, 184, 159, 0.14);
+  --fp-brand-primary-softer: rgba(101, 184, 159, 0.08);
+  --fp-brand-secondary-soft: rgba(212, 140, 97, 0.14);
+
+  /* ---- status ---- */
+  --fp-success: #59ad78;
+  --fp-warning: #d6a45d;
+  --fp-danger: #d96f70;
+  --fp-info: #6e9fc2;
+  --fp-success-soft: rgba(89, 173, 120, 0.14);
+  --fp-warning-soft: rgba(214, 164, 93, 0.14);
+  --fp-danger-soft: rgba(217, 111, 112, 0.14);
+  --fp-info-soft: rgba(110, 159, 194, 0.14);
+
+  /* ---- interaction ---- */
+  --fp-overlay: rgba(8, 13, 13, 0.72);
+  --fp-focus-ring: rgba(101, 184, 159, 0.48);
+  --fp-hover-surface: rgba(255, 255, 255, 0.045);
+  --fp-active-surface: rgba(255, 255, 255, 0.075);
+  --fp-disabled-surface: #1d2626;
+  --fp-disabled-text: #6c7a77;
+  --fp-disabled-border: #2b3839;
+
+  /* ---- shadows (colour only; no geometry change) ---- */
+  --fp-shadow-soft: 0 10px 26px rgba(6, 10, 10, 0.4);
+  --fp-shadow-raised: 0 18px 40px rgba(6, 10, 10, 0.5);
+
+  /* =====================================================================
+     3. Product category accents.
+     Kept because they carry meaning, but pulled toward the palette so they
+     read as accents rather than as separate themes. Use for icons, active
+     tabs, thin borders, small status dots and charts -- never as a dominant
+     page background.
+     ===================================================================== */
+  --fp-cat-workout: #5d93cc;   /* controlled blue   */
+  --fp-cat-nutrition: #65b89f; /* controlled green  */
+  --fp-cat-progress: #d48c61;  /* controlled copper */
+  --fp-cat-coach: #9d8fc7;     /* controlled violet */
+  --fp-cat-workout-soft: rgba(93, 147, 204, 0.14);
+  --fp-cat-nutrition-soft: rgba(101, 184, 159, 0.14);
+  --fp-cat-progress-soft: rgba(212, 140, 97, 0.14);
+  --fp-cat-coach-soft: rgba(157, 143, 199, 0.14);
+
+  /* Chart series, ordered for maximum separation against the graphite
+     background. Distinct in hue AND lightness so they stay readable for
+     colour-vision differences and in greyscale. */
+  --fp-chart-1: #65b89f;
+  --fp-chart-2: #d48c61;
+  --fp-chart-3: #6e9fc2;
+  --fp-chart-4: #c9b45a;
+  --fp-chart-5: #9d8fc7;
+  --fp-chart-6: #7fc8b4;
+  --fp-chart-grid: #2b3839;
+  --fp-chart-axis: #8e9d99;
+  --fp-chart-label: #bcc6c2;
+  --fp-chart-tooltip-bg: #263334;
+  --fp-chart-tooltip-text: #f3f0e8;
+
+  /* =====================================================================
+     2. Legacy aliases.
+     These names are already consumed across the existing page stylesheets.
+     Re-pointing them here re-themes those pages without rewriting their
+     rules -- which keeps this change colour-only and avoids a mechanical
+     find/replace that would ignore semantic meaning.
+     ===================================================================== */
+  --bg: var(--fp-bg-page);
+  --background: var(--fp-bg-page);
+  --bg-deep: var(--fp-bg-deep);
+  --panel: var(--fp-surface);
+  --surface: var(--fp-surface);
+  --surface-secondary: var(--fp-surface-raised);
+  --surface-soft: var(--fp-surface-soft);
+  --card: var(--fp-surface);
+  --card-border: var(--fp-border);
+
+  --text: var(--fp-text-primary);
+  --text-secondary: var(--fp-text-secondary);
+  --muted: var(--fp-text-muted);
+
+  --border: var(--fp-border);
+  --border-strong: var(--fp-border-strong);
+
+  --accent: var(--fp-brand-primary);
+  --accent-hover: var(--fp-brand-primary-hover);
+  --accent-soft: var(--fp-brand-primary-soft);
+
+  --green: var(--fp-success);
+  --blue: var(--fp-info);
+  --amber: var(--fp-warning);
+  --rose: var(--fp-danger);
+  --danger: var(--fp-danger);
+  --success: var(--fp-success);
+  --warning: var(--fp-warning);
+  --info: var(--fp-info);
+
+  --shadow: var(--fp-shadow-soft);
+
+  /* Category aliases used by dashboard cards. */
+  --workout: var(--fp-cat-workout);
+  --nutrition: var(--fp-cat-nutrition);
+  --progress: var(--fp-cat-progress);
+  --coach: var(--fp-cat-coach);
+
+  color-scheme: dark;
+}
+
+/* The page canvas itself. Set here so the correct background exists on the
+   very first paint rather than arriving with a page stylesheet, which is what
+   allowed a flash of the previous navy theme. Colour properties only. */
+html {
+  background-color: var(--fp-bg-deep);
+}
+
+body {
+  background-color: var(--fp-bg-page);
+  color: var(--fp-text-primary);
+}
+
+/* Form controls inherit the platform's dark palette rather than a white
+   default, which is what produced dark-on-dark placeholder text. */
+input,
+textarea,
+select {
+  color: var(--fp-text-primary);
+}
+
+::placeholder {
+  color: var(--fp-text-muted);
+  opacity: 1; /* Firefox dims placeholders further by default. */
+}
+
+/* A visible focus indicator on every surface in the new palette. */
+:focus-visible {
+  outline-color: var(--fp-brand-primary);
+}
+
+::selection {
+  background-color: var(--fp-brand-primary-soft);
+  color: var(--fp-text-primary);
+}
+
+/* Scrollbars, so they do not remain light-grey islands on a dark page. */
+* {
+  scrollbar-color: var(--fp-border-strong) var(--fp-bg-section);
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--fp-bg-section);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--fp-border-strong);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--fp-brand-primary-active);
+}
