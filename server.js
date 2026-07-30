@@ -1444,6 +1444,12 @@ Food log: ${text}`
 });
 
 const { FOOD_IMAGE_MAP: localFoodImages, resolveFoodImage, FOOD_PLACEHOLDER_IMAGE } = require("./lib/food-image-map");
+const {
+  applyBestFittingOptions,
+  attachActualTotals,
+  evaluatePlanTotals,
+  verifyDisplayedArithmetic
+} = require("./lib/nutrition-totals");
 const foodImageCache = new Map();
 async function getFoodImage(foodName) {
     const cacheKey = String(foodName || "")
@@ -3468,6 +3474,43 @@ ${slots
         ? aiPlan.notes.filter((note) => typeof note === "string").slice(0, 5)
         : []
     };
+
+    // dailyCalories/proteinGrams/... above are TARGETS derived from the
+    // user's profile. The meal cards show ACTUAL catalog macros, which will
+    // never match the target exactly once servings are snapped to measurable
+    // amounts. Open each meal on its best-fitting option, then publish the
+    // actual totals separately so the header can show a number that is by
+    // construction the exact sum of the visible cards instead of a target
+    // that reads like a broken total.
+    applyBestFittingOptions(plan);
+    attachActualTotals(plan);
+
+    const totalsCheck = evaluatePlanTotals(plan, null);
+    const arithmeticCheck = verifyDisplayedArithmetic(plan, null);
+    plan.totalsSummary = {
+      targets: totalsCheck.targets,
+      actual: totalsCheck.actual,
+      deviations: totalsCheck.deviations,
+      withinTolerance: totalsCheck.withinTolerance,
+      displayedArithmeticExact: arithmeticCheck.exact
+    };
+
+    if (!arithmeticCheck.exact) {
+      // The visible numbers must always add up; this is not a tolerance.
+      console.error("Nutrition displayed arithmetic mismatch:", arithmeticCheck.mismatches);
+      return res.status(502).json({
+        error: isHebrew
+          ? "לא הצלחנו להרכיב תפריט עקבי. נסו שוב."
+          : "Could not assemble a consistent nutrition plan. Please try again."
+      });
+    }
+
+    if (!totalsCheck.withinTolerance) {
+      console.warn(
+        `Nutrition plan outside target tolerance for uid=${user.uid}:`,
+        totalsCheck.failures.join("; ")
+      );
+    }
 
     return res.json({
       success: true,
