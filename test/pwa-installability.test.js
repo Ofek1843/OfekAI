@@ -98,11 +98,16 @@ test("pwa-install.js implements distinct platform detection, not a single generi
   // B. iOS Safari -- instructional, no fake install button wired to a
   // non-existent native flow.
   assert.match(source, /function showIOSSafariInstructions\(/);
-  assert.doesNotMatch(
-    source.match(/function showIOSSafariInstructions\([\s\S]*?\n}\n/)[0],
-    /event\.prompt\(\)/,
-    "iOS Safari path must not call the non-existent prompt() API"
-  );
+  {
+    const start = source.indexOf("function showIOSSafariInstructions(");
+    const end = source.indexOf("function showIOSOtherBrowserNotice(", start);
+    assert.ok(start !== -1 && end !== -1 && end > start, "expected to isolate the showIOSSafariInstructions function body");
+    assert.doesNotMatch(
+      source.slice(start, end),
+      /event\.prompt\(\)/,
+      "iOS Safari path must not call the non-existent prompt() API"
+    );
+  }
 
   // C. iOS non-Safari -- told to switch browsers, not shown a broken flow.
   assert.match(source, /function showIOSOtherBrowserNotice\(/);
