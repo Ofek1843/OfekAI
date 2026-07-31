@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30T15:41:14.977Z",
+  "generatedAt": "2026-07-31T04:40:08.794Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
@@ -8,7 +8,7 @@
     "canonicalSupportedExercises": 100,
     "canonicalExercisesWithDedicatedImages": 100,
     "canonicalExercisesMissingImages": 0,
-    "aliasesCovered": 240,
+    "aliasesCovered": 241,
     "orphanFiles": 0,
     "brokenMappings": 0,
     "invalidFiles": 0,
@@ -24,7 +24,11 @@
     "generatorCanonicalMismatches": 0,
     "publicEnabledExercises": 106,
     "publicReleaseImageFailures": 0,
-    "disabledUntilDedicatedImages": 0
+    "disabledUntilDedicatedImages": 1,
+    "mobilityStretchVariantsChecked": 9,
+    "mobilityStretchCorrectlyRemoved": 9,
+    "mobilityStretchSurvivedWithImage": 0,
+    "mobilityStretchFallbackLeaks": 0
   },
   "canonicalCatalog": [
     {
@@ -1373,6 +1377,7 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
+        "machine-seated-row",
         "seated-machine-row"
       ]
     },
@@ -1532,6 +1537,90 @@
       ]
     }
   ],
+  "mobilityStretchCoverage": [
+    {
+      "originalName": "Bodyweight Shoulder Stretch",
+      "demoName": "Bodyweight Shoulder Stretch",
+      "providedExerciseId": "bodyweight-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "מתיחת כתפיים עם משקל גוף",
+      "demoName": "מתיחת כתפיים עם משקל גוף",
+      "providedExerciseId": "bodyweight-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Standing Shoulder Stretch",
+      "demoName": "Standing Shoulder Stretch",
+      "providedExerciseId": "standing-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Cross-Body Shoulder Stretch",
+      "demoName": "Cross-Body Shoulder Stretch",
+      "providedExerciseId": "cross-body-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Full Body Warm-up",
+      "demoName": "Full Body Warm-up",
+      "providedExerciseId": "full-body-warm-up",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "חימום כללי לכל הגוף",
+      "demoName": "חימום כללי לכל הגוף",
+      "providedExerciseId": "full-body-warm-up",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Hip Mobility Drill",
+      "demoName": "Hip Mobility Drill",
+      "providedExerciseId": "hip-mobility-drill",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Cat-Cow Stretch",
+      "demoName": "Cat-Cow Stretch",
+      "providedExerciseId": "cat-cow-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Cool-Down Stretch",
+      "demoName": "Cool-Down Stretch",
+      "providedExerciseId": "cool-down-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    }
+  ],
+  "mobilityStretchLeaks": [],
   "generatorToImageCoverage": [
     {
       "originalName": "Ab Crunch",
@@ -15156,7 +15245,14 @@
     }
   ],
   "publicReleaseFailures": [],
-  "disabledUntilDedicatedImages": [],
+  "disabledUntilDedicatedImages": [
+    {
+      "exerciseId": "bodyweight-shoulder-stretch",
+      "title": "Bodyweight Shoulder Stretch",
+      "reason": "no dedicated stretch/mobility image exists for this movement",
+      "replacementIds": []
+    }
+  ],
   "setCreditAliases": [
     {
       "aliasExerciseId": "barbell-bench-press",
@@ -16736,6 +16832,7 @@
       "referencedByResolver": true,
       "canonicalExercise": "seated-machine-row",
       "aliases": [
+        "machine-seated-row",
         "seated-machine-row"
       ],
       "genericFallback": false,

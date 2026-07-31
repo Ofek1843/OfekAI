@@ -1,6 +1,6 @@
 # Exercise Image Coverage Report
 
-Generated: 2026-07-30T15:41:14.977Z
+Generated: 2026-07-31T04:40:08.794Z
 
 The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.
 
@@ -13,7 +13,7 @@ The workout model may still produce arbitrary free-text exercise names. This aud
 | canonicalSupportedExercises | 100 |
 | canonicalExercisesWithDedicatedImages | 100 |
 | canonicalExercisesMissingImages | 0 |
-| aliasesCovered | 240 |
+| aliasesCovered | 241 |
 | orphanFiles | 0 |
 | brokenMappings | 0 |
 | invalidFiles | 0 |
@@ -29,7 +29,11 @@ The workout model may still produce arbitrary free-text exercise names. This aud
 | generatorCanonicalMismatches | 0 |
 | publicEnabledExercises | 106 |
 | publicReleaseImageFailures | 0 |
-| disabledUntilDedicatedImages | 0 |
+| disabledUntilDedicatedImages | 1 |
+| mobilityStretchVariantsChecked | 9 |
+| mobilityStretchCorrectlyRemoved | 9 |
+| mobilityStretchSurvivedWithImage | 0 |
+| mobilityStretchFallbackLeaks | 0 |
 
 ## A. Resolver-internal coverage
 
@@ -133,7 +137,7 @@ This checks `KNOWN_EXERCISE_IMAGE_SLUGS` against files on disk. It proves resolv
 | seated-cable-row | Seated Cable Row | /images/exercises/seated-cable-row.png | seated-cable-row.png | COVERED | cable-row |
 | seated-calf-raise | Seated Calf Raise | /images/exercises/seated-calf-raise.png | seated-calf-raise.png | COVERED | seated-calf-raises |
 | seated-leg-curl | Seated Leg Curl | /images/exercises/seated-leg-curl.png | seated-leg-curl.png | COVERED | seated-hamstring-curl, seated-leg-curl, seated-leg-curls |
-| seated-machine-row | Seated Machine Row | /images/exercises/seated-machine-row.png | seated-machine-row.png | COVERED | seated-machine-row |
+| seated-machine-row | Seated Machine Row | /images/exercises/seated-machine-row.png | seated-machine-row.png | COVERED | machine-seated-row, seated-machine-row |
 | side-plank | Side Plank | /images/exercises/side-plank.png | side-plank.png | COVERED |  |
 | single-arm-cable-row | Single Arm Cable Row | /images/exercises/single-arm-cable-row.png | single-arm-cable-row.png | COVERED |  |
 | skull-crusher | Skull Crusher | /images/exercises/skull-crusher.png | skull-crusher.png | COVERED | lying-triceps-extension, skull-crushers |

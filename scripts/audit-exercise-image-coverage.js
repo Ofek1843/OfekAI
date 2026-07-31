@@ -6,10 +6,11 @@ const vm = require("node:vm");
 const { execFileSync } = require("node:child_process");
 const { EXERCISE_SETCREDITS } = require("../lib/workout-setcredits-map");
 const { EXERCISE_NAME_ALIASES } = require("../lib/workout-exercise-aliases");
-const { resolveExerciseId } = require("../lib/workout-repair");
+const { resolveExerciseId, repairWorkoutProgram } = require("../lib/workout-repair");
 const { slugifyExerciseId } = require("../lib/workout-volume");
 const {
   MISSING_DEDICATED_IMAGE_EXERCISES,
+  getCatalogExercise,
   getPublicExerciseImageMap,
   isPublicExerciseEnabled
 } = require("../lib/workout-exercise-catalog");
@@ -223,6 +224,69 @@ const EQUIPMENT_BY_SLUG = {
   "wide-grip-push-up": "bodyweight"
 };
 
+// Public warm-up, mobility, stretch and cool-down name variants the
+// generator can plausibly produce, in both prompt-supported languages. None
+// of these has a dedicated image today (see public/images/exercises), so
+// each must either resolve to a real enabled catalog entry with an accurate
+// image, or be removed entirely by repairWorkoutProgram()'s
+// repairImagelessMobilityExercises pass before it can reach the frontend —
+// never rendered via the generic branded fallback or a misleading strength
+// surrogate. This is what "expand the audit to cover warm-up/mobility
+// exercises" (a gap in the strength-focused KNOWN_GENERATED_EXERCISE_VARIANTS
+// list above) means in practice: prove removal, not just image lookup.
+const MOBILITY_STRETCH_VARIANTS = [
+  { name: "Bodyweight Shoulder Stretch", demoName: "Bodyweight Shoulder Stretch", exerciseId: "bodyweight-shoulder-stretch", equipment: "Bodyweight", muscleGroup: "Shoulders" },
+  { name: "מתיחת כתפיים עם משקל גוף", demoName: "מתיחת כתפיים עם משקל גוף", exerciseId: "bodyweight-shoulder-stretch", equipment: "Bodyweight", muscleGroup: "כתפיים" },
+  { name: "Standing Shoulder Stretch", demoName: "Standing Shoulder Stretch", exerciseId: "standing-shoulder-stretch", equipment: "Bodyweight", muscleGroup: "Shoulders" },
+  { name: "Cross-Body Shoulder Stretch", demoName: "Cross-Body Shoulder Stretch", exerciseId: "cross-body-shoulder-stretch", equipment: "Bodyweight", muscleGroup: "Shoulders" },
+  { name: "Full Body Warm-up", demoName: "Full Body Warm-up", exerciseId: "full-body-warm-up", equipment: "Bodyweight", muscleGroup: "Full Body" },
+  { name: "חימום כללי לכל הגוף", demoName: "חימום כללי לכל הגוף", exerciseId: "full-body-warm-up", equipment: "Bodyweight", muscleGroup: "גוף מלא" },
+  { name: "Hip Mobility Drill", demoName: "Hip Mobility Drill", exerciseId: "hip-mobility-drill", equipment: "Bodyweight", muscleGroup: "Hips" },
+  { name: "Cat-Cow Stretch", demoName: "Cat-Cow Stretch", exerciseId: "cat-cow-stretch", equipment: "Bodyweight", muscleGroup: "Back" },
+  { name: "Cool-Down Stretch", demoName: "Cool-Down Stretch", exerciseId: "cool-down-stretch", equipment: "Bodyweight", muscleGroup: "Full Body" }
+];
+
+// Runs each mobility/stretch variant through the REAL repair pipeline
+// (padded with enabled filler exercises so MIN_EXERCISES_PER_SESSION never
+// blocks its own removal), mirroring exactly what happens to a generated
+// program before it reaches the frontend.
+function buildMobilityStretchCoverage() {
+  return MOBILITY_STRETCH_VARIANTS.map((variant) => {
+    const program = {
+      sessions: [
+        {
+          name: "Audit Session",
+          exercises: [
+            { ...variant, sets: 3, reps: "10-15", restSeconds: 60 },
+            { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 60 },
+            { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60 },
+            { exerciseId: "russian-twist", name: "Russian Twist", demoName: "Russian Twist", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "15-20", restSeconds: 60 }
+          ]
+        }
+      ]
+    };
+    const { program: repaired } = repairWorkoutProgram(program, { equipment: [] });
+    const survivingExercise = repaired.sessions[0].exercises.find(
+      (exercise) => exercise.name === variant.name || exercise.demoName === variant.demoName
+    );
+    const removed = !survivingExercise;
+    const catalogEntry = removed ? null : getCatalogExercise(resolveExerciseId(survivingExercise).id);
+    return {
+      originalName: variant.name,
+      demoName: variant.demoName,
+      providedExerciseId: variant.exerciseId,
+      removedByRepair: removed,
+      survivedWithCatalogImage: Boolean(catalogEntry),
+      resolvedExerciseId: survivingExercise ? resolveExerciseId(survivingExercise).id : "",
+      classification: removed
+        ? "CORRECTLY_REMOVED_NO_FALLBACK"
+        : catalogEntry
+          ? "SURVIVED_WITH_ACCURATE_IMAGE"
+          : "LEAK_WOULD_RENDER_FALLBACK"
+    };
+  });
+}
+
 function slugToTitle(slug) {
   return slug
     .split("-")
@@ -391,6 +455,9 @@ function buildAudit() {
     })
     .sort((a, b) => a.aliasExerciseId.localeCompare(b.aliasExerciseId));
 
+  const mobilityStretchCoverage = buildMobilityStretchCoverage();
+  const mobilityStretchLeaks = mobilityStretchCoverage.filter((item) => item.classification === "LEAK_WOULD_RENDER_FALLBACK");
+
   const generatorVariantInventory = buildGeneratorVariantInventory();
   const generatorToImageCoverage = generatorVariantInventory.map((variant) => {
     const exercise = {
@@ -536,7 +603,8 @@ function buildAudit() {
     ...fallbackOnlyAliases.map((item) => `FALLBACK_ONLY ${item.aliasExerciseId}`),
     ...generatorFallbacks.map((item) => `GENERATOR_FALLBACK ${item.originalName} -> ${item.attemptedSlug || "(empty)"}`),
     ...generatorCanonicalMismatches.map((item) => `GENERATOR_CANONICAL_MISMATCH ${item.originalName}: expected ${item.expectedCanonical}, got ${item.canonicalExerciseId}`),
-    ...publicReleaseFailures.map((item) => `PUBLIC_RELEASE_IMAGE_FAILURE ${item.exerciseId}: ${item.classification}`)
+    ...publicReleaseFailures.map((item) => `PUBLIC_RELEASE_IMAGE_FAILURE ${item.exerciseId}: ${item.classification}`),
+    ...mobilityStretchLeaks.map((item) => `MOBILITY_STRETCH_FALLBACK_LEAK ${item.originalName} -> ${item.resolvedExerciseId || "(unresolved)"}`)
   ];
 
   const totals = {
@@ -561,7 +629,11 @@ function buildAudit() {
     generatorCanonicalMismatches: generatorCanonicalMismatches.length,
     publicEnabledExercises: publicReleaseCoverage.length,
     publicReleaseImageFailures: publicReleaseFailures.length,
-    disabledUntilDedicatedImages: MISSING_DEDICATED_IMAGE_EXERCISES.length
+    disabledUntilDedicatedImages: MISSING_DEDICATED_IMAGE_EXERCISES.length,
+    mobilityStretchVariantsChecked: mobilityStretchCoverage.length,
+    mobilityStretchCorrectlyRemoved: mobilityStretchCoverage.filter((item) => item.classification === "CORRECTLY_REMOVED_NO_FALLBACK").length,
+    mobilityStretchSurvivedWithImage: mobilityStretchCoverage.filter((item) => item.classification === "SURVIVED_WITH_ACCURATE_IMAGE").length,
+    mobilityStretchFallbackLeaks: mobilityStretchLeaks.length
   };
 
   return {
@@ -570,6 +642,8 @@ function buildAudit() {
     note: "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
     totals,
     canonicalCatalog,
+    mobilityStretchCoverage,
+    mobilityStretchLeaks,
     generatorToImageCoverage,
     generatorFallbacks,
     generatorBrokenRouting,
