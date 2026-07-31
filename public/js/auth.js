@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
-import { doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { doc, getDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
   createUserWithEmailAndPassword,
@@ -9,13 +9,37 @@ import {
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence,
-  browserSessionPersistence
+  browserSessionPersistence,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  linkWithCredential,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
+import {
+  TERMS_VERSION,
+  REDIRECT_NEXT_STORAGE_KEY,
+  GOOGLE_OAUTH_SCOPES,
+  resolveNextPath,
+  shouldUseRedirect,
+  needsTermsAcceptance,
+  buildUserDocumentMerge,
+  getFriendlyAuthError,
+  isUserCancelledAuth,
+  getAuthStrings
+} from "./auth-google-core.mjs";
+
+const locale = (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
+const strings = getAuthStrings(locale);
+
+// The requested destination survives a full-page signInWithRedirect round
+// trip via sessionStorage — the ?next= query string is gone by the time the
+// provider navigates back to this page.
 const requestedNext = new URLSearchParams(window.location.search).get("next");
-const nextPath = ["workout-builder.html", "nutrition-builder.html"].includes(requestedNext)
-  ? `/${requestedNext}`
-  : "/dashboard.html";
+const storedNext = safeSessionGet(REDIRECT_NEXT_STORAGE_KEY);
+const nextPath = resolveNextPath(requestedNext || storedNext);
 
 const loginTab =
   document.getElementById("loginTab");
@@ -47,9 +71,67 @@ const termsGroup = document.getElementById("termsGroup");
 const termsAccepted = document.getElementById("termsAccepted");
 const rememberMeInput = document.getElementById("rememberMe");
 
+const googleButton = document.getElementById("googleButton");
+const googleButtonLabel = document.getElementById("googleButtonLabel");
+const authSeparator = document.getElementById("authSeparator");
+
+const termsGatePanel = document.getElementById("termsGatePanel");
+const termsGateAccepted = document.getElementById("termsGateAccepted");
+const termsGateSubmit = document.getElementById("termsGateSubmit");
+const termsGateCancel = document.getElementById("termsGateCancel");
+const termsGateMessage = document.getElementById("termsGateMessage");
+
+const linkAccountPanel = document.getElementById("linkAccountPanel");
+const linkEmail = document.getElementById("linkEmail");
+const linkPassword = document.getElementById("linkPassword");
+const linkSubmit = document.getElementById("linkSubmit");
+const linkCancel = document.getElementById("linkCancel");
+const linkMessage = document.getElementById("linkMessage");
+
 let currentMode = "login";
 let authenticationCompleted = false;
+// True from the moment a Google flow starts until it either redirects into
+// the product or is fully cancelled. While it's set, the onAuthStateChanged
+// guard must NOT redirect: a first-time Google user IS signed in but has not
+// accepted the terms yet, and redirecting them would both bypass the gate and
+// create an auth.html -> dashboard -> auth.html loop.
+let googleFlowInProgress = false;
+// Set once a popup has been blocked, so the next attempt goes straight to the
+// redirect flow instead of silently failing the same way again.
+let preferRedirectFallback = false;
+// The Google credential recovered from an account-collision error, held only
+// in memory for the duration of the linking flow.
+let pendingGoogleCredential = null;
+// The authenticated-but-not-yet-cleared user held between showing the terms
+// gate and the user accepting it.
+let pendingProfile = null;
+
 trackPageView({ page: "auth" });
+
+function safeSessionGet(key) {
+  try {
+    return window.sessionStorage.getItem(key);
+  } catch (error) {
+    // Private-mode Safari and some embedded webviews throw on storage access.
+    return null;
+  }
+}
+
+function safeSessionSet(key, value) {
+  try {
+    window.sessionStorage.setItem(key, value);
+  } catch (error) {
+    /* Non-fatal: we fall back to the default destination after the redirect. */
+  }
+}
+
+function safeSessionRemove(key) {
+  try {
+    window.sessionStorage.removeItem(key);
+  } catch (error) {
+    /* Non-fatal. */
+  }
+}
 
 function showMessage(text, type) {
   authMessage.textContent = text;
@@ -59,6 +141,16 @@ function showMessage(text, type) {
 function clearMessage() {
   authMessage.textContent = "";
   authMessage.className = "message";
+}
+
+function showPanelMessage(element, text, type) {
+  if (!element) return;
+  element.textContent = text;
+  element.className = `message ${type}`;
+}
+
+function revealPage() {
+  document.body.classList.remove("auth-checking");
 }
 
 function changeMode(mode) {
@@ -100,33 +192,342 @@ function changeMode(mode) {
 }
 
 function getFriendlyError(errorCode) {
-  switch (errorCode) {
-    case "auth/invalid-email":
-      return "Please enter a valid email address.";
+  return getFriendlyAuthError(errorCode, locale);
+}
 
-    case "auth/missing-password":
-      return "Please enter a password.";
+// --- Localized labels for the Google/terms/linking UI ---------------------
+// Applied at render time from the shared string table so English and Hebrew
+// can never drift apart in the markup.
+function applyLocalizedLabels() {
+  if (googleButtonLabel) googleButtonLabel.textContent = strings.continueWithGoogle;
+  if (authSeparator) authSeparator.textContent = strings.orSeparator;
 
-    case "auth/weak-password":
-      return "The password must contain at least 6 characters.";
+  setTextById("termsGateTitle", strings.termsGateTitle);
+  setTextById("termsGateBody", strings.termsGateBody);
+  renderTermsGateConsent();
+  if (termsGateSubmit) termsGateSubmit.textContent = strings.termsGateAccept;
+  if (termsGateCancel) termsGateCancel.textContent = strings.termsGateDecline;
 
-    case "auth/email-already-in-use":
-      return "An account already exists with this email address.";
+  setTextById("linkTitle", strings.linkTitle);
+  setTextById("linkBody", strings.linkBody);
+  setTextById("linkPasswordLabel", strings.linkPasswordLabel);
+  if (linkSubmit) linkSubmit.textContent = strings.linkSubmit;
+  if (linkCancel) linkCancel.textContent = strings.linkCancel;
 
-    case "auth/invalid-credential":
-      return "The email or password is incorrect.";
-
-    case "auth/too-many-requests":
-      return "Too many attempts. Please wait and try again.";
-
-    case "auth/network-request-failed":
-      return "Network error. Check your internet connection.";
-
-    default:
-      return "Authentication failed. Please try again.";
+  if (locale === "he") {
+    // Scoped to the elements this feature introduced, NOT the whole document:
+    // the email/password form on this page is still English, and flipping
+    // <html dir> would right-align that pre-existing layout too.
+    for (const element of [googleButton, termsGatePanel, linkAccountPanel]) {
+      element?.setAttribute("dir", "rtl");
+      element?.setAttribute("lang", "he");
+    }
   }
 }
 
+// Rebuilds the consent sentence from localized text nodes with the terms
+// link in the middle. Built from DOM nodes rather than an HTML string so no
+// markup is ever injected, and so each locale can place the link where its
+// own sentence structure needs it.
+function renderTermsGateConsent() {
+  const container = document.getElementById("termsGateCheckboxLabel");
+  if (!container) return;
+
+  const link = document.createElement("a");
+  link.href = "/terms.html";
+  link.target = "_blank";
+  link.rel = "noopener";
+  link.textContent = strings.termsGateCheckboxLink;
+
+  container.replaceChildren(
+    document.createTextNode(strings.termsGateCheckboxBefore),
+    link,
+    document.createTextNode(strings.termsGateCheckboxAfter)
+  );
+}
+
+function setTextById(id, text) {
+  const element = document.getElementById(id);
+  if (element && text) element.textContent = text;
+}
+
+function setGoogleButtonBusy(isBusy) {
+  if (!googleButton) return;
+  googleButton.disabled = isBusy;
+  if (googleButtonLabel) {
+    googleButtonLabel.textContent = isBusy ? strings.googleLoading : strings.continueWithGoogle;
+  }
+}
+
+function openPanel(panel) {
+  document.body.classList.add("auth-panel-open");
+  termsGatePanel?.classList.remove("visible");
+  linkAccountPanel?.classList.remove("visible");
+  panel?.classList.add("visible");
+  revealPage();
+}
+
+function closePanels() {
+  document.body.classList.remove("auth-panel-open");
+  termsGatePanel?.classList.remove("visible");
+  linkAccountPanel?.classList.remove("visible");
+}
+
+function redirectToProduct() {
+  safeSessionRemove(REDIRECT_NEXT_STORAGE_KEY);
+  window.location.replace(nextPath);
+}
+
+// --- Shared post-authentication path -------------------------------------
+// Runs for every successful Google credential (popup, redirect return, and
+// post-linking). Reads the existing profile first so a returning user is
+// never re-prompted for terms they already accepted, and so the merge write
+// can never blank out a value this provider didn't supply.
+async function finalizeGoogleUser(user, { isNewLink = false } = {}) {
+  const profileRef = doc(db, "users", user.uid);
+  let existingProfile = null;
+
+  try {
+    const snapshot = await getDoc(profileRef);
+    if (snapshot.exists()) existingProfile = snapshot.data();
+  } catch (error) {
+    console.error("Could not read the user profile:", error);
+    // Fall through with existingProfile = null: the terms gate will be shown.
+    // Prompting once more is the safe failure mode; silently granting access
+    // without a recorded acceptance is not.
+  }
+
+  if (needsTermsAcceptance(existingProfile, TERMS_VERSION)) {
+    pendingProfile = { user, existingProfile, isNewLink };
+    openPanel(termsGatePanel);
+    showPanelMessage(termsGateMessage, "", "");
+    return;
+  }
+
+  await setDoc(profileRef, buildUserDocumentMerge({
+    authUser: user,
+    existingProfile,
+    providerId: GoogleAuthProvider.PROVIDER_ID,
+    acceptedTermsVersion: null,
+    now: serverTimestamp()
+  }), { merge: true });
+
+  authenticationCompleted = true;
+  trackEvent("login", { method: "google" });
+  showMessage(strings.signingIn, "success");
+  redirectToProduct();
+}
+
+// --- Google sign-in entry point ------------------------------------------
+async function startGoogleSignIn() {
+  clearMessage();
+  googleFlowInProgress = true;
+  setGoogleButtonBusy(true);
+
+  const provider = new GoogleAuthProvider();
+  // Authentication only. GOOGLE_OAUTH_SCOPES is deliberately empty: Firebase
+  // already receives basic profile + email, and this product has no reason to
+  // ask for Gmail, Contacts, Drive or Calendar access.
+  for (const scope of GOOGLE_OAUTH_SCOPES) provider.addScope(scope);
+  // Always let the user pick which Google account to use rather than silently
+  // reusing whichever one the browser last signed into.
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  try {
+    await setPersistence(
+      auth,
+      rememberMeInput?.checked
+        ? browserLocalPersistence
+        : browserSessionPersistence
+    );
+
+    const useRedirect = preferRedirectFallback || shouldUseRedirect({
+      userAgent: window.navigator.userAgent,
+      isStandalone: isStandaloneDisplayMode()
+    });
+
+    if (useRedirect) {
+      // Persist the destination before navigating away — the query string
+      // does not survive the provider round trip.
+      if (requestedNext) safeSessionSet(REDIRECT_NEXT_STORAGE_KEY, requestedNext);
+      await signInWithRedirect(auth, provider);
+      return; // The page navigates; getRedirectResult picks it up on return.
+    }
+
+    const result = await signInWithPopup(auth, provider);
+    await finalizeGoogleUser(result.user);
+  } catch (error) {
+    handleGoogleError(error);
+  } finally {
+    setGoogleButtonBusy(false);
+    // googleFlowInProgress stays set while a panel is open so the
+    // onAuthStateChanged guard cannot redirect past the terms gate.
+    if (!isPanelOpen()) googleFlowInProgress = false;
+  }
+}
+
+function isStandaloneDisplayMode() {
+  return (
+    window.matchMedia?.("(display-mode: standalone)")?.matches === true ||
+    window.navigator.standalone === true
+  );
+}
+
+function isPanelOpen() {
+  return document.body.classList.contains("auth-panel-open");
+}
+
+function handleGoogleError(error) {
+  console.error("Google authentication error:", error);
+
+  if (error?.code === "auth/account-exists-with-different-credential") {
+    startAccountLinking(error);
+    return;
+  }
+
+  if (error?.code === "auth/popup-blocked") {
+    // Next attempt uses the redirect flow, which no popup blocker can stop.
+    preferRedirectFallback = true;
+  }
+
+  // A user who closed the popup did not fail — show it as a neutral notice,
+  // not a red error.
+  showMessage(
+    getFriendlyError(error?.code),
+    isUserCancelledAuth(error?.code) ? "success" : "error"
+  );
+}
+
+// --- Existing-account collision -> safe linking flow ----------------------
+// Firebase refuses to silently create a second identity for an email that
+// already has a password account. We recover the Google credential from the
+// error, prove ownership via the existing password, then LINK — the uid, and
+// therefore every plan, workout and nutrition document, is preserved.
+function startAccountLinking(error) {
+  pendingGoogleCredential = GoogleAuthProvider.credentialFromError(error);
+  const collidingEmail = error?.customData?.email || "";
+
+  if (!pendingGoogleCredential) {
+    showMessage(getFriendlyError(error?.code), "error");
+    return;
+  }
+
+  if (linkEmail) linkEmail.value = collidingEmail;
+  if (linkPassword) linkPassword.value = "";
+  showPanelMessage(linkMessage, getFriendlyError(error?.code), "error");
+  googleFlowInProgress = true;
+  openPanel(linkAccountPanel);
+  linkPassword?.focus();
+  trackEvent("google_link_prompted", { method: "google" });
+}
+
+async function submitAccountLinking() {
+  const email = linkEmail?.value?.trim();
+  const password = linkPassword?.value || "";
+
+  if (!email || password.length < 6) {
+    showPanelMessage(linkMessage, getFriendlyAuthError("auth/missing-password", locale), "error");
+    return;
+  }
+
+  if (!pendingGoogleCredential) {
+    showPanelMessage(linkMessage, getFriendlyError("default"), "error");
+    return;
+  }
+
+  linkSubmit.disabled = true;
+  linkSubmit.textContent = strings.linkLoading;
+
+  try {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    await linkWithCredential(credential.user, pendingGoogleCredential);
+    pendingGoogleCredential = null;
+
+    showPanelMessage(linkMessage, strings.linkSuccess, "success");
+    trackEvent("google_link_completed", { method: "google" });
+
+    closePanels();
+    await finalizeGoogleUser(credential.user, { isNewLink: true });
+  } catch (error) {
+    console.error("Google account linking error:", error);
+    showPanelMessage(linkMessage, getFriendlyError(error?.code), "error");
+  } finally {
+    linkSubmit.disabled = false;
+    linkSubmit.textContent = strings.linkSubmit;
+  }
+}
+
+async function cancelAccountLinking() {
+  pendingGoogleCredential = null;
+  closePanels();
+  googleFlowInProgress = false;
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Sign-out after cancelled linking failed:", error);
+  }
+  clearMessage();
+}
+
+// --- Terms gate ----------------------------------------------------------
+async function submitTermsAcceptance() {
+  if (!termsGateAccepted?.checked) {
+    showPanelMessage(termsGateMessage, strings.termsGateRequired, "error");
+    return;
+  }
+
+  if (!pendingProfile?.user) {
+    showPanelMessage(termsGateMessage, getFriendlyError("default"), "error");
+    return;
+  }
+
+  termsGateSubmit.disabled = true;
+
+  try {
+    const { user, existingProfile } = pendingProfile;
+
+    await setDoc(doc(db, "users", user.uid), buildUserDocumentMerge({
+      authUser: user,
+      existingProfile,
+      providerId: GoogleAuthProvider.PROVIDER_ID,
+      acceptedTermsVersion: TERMS_VERSION,
+      now: serverTimestamp()
+    }), { merge: true });
+
+    authenticationCompleted = true;
+    pendingProfile = null;
+
+    if (!existingProfile) {
+      trackEvent("signup", { method: "google" });
+      trackEvent("signup_completed", { method: "google" });
+    }
+
+    closePanels();
+    redirectToProduct();
+  } catch (error) {
+    console.error("Could not record the terms acceptance:", error);
+    showPanelMessage(termsGateMessage, getFriendlyError(error?.code), "error");
+    termsGateSubmit.disabled = false;
+  }
+}
+
+// Declining the terms must not leave a signed-in-but-unaccepted session
+// sitting there: sign the user back out and return them to the form.
+async function cancelTermsAcceptance() {
+  pendingProfile = null;
+  closePanels();
+  googleFlowInProgress = false;
+
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Sign-out after declined terms failed:", error);
+  }
+
+  clearMessage();
+}
+
+// --- Wiring --------------------------------------------------------------
 loginTab.addEventListener("click", () => {
   changeMode("login");
 });
@@ -134,6 +535,17 @@ signupTab.addEventListener("click", () => {
   changeMode("signup");
   trackEvent("signup_started", { method: "email_password" });
 });
+
+googleButton?.addEventListener("click", () => {
+  trackEvent("signup_started", { method: "google" });
+  startGoogleSignIn();
+});
+
+termsGateSubmit?.addEventListener("click", submitTermsAcceptance);
+termsGateCancel?.addEventListener("click", cancelTermsAcceptance);
+linkSubmit?.addEventListener("click", submitAccountLinking);
+linkCancel?.addEventListener("click", cancelAccountLinking);
+
 authForm.addEventListener(
   "submit",
   async (event) => {
@@ -215,8 +627,11 @@ authForm.addEventListener(
         await setDoc(doc(db, "users", userCredential.user.uid), {
           email: userCredential.user.email || email,
           displayName,
+          authProviders: ["password"],
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
           termsAccepted: true,
-          termsVersion: "2026-07-21",
+          termsVersion: TERMS_VERSION,
           termsAcceptedAt: serverTimestamp()
         }, { merge: true });
 
@@ -244,7 +659,7 @@ authForm.addEventListener(
       }
 
 window.setTimeout(() => {
-  window.location.replace(nextPath);
+  redirectToProduct();
 }, 800);
     } catch (error) {
       console.error(
@@ -267,11 +682,55 @@ window.setTimeout(() => {
   }
 );
 
-onAuthStateChanged(auth, (user) => {
-  if (user && !authenticationCompleted) {
-    window.location.replace(nextPath);
-    return;
+// --- Bootstrap -----------------------------------------------------------
+// The redirect result is resolved BEFORE the onAuthStateChanged guard is
+// registered. Doing it the other way round races: the guard would see the
+// signed-in user from the redirect and bounce them into the product before
+// the terms gate ever had a chance to run.
+async function bootstrap() {
+  applyLocalizedLabels();
+
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) {
+      googleFlowInProgress = true;
+      await finalizeGoogleUser(result.user);
+      // finalizeGoogleUser either redirected or opened the terms gate; in
+      // both cases the auth-state guard must not also act.
+      if (isPanelOpen()) {
+        revealPage();
+        return;
+      }
+      return;
+    }
+  } catch (error) {
+    handleGoogleError(error);
+    if (isPanelOpen()) {
+      revealPage();
+      return;
+    }
+  } finally {
+    safeSessionRemove(REDIRECT_NEXT_STORAGE_KEY);
   }
-  document.body.classList.remove("auth-checking");
-});
+
+  onAuthStateChanged(auth, (user) => {
+    // Never redirect while a Google flow is mid-way (terms gate or account
+    // linking open): the user is authenticated but not yet cleared for
+    // product access, and redirecting would both bypass the gate and bounce
+    // them straight back here.
+    if (googleFlowInProgress || isPanelOpen()) {
+      revealPage();
+      return;
+    }
+
+    if (user && !authenticationCompleted) {
+      redirectToProduct();
+      return;
+    }
+
+    revealPage();
+  });
+}
+
+bootstrap();
 // Signed-in users enter the product through the dashboard.
