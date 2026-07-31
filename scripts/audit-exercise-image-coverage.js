@@ -409,7 +409,24 @@ function buildAudit() {
   const resolver = loadResolver();
   const knownSlugs = [...resolver.KNOWN_EXERCISE_IMAGE_SLUGS].sort();
   const aliases = resolver.ALIASES;
-  const files = fs.readdirSync(EXERCISE_DIR).sort();
+  const allFiles = fs.readdirSync(EXERCISE_DIR).sort();
+
+  // scripts/optimize-images.js writes a downscaled .webp next to each source
+  // image; server.js serves it via Accept negotiation while every URL, the
+  // resolver and the catalog still name the .png. They are derivatives, not
+  // independent assets, so they are audited as optimization coverage below
+  // rather than walked as inventory (where they would read as orphans).
+  const sourceStems = new Set(
+    allFiles.filter((file) => /\.(png|jpe?g)$/i.test(file)).map((file) => file.replace(/\.[^.]+$/, ""))
+  );
+  const optimizedDerivatives = allFiles.filter(
+    (file) => file.endsWith(".webp") && sourceStems.has(file.replace(/\.webp$/, ""))
+  );
+  const derivativeSet = new Set(optimizedDerivatives);
+  const unoptimizedSources = [...sourceStems]
+    .filter((stem) => !derivativeSet.has(`${stem}.webp`))
+    .sort();
+  const files = allFiles.filter((file) => !derivativeSet.has(file));
   const statusMap = gitStatusByPath();
   const fileSet = new Set(files);
   const fallbackUrl = resolver.fallbackExerciseImageUrl();
@@ -604,6 +621,7 @@ function buildAudit() {
     ...generatorFallbacks.map((item) => `GENERATOR_FALLBACK ${item.originalName} -> ${item.attemptedSlug || "(empty)"}`),
     ...generatorCanonicalMismatches.map((item) => `GENERATOR_CANONICAL_MISMATCH ${item.originalName}: expected ${item.expectedCanonical}, got ${item.canonicalExerciseId}`),
     ...publicReleaseFailures.map((item) => `PUBLIC_RELEASE_IMAGE_FAILURE ${item.exerciseId}: ${item.classification}`),
+    ...unoptimizedSources.map((stem) => `MISSING_WEBP_DERIVATIVE ${stem} (run: npm run images:optimize)`),
     ...mobilityStretchLeaks.map((item) => `MOBILITY_STRETCH_FALLBACK_LEAK ${item.originalName} -> ${item.resolvedExerciseId || "(unresolved)"}`)
   ];
 
@@ -630,6 +648,8 @@ function buildAudit() {
     publicEnabledExercises: publicReleaseCoverage.length,
     publicReleaseImageFailures: publicReleaseFailures.length,
     disabledUntilDedicatedImages: MISSING_DEDICATED_IMAGE_EXERCISES.length,
+    optimizedWebpDerivatives: optimizedDerivatives.length,
+    sourcesMissingWebpDerivative: unoptimizedSources.length,
     mobilityStretchVariantsChecked: mobilityStretchCoverage.length,
     mobilityStretchCorrectlyRemoved: mobilityStretchCoverage.filter((item) => item.classification === "CORRECTLY_REMOVED_NO_FALLBACK").length,
     mobilityStretchSurvivedWithImage: mobilityStretchCoverage.filter((item) => item.classification === "SURVIVED_WITH_ACCURATE_IMAGE").length,
