@@ -323,13 +323,20 @@ test("repairSchemaDefects coerces numeric-string sets/restSeconds and stringifie
 });
 
 test("trimAccessoryExercisesForDuration removes exercises from the end when a session exceeds the cap", () => {
+  // Real canonical exerciseIds (not placeholders) so this fixture exercises
+  // ONLY the duration-trim pass, not repairExercisesMissingFromCatalog's
+  // "no catalog entry / no muscle group" removal path — both passes can
+  // legitimately shrink a session, and this test is specifically about the
+  // duration one.
+  const REAL_IDS = ["push-up", "australian-row", "pistol-squat", "plank", "diamond-push-up", "pike-push-up"];
   const program = {
     sessions: [
       {
         name: "Day 1",
-        exercises: Array.from({ length: 6 }, (_, i) => ({
-          exerciseId: `exercise-${i}`,
+        exercises: REAL_IDS.map((exerciseId, i) => ({
+          exerciseId,
           name: `Exercise ${i}`,
+          muscleGroup: "General",
           sets: 4,
           restSeconds: 120,
           reps: "8-12"
@@ -345,7 +352,7 @@ test("trimAccessoryExercisesForDuration removes exercises from the end when a se
 
   // The exercises that remain must be the FIRST ones (primary lifts kept,
   // accessories from the end removed first).
-  assert.equal(program.sessions[0].exercises[0].exerciseId, "exercise-0");
+  assert.equal(program.sessions[0].exercises[0].exerciseId, "push-up");
 });
 
 test("trimAccessoryExercisesForDuration never trims below the minimum floor even if still over budget", () => {
