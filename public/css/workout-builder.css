@@ -549,6 +549,16 @@ textarea:focus {
   color: var(--fp-danger, #ef6f7f);
   background: var(--fp-danger-soft, rgba(239, 111, 127, 0.16));
 }
+/* Secondary/optional/incomplete are deliberately neutral, not
+   success/warning/danger colored: none of them are a verdict on whether
+   the plan is valid, so they must not visually read as one. */
+.muscle-volume-status--secondary,
+.muscle-volume-status--not-targeted,
+.muscle-volume-status--incomplete {
+  color: rgba(226, 232, 240, 0.65);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: help;
+}
 .muscle-volume-numbers {
   display: flex;
   align-items: baseline;
