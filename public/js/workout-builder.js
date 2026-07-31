@@ -77,16 +77,23 @@ const ui = isHebrew
         "טווח מומלץ שבועי לפי הפרופיל שלך — לא יעד רפואי מדויק ואוניברסלי.",
       weeklyVolumeSets: (count) => `${count} סטים שבועיים`,
       weeklyVolumeRecommendedRange: (min, max) => `טווח מומלץ: ${min}–${max}`,
-      weeklyVolumeBelow: "מתחת לטווח",
-      weeklyVolumeInRange: "בטווח",
-      weeklyVolumeAbove: "מעל הטווח",
+      weeklyVolumePreferredRange: (min, max) => `טווח מועדף: ${min}–${max}`,
+      weeklyVolumeMinimum: (min) => `מינימום אפקטיבי: ${min}`,
+      weeklyVolumeMaximum: (max) => `מקסימום מתוכנת: ${max}`,
+      weeklyVolumeBelow: "מתחת למינימום",
+      weeklyVolumeValidBelowPreferred: "תקין — מתחת ליעד המועדף",
+      weeklyVolumeInPreferredZone: "בטווח המועדף",
+      weeklyVolumeValidAbovePreferred: "תקין — מעל היעד המועדף",
+      weeklyVolumeAbove: "מעל המקסימום",
       weeklyVolumeSecondary: "משני / אופציונלי",
       weeklyVolumeNotTargeted: "לא ממוקד בתוכנית זו",
       weeklyVolumeIncomplete: "החישוב לא הושלם",
       weeklyVolumeSecondaryNote: "קבוצת שריר משנית — מוצגת למידע בלבד ואינה קובעת אם התוכנית תקינה.",
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} ישירים + ${fractional} עקיפים`,
-      weeklyVolumeUnmapped: "כמה תרגילים לא נכללו בחישוב (אין מיפוי שריר ידוע)."
+      weeklyVolumeUnmapped: "כמה תרגילים לא נכללו בחישוב (אין מיפוי שריר ידוע).",
+      weeklyVolumeStartingWeek: "נפח תחילת התוכנית (לא כולל התקדמות)",
+      weeklyVolumeQualityScore: (score) => `ציון איכות התוכנית: ${score}/100`
     }
   : {
       pageTitle: "Workout Builder",
@@ -135,16 +142,23 @@ const ui = isHebrew
         "Recommended weekly range for your profile — not a universal or medically exact optimum.",
       weeklyVolumeSets: (count) => `${count} weekly sets`,
       weeklyVolumeRecommendedRange: (min, max) => `Recommended range: ${min}–${max}`,
-      weeklyVolumeBelow: "Below range",
-      weeklyVolumeInRange: "In range",
-      weeklyVolumeAbove: "Above range",
+      weeklyVolumePreferredRange: (min, max) => `Preferred target: ${min}–${max}`,
+      weeklyVolumeMinimum: (min) => `Minimum effective: ${min}`,
+      weeklyVolumeMaximum: (max) => `Maximum programmed: ${max}`,
+      weeklyVolumeBelow: "Below minimum",
+      weeklyVolumeValidBelowPreferred: "Valid — below preferred target",
+      weeklyVolumeInPreferredZone: "In preferred zone",
+      weeklyVolumeValidAbovePreferred: "Valid — above preferred target",
+      weeklyVolumeAbove: "Above maximum",
       weeklyVolumeSecondary: "Secondary / optional",
       weeklyVolumeNotTargeted: "Not targeted in this plan",
       weeklyVolumeIncomplete: "Calculation incomplete",
       weeklyVolumeSecondaryNote: "A secondary muscle group — shown for visibility only, never counted against whether this plan is valid.",
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} direct + ${fractional} indirect`,
-      weeklyVolumeUnmapped: "A few exercises were not included in this calculation (no known muscle mapping)."
+      weeklyVolumeUnmapped: "A few exercises were not included in this calculation (no known muscle mapping).",
+      weeklyVolumeStartingWeek: "Starting-week volume (progression not shown)",
+      weeklyVolumeQualityScore: (score) => `Program quality score: ${score}/100`
     };
     function setText(selector, text) {
   const element = document.querySelector(selector);
@@ -795,18 +809,28 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
       const direct = Number(entry.direct) || 0;
       const fractional = Number(entry.fractional) || 0;
 
-      // "secondary" and "not-targeted" are never below/above/in-range --
+      // "secondary" and "not-targeted" are never below/above/preferred --
       // they're a distinct, deliberately non-alarming status: a muscle the
       // server classified as never able to gate a successful plan (see
       // lib/workout-volume-targets.js's classifyMuscleRequirement) still
       // shows its real numbers, but must not display a red/amber "Below
-      // range" verdict implying it's mandatory when it isn't. "incomplete"
+      // minimum" verdict implying it's mandatory when it isn't. "incomplete"
       // means the server's mapping coverage wasn't 100% for this response
       // (should only appear on stale/legacy data -- a fresh generation is
       // gated on 100% coverage before it's ever returned as successful).
+      //
+      // For a REQUIRED muscle, "below"/"above" mean the hard gate actually
+      // failed (should never reach a successful response) -- the two
+      // statuses that matter day-to-day are "valid-below-preferred" and
+      // "in-preferred-zone": both are fully valid plans, but sitting at the
+      // bare minimum is NOT the same quality outcome as landing in the
+      // preferred zone, and must never carry the same reassuring label (see
+      // the engine-quality fix this UI implements).
       const statusLabel = {
         below: ui.weeklyVolumeBelow,
-        "in-range": ui.weeklyVolumeInRange,
+        "valid-below-preferred": ui.weeklyVolumeValidBelowPreferred,
+        "in-preferred-zone": ui.weeklyVolumeInPreferredZone,
+        "valid-above-preferred": ui.weeklyVolumeValidAbovePreferred,
         above: ui.weeklyVolumeAbove,
         secondary: ui.weeklyVolumeSecondary,
         "not-targeted": ui.weeklyVolumeNotTargeted,
@@ -815,13 +839,22 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
       const statusClass = entry.status || "unknown";
       const secondaryNote = entry.status === "secondary" ? ui.weeklyVolumeSecondaryNote : "";
 
-      // The range bar fills to `total`'s position between 0 and max(range.max,
-      // total) * 1.15 -- so an above-range value still visibly overflows the
-      // marked target band instead of clipping at 100%.
-      const barMax = range ? Math.max(range.max, total) * 1.15 : Math.max(total, 1) * 1.15;
+      const hasPolicy = Number.isFinite(entry.minimumEffective) && Number.isFinite(entry.hardMaximum);
+      // The range bar fills to `total`'s position between 0 and
+      // max(hardMaximum, total) * 1.15 -- so an above-maximum value still
+      // visibly overflows the marked band instead of clipping at 100%. The
+      // shaded band itself now marks the PREFERRED zone, not the whole
+      // valid min/max span -- the valid span is wider than what's actually
+      // being called "well-targeted".
+      const barCeiling = hasPolicy ? entry.hardMaximum : (range ? range.max : Math.max(total, 1));
+      const barMax = Math.max(barCeiling, total) * 1.15;
       const fillPercent = Math.min(100, Math.round((total / barMax) * 100));
-      const rangeStartPercent = range ? Math.round((range.min / barMax) * 100) : 0;
-      const rangeEndPercent = range ? Math.round((range.max / barMax) * 100) : 100;
+      const preferredStartPercent = hasPolicy ? Math.round((entry.preferredMin / barMax) * 100) : (range ? Math.round((range.min / barMax) * 100) : 0);
+      const preferredEndPercent = hasPolicy ? Math.round((entry.preferredMax / barMax) * 100) : (range ? Math.round((range.max / barMax) * 100) : 100);
+
+      const rangeText = hasPolicy
+        ? `${ui.weeklyVolumeMinimum(entry.minimumEffective)} · ${ui.weeklyVolumePreferredRange(entry.preferredMin, entry.preferredMax)} · ${ui.weeklyVolumeMaximum(entry.hardMaximum)}`
+        : (range ? ui.weeklyVolumeRecommendedRange(range.min, range.max) : "");
 
       return `
         <div class="muscle-volume-row" data-status="${statusClass}">
@@ -831,10 +864,10 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
           </div>
           <div class="muscle-volume-numbers">
             <strong>${escapeHtml(ui.weeklyVolumeSets(formatVolumeNumber(total)))}</strong>
-            ${range ? `<span class="muscle-volume-range">${escapeHtml(ui.weeklyVolumeRecommendedRange(range.min, range.max))}</span>` : ""}
+            ${rangeText ? `<span class="muscle-volume-range">${escapeHtml(rangeText)}</span>` : ""}
           </div>
           <div class="muscle-volume-bar" title="${escapeHtml(ui.weeklyVolumeDetails(formatVolumeNumber(direct), formatVolumeNumber(fractional)))}">
-            ${range ? `<span class="muscle-volume-bar-target" style="left:${rangeStartPercent}%;width:${Math.max(0, rangeEndPercent - rangeStartPercent)}%"></span>` : ""}
+            ${(hasPolicy || range) ? `<span class="muscle-volume-bar-target" style="left:${preferredStartPercent}%;width:${Math.max(0, preferredEndPercent - preferredStartPercent)}%"></span>` : ""}
             <span class="muscle-volume-bar-fill" style="width:${fillPercent}%"></span>
           </div>
           <details class="muscle-volume-detail">
@@ -849,11 +882,22 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
     ? `<p class="muscle-volume-unmapped-notice">${escapeHtml(ui.weeklyVolumeUnmapped)}</p>`
     : "";
 
+  // qualityScore is a non-gating observability/quality signal, not a
+  // pass/fail check -- a plan without it (older cached response shape)
+  // simply omits the line rather than showing a misleading 0.
+  const qualityScore = Number.isFinite(weeklyVolume?.qualityScore) ? weeklyVolume.qualityScore : null;
+  const qualityScoreLine = qualityScore !== null
+    ? `<p class="muscle-volume-quality-score">${escapeHtml(ui.weeklyVolumeQualityScore(qualityScore))}</p>`
+    : "";
+  const startingWeekNote = `<p class="muscle-volume-starting-week-note">${escapeHtml(ui.weeklyVolumeStartingWeek)}</p>`;
+
   return `
     <section class="weekly-volume-summary">
       <header class="weekly-volume-header">
         <h3>${escapeHtml(ui.weeklyVolumeTitle)}</h3>
         <p>${escapeHtml(ui.weeklyVolumeSubtitle)}</p>
+        ${qualityScoreLine}
+        ${startingWeekNote}
       </header>
       <div class="muscle-volume-grid">
         ${rows}

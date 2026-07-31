@@ -14,7 +14,15 @@ const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-ca
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
-const { allTargetRanges, volumeStatus, classifyMuscleRequirement, requiredMusclesOutOfRange } = require("./lib/workout-volume-targets");
+const {
+  allTargetRanges,
+  allVolumePolicies,
+  volumeStatus,
+  detailedVolumeStatus,
+  classifyMuscleRequirement,
+  requiredMusclesOutOfRange,
+  calculateProgramQualityScore
+} = require("./lib/workout-volume-targets");
 const {
   buildMealSlots,
   filterMeals,
@@ -2262,13 +2270,31 @@ function volumeFailureMessage(cause, language) {
     : "We couldn't finish balancing this program. Please try generating it again.";
 }
 
+// Five-state DISPLAY status for a required muscle (see
+// lib/workout-volume-targets.js's detailedVolumeStatus): a value sitting at
+// its bare minimumEffective is a genuinely different quality outcome than
+// one inside the preferred zone, even though both are equally VALID (the
+// hard gate only cares about minimumEffective..hardMaximum). Collapsing
+// both into a single "in-range" badge is exactly the "10 sets of chest
+// reads the same as 16" complaint this fixes.
+function detailedStatusLabel(status) {
+  if (status === "below-minimum") return "below";
+  if (status === "above-maximum") return "above";
+  if (status === "valid-below-preferred") return "valid-below-preferred";
+  if (status === "valid-above-preferred") return "valid-above-preferred";
+  if (status === "in-preferred-zone") return "in-preferred-zone";
+  return "unknown";
+}
+
 function buildPerMuscleWithTargets(perMuscle, profile, mappingIncomplete = false) {
   const targets = allTargetRanges(profile);
+  const policies = allVolumePolicies(profile);
   const muscles = new Set([...Object.keys(perMuscle || {}), ...Object.keys(targets)]);
   const merged = {};
   for (const muscle of muscles) {
     const volume = perMuscle?.[muscle] || { direct: 0, fractional: 0, total: 0 };
     const targetRange = targets[muscle] || null;
+    const policy = policies[muscle] || null;
     const classification = classifyMuscleRequirement(muscle, profile);
 
     let status;
@@ -2279,7 +2305,7 @@ function buildPerMuscleWithTargets(perMuscle, profile, mappingIncomplete = false
     } else if (classification === "secondary") {
       status = "secondary";
     } else {
-      status = volumeStatus(volume.total, targetRange);
+      status = detailedStatusLabel(detailedVolumeStatus(volume.total, policy));
     }
 
     merged[muscle] = {
@@ -2287,6 +2313,10 @@ function buildPerMuscleWithTargets(perMuscle, profile, mappingIncomplete = false
       fractional: volume.fractional,
       total: volume.total,
       targetRange,
+      minimumEffective: policy?.minimumEffective ?? null,
+      preferredMin: policy?.preferredMin ?? null,
+      preferredMax: policy?.preferredMax ?? null,
+      hardMaximum: policy?.hardMaximum ?? null,
       classification,
       status
     };
@@ -2767,7 +2797,19 @@ Injuries, limitations or special requests: ${String(limitations)}
         totalHardSets,
         mappedExercises,
         unknownExercises,
-        mappingCoveragePercent
+        mappingCoveragePercent,
+        // Every number above reflects the program's STARTING weekly
+        // volume as generated -- this product does not currently vary
+        // volume week-to-week within a single program (see the engine
+        // roadmap note in lib/workout-volume-targets.js), so there is no
+        // separate average/peak-week figure to distinguish yet.
+        volumeRepresents: "starting-week",
+        // Non-gating observability signal, not a pass/fail check (see
+        // requiredMusclesOutOfRange for the actual gate) -- see
+        // lib/workout-volume-targets.js's calculateProgramQualityScore.
+        // 0-100: 100 means every required muscle landed inside its
+        // preferred zone, not merely inside the valid min/max range.
+        qualityScore: calculateProgramQualityScore(perMuscle, volumeProfile).score
       },
       sessionDurations,
       validationSummary: {
