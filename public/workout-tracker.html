@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="/css/workout-tracker.css?v=20260723-focus-1">
   <link rel="stylesheet" href="/css/exercise-demo.css">
   <link rel="stylesheet" href="/css/exercise-demo-theme.css">
+  <meta name="theme-color" content="#2f9bff">
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+    }
+  </script>
   <style>
     .intensity-help{cursor:help;text-decoration:underline dotted rgba(255,255,255,.45);text-underline-offset:3px}
     .intensity-help:focus-visible{border-radius:5px;outline:2px solid #6e9fc2;outline-offset:3px}
@@ -77,6 +84,7 @@
       </div>
       <div class="toolbar-actions">
         <a class="exit-workout-link" href="/dashboard.html">Exit workout</a>
+        <button id="discardWorkoutToolbarButton" class="discard-toolbar-button" type="button">Discard draft</button>
         <button id="quickModeButton" class="ghost-button quick-mode-button" type="button" aria-pressed="true">? Quick mode</button>
         <div class="timer">
           <span id="durationLabel">Duration</span>
@@ -194,6 +202,43 @@
         class="confirm-modal-button confirm-modal-button--agree"
       >
         Agree
+      </button>
+    </div>
+  </div>
+</div>
+<div
+  id="discardDraftModal"
+  class="confirm-modal hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="discardDraftModalTitle"
+>
+  <div class="confirm-modal-backdrop" data-close-discard-modal></div>
+
+  <div class="confirm-modal-card">
+    <span class="confirm-modal-icon">⚠</span>
+
+    <h2 id="discardDraftModalTitle">
+      Discard this workout draft?
+    </h2>
+
+    <p id="discardDraftModalText"></p>
+
+    <div class="confirm-modal-actions">
+      <button
+        id="discardDraftKeepButton"
+        type="button"
+        class="confirm-modal-button confirm-modal-button--agree"
+      >
+        Keep workout
+      </button>
+
+      <button
+        id="discardDraftConfirmButton"
+        type="button"
+        class="confirm-modal-button confirm-modal-button--danger"
+      >
+        Discard draft
       </button>
     </div>
   </div>

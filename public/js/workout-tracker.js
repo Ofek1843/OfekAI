@@ -69,7 +69,16 @@ const rawUi = he ? {
   earlyNext: "התחלת הסט הבא מוקדם",
 
   earlyConfirm: (remaining, programmed) =>
-    `האם אתה בטוח שברצונך להתחיל את הסט הבא מוקדם?\n\nזמן המנוחה שנקבע הוא ${programmed} שניות.\nנותרו עוד ${remaining} שניות.`
+    `האם אתה בטוח שברצונך להתחיל את הסט הבא מוקדם?\n\nזמן המנוחה שנקבע הוא ${programmed} שניות.\nנותרו עוד ${remaining} שניות.`,
+
+  discardToolbar: "בטל טיוטת אימון",
+  discardModalTitle: "לבטל את טיוטת האימון?",
+  discardModalText:
+    "כל הסטים שהושלמו והזמן שחלף באימון הזה יימחקו לצמיתות. פעולה זו אינה הפיכה.",
+  discardKeep: "המשך באימון",
+  discardConfirm: "בטל טיוטה",
+  discardBusy: "מבטל...",
+  discardFailed: "לא ניתן היה לבטל את הטיוטה. נסה שוב."
 
 } : {
   title: "Workout Tracker",
@@ -134,7 +143,16 @@ const rawUi = he ? {
   earlyNext: "Start next set early",
 
   earlyConfirm: (remaining, programmed) =>
-    `Are you sure you want to start the next set early?\n\nYour programmed rest is ${programmed} seconds.\n${remaining} seconds remain.`
+    `Are you sure you want to start the next set early?\n\nYour programmed rest is ${programmed} seconds.\n${remaining} seconds remain.`,
+
+  discardToolbar: "Discard draft",
+  discardModalTitle: "Discard this workout draft?",
+  discardModalText:
+    "All completed sets and elapsed workout progress will be permanently removed. This cannot be undone.",
+  discardKeep: "Keep workout",
+  discardConfirm: "Discard draft",
+  discardBusy: "Discarding...",
+  discardFailed: "Could not discard the draft. Please try again."
 };
 
 // The source strings are UTF-8. Re-decoding them here corrupts Hebrew in the
@@ -215,7 +233,9 @@ function localize() {
     ["focusDoneButton", "completeSet"],
     ["focusBackButton", "backSet"],
     ["focusPauseButton", "pause"],
-    ["focusNextButton", "nextSet"]
+    ["focusNextButton", "nextSet"],
+    ["discardWorkoutButton", "discardConfirm"],
+    ["discardWorkoutToolbarButton", "discardToolbar"]
   ];
   for (const [id, key] of map) {
     const el = document.getElementById(id);
@@ -1083,6 +1103,54 @@ function openEarlyRestModal(remaining, programmed) {
     agreeButton.focus();
   });
 }
+
+function openDiscardDraftModal() {
+  return new Promise(resolve => {
+    const modal = $("#discardDraftModal");
+    const title = $("#discardDraftModalTitle");
+    const text = $("#discardDraftModalText");
+    const keepButton = $("#discardDraftKeepButton");
+    const confirmButton = $("#discardDraftConfirmButton");
+    const backdrop = modal?.querySelector("[data-close-discard-modal]");
+
+    if (!modal || !title || !text || !keepButton || !confirmButton) {
+      resolve(false);
+      return;
+    }
+
+    title.textContent = ui.discardModalTitle;
+    text.textContent = ui.discardModalText;
+    keepButton.textContent = ui.discardKeep;
+    confirmButton.textContent = ui.discardConfirm;
+
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    const close = confirmed => {
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+      keepButton.removeEventListener("click", onKeep);
+      confirmButton.removeEventListener("click", onConfirm);
+      backdrop?.removeEventListener("click", onKeep);
+      document.removeEventListener("keydown", onKeydown);
+      resolve(confirmed);
+    };
+
+    const onKeep = () => close(false);
+    const onConfirm = () => close(true);
+    const onKeydown = event => {
+      if (event.key === "Escape") close(false);
+    };
+
+    keepButton.addEventListener("click", onKeep);
+    confirmButton.addEventListener("click", onConfirm);
+    backdrop?.addEventListener("click", onKeep);
+    document.addEventListener("keydown", onKeydown);
+
+    keepButton.focus();
+  });
+}
+
 async function startNextSet() {
   if (rest.active) {
     const remaining = Math.max(
@@ -1186,16 +1254,65 @@ function beginWorkout() {
   saveCurrentDraft();
 }
 
-function discardDraft() {
-  if (!confirm(he ? "לבטל את האימון הנוכחי ולמחוק את הטיוטה?" : "Discard the current workout and delete its draft?")) return;
-  clearInterval(workoutTimerId);
-  clearInterval(focusTimerId);
-  clearDraft();
-  localStorage.removeItem(timeBudgetKey());
-  sessionOverride = null;
-  timeBudgetMinutes = null;
-  $("#workoutNotes").value = "";
-  renderSetup();
+let discardInProgress = false;
+
+async function discardDraft() {
+  // Guards against a second tap while the confirmation modal is open or
+  // while the (currently local-only) discard is being applied.
+  if (discardInProgress) return;
+  discardInProgress = true;
+
+  const toolbarButton = $("#discardWorkoutToolbarButton");
+  const finishBarButton = $("#discardWorkoutButton");
+  [toolbarButton, finishBarButton].forEach(button => {
+    if (button) button.disabled = true;
+  });
+
+  try {
+    const confirmed = await openDiscardDraftModal();
+    if (!confirmed) return;
+
+    [toolbarButton, finishBarButton].forEach(button => {
+      if (button) button.textContent = ui.discardBusy;
+    });
+
+    // There is no server-side/database draft today -- only localStorage --
+    // so this has nothing to await. The try/catch and busy-state stay in
+    // place so a future server-persisted draft can be wired in here without
+    // reworking the discard flow or its double-submit guard.
+    clearInterval(workoutTimerId);
+    clearInterval(focusTimerId);
+    stopRestTimer();
+    clearDraft();
+    localStorage.removeItem(timeBudgetKey());
+
+    sessionOverride = null;
+    timeBudgetMinutes = null;
+    timeFitSummary = null;
+    workoutStartedAt = 0;
+    workoutElapsedBaseMs = 0;
+    workoutRunningSince = 0;
+    paused = false;
+    focus = { exerciseIndex: 0, setIndex: 0 };
+
+    $("#workoutNotes").value = "";
+    $("#exerciseList").innerHTML = "";
+    $("#trackerStatus").textContent = "";
+    $("#trackerStatus").classList.remove("error");
+
+    renderSetup();
+  } catch (error) {
+    console.error("Discard draft failed:", error);
+    $("#trackerStatus").textContent = ui.discardFailed;
+    $("#trackerStatus").classList.add("error");
+  } finally {
+    discardInProgress = false;
+    [toolbarButton, finishBarButton].forEach(button => {
+      if (!button) return;
+      button.disabled = false;
+      button.textContent = ui.discardConfirm;
+    });
+  }
 }
 
 function restoreDraft() {
