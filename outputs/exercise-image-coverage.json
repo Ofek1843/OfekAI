@@ -1,30 +1,34 @@
 {
-  "generatedAt": "2026-07-29T15:04:58.236Z",
+  "generatedAt": "2026-07-31T09:12:32.029Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
-    "physicalFiles": 108,
+    "physicalFiles": 101,
     "dedicatedExerciseImagesExcludingFallback": 100,
     "canonicalSupportedExercises": 100,
     "canonicalExercisesWithDedicatedImages": 100,
     "canonicalExercisesMissingImages": 0,
-    "aliasesCovered": 223,
-    "orphanFiles": 7,
+    "aliasesCovered": 241,
+    "orphanFiles": 0,
     "brokenMappings": 0,
     "invalidFiles": 0,
     "caseMismatches": 0,
     "fallbackOnlyAliases": 0,
     "generatorSupportedCanonicalExercises": 103,
-    "generatorKnownNameVariants": 305,
-    "generatorVariantsWithDedicatedOrSurrogateImage": 305,
+    "generatorKnownNameVariants": 309,
+    "generatorVariantsWithDedicatedOrSurrogateImage": 309,
     "generatorVariantsReachingFallback": 0,
     "generatorExistingFilesWithBrokenRouting": 0,
     "generatorGenuinelyMissingImages": 0,
-    "generatorSurrogateImageRoutes": 184,
+    "generatorSurrogateImageRoutes": 188,
     "generatorCanonicalMismatches": 0,
     "publicEnabledExercises": 106,
     "publicReleaseImageFailures": 0,
-    "disabledUntilDedicatedImages": 0
+    "disabledUntilDedicatedImages": 1,
+    "mobilityStretchVariantsChecked": 9,
+    "mobilityStretchCorrectlyRemoved": 9,
+    "mobilityStretchSurvivedWithImage": 0,
+    "mobilityStretchFallbackLeaks": 0
   },
   "canonicalCatalog": [
     {
@@ -208,8 +212,11 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
+        "barbell-bent-over-row",
+        "barbell-bent-over-rows",
         "bent-over-barbell-row",
         "bent-over-row",
+        "bent-over-row-barbell",
         "pendlay-row"
       ]
     },
@@ -606,6 +613,8 @@
       "classification": "COVERED",
       "aliases": [
         "dumbbell-calf-raises",
+        "dumbbell-standing-calf-raise",
+        "dumbbell-standing-calf-raises",
         "standing-dumbbell-calf-raise",
         "standing-dumbbell-calf-raises"
       ]
@@ -911,7 +920,11 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
+        "barbell-incline-bench-press",
+        "barbell-incline-chest-press",
         "incline-barbell-bench-press",
+        "incline-barbell-chest-press",
+        "incline-chest-press-barbell",
         "incline-press"
       ]
     },
@@ -988,7 +1001,10 @@
       "classification": "COVERED",
       "aliases": [
         "cable-lat-pulldown",
+        "front-lat-pulldown",
+        "lat-pulldown-machine",
         "lat-pulldowns",
+        "machine-lat-pulldown",
         "wide-grip-lat-pulldown"
       ]
     },
@@ -1135,8 +1151,13 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
+        "dumbbell-overhead-tricep-extension",
         "dumbbell-overhead-triceps-extension",
-        "overhead-triceps-extension"
+        "overhead-dumbbell-tricep-extension",
+        "overhead-dumbbell-triceps-extension",
+        "overhead-triceps-extension",
+        "seated-overhead-tricep-extension",
+        "seated-overhead-triceps-extension"
       ]
     },
     {
@@ -1356,6 +1377,7 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": [
+        "machine-seated-row",
         "seated-machine-row"
       ]
     },
@@ -1515,6 +1537,90 @@
       ]
     }
   ],
+  "mobilityStretchCoverage": [
+    {
+      "originalName": "Bodyweight Shoulder Stretch",
+      "demoName": "Bodyweight Shoulder Stretch",
+      "providedExerciseId": "bodyweight-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "מתיחת כתפיים עם משקל גוף",
+      "demoName": "מתיחת כתפיים עם משקל גוף",
+      "providedExerciseId": "bodyweight-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Standing Shoulder Stretch",
+      "demoName": "Standing Shoulder Stretch",
+      "providedExerciseId": "standing-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Cross-Body Shoulder Stretch",
+      "demoName": "Cross-Body Shoulder Stretch",
+      "providedExerciseId": "cross-body-shoulder-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Full Body Warm-up",
+      "demoName": "Full Body Warm-up",
+      "providedExerciseId": "full-body-warm-up",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "חימום כללי לכל הגוף",
+      "demoName": "חימום כללי לכל הגוף",
+      "providedExerciseId": "full-body-warm-up",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Hip Mobility Drill",
+      "demoName": "Hip Mobility Drill",
+      "providedExerciseId": "hip-mobility-drill",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Cat-Cow Stretch",
+      "demoName": "Cat-Cow Stretch",
+      "providedExerciseId": "cat-cow-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    },
+    {
+      "originalName": "Cool-Down Stretch",
+      "demoName": "Cool-Down Stretch",
+      "providedExerciseId": "cool-down-stretch",
+      "removedByRepair": true,
+      "survivedWithCatalogImage": false,
+      "resolvedExerciseId": "",
+      "classification": "CORRECTLY_REMOVED_NO_FALLBACK"
+    }
+  ],
+  "mobilityStretchLeaks": [],
   "generatorToImageCoverage": [
     {
       "originalName": "Ab Crunch",
@@ -4478,6 +4584,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Dumbbell Standing Calf Raise",
+      "demoName": "Dumbbell Standing Calf Raise",
+      "providedExerciseId": "dumbbell-standing-calf-raise",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Dumbbell Standing Calf Raises",
+      "demoName": "Dumbbell Standing Calf Raises",
+      "providedExerciseId": "dumbbell-standing-calf-raises",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Dumbbell Step Up",
       "demoName": "Dumbbell Step Up",
       "providedExerciseId": "dumbbell-step-up",
@@ -6074,8 +6230,8 @@
       "resolvedImageUrl": "/images/exercises/lying-leg-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "leg-curl.png",
-      "directPhysicalExists": true,
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
       "exactDedicatedFile": false,
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
@@ -6099,8 +6255,8 @@
       "resolvedImageUrl": "/images/exercises/lying-leg-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "leg-curl.png",
-      "directPhysicalExists": true,
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -8613,6 +8769,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Standing Dumbbell Calf Raise",
+      "demoName": "Standing Dumbbell Calf Raise",
+      "providedExerciseId": "standing-dumbbell-calf-raise",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Standing Dumbbell Calf Raises",
+      "demoName": "Standing Dumbbell Calf Raises",
+      "providedExerciseId": "standing-dumbbell-calf-raises",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Standing Overhead Press",
       "demoName": "Standing Overhead Press",
       "providedExerciseId": "standing-overhead-press",
@@ -8830,8 +9036,8 @@
       "resolvedImageUrl": "/images/exercises/cable-tricep-pushdown.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "tricep-pushdown.png",
-      "directPhysicalExists": true,
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -10694,6 +10900,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Dumbbell Standing Calf Raise",
+      "demoName": "Dumbbell Standing Calf Raise",
+      "providedExerciseId": "dumbbell-standing-calf-raise",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Dumbbell Standing Calf Raises",
+      "demoName": "Dumbbell Standing Calf Raises",
+      "providedExerciseId": "dumbbell-standing-calf-raises",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Dumbbell Step Up",
       "demoName": "Dumbbell Step Up",
       "providedExerciseId": "dumbbell-step-up",
@@ -11786,8 +12042,8 @@
       "resolvedImageUrl": "/images/exercises/lying-leg-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "leg-curl.png",
-      "directPhysicalExists": true,
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -13419,6 +13675,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Standing Dumbbell Calf Raise",
+      "demoName": "Standing Dumbbell Calf Raise",
+      "providedExerciseId": "standing-dumbbell-calf-raise",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Standing Dumbbell Calf Raises",
+      "demoName": "Standing Dumbbell Calf Raises",
+      "providedExerciseId": "standing-dumbbell-calf-raises",
+      "equipment": "dumbbells",
+      "muscleGroup": "calves",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dumbbell-calf-raise",
+      "canonicalExerciseId": "dumbbell-calf-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-calf-raise",
+      "resolvedImageUrl": "/images/exercises/dumbbell-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Standing Overhead Press",
       "demoName": "Standing Overhead Press",
       "providedExerciseId": "standing-overhead-press",
@@ -13536,8 +13842,8 @@
       "resolvedImageUrl": "/images/exercises/cable-tricep-pushdown.png",
       "usedFallback": false,
       "fallbackReason": "",
-      "directPhysicalFile": "tricep-pushdown.png",
-      "directPhysicalExists": true,
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
       "exactDedicatedFile": false,
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
@@ -14939,7 +15245,14 @@
     }
   ],
   "publicReleaseFailures": [],
-  "disabledUntilDedicatedImages": [],
+  "disabledUntilDedicatedImages": [
+    {
+      "exerciseId": "bodyweight-shoulder-stretch",
+      "title": "Bodyweight Shoulder Stretch",
+      "reason": "no dedicated stretch/mobility image exists for this movement",
+      "replacementIds": []
+    }
+  ],
   "setCreditAliases": [
     {
       "aliasExerciseId": "barbell-bench-press",
@@ -15082,7 +15395,7 @@
       "extension": ".png",
       "exactCase": "assisted-chin-up.png",
       "size": 1001681,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "assisted-chin-up",
       "aliases": [],
@@ -15096,7 +15409,7 @@
       "extension": ".png",
       "exactCase": "assisted-pull-up.png",
       "size": 1381540,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "assisted-pull-up",
       "aliases": [],
@@ -15186,8 +15499,11 @@
       "referencedByResolver": true,
       "canonicalExercise": "barbell-row",
       "aliases": [
+        "barbell-bent-over-row",
+        "barbell-bent-over-rows",
         "bent-over-barbell-row",
         "bent-over-row",
+        "bent-over-row-barbell",
         "pendlay-row"
       ],
       "genericFallback": false,
@@ -15273,7 +15589,7 @@
       "extension": ".png",
       "exactCase": "bench-dip.png",
       "size": 1297995,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "bench-dip",
       "aliases": [
@@ -15373,7 +15689,7 @@
       "extension": ".png",
       "exactCase": "cable-overhead-triceps-extension.png",
       "size": 1156406,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "cable-overhead-triceps-extension",
       "aliases": [
@@ -15428,7 +15744,7 @@
       "extension": ".png",
       "exactCase": "chest-supported-row.png",
       "size": 1510074,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "chest-supported-row",
       "aliases": [
@@ -15505,7 +15821,7 @@
       "extension": ".png",
       "exactCase": "conventional-deadlift.png",
       "size": 1159314,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "conventional-deadlift",
       "aliases": [
@@ -15636,6 +15952,8 @@
       "canonicalExercise": "dumbbell-calf-raise",
       "aliases": [
         "dumbbell-calf-raises",
+        "dumbbell-standing-calf-raise",
+        "dumbbell-standing-calf-raises",
         "standing-dumbbell-calf-raise",
         "standing-dumbbell-calf-raises"
       ],
@@ -15800,20 +16118,6 @@
       "classification": "COVERED"
     },
     {
-      "filename": "dumbbell-skullcrusher.png",
-      "extension": ".png",
-      "exactCase": "dumbbell-skullcrusher.png",
-      "size": 1479201,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
       "filename": "dumbbell-walking-lunge.png",
       "extension": ".png",
       "exactCase": "dumbbell-walking-lunge.png",
@@ -15830,20 +16134,6 @@
       "validImage": true,
       "invalidReason": "",
       "classification": "COVERED"
-    },
-    {
-      "filename": "dumbell-rear-delt-fly.png",
-      "extension": ".png",
-      "exactCase": "dumbell-rear-delt-fly.png",
-      "size": 1452831,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
     },
     {
       "filename": "face-pull.png",
@@ -15866,7 +16156,7 @@
       "extension": ".png",
       "exactCase": "forward-lunge.png",
       "size": 1078371,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "forward-lunge",
       "aliases": [
@@ -15881,7 +16171,7 @@
       "filename": "fuelphysique-demo-fallback.svg",
       "extension": ".svg",
       "exactCase": "fuelphysique-demo-fallback.svg",
-      "size": 1891,
+      "size": 1865,
       "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": null,
@@ -15975,7 +16265,7 @@
       "extension": ".png",
       "exactCase": "hanging-knee-raise.png",
       "size": 1166234,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "hanging-knee-raise",
       "aliases": [
@@ -16007,7 +16297,7 @@
       "extension": ".png",
       "exactCase": "hip-thrust-machine.png",
       "size": 1350923,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "hip-thrust-machine",
       "aliases": [],
@@ -16025,27 +16315,17 @@
       "referencedByResolver": true,
       "canonicalExercise": "incline-bench-press",
       "aliases": [
+        "barbell-incline-bench-press",
+        "barbell-incline-chest-press",
         "incline-barbell-bench-press",
+        "incline-barbell-chest-press",
+        "incline-chest-press-barbell",
         "incline-press"
       ],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
       "classification": "COVERED"
-    },
-    {
-      "filename": "incline-chest-press.png",
-      "extension": ".png",
-      "exactCase": "incline-chest-press.png",
-      "size": 1503558,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
     },
     {
       "filename": "incline-dumbbell-bench-press.png",
@@ -16126,41 +16406,16 @@
       "canonicalExercise": "lat-pulldown",
       "aliases": [
         "cable-lat-pulldown",
+        "front-lat-pulldown",
+        "lat-pulldown-machine",
         "lat-pulldowns",
+        "machine-lat-pulldown",
         "wide-grip-lat-pulldown"
       ],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
       "classification": "COVERED"
-    },
-    {
-      "filename": "leg-curl-machine.png",
-      "extension": ".png",
-      "exactCase": "leg-curl-machine.png",
-      "size": 84041,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "leg-curl.png",
-      "extension": ".png",
-      "exactCase": "leg-curl.png",
-      "size": 84041,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
     },
     {
       "filename": "leg-extension.png",
@@ -16249,20 +16504,6 @@
       "classification": "COVERED"
     },
     {
-      "filename": "machine-lateral-raise.png",
-      "extension": ".png",
-      "exactCase": "machine-lateral-raise.png",
-      "size": 1594715,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
       "filename": "machine-shoulder-press.png",
       "extension": ".png",
       "exactCase": "machine-shoulder-press.png",
@@ -16335,8 +16576,13 @@
       "referencedByResolver": true,
       "canonicalExercise": "overhead-tricep-extension",
       "aliases": [
+        "dumbbell-overhead-tricep-extension",
         "dumbbell-overhead-triceps-extension",
-        "overhead-triceps-extension"
+        "overhead-dumbbell-tricep-extension",
+        "overhead-dumbbell-triceps-extension",
+        "overhead-triceps-extension",
+        "seated-overhead-tricep-extension",
+        "seated-overhead-triceps-extension"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -16582,10 +16828,11 @@
       "extension": ".png",
       "exactCase": "seated-machine-row.png",
       "size": 1434221,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "seated-machine-row",
       "aliases": [
+        "machine-seated-row",
         "seated-machine-row"
       ],
       "genericFallback": false,
@@ -16612,7 +16859,7 @@
       "extension": ".png",
       "exactCase": "single-arm-cable-row.png",
       "size": 1475588,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "single-arm-cable-row",
       "aliases": [],
@@ -16721,20 +16968,6 @@
       "classification": "COVERED"
     },
     {
-      "filename": "tricep-pushdown.png",
-      "extension": ".png",
-      "exactCase": "tricep-pushdown.png",
-      "size": 1363681,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
       "filename": "typewriter-pull-ups.png",
       "extension": ".png",
       "exactCase": "typewriter-pull-ups.png",
@@ -16757,7 +16990,7 @@
       "extension": ".png",
       "exactCase": "wide-grip-pull-up.png",
       "size": 1134115,
-      "gitStatus": "??",
+      "gitStatus": "tracked",
       "referencedByResolver": true,
       "canonicalExercise": "wide-grip-pull-up",
       "aliases": [
@@ -16785,119 +17018,12 @@
       "classification": "COVERED"
     }
   ],
-  "orphanFiles": [
-    {
-      "filename": "dumbbell-skullcrusher.png",
-      "extension": ".png",
-      "exactCase": "dumbbell-skullcrusher.png",
-      "size": 1479201,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "dumbell-rear-delt-fly.png",
-      "extension": ".png",
-      "exactCase": "dumbell-rear-delt-fly.png",
-      "size": 1452831,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "incline-chest-press.png",
-      "extension": ".png",
-      "exactCase": "incline-chest-press.png",
-      "size": 1503558,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "leg-curl-machine.png",
-      "extension": ".png",
-      "exactCase": "leg-curl-machine.png",
-      "size": 84041,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "leg-curl.png",
-      "extension": ".png",
-      "exactCase": "leg-curl.png",
-      "size": 84041,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "machine-lateral-raise.png",
-      "extension": ".png",
-      "exactCase": "machine-lateral-raise.png",
-      "size": 1594715,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    },
-    {
-      "filename": "tricep-pushdown.png",
-      "extension": ".png",
-      "exactCase": "tricep-pushdown.png",
-      "size": 1363681,
-      "gitStatus": "??",
-      "referencedByResolver": false,
-      "canonicalExercise": null,
-      "aliases": [],
-      "genericFallback": false,
-      "validImage": true,
-      "invalidReason": "",
-      "classification": "ORPHAN_FILE"
-    }
-  ],
+  "orphanFiles": [],
   "invalidFiles": [],
   "badNames": [],
   "brokenMappings": [],
   "caseMismatches": [],
   "fallbackOnlyAliases": [],
   "missingCanonical": [],
-  "issues": [
-    "ORPHAN_FILE dumbbell-skullcrusher.png",
-    "ORPHAN_FILE dumbell-rear-delt-fly.png",
-    "ORPHAN_FILE incline-chest-press.png",
-    "ORPHAN_FILE leg-curl-machine.png",
-    "ORPHAN_FILE leg-curl.png",
-    "ORPHAN_FILE machine-lateral-raise.png",
-    "ORPHAN_FILE tricep-pushdown.png"
-  ]
+  "issues": []
 }

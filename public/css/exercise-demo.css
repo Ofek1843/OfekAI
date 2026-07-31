@@ -24,11 +24,11 @@
   width: min(920px, 100%);
   max-height: min(860px, 92vh);
   overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, 0.32);
+  border: 1px solid rgba(110, 159, 194, 0.32);
   border-radius: 26px;
   background:
     linear-gradient(145deg, rgba(14, 23, 42, 0.97), rgba(8, 13, 26, 0.97)),
-    #0b1220;
+    #1a2324;
   box-shadow: 0 26px 90px rgba(0, 0, 0, 0.48);
 }
 
@@ -41,8 +41,8 @@
   height: 42px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-  color: #dbeafe;
-  background: rgba(15, 23, 42, 0.76);
+  color: #bcc6c2;
+  background: rgba(32, 43, 44, 0.76);
   cursor: pointer;
   font-size: 28px;
   line-height: 1;
@@ -55,7 +55,7 @@
 .exercise-demo-kicker {
   display: inline-flex;
   margin-bottom: 8px;
-  color: #67e8f9;
+  color: #7fc8b4;
   font-size: 12px;
   font-weight: 900;
   letter-spacing: 0.16em;
@@ -79,8 +79,8 @@
   min-height: 340px;
   padding: 18px;
   background:
-    radial-gradient(circle at 50% 20%, rgba(34, 211, 238, 0.16), transparent 35%),
-    rgba(2, 6, 23, 0.48);
+    radial-gradient(circle at 50% 20%, rgba(127, 200, 180, 0.16), transparent 35%),
+    rgba(8, 13, 13, 0.48);
 }
 
 .exercise-demo-media img {

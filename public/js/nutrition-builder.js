@@ -437,7 +437,7 @@ function renderShoppingList(plan = {}) {
         <h3>${escapeHtml(category)}</h3>
         <ul>
           ${items
-            .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#94a3b8">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
+            .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#8e9d99">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
             .join("")}
         </ul>
       </section>
@@ -484,10 +484,34 @@ function hideResult() {
 // activeOptions maps mealNumber -> visible option index, so re-rendering
 // after a meal swap keeps every carousel where the user left it instead of
 // snapping them all back to option 1.
+// Sums the option each meal is currently SHOWING. plan.dailyCalories & co.
+// are targets derived from the user's profile, not a total of the plan, so
+// the header used to disagree with the visible cards (a reported 2350 kcal
+// summary over meals that added to 2352, with protein out by 28g). These
+// per-option numbers are already integers that equal their own ingredient
+// rows, so summing them is exact and always matches what is on screen.
+function sumVisibleMealTotals(meals, activeOptions = null) {
+  const totals = { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 };
+  for (const meal of meals) {
+    const options = Array.isArray(meal.options) ? meal.options : [];
+    if (!options.length) continue;
+    const requested = activeOptions?.get(meal.mealNumber);
+    const index = Number.isInteger(requested) && requested >= 0 && requested < options.length ? requested : 0;
+    const option = options[index];
+    totals.calories += Number(option.optionCalories) || 0;
+    totals.proteinGrams += Number(option.optionProteinGrams) || 0;
+    totals.carbsGrams += Number(option.optionCarbsGrams) || 0;
+    totals.fatGrams += Number(option.optionFatGrams) || 0;
+  }
+  return totals;
+}
+
 function renderNutritionPlan(plan, activeOptions = null) {
   const meals = Array.isArray(plan.meals)
     ? plan.meals
     : [];
+
+  const visibleTotals = sumVisibleMealTotals(meals, activeOptions);
 
   const notes = Array.isArray(plan.notes)
     ? plan.notes
@@ -518,7 +542,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
             .join("");
 
           return `
-            <div class="carousel-option ${idx === 0 ? "active" : ""}" data-option-number="${option.optionNumber}">
+            <div class="carousel-option ${idx === 0 ? "active" : ""}" data-option-number="${option.optionNumber}" data-keeps-plan-valid="${option.keepsPlanValid === false ? "false" : "true"}">
               <div class="meal-option-media">
                 <div class="meal-photo${option.mealImage ? "" : " no-image"}">
                   ${
@@ -661,33 +685,37 @@ function renderNutritionPlan(plan, activeOptions = null) {
         </div>
       </header>
 
-      <section class="nutrition-summary">
+      <section class="nutrition-summary" data-summary="plan-total">
         <div>
-          <strong>
-            ${escapeHtml(plan.dailyCalories ?? "-")}
+          <strong data-total="calories">
+            ${escapeHtml(visibleTotals.calories)}
           </strong>
           <span>${ui.calories}</span>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.dailyCalories ?? "-")}</small>
         </div>
 
         <div>
-          <strong>
-            ${escapeHtml(plan.proteinGrams ?? "-")}g
+          <strong data-total="proteinGrams">
+            ${escapeHtml(visibleTotals.proteinGrams)}g
           </strong>
           <span>${ui.protein}</span>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.proteinGrams ?? "-")}g</small>
         </div>
 
         <div>
-          <strong>
-            ${escapeHtml(plan.carbsGrams ?? "-")}g
+          <strong data-total="carbsGrams">
+            ${escapeHtml(visibleTotals.carbsGrams)}g
           </strong>
           <span>${ui.carbs}</span>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.carbsGrams ?? "-")}g</small>
         </div>
 
         <div>
-          <strong>
-            ${escapeHtml(plan.fatGrams ?? "-")}g
+          <strong data-total="fatGrams">
+            ${escapeHtml(visibleTotals.fatGrams)}g
           </strong>
           <span>${ui.fat}</span>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.fatGrams ?? "-")}g</small>
         </div>
 
         <div>
@@ -800,11 +828,40 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
   });
 });
 
+// Keeps the header in step with the cards: switching a meal option changes
+// what is on the plate, so the plan total has to be recomputed from the
+// options currently on screen rather than left at its first-render value.
+const visibleSelection = new Map();
+const refreshVisibleTotals = () => {
+  const totals = sumVisibleMealTotals(meals, visibleSelection);
+  const summary = resultElement.querySelector('[data-summary="plan-total"]');
+  if (!summary) return;
+  for (const [key, value] of Object.entries(totals)) {
+    const node = summary.querySelector(`[data-total="${key}"]`);
+    if (node) node.textContent = key === "calories" ? String(value) : `${value}g`;
+  }
+};
+
 // Setup carousel navigation
 resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
   const mealNumber = Number(carousel.dataset.mealNumber);
-  const options = [...carousel.querySelectorAll(".carousel-option")];
-  const dots = [...carousel.querySelectorAll(".carousel-dot")];
+  // The server balances each alternative against the plan's targets and flags
+  // any that cannot be made to fit. Those are removed from the carousel so a
+  // user cannot switch the plan into a state that no longer meets their
+  // targets -- the totals would still add up, but they would be the wrong
+  // totals.
+  const allOptions = [...carousel.querySelectorAll(".carousel-option")];
+  const invalidOptions = allOptions.filter(
+    (option) => option.dataset.keepsPlanValid === "false"
+  );
+  invalidOptions.forEach((option) => option.remove());
+  const options = allOptions.filter((option) => !invalidOptions.includes(option));
+  const allDots = [...carousel.querySelectorAll(".carousel-dot")];
+  // Keep one dot per remaining option.
+  allDots.slice(options.length).forEach((dot) => dot.remove());
+  const dots = allDots.slice(0, options.length);
+  const totalCounter = carousel.querySelector(".carousel-total");
+  if (totalCounter) totalCounter.textContent = String(options.length);
   const prevBtn = carousel.querySelector(".carousel-prev");
   const nextBtn = carousel.querySelector(".carousel-next");
   const currentCounter = carousel.querySelector(".carousel-current");
@@ -822,6 +879,8 @@ resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
     if (currentCounter) currentCounter.textContent = wrappedIndex + 1;
     if (prevBtn) prevBtn.disabled = false;
     if (nextBtn) nextBtn.disabled = false;
+    visibleSelection.set(mealNumber, wrappedIndex);
+    refreshVisibleTotals();
   };
 
   prevBtn?.addEventListener("click", () => showOption(currentIndex - 1));

@@ -5,15 +5,15 @@
 :root {
   color-scheme: dark;
 
-  --background: #070b14;
-  --surface: #101725;
-  --surface-secondary: #171f30;
-  --border: rgba(255, 255, 255, 0.1);
-  --text: #f4f7fb;
-  --muted: #9da9bc;
-  --accent: #7c5cff;
-  --accent-hover: #8d73ff;
-  --danger: #ff667a;
+  --background: var(--fp-bg-page);
+  --surface: var(--fp-surface);
+  --surface-secondary: var(--fp-surface-raised);
+  --border: var(--fp-border);
+  --text: var(--fp-text-primary);
+  --muted: var(--fp-text-muted);
+  --accent: var(--fp-brand-primary);
+  --accent-hover: var(--fp-brand-primary-hover);
+  --danger: var(--fp-danger);
 }
 
 body {
@@ -31,7 +31,7 @@ body {
   background:
     radial-gradient(
       circle at top,
-      rgba(124, 92, 255, 0.18),
+      rgba(82, 201, 138, 0.18),
       transparent 35%
     ),
     var(--background);
@@ -55,21 +55,21 @@ textarea {
 .condition-options label { position:relative; cursor:pointer; }
 .condition-options input { position:absolute; opacity:0; pointer-events:none; }
 .condition-options span { display:flex; min-height:46px; align-items:center; padding:10px 12px; border:1px solid var(--border); border-radius:11px; color:var(--muted); background:rgba(255,255,255,.035); transition:.18s ease; }
-.condition-options input:checked + span { border-color:#7c5cff; color:#ede9fe; background:rgba(124,92,255,.2); box-shadow:0 0 0 2px rgba(124,92,255,.08); }
-.condition-options input:focus-visible + span { outline:2px solid #38bdf8; outline-offset:2px; }
-.youth-consent { display:flex; gap:10px; align-items:flex-start; padding:14px; border:1px solid rgba(251,191,36,.32); border-radius:12px; color:#fde68a; background:rgba(251,191,36,.08); line-height:1.5; }
-.youth-consent input { width:auto; margin-top:4px; accent-color:#f59e0b; }
+.condition-options input:checked + span { border-color:#52c98a; color:#ede9fe; background:rgba(82, 201, 138,.2); box-shadow:0 0 0 2px rgba(82, 201, 138,.08); }
+.condition-options input:focus-visible + span { outline:2px solid #6e9fc2; outline-offset:2px; }
+.youth-consent { display:flex; gap:10px; align-items:flex-start; padding:14px; border:1px solid rgba(214, 164, 93,.32); border-radius:12px; color:#e8cfa2; background:rgba(214, 164, 93,.08); line-height:1.5; }
+.youth-consent input { width:auto; margin-top:4px; accent-color:#d6a45d; }
 .hidden { display:none!important; }
 @media(max-width:640px){.condition-options{grid-template-columns:1fr}}
 
 .builder-navigation { display: flex; justify-content: space-between; gap: 16px; max-width: 980px; margin: 0 auto 20px; }
-.builder-navigation a { color: #c9bcff; font-weight: 750; text-decoration: none; }
+.builder-navigation a { color: #bcc6c2; font-weight: 750; text-decoration: none; }
 
 .builder-card,
 .program-result {
   border: 1px solid var(--border);
   border-radius: 24px;
-  background: rgba(16, 23, 37, 0.92);
+  background: rgba(32, 43, 44, 0.92);
   backdrop-filter: blur(18px);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
 }
@@ -88,10 +88,10 @@ textarea {
   display: inline-flex;
   margin-bottom: 14px;
   padding: 7px 12px;
-  border: 1px solid rgba(124, 92, 255, 0.35);
+  border: 1px solid rgba(82, 201, 138, 0.35);
   border-radius: 999px;
-  color: #c9bcff;
-  background: rgba(124, 92, 255, 0.12);
+  color: #bcc6c2;
+  background: rgba(82, 201, 138, 0.12);
   font-size: 13px;
   font-weight: 700;
 }
@@ -156,7 +156,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.14);
+  box-shadow: 0 0 0 4px rgba(82, 201, 138, 0.14);
 }
 
 .checkbox-grid {
@@ -188,7 +188,7 @@ textarea:focus {
   min-height: 52px;
   border: 0;
   border-radius: 14px;
-  color: white;
+  color: var(--fp-text-inverse);
   background: var(--accent);
   font-weight: 800;
   cursor: pointer;
@@ -313,18 +313,18 @@ textarea:focus {
   position: relative;
   overflow: hidden;
   padding: 34px;
-  border: 1px solid rgba(124, 92, 255, 0.28);
+  border: 1px solid rgba(82, 201, 138, 0.28);
   border-radius: 28px;
   background:
     radial-gradient(
       circle at top right,
-      rgba(124, 92, 255, 0.18),
+      rgba(82, 201, 138, 0.18),
       transparent 32%
     ),
     linear-gradient(
       145deg,
       rgba(20, 29, 48, 0.98),
-      rgba(10, 16, 29, 0.98)
+      rgba(26, 35, 36, 0.98)
     );
   box-shadow:
     0 24px 70px rgba(0, 0, 0, 0.38),
@@ -384,35 +384,35 @@ textarea:focus {
 
 .print-program-button:hover {
   transform: translateY(-2px);
-  border-color: rgba(124, 92, 255, 0.75);
-  background: rgba(124, 92, 255, 0.16);
+  border-color: rgba(82, 201, 138, 0.75);
+  background: rgba(82, 201, 138, 0.16);
 }
 
 .program-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
-.save-program-button { padding: 12px 18px; border: 1px solid rgba(34, 197, 94, 0.45); border-radius: 12px; color: #dcfce7; background: rgba(34, 197, 94, 0.16); font-weight: 800; cursor: pointer; }
-.save-program-button:hover { background: rgba(34, 197, 94, 0.26); }
+.save-program-button { padding: 12px 18px; border: 1px solid rgba(89, 173, 120, 0.45); border-radius: 12px; color: #dcfce7; background: rgba(89, 173, 120, 0.16); font-weight: 800; cursor: pointer; }
+.save-program-button:hover { background: rgba(89, 173, 120, 0.26); }
 .save-program-button:disabled { cursor: default; opacity: 0.75; }
-.shopping-list-button { padding: 12px 18px; border: 1px solid rgba(245, 158, 11, 0.32); border-radius: 12px; color: #fff7ed; background: rgba(245, 158, 11, 0.14); font-weight: 800; cursor: pointer; }
-.shopping-list-button:hover { background: rgba(245, 158, 11, 0.24); }
-.shopping-modal { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 18px; background: rgba(2, 6, 23, 0.72); backdrop-filter: blur(8px); }
+.shopping-list-button { padding: 12px 18px; border: 1px solid rgba(214, 164, 93, 0.32); border-radius: 12px; color: #fff7ed; background: rgba(214, 164, 93, 0.14); font-weight: 800; cursor: pointer; }
+.shopping-list-button:hover { background: rgba(214, 164, 93, 0.24); }
+.shopping-modal { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 18px; background: rgba(8, 13, 13, 0.72); backdrop-filter: blur(8px); }
 .shopping-modal.hidden { display: none; }
 .shopping-modal__backdrop { position: absolute; inset: 0; }
 .shopping-modal__panel { position: relative; z-index: 1; width: min(920px, calc(100vw - 24px)); max-height: min(84vh, 920px); display: flex; flex-direction: column; gap: 18px; padding: 22px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; background: linear-gradient(180deg, rgba(10, 17, 30, 0.98), rgba(7, 11, 20, 0.98)); box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4); }
 .shopping-modal__header { display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; }
-.shopping-modal__eyebrow { display: inline-flex; margin-bottom: 8px; padding: 6px 10px; border-radius: 999px; color: #fbbf24; background: rgba(245, 158, 11, 0.12); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.shopping-modal__eyebrow { display: inline-flex; margin-bottom: 8px; padding: 6px 10px; border-radius: 999px; color: #d6a45d; background: rgba(214, 164, 93, 0.12); font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .shopping-modal__header h2 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 38px); }
-.shopping-modal__header p { margin: 0; color: #94a3b8; }
+.shopping-modal__header p { margin: 0; color: #8e9d99; }
 .shopping-modal__close { width: 42px; height: 42px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; color: #fff; background: rgba(255, 255, 255, 0.04); font-size: 28px; line-height: 1; cursor: pointer; }
 .shopping-modal__body { overflow: auto; display: grid; gap: 16px; padding-right: 6px; }
 .shopping-section { padding: 16px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; background: rgba(255, 255, 255, 0.03); }
 .shopping-section h3 { margin: 0 0 12px; font-size: 18px; }
-.shopping-section ul { margin: 0; padding-left: 20px; color: #dbe4f0; line-height: 1.65; }
+.shopping-section ul { margin: 0; padding-left: 20px; color: #d3dbd7; line-height: 1.65; }
 .shopping-section li + li { margin-top: 6px; }
-.shopping-empty { margin: 0; color: #94a3b8; }
+.shopping-empty { margin: 0; color: #8e9d99; }
 .shopping-modal__footer { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .shopping-modal__primary, .shopping-modal__secondary { padding: 11px 16px; border-radius: 12px; font-weight: 800; cursor: pointer; }
-.shopping-modal__primary { border: 1px solid rgba(245, 158, 11, 0.28); color: #1f1300; background: linear-gradient(135deg, #fbbf24, #fb7185); }
-.shopping-modal__secondary { border: 1px solid rgba(255, 255, 255, 0.12); color: #dbe4f0; background: rgba(255, 255, 255, 0.05); }
+.shopping-modal__primary { border: 1px solid rgba(214, 164, 93, 0.28); color: #1f1300; background: linear-gradient(135deg, #d6a45d, #d96f70); }
+.shopping-modal__secondary { border: 1px solid rgba(255, 255, 255, 0.12); color: #d3dbd7; background: rgba(255, 255, 255, 0.05); }
 
 .program-summary {
   display: grid;
@@ -452,7 +452,7 @@ textarea:focus {
 .workout-day {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-top: 4px solid #7c5cff;
+  border-top: 4px solid #52c98a;
   border-radius: 20px;
   background: rgba(15, 23, 39, 0.82);
 }
@@ -612,7 +612,7 @@ textarea:focus {
 }
 
 .workout-table tbody tr:hover {
-  background: rgba(124, 92, 255, 0.065);
+  background: rgba(82, 201, 138, 0.065);
 }
 
 .workout-table tbody tr:last-child td {
@@ -666,7 +666,7 @@ textarea:focus {
 }
 
 .muscle-badge {
-  background: rgba(124, 92, 255, 0.15);
+  background: rgba(82, 201, 138, 0.15);
   color: #b9a8ff;
 }
 
@@ -742,7 +742,7 @@ textarea:focus {
     gap: 8px;
     align-items: center;
     padding: 10px 10px 10px 8px;
-    border-bottom: 1px solid #eef2f7;
+    border-bottom: 1px solid #e6e2d8;
   }
 
   .nutrition-food-table td {
@@ -844,7 +844,7 @@ textarea:focus {
   .program-card,
   .workout-day {
     background: #ffffff !important;
-    color: #111827 !important;
+    color: #202b2c !important;
     box-shadow: none !important;
   }
 
@@ -858,13 +858,13 @@ textarea:focus {
   .exercise-name-cell strong,
   .summary-item strong,
   .workout-value {
-    color: #111827 !important;
+    color: #202b2c !important;
   }
 
   .program-description,
   .workout-table td,
   .exercise-note {
-    color: #475569 !important;
+    color: #8e9d99 !important;
   }
 
   .print-program-button {
@@ -897,8 +897,8 @@ textarea:focus {
 
 .meal-option-card:hover {
   transform: translateY(-2px);
-  border-color: #3b82f6;
-  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.12);
+  border-color: #6e9fc2;
+  box-shadow: 0 10px 24px rgba(110, 159, 194, 0.12);
 }
 .meal-option-header {
   display: flex;
@@ -906,7 +906,7 @@ textarea:focus {
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid #e6e2d8;
 }
 .option-label {
   font-size: 13px;
@@ -919,7 +919,7 @@ textarea:focus {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #6e9fc2;
   color: #fff;
   display: flex;
   align-items: center;
@@ -954,7 +954,7 @@ option-foods {
   padding: 4px 10px;
   border-radius: 999px;
   background: #eff6ff;
-  color: #2563eb;
+  color: #6e9fc2;
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -976,7 +976,7 @@ option-foods {
 .meal-options-title-sub {
   font-size: 12px;
   font-weight: 600;
-  color: #94a3b8;
+  color: #8e9d99;
 }
 .nutrition-food-table {
   width: 100%;
@@ -988,7 +988,7 @@ option-foods {
 
 .nutrition-food-table th {
   padding: 14px;
-  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  background: linear-gradient(135deg, #6e9fc2, #6e9fc2);
   color: #ffffff;
   font-size: 13px;
   font-weight: 800;
@@ -997,7 +997,7 @@ option-foods {
 
 .nutrition-food-table td {
   padding: 14px;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid #e6e2d8;
   color: #1e293b;
   font-size: 14px;
   font-weight: 600;
@@ -1040,11 +1040,11 @@ html[dir="ltr"] .nutrition-food-table td {
      would render as white-on-white here) — the card controls its own text
      theme explicitly rather than inheriting the page's. */
   --card-text: #0f172a;
-  --card-text-secondary: #334155;
+  --card-text-secondary: #3d4a48;
   --card-text-muted: #64748b;
-  --card-accent: #6d28d9;
+  --card-accent: #52c98a;
   --card-accent-soft: #f3f0ff;
-  --card-surface: #f4f7fb;
+  --card-surface: #f3f0e8;
   --card-border: #e7eaf0;
 
   background: #ffffff;
@@ -1053,13 +1053,13 @@ html[dir="ltr"] .nutrition-food-table td {
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 8px 24px rgba(32, 43, 44, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .meal-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 14px 32px rgba(32, 43, 44, 0.1);
 }
 .meal-header {
   display: flex;
@@ -1068,7 +1068,7 @@ html[dir="ltr"] .nutrition-food-table td {
   gap: 16px;
   margin-bottom: 18px;
   padding-bottom: 14px;
-  border-bottom: 1px solid #eef2f7;
+  border-bottom: 1px solid #e6e2d8;
 }
 
 .meal-header h3,
@@ -1091,11 +1091,11 @@ html[dir="ltr"] .nutrition-food-table td {
   align-items: center;
   padding: 8px 14px;
   border-radius: 999px;
-  background: #f4f7fb;
+  background: #f3f0e8;
   border: 1px solid #e4eaf2;
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: #3d4a48;
 }
 .food-cell {
   display: flex;
@@ -1110,7 +1110,7 @@ html[dir="ltr"] .nutrition-food-table td {
   object-fit: cover;
   flex-shrink: 0;
   border: 1px solid #dbe3ee;
-  background: #f8fafc;
+  background: #f3f0e8;
 }
 
 .food-cell span {
@@ -1139,11 +1139,11 @@ html[dir="ltr"] .nutrition-food-table td {
 .visually-hidden-select{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 
 /* Progress bar */
-.wizard-progress{margin-bottom:24px;padding:16px 18px;border:1px solid rgba(124,92,255,.2);border-radius:16px;background:rgba(124,92,255,.07)}
-.wizard-progress-topline{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:11px;color:#cbd5e1;font-size:13px}
+.wizard-progress{margin-bottom:24px;padding:16px 18px;border:1px solid rgba(82, 201, 138,.2);border-radius:16px;background:rgba(82, 201, 138,.07)}
+.wizard-progress-topline{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:11px;color:#bcc6c2;font-size:13px}
 .wizard-progress-topline strong{color:#fff;font-size:15px}
 .wizard-progress-track{height:8px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.07)}
-.wizard-progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#7c5cff,#22c55e);transition:width .28s ease}
+.wizard-progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#52c98a,#59ad78);transition:width .28s ease}
 
 /* Steps */
 .wizard-step{display:none;animation:nutrStepIn .25s ease-out}
@@ -1151,7 +1151,7 @@ html[dir="ltr"] .nutrition-food-table td {
 @keyframes nutrStepIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
 
 .wizard-step-heading{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px}
-.wizard-step-heading>span{display:grid;width:44px;height:44px;place-items:center;flex:0 0 44px;border:1px solid rgba(124,92,255,.35);border-radius:14px;color:#c9bcff;background:rgba(124,92,255,.12);font-weight:900}
+.wizard-step-heading>span{display:grid;width:44px;height:44px;place-items:center;flex:0 0 44px;border:1px solid rgba(82, 201, 138,.35);border-radius:14px;color:#bcc6c2;background:rgba(82, 201, 138,.12);font-weight:900}
 .wizard-step-heading h2{margin:0;color:#fff;font-size:clamp(22px,4vw,32px)}
 .wizard-step-heading p{margin:7px 0 0;color:var(--muted);line-height:1.55}
 
@@ -1160,28 +1160,28 @@ html[dir="ltr"] .nutrition-food-table td {
 .wizard-fields-grid--two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .wizard-fields-grid--one{grid-template-columns:1fr}
 .wizard-fields-grid label,.limitations-field{display:grid;gap:8px}
-.wizard-fields-grid label>span,.limitations-field>span{color:#dbe4f0;font-size:14px;font-weight:800}
+.wizard-fields-grid label>span,.limitations-field>span{color:#d3dbd7;font-size:14px;font-weight:800}
 
 /* Youth consent */
-.youth-consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:14px;border:1px solid rgba(255,200,0,.2);border-radius:12px;background:rgba(255,200,0,.06);color:#fde68a;font-size:13px;line-height:1.5;cursor:pointer}
-.youth-consent input{margin-top:2px;accent-color:#7c5cff}
+.youth-consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:14px;border:1px solid rgba(255,200,0,.2);border-radius:12px;background:rgba(255,200,0,.06);color:#e8cfa2;font-size:13px;line-height:1.5;cursor:pointer}
+.youth-consent input{margin-top:2px;accent-color:#52c98a}
 
 /* Visual goal cards grid — 3 equal columns */
 .nutr-goal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 
 /* Shared visual card styles */
-.visual-choice-card{position:relative;display:block;min-height:220px;overflow:hidden;border:2px solid rgba(255,255,255,.09);border-radius:19px;cursor:pointer;background:#111827;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-.visual-choice-card:hover{transform:translateY(-2px);border-color:rgba(139,92,246,.55);box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.visual-choice-card{position:relative;display:block;min-height:220px;overflow:hidden;border:2px solid rgba(255,255,255,.09);border-radius:19px;cursor:pointer;background:#202b2c;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.visual-choice-card:hover{transform:translateY(-2px);border-color:rgba(82, 201, 138,.55);box-shadow:0 18px 40px rgba(0,0,0,.28)}
 .visual-choice-card input{position:absolute;opacity:0;pointer-events:none}
 .visual-choice-image,.visual-choice-shade{position:absolute;inset:0}
 .visual-choice-image{background-size:cover;background-repeat:no-repeat;background-position:center;transition:transform .28s ease}
 .visual-choice-card:hover .visual-choice-image{transform:scale(1.035)}
-.visual-choice-shade{background:linear-gradient(180deg,rgba(2,6,23,.02) 0%,rgba(2,6,23,.1) 42%,rgba(2,6,23,.82) 100%)}
+.visual-choice-shade{background:linear-gradient(180deg,rgba(8, 13, 13,.02) 0%,rgba(8, 13, 13,.1) 42%,rgba(8, 13, 13,.82) 100%)}
 .visual-choice-content{position:absolute;inset:auto 18px 17px;z-index:2;display:grid;gap:5px}
 .visual-choice-content strong{color:#fff;font-size:20px;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.5)}
 .visual-choice-content small{color:#d6deeb;line-height:1.35;text-shadow:0 1px 6px rgba(0,0,0,.5)}
-.visual-choice-check{position:absolute;top:14px;right:14px;z-index:3;display:none;width:36px;height:36px;place-items:center;border-radius:50%;color:#fff;background:#22c55e;box-shadow:0 10px 22px rgba(34,197,94,.3);font-weight:950}
-.visual-choice-card:has(input:checked){border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.18),0 20px 45px rgba(0,0,0,.34)}
+.visual-choice-check{position:absolute;top:14px;right:14px;z-index:3;display:none;width:36px;height:36px;place-items:center;border-radius:50%;color:var(--fp-text-inverse);background:#59ad78;box-shadow:0 10px 22px rgba(89, 173, 120,.3);font-weight:950}
+.visual-choice-card:has(input:checked){border-color:#52c98a;box-shadow:0 0 0 3px rgba(82, 201, 138,.18),0 20px 45px rgba(0,0,0,.34)}
 .visual-choice-card:has(input:checked) .visual-choice-check{display:grid}
 .visual-choice-card--wide{grid-column:1/-1;min-height:420px}
 .nutr-goal-grid .visual-choice-card--wide{grid-column:auto;min-height:300px}
@@ -1190,7 +1190,7 @@ html[dir="ltr"] .nutrition-food-table td {
 /* Nutrition goal card images — replace with real images when available */
 .visual-choice-card--nutr-muscle .visual-choice-image{
   background-image:
-    linear-gradient(135deg,rgba(37,99,235,.28),rgba(2,6,23,.18)),
+    linear-gradient(135deg,rgba(110, 159, 194,.28),rgba(8, 13, 13,.18)),
     url('/images/nutrition-builder/goals/build-muscle.webp');
   background-position: center 30%;
   /* Placeholder: rich blue gradient until image is added */
@@ -1198,7 +1198,7 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 .visual-choice-card--nutr-fat .visual-choice-image{
   background-image:
-    linear-gradient(135deg,rgba(16,185,129,.28),rgba(2,6,23,.18)),
+    linear-gradient(135deg,rgba(16,185,129,.28),rgba(8, 13, 13,.18)),
     url('/images/nutrition-builder/goals/lose-fat.webp');
   background-position: center 30%;
   /* Placeholder: green gradient */
@@ -1206,7 +1206,7 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 .visual-choice-card--nutr-maintain .visual-choice-image{
   background-image:
-    linear-gradient(135deg,rgba(245,158,11,.24),rgba(2,6,23,.18)),
+    linear-gradient(135deg,rgba(214, 164, 93,.24),rgba(8, 13, 13,.18)),
     url('/images/nutrition-builder/goals/maintain-weight.webp');
   background-position: center 30%;
   /* Placeholder: amber gradient */
@@ -1218,7 +1218,7 @@ html[dir="ltr"] .nutrition-food-table td {
 .wizard-button{min-height:52px;border:0;border-radius:14px;color:#fff;font:inherit;font-weight:900;cursor:pointer;transition:opacity .15s}
 .wizard-button:disabled{opacity:.4;cursor:not-allowed}
 .wizard-button--back{min-width:130px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06)}
-.wizard-button--next,.wizard-button--generate{background:linear-gradient(135deg,#6d4aff,#8b5cf6)}
+.wizard-button--next,.wizard-button--generate{background:linear-gradient(135deg,#167fdc,#2f9bff)}
 .wizard-button--generate{grid-column:2}
 .wizard-button.hidden{display:none!important}
 
@@ -1227,7 +1227,7 @@ html[dir="ltr"] .nutrition-food-table td {
 .wizard-error.hidden{display:none}
 
 /* Review summary */
-.wizard-review{margin-top:20px;padding:16px 18px;border:1px solid rgba(34,197,94,.2);border-radius:16px;background:rgba(34,197,94,.07);color:#d1fae5;line-height:1.6}
+.wizard-review{margin-top:20px;padding:16px 18px;border:1px solid rgba(89, 173, 120,.2);border-radius:16px;background:rgba(89, 173, 120,.07);color:#d1fae5;line-height:1.6}
 .wizard-review strong{color:#fff}
 .wizard-review:empty{display:none}
 
@@ -1516,7 +1516,7 @@ html[dir="ltr"] .nutrition-food-table td {
   border-radius: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(124, 92, 255, 0.2);
+  border: 1px solid rgba(82, 201, 138, 0.2);
 }
 
 .meal-photo img {
@@ -1539,7 +1539,7 @@ html[dir="ltr"] .nutrition-food-table td {
   justify-content: center;
   padding: 24px;
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
-  color: #c9bcff;
+  color: #bcc6c2;
   font-size: 18px;
   font-weight: 800;
   text-align: center;
@@ -1631,9 +1631,9 @@ html[dir="ltr"] .nutrition-food-table td {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   padding: 18px 16px;
-  border: 1px solid rgba(124, 92, 255, 0.2);
+  border: 1px solid rgba(82, 201, 138, 0.2);
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(124, 92, 255, 0.04));
+  background: linear-gradient(135deg, rgba(82, 201, 138, 0.08), rgba(82, 201, 138, 0.04));
   text-align: center;
   margin-top: 18px;
 }
@@ -1662,8 +1662,8 @@ html[dir="ltr"] .nutrition-food-table td {
   gap: 18px;
   margin-top: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(124, 92, 255, 0.04));
-  border: 1px solid rgba(124, 92, 255, 0.15);
+  background: linear-gradient(135deg, rgba(82, 201, 138, 0.08), rgba(82, 201, 138, 0.04));
+  border: 1px solid rgba(82, 201, 138, 0.15);
   border-radius: 14px;
 }
 
@@ -1701,11 +1701,11 @@ html[dir="ltr"] .nutrition-food-table td {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(15, 23, 42, 0.18);
+  background: rgba(32, 43, 44, 0.18);
   opacity: 0.8;
   cursor: pointer;
   transition: all 0.25s ease;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(32, 43, 44, 0.12);
 }
 
 .carousel-dot:hover {

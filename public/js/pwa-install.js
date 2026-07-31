@@ -54,11 +54,11 @@ function injectStyles() {
       gap: 14px;
       padding: 14px 16px;
       border-radius: 14px;
-      background: rgba(17, 25, 45, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(38, 51, 52, 0.96);
+      border: 1px solid rgba(142, 157, 153, 0.18);
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(10px);
-      color: #f8fafc;
+      color: #f3f0e8;
       font-family: inherit;
       transform: translateY(120%);
       opacity: 0;
@@ -73,13 +73,13 @@ function injectStyles() {
       width: 40px;
       height: 40px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #38bdf8, #7c3aed);
+      background: linear-gradient(135deg, #167fdc, #35cfdf);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       font-size: 14px;
-      color: #050812;
+      color: #101516;
     }
     .pwa-install-copy {
       flex: 1;
@@ -93,7 +93,7 @@ function injectStyles() {
     .pwa-install-copy p {
       margin: 0;
       font-size: 12.5px;
-      color: #a8b3c7;
+      color: #bcc6c2;
       line-height: 1.4;
     }
     .pwa-install-actions {
@@ -112,12 +112,12 @@ function injectStyles() {
       white-space: nowrap;
     }
     .pwa-install-btn.primary {
-      background: linear-gradient(135deg, #38bdf8, #7c3aed);
-      color: #050812;
+      background: linear-gradient(135deg, #167fdc, #35cfdf);
+      color: #101516;
     }
     .pwa-install-btn.secondary {
       background: transparent;
-      color: #a8b3c7;
+      color: #bcc6c2;
     }
     @media (max-width: 480px) {
       .pwa-install-banner {

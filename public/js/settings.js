@@ -336,7 +336,7 @@ function setStatus(
     status.dataset.type = type;
 
     if (type === "success") {
-        status.style.color = "#22c55e";
+        status.style.color = "#59ad78";
     } else if (type === "error") {
         status.style.color = "#ef4444";
     } else {
