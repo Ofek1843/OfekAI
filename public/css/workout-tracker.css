@@ -262,6 +262,22 @@ textarea{
   margin:6px 0 0;
   color:var(--muted);
 }
+.focus-exercise-media{
+  width:100%;
+  max-width:540px;
+  aspect-ratio:1;
+  border-radius:16px;
+  border:1px solid rgba(53,207,223,.22);
+  background:linear-gradient(135deg,rgba(32,43,44,.8),rgba(10,15,25,.8));
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+}
+.focus-exercise-media img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 .next-set-preview{
   display:flex;
   flex-direction:column;

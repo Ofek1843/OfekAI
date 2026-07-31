@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#070b14",
-  "theme_color": "#7c3aed",
+  "theme_color": "#2f9bff",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23070b14' width='192' height='192'/><text x='50%' y='50%' font-size='120' font-weight='900' fill='%237c3aed' text-anchor='middle' dominant-baseline='central' font-family='system-ui'>FP</text></svg>",

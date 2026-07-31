@@ -73,13 +73,13 @@ function injectStyles() {
       width: 40px;
       height: 40px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #167fdc, #35cfdf);
+      background: linear-gradient(135deg, #2f9bff, #35cfdf);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
       font-size: 14px;
-      color: #101516;
+      color: #0a0e1a;
     }
     .pwa-install-copy {
       flex: 1;
@@ -112,8 +112,8 @@ function injectStyles() {
       white-space: nowrap;
     }
     .pwa-install-btn.primary {
-      background: linear-gradient(135deg, #167fdc, #35cfdf);
-      color: #101516;
+      background: linear-gradient(135deg, #2f9bff, #35cfdf);
+      color: #0a0e1a;
     }
     .pwa-install-btn.secondary {
       background: transparent;
