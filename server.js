@@ -3545,12 +3545,44 @@ ${slots
     // to an alternative could silently move the plan out of tolerance. Balance
     // each alternative too and flag any that still cannot be made valid, so
     // the UI can keep the user out of an invalid plan.
-    plan.totalsSummary.optionSelectability = markSelectableOptions(
+    const optionSelectability = markSelectableOptions(
       plan,
       { calories: targetCalories, proteinGrams: targetProtein, carbsGrams: targetCarbs, fatGrams: targetFat },
       { isHebrew }
     );
     attachActualTotals(plan);
+
+    // markSelectableOptions rebalances each option in turn and restores the
+    // chosen one, which can move the final amounts by a rounding step. The
+    // summary was computed BEFORE that, so publishing it unchanged left
+    // totalsSummary.actual disagreeing with the meals it claims to total.
+    // Recompute from the plan as it will actually be sent.
+    const finalTotals = evaluatePlanTotals(plan, null);
+    const finalArithmetic = verifyDisplayedArithmetic(plan, null);
+    plan.totalsSummary = {
+      ...plan.totalsSummary,
+      actual: finalTotals.actual,
+      deviations: finalTotals.deviations,
+      withinTolerance: finalTotals.withinTolerance,
+      displayedArithmeticExact: finalArithmetic.exact,
+      optionSelectability
+    };
+
+    // The post-rebalance plan must still satisfy the same gate as before it.
+    const finalImplausible = findImplausibleServings(plan);
+    if (!finalTotals.withinTolerance || !finalArithmetic.exact || finalImplausible.length) {
+      console.warn(
+        `Nutrition plan rejected after option rebalancing for uid=${user.uid}:`,
+        finalTotals.failures.join("; "),
+        finalArithmetic.mismatches.join("; "),
+        finalImplausible.join("; ")
+      );
+      return res.status(422).json({
+        error: isHebrew
+          ? "לא הצלחנו לבנות תפריט שמתאים ליעדים שלך עם ההעדפות האלה. נסו לשנות מספר ארוחות, העדפה תזונתית או מגבלות."
+          : "We couldn't build a menu that meets your targets with these preferences. Try adjusting the number of meals, your dietary preference, or your restrictions."
+      });
+    }
 
     return res.json({
       success: true,
