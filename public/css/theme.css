@@ -9,17 +9,16 @@
    typography, radius or animation property, so it cannot move anything on the
    page.
 
-   Identity — "Midnight Coral": neutral deep-ink foundation, coral primary
-   action, fresh aqua secondary, warm cream text. Replaces the previous
-   dark-navy + saturated purple/blue palette, which read as a generic AI-SaaS
-   template, and the graphite/sage direction that followed it, which was too
-   muted and too gray-green to stay in for long sessions.
+   Identity — "Deep Ocean Sport": deep petrol-ink foundation, sky-blue primary
+   action, fresh mint secondary, warm sand highlight. Replaces the original
+   navy + saturated purple/blue palette (a generic AI-SaaS look), the
+   graphite/sage direction (too muted and gray-green) and the coral direction.
 
-   Coral carries the brand: primary CTAs, selected states, action highlights
-   and small memorable details. It is deliberately NOT used as a page
-   background or on every card. Aqua carries secondary actions, links, focus
-   and light decorative glow. The ink background stays neutral so photographs
-   and content dominate.
+   Blue carries interaction -- primary actions, active navigation, links, focus
+   and workout accents -- NOT every surface. Mint carries secondary actions,
+   nutrition and positive states. Warm sand is a restrained supporting accent
+   only. The petrol background stays deep and neutral so photographs, copy and
+   CTAs dominate.
 
    Structure:
      1. --fp-*  semantic tokens (the real palette; reference these in new work)
@@ -31,67 +30,67 @@
 
 :root {
   /* ---- 1. surface hierarchy: deepest page → raised modal ---- */
-  --fp-bg-deep: #0b0d12;
-  --fp-bg-page: #11131a;
-  --fp-bg-section: #171a23;
-  --fp-surface: #202532;
-  --fp-surface-raised: #2a3040;
-  --fp-surface-soft: #343b4e;
-  --fp-surface-input: #181d28;
+  --fp-bg-deep: #081316;
+  --fp-bg-page: #0d1b20;
+  --fp-bg-section: #13252b;
+  --fp-surface: #192f36;
+  --fp-surface-raised: #203b43;
+  --fp-surface-soft: #294850;
+  --fp-surface-input: #102329;
 
   /* Navigation/sidebar sit BELOW content cards in the ramp, so chrome recedes
      and cards come forward instead of the whole page reading as one plane. */
-  --fp-nav-surface: #171a23;
+  --fp-nav-surface: #0f2126;
 
   /* ---- borders ---- */
-  --fp-border: #3b4358;
-  --fp-border-strong: #59647d;
+  --fp-border: #35545c;
+  --fp-border-strong: #52717a;
 
   /* ---- text ---- */
-  --fp-text-primary: #f7f4ee;
-  --fp-text-secondary: #c8ccd6;
-  --fp-text-muted: #969eaf;
-  --fp-text-inverse: #13151a;
+  --fp-text-primary: #f4f6f1;
+  --fp-text-secondary: #c4d1cf;
+  --fp-text-muted: #91a6a4;
+  --fp-text-inverse: #0c1719;
 
   /* ---- brand ---- */
-  --fp-brand-primary: #ff7866;
-  --fp-brand-primary-hover: #ff9180;
-  --fp-brand-primary-active: #e96252;
-  --fp-brand-secondary: #5ed7c4;
-  --fp-brand-secondary-hover: #79e3d3;
+  --fp-brand-primary: #55b8e8;
+  --fp-brand-primary-hover: #73c8ee;
+  --fp-brand-primary-active: #389bc9;
+  --fp-brand-secondary: #8ed081;
+  --fp-brand-secondary-hover: #a5dd99;
 
   /* Supporting highlight: streaks, badges, small emphasis. Never a surface. */
-  --fp-highlight: #f1c75b;
-  --fp-highlight-soft: rgba(241, 199, 91, 0.16);
+  --fp-highlight: #e7bd67;
+  --fp-highlight-soft: rgba(231, 189, 103, 0.16);
 
   /* Tinted fills for soft brand backgrounds, so components do not invent
      their own low-opacity variants. */
-  --fp-brand-primary-soft: rgba(255, 120, 102, 0.16);
-  --fp-brand-primary-softer: rgba(255, 120, 102, 0.09);
-  --fp-brand-secondary-soft: rgba(94, 215, 196, 0.16);
+  --fp-brand-primary-soft: rgba(85, 184, 232, 0.16);
+  --fp-brand-primary-softer: rgba(85, 184, 232, 0.09);
+  --fp-brand-secondary-soft: rgba(142, 208, 129, 0.16);
 
   /* ---- status ---- */
-  --fp-success: #52c28b;
-  --fp-warning: #e2ad58;
-  --fp-danger: #ee6c78;
-  --fp-info: #72a8df;
-  --fp-success-soft: rgba(82, 194, 139, 0.16);
-  --fp-warning-soft: rgba(226, 173, 88, 0.16);
-  --fp-danger-soft: rgba(238, 108, 120, 0.16);
-  --fp-info-soft: rgba(114, 168, 223, 0.16);
+  --fp-success: #69c58d;
+  --fp-warning: #e1ad5b;
+  --fp-danger: #ea7076;
+  --fp-info: #65bce3;
+  --fp-success-soft: rgba(105, 197, 141, 0.16);
+  --fp-warning-soft: rgba(225, 173, 91, 0.16);
+  --fp-danger-soft: rgba(234, 112, 118, 0.16);
+  --fp-info-soft: rgba(101, 188, 227, 0.16);
 
   /* ---- interaction ---- */
-  --fp-overlay: rgba(7, 9, 13, 0.74);
-  --fp-focus-ring: rgba(255, 120, 102, 0.5);
+  --fp-overlay: rgba(4, 10, 12, 0.74);
+  --fp-focus-ring: rgba(85, 184, 232, 0.5);
   --fp-hover-surface: rgba(255, 255, 255, 0.05);
   --fp-active-surface: rgba(255, 255, 255, 0.08);
-  --fp-disabled-surface: #1a1e28;
-  --fp-disabled-text: #767d8d;
-  --fp-disabled-border: #2b3040;
+  --fp-disabled-surface: #142b31;
+  --fp-disabled-text: #74908e;
+  --fp-disabled-border: #24444b;
 
   /* ---- shadows (colour only; no geometry change) ---- */
-  --fp-shadow-soft: 0 10px 26px rgba(4, 6, 10, 0.45);
-  --fp-shadow-raised: 0 18px 40px rgba(4, 6, 10, 0.55);
+  --fp-shadow-soft: 0 10px 26px rgba(3, 8, 10, 0.45);
+  --fp-shadow-raised: 0 18px 40px rgba(3, 8, 10, 0.55);
 
   /* =====================================================================
      3. Product category accents.
@@ -100,29 +99,29 @@
      tabs, thin borders, small status dots and charts -- never as a dominant
      page background.
      ===================================================================== */
-  --fp-cat-workout: #72a8df;   /* controlled blue   */
-  --fp-cat-nutrition: #5ec98f; /* controlled green  */
-  --fp-cat-progress: #ff7866;  /* controlled copper */
-  --fp-cat-coach: #5ed7c4;     /* controlled violet */
-  --fp-cat-workout-soft: rgba(114, 168, 223, 0.16);
-  --fp-cat-nutrition-soft: rgba(94, 201, 143, 0.16);
-  --fp-cat-progress-soft: rgba(255, 120, 102, 0.16);
-  --fp-cat-coach-soft: rgba(94, 215, 196, 0.16);
+  --fp-cat-workout: #55b8e8;   /* controlled blue   */
+  --fp-cat-nutrition: #8ed081; /* controlled green  */
+  --fp-cat-progress: #e7bd67;  /* controlled copper */
+  --fp-cat-coach: #35c2ae;     /* controlled violet */
+  --fp-cat-workout-soft: rgba(85, 184, 232, 0.16);
+  --fp-cat-nutrition-soft: rgba(142, 208, 129, 0.16);
+  --fp-cat-progress-soft: rgba(231, 189, 103, 0.16);
+  --fp-cat-coach-soft: rgba(53, 194, 174, 0.16);
 
   /* Chart series, ordered for maximum separation against the graphite
      background. Distinct in hue AND lightness so they stay readable for
      colour-vision differences and in greyscale. */
-  --fp-chart-1: #ff7866;
-  --fp-chart-2: #5ed7c4;
-  --fp-chart-3: #72a8df;
-  --fp-chart-4: #f1c75b;
-  --fp-chart-5: #5ec98f;
-  --fp-chart-6: #b79be6;
-  --fp-chart-grid: #2b3040;
-  --fp-chart-axis: #969eaf;
-  --fp-chart-label: #c8ccd6;
-  --fp-chart-tooltip-bg: #2a3040;
-  --fp-chart-tooltip-text: #f7f4ee;
+  --fp-chart-1: #55b8e8;
+  --fp-chart-2: #8ed081;
+  --fp-chart-3: #e7bd67;
+  --fp-chart-4: #ea7076;
+  --fp-chart-5: #35c2ae;
+  --fp-chart-6: #a99adf;
+  --fp-chart-grid: #24444b;
+  --fp-chart-axis: #91a6a4;
+  --fp-chart-label: #c4d1cf;
+  --fp-chart-tooltip-bg: #203b43;
+  --fp-chart-tooltip-text: #f4f6f1;
 
   /* =====================================================================
      2. Legacy aliases.

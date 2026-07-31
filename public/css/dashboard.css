@@ -1759,36 +1759,36 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .dashboard-action--coach {
-    background: linear-gradient(135deg, #3fb8a6, #5ed7c4);
-    border-color: rgba(94, 215, 196, .42);
-    box-shadow: 0 16px 38px rgba(94, 215, 196, .2);
+    background: linear-gradient(135deg, #2aa294, #35c2ae);
+    border-color: rgba(53, 194, 174, .42);
+    box-shadow: 0 16px 38px rgba(53, 194, 174, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--coach::before { content: "💬"; }
 
   .dashboard-action--workout {
-    background: linear-gradient(135deg, #5289bd, #72a8df);
-    border-color: rgba(114, 168, 223, .42);
-    box-shadow: 0 16px 38px rgba(114, 168, 223, .2);
+    background: linear-gradient(135deg, #3596c6, #55b8e8);
+    border-color: rgba(85, 184, 232, .42);
+    box-shadow: 0 16px 38px rgba(85, 184, 232, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--workout::before { content: "🏋️"; }
 
   .dashboard-action--nutrition {
-    background: linear-gradient(135deg, #43ab77, #5ec98f);
-    border-color: rgba(94, 201, 143, .42);
-    box-shadow: 0 16px 38px rgba(94, 201, 143, .2);
+    background: linear-gradient(135deg, #6cb45f, #8ed081);
+    border-color: rgba(142, 208, 129, .42);
+    box-shadow: 0 16px 38px rgba(142, 208, 129, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--nutrition::before { content: "🥗"; }
 
   .dashboard-action--progress {
-    background: linear-gradient(135deg, #e05a4b, #ff7866);
-    border-color: rgba(255, 120, 102, .42);
-    box-shadow: 0 16px 38px rgba(255, 120, 102, .2);
+    background: linear-gradient(135deg, #c99c47, #e7bd67);
+    border-color: rgba(231, 189, 103, .42);
+    box-shadow: 0 16px 38px rgba(231, 189, 103, .2);
     color: var(--fp-text-inverse);
   }
 
@@ -1860,30 +1860,30 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .dashboard-action--coach {
-    background: linear-gradient(135deg, #3fb8a6, #5ed7c4);
-    border-color: rgba(94, 215, 196, .42);
-    box-shadow: 0 16px 38px rgba(94, 215, 196, .2);
+    background: linear-gradient(135deg, #2aa294, #35c2ae);
+    border-color: rgba(53, 194, 174, .42);
+    box-shadow: 0 16px 38px rgba(53, 194, 174, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--workout {
-    background: linear-gradient(135deg, #5289bd, #72a8df);
-    border-color: rgba(114, 168, 223, .42);
-    box-shadow: 0 16px 38px rgba(114, 168, 223, .2);
+    background: linear-gradient(135deg, #3596c6, #55b8e8);
+    border-color: rgba(85, 184, 232, .42);
+    box-shadow: 0 16px 38px rgba(85, 184, 232, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--nutrition {
-    background: linear-gradient(135deg, #43ab77, #5ec98f);
-    border-color: rgba(94, 201, 143, .42);
-    box-shadow: 0 16px 38px rgba(94, 201, 143, .2);
+    background: linear-gradient(135deg, #6cb45f, #8ed081);
+    border-color: rgba(142, 208, 129, .42);
+    box-shadow: 0 16px 38px rgba(142, 208, 129, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--progress {
-    background: linear-gradient(135deg, #e05a4b, #ff7866);
-    border-color: rgba(255, 120, 102, .42);
-    box-shadow: 0 16px 38px rgba(255, 120, 102, .2);
+    background: linear-gradient(135deg, #c99c47, #e7bd67);
+    border-color: rgba(231, 189, 103, .42);
+    box-shadow: 0 16px 38px rgba(231, 189, 103, .2);
     color: var(--fp-text-inverse);
   }
 
