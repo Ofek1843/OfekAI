@@ -12,7 +12,7 @@ const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-va
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
-const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
+const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
 const { allTargetRanges, volumeStatus, classifyMuscleRequirement, requiredMusclesOutOfRange } = require("./lib/workout-volume-targets");
 const {
@@ -2239,6 +2239,29 @@ const { sanitizeLanguageLeakage, findLanguageLeaks } = require("./lib/workout-la
 //   - classification "required"  -> the actual below/in-range/above status.
 //     Only this classification can make requiredMusclesOutOfRange() (and
 //     therefore validationSummary.volumePassed) fail.
+// Cause-specific, localized message for a volume-gate failure — never the
+// generic "widen your equipment" line unless equipment coverage is the
+// ACTUAL cause (see diagnoseVolumeGateFailure in lib/workout-repair.js,
+// which checks the real catalog against the final allowed equipment set
+// rather than assuming). A profile with full equipment coverage that still
+// fails is a solver limitation or a genuine schedule squeeze, and telling
+// the user to add equipment they already have is actively misleading.
+function volumeFailureMessage(cause, language) {
+  if (cause === "equipment") {
+    return language === "he"
+      ? "הציוד שנבחר אינו מספק תרגיל מתאים לכל קבוצת שריר נדרשת. הוסף ציוד תואם או שנה את סגנון האימון."
+      : "The selected equipment does not provide a suitable exercise for every required muscle group. Add compatible equipment or change the training style.";
+  }
+  if (cause === "schedule") {
+    return language === "he"
+      ? "לא הצלחנו להתאים את נפח האימון השבועי הנדרש ללוח הזמנים שנבחר. נסה להוסיף יום אימון או להאריך את משך האימון."
+      : "We couldn't fit the required weekly training volume into the selected schedule. Try adding a training day or increasing session duration.";
+  }
+  return language === "he"
+    ? "לא הצלחנו לסיים לאזן את התוכנית הזו. נסה ליצור אותה שוב."
+    : "We couldn't finish balancing this program. Please try generating it again.";
+}
+
 function buildPerMuscleWithTargets(perMuscle, profile, mappingIncomplete = false) {
   const targets = allTargetRanges(profile);
   const muscles = new Set([...Object.keys(perMuscle || {}), ...Object.keys(targets)]);
@@ -2712,17 +2735,27 @@ Injuries, limitations or special requests: ${String(limitations)}
     const volumePassed = mappingComplete && outOfRangeRequired.length === 0;
 
     if (!volumePassed) {
+      // Diagnose WHY before choosing the user-facing message: check the
+      // real catalog against the final allowed equipment set rather than
+      // assuming equipment is the problem. Diagnostics are logged
+      // server-side only — never sent to the client (private, matches the
+      // existing policy of never exposing raw validator internals).
+      const diagnosis = diagnoseVolumeGateFailure(outOfRangeRequired, {
+        equipment: equipmentForGeneration,
+        daysPerWeek: parsedDays,
+        sessionDuration: parsedDuration
+      });
       console.warn(`Workout volume gate failed for user ${user.uid}:`, {
+        cause: diagnosis.cause,
         mappingComplete,
         mappingCoveragePercent,
         unknownExercises,
-        outOfRangeRequired
+        equipmentCoverage: diagnosis.equipmentCoverage,
+        details: diagnosis.details
       });
       return res.status(422).json({
         success: false,
-        error: language === "he"
-          ? "לא הצלחנו להרכיב תוכנית אימונים עם נפח שבועי מאוזן לקבוצות השריר הנדרשות. נסה שוב, או הרחב את הציוד הזמין."
-          : "We couldn't put together a workout program with balanced weekly volume for the required muscle groups. Please try again, or widen your available equipment."
+        error: volumeFailureMessage(diagnosis.cause, language)
       });
     }
 
