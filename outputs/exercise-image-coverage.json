@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-31T09:12:32.029Z",
+  "generatedAt": "2026-07-31T09:56:15.204Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
@@ -25,6 +25,8 @@
     "publicEnabledExercises": 106,
     "publicReleaseImageFailures": 0,
     "disabledUntilDedicatedImages": 1,
+    "optimizedWebpDerivatives": 100,
+    "sourcesMissingWebpDerivative": 0,
     "mobilityStretchVariantsChecked": 9,
     "mobilityStretchCorrectlyRemoved": 9,
     "mobilityStretchSurvivedWithImage": 0,

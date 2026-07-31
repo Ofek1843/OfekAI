@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const payPlusBilling = require("./lib/payplus-billing");
@@ -104,6 +105,36 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: "512kb" }));
 app.use(express.urlencoded({ extended: false, limit: "64kb" }));
+
+// Transparent webp content negotiation for images.
+//
+// The source images are full-resolution PNG/JPEG renders (~254MB across
+// public/images). scripts/optimize-images.js writes a downscaled .webp
+// sibling next to each one; this rewrites the request to that sibling when
+// the client advertises webp support and the file exists. Every existing URL
+// keeps working unchanged -- the exercise-image resolver, the catalog's
+// `image:` filenames and the coverage audits still refer to the .png, and
+// clients without webp support still receive the original file.
+const WEBP_SOURCE_PATTERN = /^\/images\/.+\.(?:png|jpe?g)$/i;
+
+app.use((req, res, next) => {
+  if (req.method !== "GET" && req.method !== "HEAD") return next();
+  if (!WEBP_SOURCE_PATTERN.test(req.path)) return next();
+  if (!/\bimage\/webp\b/i.test(req.headers.accept || "")) return next();
+
+  const webpPath = req.path.replace(/\.[^.]+$/, ".webp");
+  const absolute = path.join(__dirname, "public", webpPath);
+  // Guard against path traversal before touching the filesystem.
+  if (!absolute.startsWith(path.join(__dirname, "public") + path.sep)) return next();
+  if (!fs.existsSync(absolute)) return next();
+
+  // Caches must key on Accept, or a webp body can be replayed to a client
+  // that never asked for one.
+  res.setHeader("Vary", "Accept");
+  req.url = webpPath + (req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "");
+  next();
+});
+
 app.use(express.static(path.join(__dirname, "public"), {
   maxAge: "1h",
   setHeaders(res, filePath) {
@@ -111,10 +142,18 @@ app.use(express.static(path.join(__dirname, "public"), {
       res.setHeader("Cache-Control", "no-store, max-age=0");
       return;
     }
-    const isAsset = /\.(?:css|js|png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath);
-    if (isAsset) {
-      // These assets do not use content-hashed filenames. Revalidate them so a
-      // deployed fix is visible immediately instead of surviving for an hour.
+    if (/\.(?:png|jpe?g|webp|gif|svg|ico|woff2?)$/i.test(filePath)) {
+      // Images and fonts are the bulk of the transferred bytes and change
+      // only when an asset is deliberately replaced. Revalidating each one
+      // on every visit cost a blocking round-trip per image (100+ on a
+      // generated workout); cache them properly and let stale-while-
+      // revalidate refresh a swapped asset in the background instead.
+      res.setHeader("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400");
+      return;
+    }
+    if (/\.(?:css|js)$/i.test(filePath)) {
+      // Code is not content-hashed, so it must still revalidate to keep a
+      // deployed fix visible immediately.
       res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
     }
   }
@@ -2752,7 +2791,15 @@ Required JSON format:
       { sessions: [{ exercises: [newExercise] }] },
       {
         sessionDuration: program.sessionDuration || 60,
-        equipment: selectedEquipment
+        equipment: selectedEquipment,
+        // Repairing the replacement in isolation hides the rest of the
+        // session from the substitution passes, which could then swap in an
+        // exercise the session already contains and fail the duplicate-id
+        // validation rule. Reserve the siblings' ids so that cannot happen.
+        reservedExerciseIds: (program.sessions?.[sessionIndex]?.exercises || [])
+          .filter((_, index) => index !== exerciseIndex)
+          .map((exercise) => exercise?.exerciseId)
+          .filter(Boolean)
       }
     );
     if (rerollRepairs.length > 0) {
