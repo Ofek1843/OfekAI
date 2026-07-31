@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FuelPhysique Workout Tracker</title>
 <link rel="stylesheet" href="/css/theme.css">
-  <link rel="stylesheet" href="/css/workout-tracker.css?v=20260723-focus-1">
+  <link rel="stylesheet" href="/css/workout-tracker.css?v=20260731-image-fix-1">
   <link rel="stylesheet" href="/css/exercise-demo.css">
   <link rel="stylesheet" href="/css/exercise-demo-theme.css">
   <meta name="theme-color" content="#2f9bff">
@@ -104,8 +104,10 @@
           <h3 id="focusExerciseName">Exercise</h3>
           <p id="focusSetMeta">Set 1 of 1</p>
         </div>
-        <div id="focusExerciseMedia" class="focus-exercise-media hidden">
-          <img id="focusExerciseImage" alt="" loading="lazy">
+        <div id="focusExerciseMedia" class="focus-exercise-media" aria-hidden="true">
+          <span class="focus-exercise-skeleton"></span>
+          <span class="focus-exercise-error-icon">🏋</span>
+          <img id="focusExerciseImage" alt="" loading="eager" fetchpriority="high">
         </div>
         <div class="single-set-entry">
           <label class="weight-picker">
@@ -166,7 +168,7 @@
     </div>
   </section>
 </main>
-<script type="module" src="/js/workout-tracker.js?v=20260723-focus-1"></script>
+<script type="module" src="/js/workout-tracker.js?v=20260731-image-fix-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
   <script src="/js/pwa-install.js"></script>
   <div
