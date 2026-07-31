@@ -11,6 +11,13 @@
 <link rel="stylesheet" href="/css/theme.css">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#2f9bff">
+<link rel="manifest" href="/manifest.json">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+  }
+</script>
 <link rel="preload" as="image" href="/images/workout-builder/goals/build-muscle.webp" type="image/webp">
 <!--
   Wizard steps are display:none until reached, and these card images are CSS

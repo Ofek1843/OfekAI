@@ -7,6 +7,13 @@
 <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/nutrition-builder.css?v=20260724-wiz-5" />
   <link rel="stylesheet" href="/css/plan-sharing.css" />
+  <meta name="theme-color" content="#2f9bff">
+  <link rel="manifest" href="/manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+    }
+  </script>
 </head>
 
 <body>
