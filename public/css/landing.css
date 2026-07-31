@@ -33,9 +33,9 @@ body {
     font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: var(--text-primary);
     background:
-        radial-gradient(circle at 12% 18%, rgba(89, 173, 120, 0.13), transparent 28%),
-        radial-gradient(circle at 86% 16%, rgba(101, 184, 159, 0.2), transparent 32%),
-        radial-gradient(circle at 74% 80%, rgba(214, 164, 93, 0.11), transparent 28%),
+        radial-gradient(circle at 12% 18%, rgba(94, 215, 196, 0.10), transparent 28%),
+        radial-gradient(circle at 86% 16%, rgba(255, 120, 102, 0.11), transparent 32%),
+        radial-gradient(circle at 74% 80%, rgba(94, 215, 196, 0.08), transparent 28%),
         linear-gradient(180deg, #101516 0%, #060a14 58%, #03050a 100%);
 }
 
@@ -59,7 +59,7 @@ body::after {
     z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(circle at 50% 16%, rgba(110, 159, 194, 0.16), transparent 34%),
+        radial-gradient(circle at 50% 16%, rgba(94, 215, 196, 0.12), transparent 34%),
         radial-gradient(circle at 50% 45%, rgba(101, 184, 159, 0.08), transparent 42%);
     filter: blur(6px);
 }
@@ -99,7 +99,7 @@ input {
     font-size: 1rem;
     font-weight: 800;
     letter-spacing: 0.22em;
-    background: linear-gradient(90deg, #f3f0e8, #8fb8cf 45%, #7fc8b4);
+    background: linear-gradient(90deg, #f7f4ee, #5ed7c4 45%, #ff7866);
     background-clip: text;
     -webkit-background-clip: text;
 }
@@ -262,14 +262,14 @@ input {
 
 .hero h1 span:first-child {
     color: transparent;
-    background: linear-gradient(90deg, #f3f0e8 5%, #7fc8b4 78%, #59ad78);
+    background: linear-gradient(90deg, #f7f4ee 5%, #5ed7c4 74%, #45c9b4);
     background-clip: text;
     -webkit-background-clip: text;
 }
 
 .hero h1 span:last-child {
     color: transparent;
-    background: linear-gradient(90deg, #8fb8cf, #9d8fc7 70%, #f0abfc);
+    background: linear-gradient(90deg, #ffd2c9, #ff7866 66%, #e96252);
     background-clip: text;
     -webkit-background-clip: text;
 }

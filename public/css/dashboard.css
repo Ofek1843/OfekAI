@@ -1759,33 +1759,37 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .dashboard-action--coach {
-    background: linear-gradient(135deg, #4f9f88, #65b89f);
-    border-color: rgba(196, 181, 253, .34);
-    box-shadow: 0 16px 38px rgba(79, 70, 229, .25);
+    background: linear-gradient(135deg, #3fb8a6, #5ed7c4);
+    border-color: rgba(94, 215, 196, .42);
+    box-shadow: 0 16px 38px rgba(94, 215, 196, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--coach::before { content: "💬"; }
 
   .dashboard-action--workout {
-    background: linear-gradient(135deg, #1d4ed8, #6e9fc2 52%, #6e9fc2);
-    border-color: rgba(147, 197, 253, .34);
-    box-shadow: 0 16px 38px rgba(110, 159, 194, .24);
+    background: linear-gradient(135deg, #5289bd, #72a8df);
+    border-color: rgba(114, 168, 223, .42);
+    box-shadow: 0 16px 38px rgba(114, 168, 223, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--workout::before { content: "🏋️"; }
 
   .dashboard-action--nutrition {
-    background: linear-gradient(135deg, #15803d, #16a34a 52%, #59ad78);
-    border-color: rgba(134, 239, 172, .3);
-    box-shadow: 0 16px 38px rgba(22, 163, 74, .22);
+    background: linear-gradient(135deg, #43ab77, #5ec98f);
+    border-color: rgba(94, 201, 143, .42);
+    box-shadow: 0 16px 38px rgba(94, 201, 143, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--nutrition::before { content: "🥗"; }
 
   .dashboard-action--progress {
-    background: linear-gradient(135deg, #c2410c, #ea580c 52%, #d48c61);
-    border-color: rgba(253, 186, 116, .34);
-    box-shadow: 0 16px 38px rgba(234, 88, 12, .22);
+    background: linear-gradient(135deg, #e05a4b, #ff7866);
+    border-color: rgba(255, 120, 102, .42);
+    box-shadow: 0 16px 38px rgba(255, 120, 102, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--progress::before { content: "📈"; }
@@ -1856,21 +1860,31 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .dashboard-action--coach {
-    grid-column: 1 / -1;
-    background: linear-gradient(135deg, #4f9f88, #65b89f);
+    background: linear-gradient(135deg, #3fb8a6, #5ed7c4);
+    border-color: rgba(94, 215, 196, .42);
+    box-shadow: 0 16px 38px rgba(94, 215, 196, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--workout {
-    background: linear-gradient(135deg, #1d4ed8, #6e9fc2);
+    background: linear-gradient(135deg, #5289bd, #72a8df);
+    border-color: rgba(114, 168, 223, .42);
+    box-shadow: 0 16px 38px rgba(114, 168, 223, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--nutrition {
-    background: linear-gradient(135deg, #15803d, #59ad78);
+    background: linear-gradient(135deg, #43ab77, #5ec98f);
+    border-color: rgba(94, 201, 143, .42);
+    box-shadow: 0 16px 38px rgba(94, 201, 143, .2);
+    color: var(--fp-text-inverse);
   }
 
   .dashboard-action--progress {
-    grid-column: 1 / -1;
-    background: linear-gradient(135deg, #c2410c, #d48c61);
+    background: linear-gradient(135deg, #e05a4b, #ff7866);
+    border-color: rgba(255, 120, 102, .42);
+    box-shadow: 0 16px 38px rgba(255, 120, 102, .2);
+    color: var(--fp-text-inverse);
   }
 
   .workout-history-card { order: 3; }

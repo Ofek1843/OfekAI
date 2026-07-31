@@ -9,10 +9,17 @@
    typography, radius or animation property, so it cannot move anything on the
    page.
 
-   Identity: warm deep graphite foundation, calm sage/teal primary accent,
-   restrained warm copper secondary, comfortable off-white text. Replaces the
-   previous dark-navy + saturated purple/blue palette, which read as a generic
-   AI-SaaS template.
+   Identity — "Midnight Coral": neutral deep-ink foundation, coral primary
+   action, fresh aqua secondary, warm cream text. Replaces the previous
+   dark-navy + saturated purple/blue palette, which read as a generic AI-SaaS
+   template, and the graphite/sage direction that followed it, which was too
+   muted and too gray-green to stay in for long sessions.
+
+   Coral carries the brand: primary CTAs, selected states, action highlights
+   and small memorable details. It is deliberately NOT used as a page
+   background or on every card. Aqua carries secondary actions, links, focus
+   and light decorative glow. The ink background stays neutral so photographs
+   and content dominate.
 
    Structure:
      1. --fp-*  semantic tokens (the real palette; reference these in new work)
@@ -24,59 +31,67 @@
 
 :root {
   /* ---- 1. surface hierarchy: deepest page → raised modal ---- */
-  --fp-bg-deep: #101516;
-  --fp-bg-page: #151c1d;
-  --fp-bg-section: #1a2324;
-  --fp-surface: #202b2c;
-  --fp-surface-raised: #263334;
-  --fp-surface-soft: #2c3a3b;
-  --fp-surface-input: #182122;
+  --fp-bg-deep: #0b0d12;
+  --fp-bg-page: #11131a;
+  --fp-bg-section: #171a23;
+  --fp-surface: #202532;
+  --fp-surface-raised: #2a3040;
+  --fp-surface-soft: #343b4e;
+  --fp-surface-input: #181d28;
+
+  /* Navigation/sidebar sit BELOW content cards in the ramp, so chrome recedes
+     and cards come forward instead of the whole page reading as one plane. */
+  --fp-nav-surface: #171a23;
 
   /* ---- borders ---- */
-  --fp-border: #344546;
-  --fp-border-strong: #49605f;
+  --fp-border: #3b4358;
+  --fp-border-strong: #59647d;
 
   /* ---- text ---- */
-  --fp-text-primary: #f3f0e8;
-  --fp-text-secondary: #bcc6c2;
-  --fp-text-muted: #8e9d99;
-  --fp-text-inverse: #121817;
+  --fp-text-primary: #f7f4ee;
+  --fp-text-secondary: #c8ccd6;
+  --fp-text-muted: #969eaf;
+  --fp-text-inverse: #13151a;
 
   /* ---- brand ---- */
-  --fp-brand-primary: #65b89f;
-  --fp-brand-primary-hover: #78c8af;
-  --fp-brand-primary-active: #4f9f88;
-  --fp-brand-secondary: #d48c61;
-  --fp-brand-secondary-hover: #e09c70;
+  --fp-brand-primary: #ff7866;
+  --fp-brand-primary-hover: #ff9180;
+  --fp-brand-primary-active: #e96252;
+  --fp-brand-secondary: #5ed7c4;
+  --fp-brand-secondary-hover: #79e3d3;
+
+  /* Supporting highlight: streaks, badges, small emphasis. Never a surface. */
+  --fp-highlight: #f1c75b;
+  --fp-highlight-soft: rgba(241, 199, 91, 0.16);
 
   /* Tinted fills for soft brand backgrounds, so components do not invent
      their own low-opacity variants. */
-  --fp-brand-primary-soft: rgba(101, 184, 159, 0.14);
-  --fp-brand-primary-softer: rgba(101, 184, 159, 0.08);
-  --fp-brand-secondary-soft: rgba(212, 140, 97, 0.14);
+  --fp-brand-primary-soft: rgba(255, 120, 102, 0.16);
+  --fp-brand-primary-softer: rgba(255, 120, 102, 0.09);
+  --fp-brand-secondary-soft: rgba(94, 215, 196, 0.16);
 
   /* ---- status ---- */
-  --fp-success: #59ad78;
-  --fp-warning: #d6a45d;
-  --fp-danger: #d96f70;
-  --fp-info: #6e9fc2;
-  --fp-success-soft: rgba(89, 173, 120, 0.14);
-  --fp-warning-soft: rgba(214, 164, 93, 0.14);
-  --fp-danger-soft: rgba(217, 111, 112, 0.14);
-  --fp-info-soft: rgba(110, 159, 194, 0.14);
+  --fp-success: #52c28b;
+  --fp-warning: #e2ad58;
+  --fp-danger: #ee6c78;
+  --fp-info: #72a8df;
+  --fp-success-soft: rgba(82, 194, 139, 0.16);
+  --fp-warning-soft: rgba(226, 173, 88, 0.16);
+  --fp-danger-soft: rgba(238, 108, 120, 0.16);
+  --fp-info-soft: rgba(114, 168, 223, 0.16);
 
   /* ---- interaction ---- */
-  --fp-overlay: rgba(8, 13, 13, 0.72);
-  --fp-focus-ring: rgba(101, 184, 159, 0.48);
-  --fp-hover-surface: rgba(255, 255, 255, 0.045);
-  --fp-active-surface: rgba(255, 255, 255, 0.075);
-  --fp-disabled-surface: #1d2626;
-  --fp-disabled-text: #6c7a77;
-  --fp-disabled-border: #2b3839;
+  --fp-overlay: rgba(7, 9, 13, 0.74);
+  --fp-focus-ring: rgba(255, 120, 102, 0.5);
+  --fp-hover-surface: rgba(255, 255, 255, 0.05);
+  --fp-active-surface: rgba(255, 255, 255, 0.08);
+  --fp-disabled-surface: #1a1e28;
+  --fp-disabled-text: #767d8d;
+  --fp-disabled-border: #2b3040;
 
   /* ---- shadows (colour only; no geometry change) ---- */
-  --fp-shadow-soft: 0 10px 26px rgba(6, 10, 10, 0.4);
-  --fp-shadow-raised: 0 18px 40px rgba(6, 10, 10, 0.5);
+  --fp-shadow-soft: 0 10px 26px rgba(4, 6, 10, 0.45);
+  --fp-shadow-raised: 0 18px 40px rgba(4, 6, 10, 0.55);
 
   /* =====================================================================
      3. Product category accents.
@@ -85,29 +100,29 @@
      tabs, thin borders, small status dots and charts -- never as a dominant
      page background.
      ===================================================================== */
-  --fp-cat-workout: #5d93cc;   /* controlled blue   */
-  --fp-cat-nutrition: #65b89f; /* controlled green  */
-  --fp-cat-progress: #d48c61;  /* controlled copper */
-  --fp-cat-coach: #9d8fc7;     /* controlled violet */
-  --fp-cat-workout-soft: rgba(93, 147, 204, 0.14);
-  --fp-cat-nutrition-soft: rgba(101, 184, 159, 0.14);
-  --fp-cat-progress-soft: rgba(212, 140, 97, 0.14);
-  --fp-cat-coach-soft: rgba(157, 143, 199, 0.14);
+  --fp-cat-workout: #72a8df;   /* controlled blue   */
+  --fp-cat-nutrition: #5ec98f; /* controlled green  */
+  --fp-cat-progress: #ff7866;  /* controlled copper */
+  --fp-cat-coach: #5ed7c4;     /* controlled violet */
+  --fp-cat-workout-soft: rgba(114, 168, 223, 0.16);
+  --fp-cat-nutrition-soft: rgba(94, 201, 143, 0.16);
+  --fp-cat-progress-soft: rgba(255, 120, 102, 0.16);
+  --fp-cat-coach-soft: rgba(94, 215, 196, 0.16);
 
   /* Chart series, ordered for maximum separation against the graphite
      background. Distinct in hue AND lightness so they stay readable for
      colour-vision differences and in greyscale. */
-  --fp-chart-1: #65b89f;
-  --fp-chart-2: #d48c61;
-  --fp-chart-3: #6e9fc2;
-  --fp-chart-4: #c9b45a;
-  --fp-chart-5: #9d8fc7;
-  --fp-chart-6: #7fc8b4;
-  --fp-chart-grid: #2b3839;
-  --fp-chart-axis: #8e9d99;
-  --fp-chart-label: #bcc6c2;
-  --fp-chart-tooltip-bg: #263334;
-  --fp-chart-tooltip-text: #f3f0e8;
+  --fp-chart-1: #ff7866;
+  --fp-chart-2: #5ed7c4;
+  --fp-chart-3: #72a8df;
+  --fp-chart-4: #f1c75b;
+  --fp-chart-5: #5ec98f;
+  --fp-chart-6: #b79be6;
+  --fp-chart-grid: #2b3040;
+  --fp-chart-axis: #969eaf;
+  --fp-chart-label: #c8ccd6;
+  --fp-chart-tooltip-bg: #2a3040;
+  --fp-chart-tooltip-text: #f7f4ee;
 
   /* =====================================================================
      2. Legacy aliases.
@@ -148,7 +163,8 @@
 
   --shadow: var(--fp-shadow-soft);
 
-  /* Category aliases used by dashboard cards. */
+  /* Category aliases used by dashboard cards. Coral stays the brand action
+     colour; these only distinguish product areas. */
   --workout: var(--fp-cat-workout);
   --nutrition: var(--fp-cat-nutrition);
   --progress: var(--fp-cat-progress);
@@ -207,4 +223,17 @@ select {
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: var(--fp-brand-primary-active);
+}
+
+/* Navigation and sidebar sit one step BELOW content cards, so chrome recedes
+   and cards come forward. Without this the dashboard read as a single
+   continuous surface. Colour only -- no geometry. */
+.dashboard-sidebar,
+.site-header,
+.landing-nav,
+.builder-navigation,
+.top-nav,
+.pricing-nav,
+.page-nav {
+  background-color: var(--fp-nav-surface);
 }
