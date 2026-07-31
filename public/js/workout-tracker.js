@@ -734,21 +734,52 @@ function workoutCompletionPercent(session) {
   return Math.max(0, Math.min(100, Math.round((completed / total) * 100)));
 }
 
-function updateFocusExerciseImage(exercise) {
+// The active exercise's technique image is critical, above-the-fold
+// content, so it is never lazy-loaded and its container is never hidden
+// while waiting: a hidden ancestor (display:none) blocks the browser's lazy
+// intersection check from ever firing, and the old code only removed
+// "hidden" inside img.onload -- a deadlock where the image can never load
+// because it's hidden, and can never become visible because it never loads.
+// The container now stays visible at a fixed size (CSS aspect-ratio:1) the
+// whole time; only a loading-skeleton/error state toggles inside it, so
+// there is never a layout shift and never a giant blank region.
+function updateFocusExerciseImage(exercise, nextExercise) {
   const media = $("#focusExerciseMedia");
   const img = $("#focusExerciseImage");
   if (!media || !img) return;
 
-  const source = exercise?.demoName || exercise?.name || "";
+  media.classList.remove("image-loaded", "image-error");
+
+  const source = exercise?.demoName || exercise?.name || exercise?.exerciseId || "";
   if (!source) {
-    media.classList.add("hidden");
     img.removeAttribute("src");
+    media.classList.add("image-error");
     return;
   }
 
-  img.onload = () => media.classList.remove("hidden");
-  img.onerror = () => media.classList.add("hidden");
+  img.onload = () => {
+    media.classList.add("image-loaded");
+    preloadExerciseImage(nextExercise);
+  };
+  img.onerror = () => {
+    console.error("Workout tracker: exercise image failed to load.", {
+      name: exercise?.name,
+      exerciseId: exercise?.exerciseId,
+      src: img.src
+    });
+    media.classList.add("image-error");
+  };
   img.src = exerciseImageUrl(exercise);
+}
+
+// Warms the browser cache for the next exercise's image once the current
+// one has actually finished loading, so advancing to the next set/exercise
+// shows its image immediately instead of triggering a fresh fetch.
+function preloadExerciseImage(exercise) {
+  const source = exercise?.demoName || exercise?.name || exercise?.exerciseId || "";
+  if (!source) return;
+  const preloadImg = new Image();
+  preloadImg.src = exerciseImageUrl(exercise);
 }
 
 function syncFocusFromRow() {
@@ -812,8 +843,10 @@ function syncFocusFromRow() {
   const session = activeSessionForIndex(sessionIndex);
   const exercise =
     session?.exercises?.[focus.exerciseIndex];
+  const nextExercise =
+    session?.exercises?.[focus.exerciseIndex + 1];
 
-  updateFocusExerciseImage(exercise);
+  updateFocusExerciseImage(exercise, nextExercise);
 
   const percentBadge = $("#focusPercentBadge");
   if (percentBadge && session) {

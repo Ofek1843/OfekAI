@@ -1,4 +1,8 @@
-const CACHE_NAME = 'fuelphysique-v1';
+// Bump this whenever a deploy must guarantee stale cached HTML/JS/CSS is
+// dropped (the activate handler below deletes any cache whose name !==
+// CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
+// deadlock fix and must not be served from a stale v1 cache after deploy.
+const CACHE_NAME = 'fuelphysique-v2';
 const urlsToCache = [
   '/',
   '/dashboard.html',

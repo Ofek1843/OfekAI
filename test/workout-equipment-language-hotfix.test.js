@@ -15,7 +15,13 @@
 // 3. Nothing made bodyweight implicitly available for Calisthenics style,
 //    so a user who selected Barbell + Machines but not Bodyweight got
 //    every bodyweight/pull-up-bar exercise the model correctly generated
-//    for that goal rejected as "unselected equipment".
+//    for that goal rejected as "unselected equipment". This is now handled
+//    by lib/workout-equipment-policy.js's deriveAllowedEquipment(), which
+//    server.js calls once and passes the SAME resulting canonical set into
+//    generation, repair and validation. validateWorkoutProgram itself has
+//    no bodyweight special case — see the "strict enforcement" tests below,
+//    which cover the flip side: a Gym program must NEVER get an implicit
+//    bodyweight pass.
 // 4. server.js never sanitized Hebrew leakage into an English response —
 //    only the prompt asked nicely for English-only output.
 
@@ -23,6 +29,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { repairWorkoutProgram } = require("../lib/workout-repair");
 const { validateWorkoutProgram, normalizeEquipment } = require("../lib/workout-validator");
+const { deriveAllowedEquipment } = require("../lib/workout-equipment-policy");
 const { hasHebrewCharacters } = require("../public/js/equipment-i18n.mjs");
 
 function exercise(overrides = {}) {
@@ -194,17 +201,43 @@ test("Cable exercise returned when Cable is not selected still gets repaired (ex
   assert.equal(cableStillPresent, false, "A Cable exercise survived repair without Cable being selected");
 });
 
-test("Bodyweight exercise in Calisthenics mode always validates regardless of other equipment selected", () => {
+test("Bodyweight exercise validates for Calisthenics once deriveAllowedEquipment adds it to the canonical set", () => {
   const program = {
     sessions: [{ name: "Day 1", exercises: [exercise({ equipment: "Bodyweight" })] }]
   };
+  const { allowed } = deriveAllowedEquipment({
+    trainingStyle: "calisthenics",
+    selectedEquipment: ["barbell", "machine"] // bodyweight not explicitly checked
+  });
+  assert.ok(allowed.includes("bodyweight"), "Calisthenics must derive bodyweight into the allowed set");
+
   const validation = validateWorkoutProgram(program, {
     daysPerWeek: 1,
     sessionDuration: 60,
-    equipment: ["barbell", "machine"], // bodyweight not explicitly selected
+    equipment: allowed,
     availableDayIndexes: [1]
   });
   assert.equal(validation.ok, true, JSON.stringify(validation.errors));
+});
+
+test("Bodyweight exercise does NOT validate for Gym style — the validator has no bodyweight special case", () => {
+  const program = {
+    sessions: [{ name: "Day 1", exercises: [exercise({ equipment: "Bodyweight" })] }]
+  };
+  const { allowed } = deriveAllowedEquipment({
+    trainingStyle: "gym",
+    selectedEquipment: ["barbell", "machine"]
+  });
+  assert.ok(!allowed.includes("bodyweight"), "Gym must never derive bodyweight implicitly");
+
+  const validation = validateWorkoutProgram(program, {
+    daysPerWeek: 1,
+    sessionDuration: 60,
+    equipment: allowed,
+    availableDayIndexes: [1]
+  });
+  assert.equal(validation.ok, false, "A Bodyweight exercise must be rejected when Gym style did not select it");
+  assert.equal(validation.equipmentOk, false);
 });
 
 test("English generation containing Hebrew equipment strings validates once canonicalized (no false rejection)", () => {

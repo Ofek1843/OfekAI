@@ -32,7 +32,10 @@ test("exercise-image resolver: canonical exercises used by the tracker", async (
     { exerciseId: "barbell-squat", name: "Barbell Squat", expectedSlug: "barbell-squat" },
     { exerciseId: "bench-press", name: "Bench Press", expectedSlug: "bench-press" },
     { exerciseId: "lat-pulldown", name: "Lat Pulldown", expectedSlug: "lat-pulldown" },
-    { exerciseId: "dumbbell-shoulder-press", name: "Dumbbell Shoulder Press", expectedSlug: "dumbbell-shoulder-press" }
+    { exerciseId: "dumbbell-shoulder-press", name: "Dumbbell Shoulder Press", expectedSlug: "dumbbell-shoulder-press" },
+    { exerciseId: "machine-chest-press", name: "Machine Chest Press", expectedSlug: "machine-chest-press" },
+    { exerciseId: "archer-push-up", name: "Archer Push Up", expectedSlug: "archer-push-up" },
+    { exerciseId: "australian-row", name: "Australian Row", expectedSlug: "australian-row" }
   ];
 
   for (const exercise of cases) {
@@ -71,6 +74,39 @@ test("exercise-image resolver: an aliased spelling still resolves to the real fi
     assert.equal(exerciseImageUrl(exercise), `/images/exercises/${exercise.expectedSlug}.png`);
     assert.ok(fs.existsSync(path.join(EXERCISE_DIR, `${exercise.expectedSlug}.png`)));
   }
+});
+
+test("an old saved plan without exerciseId still resolves the correct image via the client resolver's own alias/name fallback", async () => {
+  // Plans saved before exerciseId became a required field only have
+  // name/demoName. The Tracker calls exerciseImageUrl(exercise) directly
+  // (see public/js/workout-tracker.js's updateFocusExerciseImage) with no
+  // separate "repair" step of its own -- exerciseImageUrl's own candidate
+  // chain (exerciseId -> id -> demoName -> name -> exercise, each checked
+  // against its ALIASES table) already covers a missing exerciseId: it must
+  // still resolve correctly from demoName/name alone, not fail solely
+  // because the plan predates the exerciseId field.
+  const { exerciseImageUrl, exerciseImageResolutionDetails } = await loadExerciseImageModule();
+
+  const oldSavedExercise = {
+    name: "Machine Chest Press",
+    demoName: "Machine Chest Press",
+    muscleGroup: "Chest",
+    equipment: "Machine",
+    sets: 3,
+    reps: "8-12",
+    restSeconds: 90
+    // no exerciseId -- exactly what a pre-field saved plan looks like
+  };
+
+  const details = exerciseImageResolutionDetails(oldSavedExercise);
+  assert.equal(details.usedFallback, false, "a pre-exerciseId saved plan must not fall back to the branded placeholder");
+  assert.equal(details.sourceField, "demoName", "with no exerciseId, demoName is the next candidate tried");
+  assert.equal(exerciseImageUrl(oldSavedExercise), "/images/exercises/machine-chest-press.png");
+
+  // An aliased name (no dedicated file under that exact spelling) must also
+  // still resolve for an old saved plan.
+  const oldSavedAliasedExercise = { name: "Overhead Press", demoName: "Overhead Press", equipment: "Barbell" };
+  assert.equal(exerciseImageUrl(oldSavedAliasedExercise), "/images/exercises/barbell-shoulder-press.png");
 });
 
 test("exercise-image resolver: canonical exerciseId wins over a mismatched display name", async () => {
@@ -149,7 +185,7 @@ test("workout-tracker.js updates the focus image when switching exercises", () =
   );
   assert.match(
     source,
-    /updateFocusExerciseImage\(exercise\)/,
+    /updateFocusExerciseImage\(exercise, nextExercise\)/,
     "updateFocusExerciseImage must be called from the focus-sync path (syncFocusFromRow), so it re-runs on every exercise/set switch"
   );
   assert.match(
@@ -177,6 +213,91 @@ test("workout-tracker.html: the focus exercise image sits above the weight/reps 
     /\.focus-exercise-media\{[^}]*aspect-ratio:1[^}]*\}/,
     "the image container must have a fixed aspect-ratio so it doesn't cause layout shift while loading"
   );
+});
+
+// --- Regression: the lazy-load + hidden-ancestor deadlock ----------------
+//
+// Previously #focusExerciseMedia started with class="focus-exercise-media
+// hidden" (display:none via the shared .hidden{display:none!important}
+// rule) and its <img> had loading="lazy". A browser will not fire a lazy
+// image's network fetch for an element inside a display:none ancestor
+// (there is nothing to intersect with the viewport), and the old JS only
+// removed "hidden" inside img.onload -- which can only fire after the image
+// has already loaded. That is a genuine deadlock, not merely a slow load:
+// the image can never load because it's hidden, and can never become
+// visible because it never loads. This is exactly why Machine Chest Press
+// rendered as a large empty box in the reported screenshot.
+//
+// No DOM/browser test harness (jsdom/puppeteer/playwright) is installed in
+// this project, so these are source-level checks -- but they assert the
+// SPECIFIC mechanism of the deadlock (not just "an image tag exists"),
+// which is the strongest regression coverage available without adding a new
+// browser-automation dependency.
+
+test("regression: the initial media container markup is never combined with the hidden class", () => {
+  const html = fs.readFileSync(path.join(ROOT, "public", "workout-tracker.html"), "utf8");
+  const mediaTagMatch = html.match(/<div id="focusExerciseMedia"[^>]*>/);
+  assert.ok(mediaTagMatch, "expected to find the #focusExerciseMedia opening tag");
+  const classMatch = mediaTagMatch[0].match(/class="([^"]*)"/);
+  assert.ok(classMatch, "expected a class attribute on the media container");
+  const classes = classMatch[1].split(/\s+/);
+  assert.ok(
+    !classes.includes("hidden"),
+    "the media container must never start with the hidden class — that combined with loading=lazy is the exact deadlock this test guards against"
+  );
+});
+
+test("regression: the active exercise image is not lazy-loaded", () => {
+  const html = fs.readFileSync(path.join(ROOT, "public", "workout-tracker.html"), "utf8");
+  const imgTagMatch = html.match(/<img id="focusExerciseImage"[^>]*>/);
+  assert.ok(imgTagMatch, "expected to find the #focusExerciseImage tag");
+  assert.doesNotMatch(imgTagMatch[0], /loading="lazy"/, "the active exercise image must never be lazy-loaded — it is above-the-fold critical content");
+  assert.match(imgTagMatch[0], /loading="eager"/, "expected explicit eager loading");
+  assert.match(imgTagMatch[0], /fetchpriority="high"/, "expected an elevated fetch priority for critical above-the-fold content");
+});
+
+test("regression: the base .focus-exercise-media rule never sets display:none", () => {
+  const css = fs.readFileSync(path.join(ROOT, "public", "css", "workout-tracker.css"), "utf8");
+  const baseRuleMatch = css.match(/\.focus-exercise-media\{[^}]*\}/);
+  assert.ok(baseRuleMatch, "expected the base .focus-exercise-media rule");
+  assert.doesNotMatch(
+    baseRuleMatch[0],
+    /display\s*:\s*none/,
+    "the container must stay visible at all times — only its loading/error state (skeleton vs image) should toggle, never the whole container's display"
+  );
+});
+
+test("regression: image visibility is driven by opacity + a loaded/error class, not display toggling on the container", () => {
+  const css = fs.readFileSync(path.join(ROOT, "public", "css", "workout-tracker.css"), "utf8");
+  assert.match(css, /\.focus-exercise-media\.image-loaded img\{opacity:1\}/, "expected the loaded state to fade the image in via opacity");
+  assert.match(css, /\.focus-exercise-media\.image-error/, "expected a distinct compact error state instead of a giant blank box");
+});
+
+test("regression: updateFocusExerciseImage never re-introduces the hidden-class gate inside onload", () => {
+  const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-tracker.js"), "utf8");
+  const fnStart = source.indexOf("function updateFocusExerciseImage(");
+  assert.ok(fnStart !== -1);
+  const fnBody = source.slice(fnStart, fnStart + 1500);
+
+  assert.doesNotMatch(
+    fnBody,
+    /classList\.remove\(["']hidden["']\)/,
+    "must not gate visibility on removing a 'hidden' class inside the load handler — that IS the deadlock"
+  );
+  assert.match(fnBody, /img\.onload\s*=/, "expected an onload handler");
+  assert.match(fnBody, /img\.onerror\s*=/, "expected an onerror handler that shows the compact error state, not a blank box");
+  assert.match(fnBody, /media\.classList\.add\(["']image-loaded["']\)/);
+  assert.match(fnBody, /media\.classList\.add\(["']image-error["']\)/);
+});
+
+test("next-exercise image is preloaded once the current image actually finishes loading", () => {
+  const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-tracker.js"), "utf8");
+  assert.match(source, /function preloadExerciseImage\(/);
+  const fnStart = source.indexOf("function updateFocusExerciseImage(");
+  const fnBody = source.slice(fnStart, fnStart + 1500);
+  const onloadMatch = fnBody.match(/img\.onload\s*=\s*\(\)\s*=>\s*\{[\s\S]*?\};/);
+  assert.ok(onloadMatch, "expected an onload handler body");
+  assert.match(onloadMatch[0], /preloadExerciseImage\(nextExercise\)/, "the preload call must happen inside onload — only after the current image actually succeeded");
 });
 
 // --- HTTP-level check: the resolved image URLs actually serve 200 --------
