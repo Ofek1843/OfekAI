@@ -142,21 +142,28 @@ test("POST /api/workout-builder: fewer available days than daysPerWeek returns 4
 });
 
 test("POST /api/workout-builder: an oversized program is repaired (accessory exercises trimmed) instead of rejected", async () => {
-  // sessionDuration of 20 (the minimum accepted) combined with the mock
-  // generator's 5 fixed exercises overruns the session-cap rule. Before
-  // the repair-before-validate fix this was a deterministic 422; now
-  // lib/workout-repair.js trims lowest-priority accessory exercises from
-  // the end of the session until it fits (down to a floor of 3), so this
-  // now succeeds. See test/workout-builder-422-repair.test.js and
-  // test/workout-repair.test.js for the still-invalid-after-repair paths
+  // A tight sessionDuration relative to the mock generator's 6 fixed
+  // exercises overruns the session-cap rule. Before the repair-before-
+  // validate fix this was a deterministic 422; now lib/workout-repair.js
+  // trims lowest-priority accessory exercises from the end of each session
+  // until it fits (down to a floor of 3). See test/workout-builder-422-repair.test.js
+  // and test/workout-repair.test.js for the still-invalid-after-repair paths
   // (equipment/duplicate-exerciseId cases repair does not touch).
+  //
+  // daysPerWeek:3 (not 1) is deliberate: with only a single weekly session,
+  // trimming even one exercise removes that muscle's ONLY weekly credit and
+  // the weekly-volume gate (validationSummary.volumePassed) correctly fails
+  // the response — trimming and full-body weekly-volume adequacy are
+  // fundamentally in tension at 1 day/week. Spreading the same trim across
+  // 3 sessions/week leaves enough total weekly volume for every required
+  // muscle even after each individual session trims one exercise.
   const res = await fetch(`${BASE_URL}/api/workout-builder`, {
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify(buildWorkoutPayload({
-      daysPerWeek: 1,
-      sessionDuration: 20,
-      availableDays: ["monday"]
+      daysPerWeek: 3,
+      sessionDuration: 30,
+      availableDays: ["monday", "wednesday", "friday"]
     }))
   });
   const data = await res.json();
@@ -165,7 +172,8 @@ test("POST /api/workout-builder: an oversized program is repaired (accessory exe
   assert.equal(data.success, true);
   assert.ok(data.program.sessions[0].exercises.length <= 5, "Repair may have trimmed accessory exercises");
   assert.ok(data.program.sessions[0].exercises.length >= 3, "Repair must never trim below the minimum floor");
-  assert.ok(data.sessionDurations[0].estimatedMinutes <= 25, "Repaired session must fit the duration budget (20min + 5min tolerance)");
+  assert.ok(data.sessionDurations[0].estimatedMinutes <= 35, "Repaired session must fit the duration budget (30min + 5min tolerance)");
+  assert.equal(data.validationSummary.volumePassed, true, "the trim must not leave weekly volume unbalanced for any required muscle");
 });
 
 test("POST /api/workout-builder: invalid programs are never returned with success:true", async () => {

@@ -224,3 +224,30 @@ test("Weekly Muscle Volume section is positioned after all workout sessions, not
   assert.ok(programDaysIndex !== -1 && volumeContainerIndex !== -1);
   assert.ok(volumeContainerIndex > programDaysIndex, "the weekly volume section must render after the sessions grid");
 });
+
+// --- Secondary / not-targeted / incomplete statuses (release-blocking fix) ---
+
+test("workout-builder.js: secondary/not-targeted/incomplete statuses are mapped to distinct, non-alarming labels", () => {
+  const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-builder.js"), "utf8");
+  assert.match(source, /secondary:\s*ui\.weeklyVolumeSecondary/);
+  assert.match(source, /"not-targeted":\s*ui\.weeklyVolumeNotTargeted/);
+  assert.match(source, /incomplete:\s*ui\.weeklyVolumeIncomplete/);
+
+  for (const key of ["weeklyVolumeSecondary", "weeklyVolumeNotTargeted", "weeklyVolumeIncomplete"]) {
+    const matches = source.match(new RegExp(`${key}:`, "g")) || [];
+    assert.ok(matches.length >= 2, `expected "${key}" defined in both language tables, found ${matches.length}`);
+  }
+});
+
+test("workout-builder.css: secondary/not-targeted/incomplete use a neutral style, never the success/warning/danger colors", () => {
+  const css = fs.readFileSync(path.join(ROOT, "public", "css", "workout-builder.css"), "utf8");
+  const ruleMatch = css.match(/\.muscle-volume-status--secondary,\s*\n\.muscle-volume-status--not-targeted,\s*\n\.muscle-volume-status--incomplete\s*\{([^}]*)\}/);
+  assert.ok(ruleMatch, "expected a shared neutral rule for secondary/not-targeted/incomplete");
+  assert.doesNotMatch(ruleMatch[1], /--fp-(success|warning|danger)/, "these statuses must never reuse a below/in-range/above color token");
+});
+
+test("a secondary muscle's badge carries an explanatory tooltip so it doesn't read as a silent mandatory minimum", () => {
+  const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-builder.js"), "utf8");
+  assert.match(source, /secondaryNote\s*=\s*entry\.status === "secondary" \? ui\.weeklyVolumeSecondaryNote/);
+  assert.match(source, /muscle-volume-status--\$\{statusClass\}"\$\{secondaryNote/);
+});

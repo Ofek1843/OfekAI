@@ -80,6 +80,10 @@ const ui = isHebrew
       weeklyVolumeBelow: "מתחת לטווח",
       weeklyVolumeInRange: "בטווח",
       weeklyVolumeAbove: "מעל הטווח",
+      weeklyVolumeSecondary: "משני / אופציונלי",
+      weeklyVolumeNotTargeted: "לא ממוקד בתוכנית זו",
+      weeklyVolumeIncomplete: "החישוב לא הושלם",
+      weeklyVolumeSecondaryNote: "קבוצת שריר משנית — מוצגת למידע בלבד ואינה קובעת אם התוכנית תקינה.",
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} ישירים + ${fractional} עקיפים`,
       weeklyVolumeUnmapped: "כמה תרגילים לא נכללו בחישוב (אין מיפוי שריר ידוע)."
@@ -134,6 +138,10 @@ const ui = isHebrew
       weeklyVolumeBelow: "Below range",
       weeklyVolumeInRange: "In range",
       weeklyVolumeAbove: "Above range",
+      weeklyVolumeSecondary: "Secondary / optional",
+      weeklyVolumeNotTargeted: "Not targeted in this plan",
+      weeklyVolumeIncomplete: "Calculation incomplete",
+      weeklyVolumeSecondaryNote: "A secondary muscle group — shown for visibility only, never counted against whether this plan is valid.",
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} direct + ${fractional} indirect`,
       weeklyVolumeUnmapped: "A few exercises were not included in this calculation (no known muscle mapping)."
@@ -787,12 +795,25 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
       const direct = Number(entry.direct) || 0;
       const fractional = Number(entry.fractional) || 0;
 
+      // "secondary" and "not-targeted" are never below/above/in-range --
+      // they're a distinct, deliberately non-alarming status: a muscle the
+      // server classified as never able to gate a successful plan (see
+      // lib/workout-volume-targets.js's classifyMuscleRequirement) still
+      // shows its real numbers, but must not display a red/amber "Below
+      // range" verdict implying it's mandatory when it isn't. "incomplete"
+      // means the server's mapping coverage wasn't 100% for this response
+      // (should only appear on stale/legacy data -- a fresh generation is
+      // gated on 100% coverage before it's ever returned as successful).
       const statusLabel = {
         below: ui.weeklyVolumeBelow,
         "in-range": ui.weeklyVolumeInRange,
-        above: ui.weeklyVolumeAbove
+        above: ui.weeklyVolumeAbove,
+        secondary: ui.weeklyVolumeSecondary,
+        "not-targeted": ui.weeklyVolumeNotTargeted,
+        incomplete: ui.weeklyVolumeIncomplete
       }[entry.status] || "";
       const statusClass = entry.status || "unknown";
+      const secondaryNote = entry.status === "secondary" ? ui.weeklyVolumeSecondaryNote : "";
 
       // The range bar fills to `total`'s position between 0 and max(range.max,
       // total) * 1.15 -- so an above-range value still visibly overflows the
@@ -806,7 +827,7 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
         <div class="muscle-volume-row" data-status="${statusClass}">
           <div class="muscle-volume-row-header">
             <span class="muscle-volume-name">${escapeHtml(translateWorkoutValue(MUSCLE_DISPLAY_NAMES[muscleKey]))}</span>
-            <span class="muscle-volume-status muscle-volume-status--${statusClass}">${escapeHtml(statusLabel)}</span>
+            <span class="muscle-volume-status muscle-volume-status--${statusClass}"${secondaryNote ? ` title="${escapeHtml(secondaryNote)}"` : ""}>${escapeHtml(statusLabel)}</span>
           </div>
           <div class="muscle-volume-numbers">
             <strong>${escapeHtml(ui.weeklyVolumeSets(formatVolumeNumber(total)))}</strong>

@@ -14,7 +14,7 @@ const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-ca
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
-const { allTargetRanges, volumeStatus } = require("./lib/workout-volume-targets");
+const { allTargetRanges, volumeStatus, classifyMuscleRequirement, requiredMusclesOutOfRange } = require("./lib/workout-volume-targets");
 const {
   buildMealSlots,
   filterMeals,
@@ -975,6 +975,16 @@ async function createChatCompletion({
     if (mockResponseMode) {
       const mockAttempt = Number(process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS || 0) + 1;
       process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS = String(mockAttempt);
+      // A well-rounded single-day bodyweight session (not just push-up +
+      // squat): every REQUIRED muscle for a 1-day/week bodyweight profile
+      // (see lib/workout-volume-targets.js's classifyMuscleRequirement,
+      // which downgrades hamstrings/calves to secondary when the allowed
+      // equipment has no compatible exercise for them at all) needs enough
+      // credited volume to clear its target range, or the new
+      // validationSummary.volumePassed gate in POST /api/workout-builder
+      // correctly turns this into a controlled 422 rather than a "successful"
+      // mock response — set counts here were tuned against the real
+      // repair+volume pipeline, not guessed.
       const validWorkout = JSON.stringify({
         programName: "Mock Workout Program",
         daysPerWeek: 1,
@@ -986,7 +996,11 @@ async function createChatCompletion({
             name: "Mock Session 1",
             exercises: [
               { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-              { exerciseId: "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }
+              { exerciseId: "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 2, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "diamond-push-up", name: "Diamond Push-up", demoName: "Diamond Push-up", muscleGroup: "Triceps", equipment: "Bodyweight", sets: 1, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "pistol-squat", name: "Pistol Squat", demoName: "Pistol Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 1, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
             ]
           }
         ]
@@ -1107,20 +1121,41 @@ async function createChatCompletion({
       // tests force a still-invalid-after-repair 422 deterministically.
       const forceDuplicateExerciseId = String(process.env.MOCK_OPENAI_FORCE_DUPLICATE_EXERCISE_ID || "").toLowerCase() === "true";
       const forceEmptySession = String(process.env.MOCK_OPENAI_FORCE_EMPTY_SESSION || "").toLowerCase() === "true";
+      // Test-only: appends extra low-value accessory exercises so the
+      // session overruns its duration budget and the repair-trim pass has
+      // something to trim. Appended AFTER the balanced 6-exercise core (see
+      // below) so the trim -- which always removes from the END -- takes
+      // the filler first and leaves the muscle-balanced core intact,
+      // letting a duration-trim test exercise the trim code path without
+      // also failing the (unrelated) weekly-volume gate. Never true outside
+      // test/CI.
+      const forceOversizedSession = String(process.env.MOCK_OPENAI_FORCE_OVERSIZED_SESSION || "").toLowerCase() === "true";
       const stripId = (exercise) => {
         if (!omitExerciseId) return exercise;
         const { exerciseId, ...rest } = exercise;
         return rest;
       };
+      // Well-rounded bodyweight full-body session (not just push-up +
+      // squat): tuned against the real repair+volume pipeline so every
+      // REQUIRED muscle (see classifyMuscleRequirement -- hamstrings/calves
+      // downgrade to secondary for an all-bodyweight allowed set, since the
+      // catalog has no bodyweight exercise for either) clears its target
+      // range at daysPerWeek 1, 3 and 4. Same shape repeated per session,
+      // same as before; only the exercise mix changed.
       const sessions = Array.from({ length: daysPerWeek }, (_, index) => ({
         day: index + 1,
         name: `Mock Session ${index + 1}`,
         exercises: [
           stripId({ exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
-          stripId({ exerciseId: forceDuplicateExerciseId ? "push-up" : "bodyweight-squat", name: "Bodyweight Squat", demoName: "Bodyweight Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
-          stripId({ exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }),
-          stripId({ exerciseId: "lunge", name: "Lunge", demoName: "Bodyweight Lunge", muscleGroup: "Quads", equipment: "Bodyweight", sets: 3, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
-          stripId({ exerciseId: "mountain-climber", name: "Mountain Climber", demoName: "Mountain Climber", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 90, rir: "1-3", notes: "Mock mode." })
+          stripId({ exerciseId: forceDuplicateExerciseId ? "push-up" : "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 2, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "diamond-push-up", name: "Diamond Push-up", demoName: "Diamond Push-up", muscleGroup: "Triceps", equipment: "Bodyweight", sets: 1, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "pistol-squat", name: "Pistol Squat", demoName: "Pistol Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 1, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }),
+          ...(forceOversizedSession ? [
+            stripId({ exerciseId: "wide-grip-push-up", name: "Wide Grip Push-up", demoName: "Wide Grip Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+            stripId({ exerciseId: "russian-twist", name: "Russian Twist", demoName: "Russian Twist", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "20-30", restSeconds: 60, rir: "1-3", notes: "Mock mode." })
+          ] : [])
         ]
       }));
       if (forceEmptySession && sessions[0]) {
@@ -2182,24 +2217,55 @@ ${repairPrompt}`
 const { sanitizeLanguageLeakage, findLanguageLeaks } = require("./lib/workout-language-sanitizer");
 
 // Merges calculateWeeklyVolume()'s per-muscle credited sets with this
-// profile's deterministic target range and below/in-range/above status (see
-// lib/workout-volume-targets.js). The single source of truth for both the
-// numbers (calculateWeeklyVolume) and the ranges (allTargetRanges) so the
-// Weekly Muscle Volume summary can never show a UI-only recomputation that
-// drifts from what generation/repair/validation actually used.
-function buildPerMuscleWithTargets(perMuscle, profile) {
+// profile's deterministic target range, required/secondary/optional
+// classification (lib/workout-volume-targets.js's classifyMuscleRequirement)
+// and a DISPLAY status. The single source of truth for both the numbers
+// (calculateWeeklyVolume) and the ranges (allTargetRanges) so the Weekly
+// Muscle Volume summary can never show a UI-only recomputation that drifts
+// from what generation/repair/validation actually used.
+//
+// Display status rules (see the classification module for the reasoning):
+//   - mappingIncomplete           -> "incomplete" for every muscle. Never
+//     claim a confident below/in-range/above reading when some exercises in
+//     the program have no known muscle-credit mapping at all.
+//   - classification "optional"  -> "not-targeted" (e.g. skills-priority
+//     profiles, where standard hypertrophy ranges don't apply to any muscle)
+//   - classification "secondary" -> "secondary" always, REGARDLESS of the
+//     computed range status. This is the fix for the reported bug: a
+//     required-looking red/amber "Below range" badge on Rear Delts/Traps
+//     implied they were mandatory and then let the plan ship anyway. They
+//     are real, useful numbers (still returned in full), just never treated
+//     as a below/above verdict.
+//   - classification "required"  -> the actual below/in-range/above status.
+//     Only this classification can make requiredMusclesOutOfRange() (and
+//     therefore validationSummary.volumePassed) fail.
+function buildPerMuscleWithTargets(perMuscle, profile, mappingIncomplete = false) {
   const targets = allTargetRanges(profile);
   const muscles = new Set([...Object.keys(perMuscle || {}), ...Object.keys(targets)]);
   const merged = {};
   for (const muscle of muscles) {
     const volume = perMuscle?.[muscle] || { direct: 0, fractional: 0, total: 0 };
     const targetRange = targets[muscle] || null;
+    const classification = classifyMuscleRequirement(muscle, profile);
+
+    let status;
+    if (mappingIncomplete) {
+      status = "incomplete";
+    } else if (classification === "optional") {
+      status = "not-targeted";
+    } else if (classification === "secondary") {
+      status = "secondary";
+    } else {
+      status = volumeStatus(volume.total, targetRange);
+    }
+
     merged[muscle] = {
       direct: volume.direct,
       fractional: volume.fractional,
       total: volume.total,
       targetRange,
-      status: volumeStatus(volume.total, targetRange)
+      classification,
+      status
     };
   }
   return merged;
@@ -2602,7 +2668,11 @@ Injuries, limitations or special requests: ${String(limitations)}
       sanitizeLanguageLeakage(program, goal);
     }
 
-    // Deterministic weekly volume, based only on the explicit setCredits map
+    // Deterministic weekly volume, based only on the explicit setCredits map.
+    // This runs AFTER every repair pass above (including the volume-repair
+    // pass inside repairGeneratedWorkoutProgram, which already ran against
+    // this exact program) so the numbers reflect the FINAL program, never a
+    // pre-repair snapshot.
     const { perMuscle, totalHardSets, mappedExercises, unknownExercises, mappingCoveragePercent, warnings: volumeWarnings } =
       calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
 
@@ -2628,15 +2698,39 @@ Injuries, limitations or special requests: ${String(limitations)}
       });
     }
 
+    // Weekly-volume acceptance gate: a "successful" program must have 100%
+    // set-credit mapping coverage AND every REQUIRED muscle (see
+    // classifyMuscleRequirement — secondary/optional muscles never gate)
+    // inside its profile-specific target range. The deterministic volume
+    // repair above already tried to fix both; this is what turns "still
+    // broken after repair" into a controlled failure instead of a
+    // "successful" response with a misleading below/above badge. Never
+    // widen the ranges here to force a pass — see lib/workout-volume-targets.js.
+    const volumeProfile = { experience, priority: canonicalPriority, daysPerWeek: parsedDays, equipment: equipmentForGeneration };
+    const mappingComplete = mappingCoveragePercent === 100 && unknownExercises === 0;
+    const outOfRangeRequired = requiredMusclesOutOfRange(perMuscle, volumeProfile);
+    const volumePassed = mappingComplete && outOfRangeRequired.length === 0;
+
+    if (!volumePassed) {
+      console.warn(`Workout volume gate failed for user ${user.uid}:`, {
+        mappingComplete,
+        mappingCoveragePercent,
+        unknownExercises,
+        outOfRangeRequired
+      });
+      return res.status(422).json({
+        success: false,
+        error: language === "he"
+          ? "לא הצלחנו להרכיב תוכנית אימונים עם נפח שבועי מאוזן לקבוצות השריר הנדרשות. נסה שוב, או הרחב את הציוד הזמין."
+          : "We couldn't put together a workout program with balanced weekly volume for the required muscle groups. Please try again, or widen your available equipment."
+      });
+    }
+
     return res.json({
       success: true,
       program,
       weeklyVolume: {
-        perMuscle: buildPerMuscleWithTargets(perMuscle, {
-          experience,
-          priority: canonicalPriority,
-          daysPerWeek: parsedDays
-        }),
+        perMuscle: buildPerMuscleWithTargets(perMuscle, volumeProfile),
         totalHardSets,
         mappedExercises,
         unknownExercises,
@@ -2646,6 +2740,7 @@ Injuries, limitations or special requests: ${String(limitations)}
       validationSummary: {
         passed: validation.ok,
         equipmentPassed: Boolean(validation.equipmentOk),
+        volumePassed,
         errors: [],
         warnings: [...validation.warnings, ...volumeWarnings]
       }
@@ -2885,7 +2980,9 @@ Required JSON format:
     }
 
     // Recalculate volume and durations against the updated program so the
-    // client's displayed totals never go stale after a reroll.
+    // client's displayed totals never go stale after a reroll -- fresh
+    // calculateWeeklyVolume() call against the program that now contains
+    // the replacement exercise, not a reused pre-reroll summary.
     const { perMuscle, totalHardSets, mappedExercises, unknownExercises, mappingCoveragePercent, warnings: volumeWarnings } =
       calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
     const sessionDurations = program.sessions.map((s) => ({
@@ -2893,15 +2990,21 @@ Required JSON format:
       ...estimateSessionDuration(s)
     }));
 
+    const rerollVolumeProfile = { experience, priority: canonicalPriority, daysPerWeek: program.daysPerWeek || program.sessions.length, equipment: selectedEquipment };
+    const rerollMappingComplete = mappingCoveragePercent === 100 && unknownExercises === 0;
+    // A single-exercise reroll is informational here, not a hard gate: the
+    // user is swapping one exercise, not regenerating the whole program, so
+    // a required muscle that's still slightly out of range doesn't reject
+    // the reroll the way it rejects a fresh generation -- but the response
+    // must still report the true status via the same classification/status
+    // rules the initial generation uses, never a stale or optimistic one.
+    const rerollVolumePassed = rerollMappingComplete && requiredMusclesOutOfRange(perMuscle, rerollVolumeProfile).length === 0;
+
     return res.json({
       success: true,
       exercise: newExercise,
       weeklyVolume: {
-        perMuscle: buildPerMuscleWithTargets(perMuscle, {
-          experience,
-          priority: canonicalPriority,
-          daysPerWeek: program.daysPerWeek || program.sessions.length
-        }),
+        perMuscle: buildPerMuscleWithTargets(perMuscle, rerollVolumeProfile, !rerollMappingComplete),
         totalHardSets,
         mappedExercises,
         unknownExercises,
@@ -2911,6 +3014,7 @@ Required JSON format:
       validationSummary: {
         passed: programValidation.ok,
         equipmentPassed: Boolean(programValidation.equipmentOk),
+        volumePassed: rerollVolumePassed,
         errors: [],
         warnings: [...programValidation.warnings, ...volumeWarnings]
       }
