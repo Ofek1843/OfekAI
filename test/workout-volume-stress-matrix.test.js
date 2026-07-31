@@ -20,7 +20,7 @@ const { validateWorkoutProgram, normalizeEquipment } = require("../lib/workout-v
 const { calculateWeeklyVolume } = require("../lib/workout-volume");
 const { EXERCISE_SETCREDITS } = require("../lib/workout-setcredits-map");
 const { deriveAllowedEquipment } = require("../lib/workout-equipment-policy");
-const { requiredMusclesOutOfRange, classifyMuscleRequirement } = require("../lib/workout-volume-targets");
+const { requiredMusclesOutOfRange, classifyMuscleRequirement, allVolumePolicies, calculateProgramQualityScore } = require("../lib/workout-volume-targets");
 const { derivePriorityFromGoal } = require("../lib/workout-priority");
 const { WORKOUT_EXERCISE_CATALOG, isPublicExerciseEnabled } = require("../lib/workout-exercise-catalog");
 
@@ -76,6 +76,7 @@ const GOALS = ["buildMuscle", "increaseStrength", "improveSkills", "loseFat"];
 const EXPERIENCES = ["beginner", "intermediate", "advanced"];
 const STYLES = ["gym", "calisthenics", "hybrid"];
 const DAYS = [2, 3, 4, 5, 6];
+const DURATIONS = [30, 45, 60, 75, 90];
 const EQUIPMENT_SETS = {
   gym: [["dumbbell", "machine"], ["machine"], ["dumbbell"], ["dumbbell", "machine", "barbell", "cable"]],
   hybrid: [["dumbbell", "machine"], ["dumbbell", "machine", "bodyweight"]],
@@ -92,8 +93,9 @@ function buildMatrix() {
           const equipmentOptions = EQUIPMENT_SETS[trainingStyle];
           const selectedEquipment = equipmentOptions[(cases.length) % equipmentOptions.length];
           const language = LANGUAGES[cases.length % LANGUAGES.length];
-          cases.push({ goal, experience, trainingStyle, daysPerWeek, selectedEquipment, language });
-          if (cases.length >= 130) return cases; // well over the required 100
+          const sessionDuration = DURATIONS[cases.length % DURATIONS.length];
+          cases.push({ goal, experience, trainingStyle, daysPerWeek, selectedEquipment, language, sessionDuration });
+          if (cases.length >= 150) return cases; // well over the required 150
         }
       }
     }
@@ -108,19 +110,23 @@ test("stress matrix: 100+ deterministic profiles through the full repair/validat
   const stats = {
     total: matrix.length,
     successfulValid: 0,
+    validBelowQualityThreshold: 0,
     controlledFailures: 0,
     successfulWithRequiredOutOfRange: 0,
     successfulWithIncompleteMapping: 0,
     equipmentViolations: 0,
     durationViolations: 0,
+    hardMaximumViolations: 0,
+    above20Violations: 0,
     staleSummaries: 0
   };
+  const QUALITY_THRESHOLD = 60;
 
   for (const scenario of matrix) {
     const { allowed } = deriveAllowedEquipment({ trainingStyle: scenario.trainingStyle, selectedEquipment: scenario.selectedEquipment });
     const allowedEquipmentSet = new Set(allowed);
     const priority = derivePriorityFromGoal(scenario.goal);
-    const sessionDuration = 60;
+    const sessionDuration = scenario.sessionDuration;
 
     const seedProgram = buildSeedProgram(allowedEquipmentSet, scenario.daysPerWeek);
     seedProgram.weeklyScheduleDays = Array.from({ length: scenario.daysPerWeek }, (_, i) => i);
@@ -172,10 +178,41 @@ test("stress matrix: 100+ deterministic profiles through the full repair/validat
     const outOfRangeRequired = requiredMusclesOutOfRange(volumeAfter.perMuscle, profile);
     const volumePassed = mappingComplete && outOfRangeRequired.length === 0;
 
-    const successful = validation.ok && volumePassed && !hasEquipmentViolation && !hasDurationViolation;
+    // Hard-maximum check, independent of requiredMusclesOutOfRange (which
+    // already implies this for required muscles) -- verified directly
+    // against each muscle's own policy so a bug in the gate itself wouldn't
+    // silently hide a ceiling breach here too. Also checked against the
+    // absolute product ceiling of 20 (section 1 of the engine-quality spec:
+    // "no required muscle should have a default hard ceiling above 20").
+    // Only meaningful (and only counted) for scenarios the gate otherwise
+    // called successful -- a scenario the gate correctly rejected for an
+    // unrelated reason (e.g. equipment) may legitimately still carry
+    // leftover volume outside range in its rejected, unrepaired state.
+    const policies = allVolumePolicies(profile);
+    const gateSaysPassed = validation.ok && volumePassed;
+    let hasHardMaximumViolation = false;
+    let hasAbove20Violation = false;
+    if (gateSaysPassed) {
+      for (const muscle of MUSCLES) {
+        if (classifyMuscleRequirement(muscle, profile) !== "required") continue;
+        const policy = policies[muscle];
+        const actual = volumeAfter.perMuscle[muscle]?.total || 0;
+        if (policy && actual > policy.hardMaximum) hasHardMaximumViolation = true;
+        if (actual > 20) hasAbove20Violation = true;
+      }
+    }
+    if (hasHardMaximumViolation) stats.hardMaximumViolations += 1;
+    if (hasAbove20Violation) stats.above20Violations += 1;
+
+    const successful = gateSaysPassed && !hasEquipmentViolation && !hasDurationViolation && !hasHardMaximumViolation;
 
     if (successful) {
-      stats.successfulValid += 1;
+      const quality = calculateProgramQualityScore(volumeAfter.perMuscle, profile);
+      if (quality.score !== null && quality.score < QUALITY_THRESHOLD) {
+        stats.validBelowQualityThreshold += 1;
+      } else {
+        stats.successfulValid += 1;
+      }
       if (outOfRangeRequired.length > 0) stats.successfulWithRequiredOutOfRange += 1;
       if (!mappingComplete) stats.successfulWithIncompleteMapping += 1;
     } else {
@@ -189,11 +226,13 @@ test("stress matrix: 100+ deterministic profiles through the full repair/validat
   assert.equal(stats.successfulWithIncompleteMapping, 0, "no successful plan may have incomplete mapping coverage");
   assert.equal(stats.equipmentViolations, 0, "no scenario may leave a disallowed-equipment exercise in the final program");
   assert.equal(stats.staleSummaries, 0, "recalculating against the same final program must always be deterministic/identical");
+  assert.equal(stats.hardMaximumViolations, 0, "no successful plan may have a required muscle above its own hard maximum");
+  assert.equal(stats.above20Violations, 0, "no required muscle may exceed the 20-weekly-set default product ceiling");
   // Duration violations and controlled failures are allowed (a genuinely
   // constrained profile -- e.g. 2 days/week bodyweight-only advanced
   // hypertrophy -- may not be repairable within budget), but must be
   // reported, never silently hidden inside a "successful" result.
-  assert.ok(stats.successfulValid + stats.controlledFailures === stats.total);
+  assert.ok(stats.successfulValid + stats.validBelowQualityThreshold + stats.controlledFailures === stats.total);
 });
 
 test("classification sanity across the matrix: skills-priority scenarios never produce a required-muscle failure", () => {

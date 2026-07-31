@@ -198,23 +198,41 @@ test("workout-builder.js: number formatting is whole for exact values and one de
 test("workout-builder.js: weekly volume UI strings are defined for both English and Hebrew, and labels are applied only at render time", () => {
   const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-builder.js"), "utf8");
 
-  for (const key of ["weeklyVolumeTitle", "weeklyVolumeBelow", "weeklyVolumeInRange", "weeklyVolumeAbove", "weeklyVolumeRecommendedRange", "weeklyVolumeDetails"]) {
+  for (const key of [
+    "weeklyVolumeTitle", "weeklyVolumeBelow", "weeklyVolumeValidBelowPreferred",
+    "weeklyVolumeInPreferredZone", "weeklyVolumeValidAbovePreferred", "weeklyVolumeAbove",
+    "weeklyVolumeRecommendedRange", "weeklyVolumePreferredRange", "weeklyVolumeMinimum",
+    "weeklyVolumeMaximum", "weeklyVolumeDetails"
+  ]) {
     const matches = source.match(new RegExp(`${key}:`, "g")) || [];
     assert.ok(matches.length >= 2, `expected "${key}" defined in both language tables, found ${matches.length}`);
   }
 
   // The renderer must key its status lookup off the CANONICAL status string
-  // ("below"/"in-range"/"above") coming from the server, translating to a
-  // label only inside the render function -- not baking a language choice
+  // coming from the server ("below" / "valid-below-preferred" /
+  // "in-preferred-zone" / "valid-above-preferred" / "above"), translating to
+  // a label only inside the render function -- not baking a language choice
   // into the calculation layer.
   assert.match(source, /statusLabel\s*=\s*\{\s*below:\s*ui\.weeklyVolumeBelow/);
+  assert.match(source, /"valid-below-preferred":\s*ui\.weeklyVolumeValidBelowPreferred/);
+  assert.match(source, /"in-preferred-zone":\s*ui\.weeklyVolumeInPreferredZone/);
 });
 
-test("workout-builder.css: distinct visual states exist for below/in-range/above status", () => {
+test("workout-builder.css: distinct visual states exist for below/preferred-zone/above status, with a visually distinct 'valid but off-target' state", () => {
   const css = fs.readFileSync(path.join(ROOT, "public", "css", "workout-builder.css"), "utf8");
-  assert.match(css, /\.muscle-volume-status--below/);
-  assert.match(css, /\.muscle-volume-status--in-range/);
-  assert.match(css, /\.muscle-volume-status--above/);
+  assert.match(css, /\.muscle-volume-status--below\s*\{/);
+  assert.match(css, /\.muscle-volume-status--in-preferred-zone\s*\{/);
+  assert.match(css, /\.muscle-volume-status--above\s*\{/);
+  assert.match(css, /\.muscle-volume-status--valid-below-preferred/);
+  assert.match(css, /\.muscle-volume-status--valid-above-preferred/);
+
+  // The "valid but below/above preferred" rule must not reuse the
+  // in-preferred-zone success color -- a bare-minimum value must never look
+  // identical to a well-targeted one (the reported "sits at the minimum but
+  // reads as fully optimized" bug).
+  const successRule = css.match(/\.muscle-volume-status--in-preferred-zone\s*\{([^}]*)\}/)[1];
+  const validOffTargetRule = css.match(/\.muscle-volume-status--valid-below-preferred,\s*\n\.muscle-volume-status--valid-above-preferred\s*\{([^}]*)\}/)[1];
+  assert.notEqual(successRule.trim(), validOffTargetRule.trim(), "a bare-minimum value must be visually distinct from a preferred-zone value");
 });
 
 test("Weekly Muscle Volume section is positioned after all workout sessions, not interleaved with them", () => {
