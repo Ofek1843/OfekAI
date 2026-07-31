@@ -93,7 +93,7 @@ function injectFeedbackStyles() {
       font-weight: 900;
       cursor: pointer;
     }
-    .site-feedback-send { color: #06211a; background: linear-gradient(135deg, #65b89f, #6e9fc2); }
+    .site-feedback-send { color: #06111f; background: linear-gradient(135deg, #35cfdf, #167fdc); }
     .site-feedback-close { color: #bcc6c2; background: rgba(255, 255, 255, 0.06); }
     .site-feedback-error {
       min-height: 18px;

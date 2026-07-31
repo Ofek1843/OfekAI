@@ -73,7 +73,7 @@ function injectStyles() {
       width: 40px;
       height: 40px;
       border-radius: 10px;
-      background: linear-gradient(135deg, #6e9fc2, #65b89f);
+      background: linear-gradient(135deg, #167fdc, #35cfdf);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -112,7 +112,7 @@ function injectStyles() {
       white-space: nowrap;
     }
     .pwa-install-btn.primary {
-      background: linear-gradient(135deg, #6e9fc2, #65b89f);
+      background: linear-gradient(135deg, #167fdc, #35cfdf);
       color: #101516;
     }
     .pwa-install-btn.secondary {

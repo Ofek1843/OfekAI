@@ -29,7 +29,7 @@ button, input, select, textarea { font: inherit; }
 }
 .legal-nav-brand {
   font-size: 22px; font-weight: 900; letter-spacing: -.03em;
-  background: linear-gradient(90deg, #f3f0e8 5%, #93c5fd 50%, #7fc8b4 95%);
+  background: linear-gradient(90deg, #f3f0e8 5%, #93c5fd 50%, #78d9ff 95%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
   text-decoration: none;
 }
@@ -48,8 +48,8 @@ button, input, select, textarea { font: inherit; }
 .legal-hero { margin-bottom: 48px; }
 .legal-badge {
   display: inline-block; padding: 5px 14px;
-  border: 1px solid rgba(101, 184, 159,.35); border-radius: 999px;
-  color: var(--accent2); background: rgba(101, 184, 159,.1);
+  border: 1px solid rgba(53, 207, 223,.35); border-radius: 999px;
+  color: var(--accent2); background: rgba(53, 207, 223,.1);
   font-size: 12px; font-weight: 800; letter-spacing: .06em;
   text-transform: uppercase; margin-bottom: 16px;
 }
@@ -117,15 +117,15 @@ button, input, select, textarea { font: inherit; }
 .contact-field textarea { resize: vertical; }
 .contact-field input:focus, .contact-field textarea:focus {
   outline: none; border-color: var(--accent2);
-  box-shadow: 0 0 0 3px rgba(101, 184, 159,.12);
+  box-shadow: 0 0 0 3px rgba(53, 207, 223,.12);
 }
 .contact-submit {
   min-height: 52px; width: 100%; border: 0; border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), #4f9f88);
+  background: linear-gradient(135deg, var(--accent), #28b8c8);
   color: var(--fp-text-inverse); font-size: 16px; font-weight: 800; cursor: pointer;
   transition: transform .15s ease, box-shadow .15s ease;
 }
-.contact-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(101, 184, 159,.35); }
+.contact-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(53, 207, 223,.35); }
 .contact-email-card {
   display: flex; align-items: center; gap: 14px;
   padding: 18px 22px; border: 1px solid var(--border); border-radius: 16px;
@@ -166,7 +166,7 @@ button, input, select, textarea { font: inherit; }
 /* ── Highlight box ── */
 .legal-highlight {
   padding: 16px 20px; border-radius: 14px;
-  background: rgba(101, 184, 159,.08); border: 1px solid rgba(101, 184, 159,.2);
+  background: rgba(53, 207, 223,.08); border: 1px solid rgba(53, 207, 223,.2);
   font-size: 14px; color: #9d8fc7; margin-bottom: 18px;
 }
 

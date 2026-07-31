@@ -46,18 +46,18 @@ body {
   font-family: "Heebo", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--text);
   background:
-    radial-gradient(circle at 18% 8%, rgba(110, 159, 194, 0.2), transparent 26%),
-    radial-gradient(circle at 84% 12%, rgba(89, 173, 120, 0.12), transparent 22%),
-    radial-gradient(circle at 88% 86%, rgba(214, 164, 93, 0.07), transparent 24%),
+    radial-gradient(circle at 18% 8%, rgba(47, 155, 255, 0.22), transparent 26%),
+    radial-gradient(circle at 84% 12%, rgba(53, 207, 223, 0.12), transparent 22%),
+    radial-gradient(circle at 88% 86%, rgba(224, 169, 64, 0.06), transparent 24%),
     var(--bg);
 }
 
 html[data-theme="light"] body {
   background:
-    radial-gradient(circle at 16% 10%, rgba(110, 159, 194, 0.11), transparent 25%),
-    radial-gradient(circle at 82% 14%, rgba(89, 173, 120, 0.09), transparent 23%),
-    radial-gradient(circle at 86% 84%, rgba(214, 164, 93, 0.06), transparent 20%),
-    linear-gradient(180deg, #eef5fb 0%, #f5f8fc 100%);
+    radial-gradient(circle at 16% 10%, rgba(22, 127, 220, 0.12), transparent 25%),
+    radial-gradient(circle at 82% 14%, rgba(26, 169, 186, 0.09), transparent 23%),
+    radial-gradient(circle at 86% 84%, rgba(178, 121, 15, 0.05), transparent 20%),
+    linear-gradient(180deg, #eef4fc 0%, #f3f8fd 100%);
 }
 
 a { color: inherit; }
@@ -110,7 +110,7 @@ html[data-theme="light"] .sidebar {
   font-weight: 900;
   letter-spacing: -0.03em;
   text-decoration: none;
-  background: linear-gradient(90deg, #f3f0e8 5%, #93c5fd 48%, #7fc8b4 92%);
+  background: linear-gradient(90deg, #f3f0e8 5%, #93c5fd 48%, #78d9ff 92%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -143,7 +143,7 @@ html[data-theme="light"] .sidebar {
   padding: 12px 16px;
   border-radius: 16px;
   border: 1px solid rgba(127, 200, 180, 0.24);
-  background: linear-gradient(135deg, rgba(110, 159, 194, 0.2), rgba(89, 173, 120, 0.14));
+  background: linear-gradient(135deg, rgba(110, 159, 194, 0.2), rgba(53, 207, 223, 0.14));
   color: #eaf2ff;
   font-weight: 800;
   text-decoration: none;
@@ -153,7 +153,7 @@ html[data-theme="light"] .sidebar {
 html[data-theme="light"] .drawer-coach-link {
   color: #17324d;
   border-color: rgba(110, 159, 194, 0.16);
-  background: linear-gradient(135deg, rgba(110, 159, 194, 0.12), rgba(89, 173, 120, 0.08));
+  background: linear-gradient(135deg, rgba(110, 159, 194, 0.12), rgba(53, 207, 223, 0.08));
   box-shadow: 0 12px 28px rgba(52, 69, 70, 0.08);
 }
 
@@ -202,17 +202,17 @@ html[data-theme="light"] .sidebar-nav a.active {
 .sidebar-footer span {
   padding: 7px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(89, 173, 120, 0.24);
-  color: #7fc8b4;
-  background: rgba(89, 173, 120, 0.08);
+  border: 1px solid rgba(53, 207, 223, 0.24);
+  color: #78d9ff;
+  background: rgba(53, 207, 223, 0.08);
   font-size: 12px;
   font-weight: 900;
 }
 
 html[data-theme="light"] .sidebar-footer span {
-  border-color: rgba(89, 173, 120, 0.18);
+  border-color: rgba(53, 207, 223, 0.18);
   color: #166534;
-  background: rgba(89, 173, 120, 0.08);
+  background: rgba(53, 207, 223, 0.08);
 }
 
 .sidebar-logout {
@@ -481,7 +481,7 @@ html[data-theme="light"] .hero-secondary-action {
 .chat-link {
   margin-top: 34px;
   color: #e0e7ff;
-  background: linear-gradient(135deg, rgba(110, 159, 194, 0.92), rgba(89, 173, 120, 0.7));
+  background: linear-gradient(135deg, rgba(110, 159, 194, 0.92), rgba(53, 207, 223, 0.7));
   box-shadow: 0 16px 38px rgba(110, 159, 194, 0.24);
 }
 
@@ -611,7 +611,7 @@ html[data-theme="light"] .card {
 .stats-grid article:nth-child(2) { --stat-accent: var(--rose); }
 .stats-grid article:nth-child(3) { --stat-accent: var(--cyan); }
 .stats-grid article:nth-child(4) { --stat-accent: var(--amber); }
-.stats-grid article:nth-child(1) strong { color: #7fc8b4; }
+.stats-grid article:nth-child(1) strong { color: #78d9ff; }
 .stats-grid article:nth-child(2) strong { color: #e39a9a; }
 .stats-grid article:nth-child(3) strong { color: #8fb8cf; }
 .stats-grid article:nth-child(4) strong { color: #e0b878; }
@@ -751,15 +751,15 @@ html[data-theme="light"] .schedule-day {
 }
 
 .schedule-day.is-today {
-  border-color: rgba(89, 173, 120, 0.26);
+  border-color: rgba(53, 207, 223, 0.26);
   background:
-    linear-gradient(180deg, rgba(89, 173, 120, 0.05), rgba(255, 255, 255, 0.015)),
+    linear-gradient(180deg, rgba(53, 207, 223, 0.05), rgba(255, 255, 255, 0.015)),
     rgba(8, 13, 24, 0.56);
 }
 
 html[data-theme="light"] .schedule-day.is-today {
   background:
-    linear-gradient(180deg, rgba(89, 173, 120, 0.07), rgba(255, 255, 255, 0.96)),
+    linear-gradient(180deg, rgba(53, 207, 223, 0.07), rgba(255, 255, 255, 0.96)),
     rgba(255, 255, 255, 0.94);
 }
 
@@ -802,7 +802,7 @@ html[data-theme="light"] .schedule-day.is-today {
   padding: 12px;
   border: 1px solid rgba(110, 159, 194, 0.18);
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(110, 159, 194, 0.2), rgba(89, 173, 120, 0.12));
+  background: linear-gradient(135deg, rgba(110, 159, 194, 0.2), rgba(53, 207, 223, 0.12));
   color: var(--text);
   text-align: start;
   cursor: grab;
@@ -899,19 +899,19 @@ html[data-theme="light"] .schedule-day.is-today {
   background: var(--card-glow);
 }
 
-.next-workout-card { --card-glow: #59ad78; }
-.nutrition-card { --card-glow: #d6a45d; }
-.recent-card { --card-glow: #6e9fc2; }
-.progress-card { --card-glow: #a855f7; }
-.quick-food-card { --card-glow: #59ad78; }
-.manual-card { --card-glow: #d6a45d; }
+.next-workout-card { --card-glow: #2f9bff; }
+.nutrition-card { --card-glow: #52c98a; }
+.recent-card { --card-glow: #35cfdf; }
+.progress-card { --card-glow: #e0a940; }
+.quick-food-card { --card-glow: #52c98a; }
+.manual-card { --card-glow: #2f9bff; }
 
-.next-workout-card .card-icon { background: rgba(89, 173, 120, 0.14); }
-.nutrition-card .card-icon { background: rgba(214, 164, 93, 0.14); }
-.recent-card .card-icon { background: rgba(110, 159, 194, 0.14); }
-.progress-card .card-icon { background: rgba(168, 85, 247, 0.14); }
-.quick-food-card .card-icon { background: rgba(89, 173, 120, 0.14); }
-.manual-card .card-icon { background: rgba(214, 164, 93, 0.14); }
+.next-workout-card .card-icon { background: rgba(47, 155, 255, 0.14); }
+.nutrition-card .card-icon { background: rgba(82, 201, 138, 0.14); }
+.recent-card .card-icon { background: rgba(53, 207, 223, 0.14); }
+.progress-card .card-icon { background: rgba(224, 169, 64, 0.14); }
+.quick-food-card .card-icon { background: rgba(82, 201, 138, 0.14); }
+.manual-card .card-icon { background: rgba(47, 155, 255, 0.14); }
 
 .exercise-preview {
   display: flex;
@@ -925,22 +925,22 @@ html[data-theme="light"] .schedule-day.is-today {
   border-radius: 10px;
   color: #d6e0ec;
   background: rgba(255, 255, 255, 0.055);
-  border: 1px solid rgba(89, 173, 120, 0.12);
+  border: 1px solid rgba(47, 155, 255, 0.12);
   font-size: 12px;
 }
 
 .primary-action {
   margin-top: auto;
-  color: #12211a;
-  background: linear-gradient(135deg, #59ad78, #59ad78);
+  color: var(--fp-text-inverse);
+  background: linear-gradient(135deg, #167fdc, #2f9bff);
 }
 
 .secondary-action {
   align-self: flex-start;
   margin-top: auto;
   color: #f3f0e8;
-  border-color: rgba(101, 184, 159, 0.3);
-  background: rgba(101, 184, 159, 0.1);
+  border-color: rgba(53, 207, 223, 0.3);
+  background: rgba(53, 207, 223, 0.1);
 }
 
 .macro-grid {
@@ -984,8 +984,8 @@ html[data-theme="light"] .schedule-day.is-today {
 }
 
 .quick-food-input:focus {
-  border-color: rgba(89, 173, 120, 0.55);
-  box-shadow: 0 0 0 3px rgba(89, 173, 120, 0.12);
+  border-color: rgba(53, 207, 223, 0.55);
+  box-shadow: 0 0 0 3px rgba(53, 207, 223, 0.12);
 }
 
 .quick-food-actions {
@@ -1072,7 +1072,7 @@ html[data-theme="light"] .schedule-day.is-today {
   height: 58px;
   margin-bottom: 14px;
   border-radius: 18px;
-  background: linear-gradient(135deg, rgba(101, 184, 159, 0.28), rgba(110, 159, 194, 0.2));
+  background: linear-gradient(135deg, rgba(53, 207, 223, 0.28), rgba(110, 159, 194, 0.2));
   border: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 28px;
 }
@@ -1759,18 +1759,18 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .dashboard-action--coach {
-    background: linear-gradient(135deg, #2aa294, #35c2ae);
-    border-color: rgba(53, 194, 174, .42);
-    box-shadow: 0 16px 38px rgba(53, 194, 174, .2);
+    background: linear-gradient(135deg, #1fb6c9, #35cfdf);
+    border-color: rgba(53, 207, 223, .42);
+    box-shadow: 0 16px 38px rgba(53, 207, 223, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--coach::before { content: "💬"; }
 
   .dashboard-action--workout {
-    background: linear-gradient(135deg, #3596c6, #55b8e8);
-    border-color: rgba(85, 184, 232, .42);
-    box-shadow: 0 16px 38px rgba(85, 184, 232, .2);
+    background: linear-gradient(135deg, #167fdc, #2f9bff);
+    border-color: rgba(47, 155, 255, .42);
+    box-shadow: 0 16px 38px rgba(47, 155, 255, .2);
     color: var(--fp-text-inverse);
   }
 
@@ -1815,13 +1815,13 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .workout-history-card {
-    --card-glow: #65b89f;
-    --card-border: rgba(101, 184, 159, .4);
+    --card-glow: #35cfdf;
+    --card-border: rgba(53, 207, 223, .4);
     min-height: 0;
   }
 
   .workout-history-card .card-icon {
-    background: rgba(101, 184, 159, .14);
+    background: rgba(53, 207, 223, .14);
   }
 
   .workout-history-card .secondary-action {
@@ -1860,16 +1860,16 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 
   .dashboard-action--coach {
-    background: linear-gradient(135deg, #2aa294, #35c2ae);
-    border-color: rgba(53, 194, 174, .42);
-    box-shadow: 0 16px 38px rgba(53, 194, 174, .2);
+    background: linear-gradient(135deg, #1fb6c9, #35cfdf);
+    border-color: rgba(53, 207, 223, .42);
+    box-shadow: 0 16px 38px rgba(53, 207, 223, .2);
     color: var(--fp-text-inverse);
   }
 
   .dashboard-action--workout {
-    background: linear-gradient(135deg, #3596c6, #55b8e8);
-    border-color: rgba(85, 184, 232, .42);
-    box-shadow: 0 16px 38px rgba(85, 184, 232, .2);
+    background: linear-gradient(135deg, #167fdc, #2f9bff);
+    border-color: rgba(47, 155, 255, .42);
+    box-shadow: 0 16px 38px rgba(47, 155, 255, .2);
     color: var(--fp-text-inverse);
   }
 
@@ -1940,7 +1940,7 @@ html[data-theme="light"] .schedule-day.is-today {
 .progress-teaser-vs {
   font-size: 22px;
   font-weight: 900;
-  color: #65b89f;
+  color: #35cfdf;
   flex-shrink: 0;
   text-align: center;
   min-width: 36px;
@@ -1966,7 +1966,7 @@ html[data-theme="light"] .schedule-day.is-today {
 /* ── Progress teaser redesign ── */
 .progress-teaser-card {
   margin-top: 20px;
-  border: 1.5px solid rgba(101, 184, 159,.25);
+  border: 1.5px solid rgba(53, 207, 223,.25);
   background: linear-gradient(160deg, #0d1020 0%, #202b2c 100%);
   overflow: hidden;
 }
@@ -2033,8 +2033,8 @@ html[data-theme="light"] .schedule-day.is-today {
 
 .progress-teaser-date-badge--after {
   color: #9d8fc7;
-  background: rgba(101, 184, 159,.12);
-  border-color: rgba(101, 184, 159,.3);
+  background: rgba(53, 207, 223,.12);
+  border-color: rgba(53, 207, 223,.3);
 }
 
 .progress-teaser-photo {
@@ -2062,18 +2062,18 @@ html[data-theme="light"] .schedule-day.is-today {
   font-weight: 900;
   color: #e2e8f0;
   letter-spacing: .04em;
-  text-shadow: 0 0 12px rgba(101, 184, 159,.3);
+  text-shadow: 0 0 12px rgba(53, 207, 223,.3);
 }
 
 .progress-teaser-vs {
   font-size: 26px;
   font-weight: 900;
-  color: #65b89f;
+  color: #35cfdf;
   flex-shrink: 0;
   text-align: center;
   min-width: 40px;
   align-self: center;
-  text-shadow: 0 0 20px rgba(101, 184, 159,.5);
+  text-shadow: 0 0 20px rgba(53, 207, 223,.5);
 }
 
 .progress-teaser-cta {
@@ -2081,20 +2081,20 @@ html[data-theme="light"] .schedule-day.is-today {
   width: 100%;
   text-align: center;
   padding: 17px 24px;
-  background: linear-gradient(135deg, #65b89f, #4f9f88);
+  background: linear-gradient(135deg, #35cfdf, #28b8c8);
   color: var(--fp-text-inverse);
   font-size: 16px;
   font-weight: 800;
   border-radius: 14px;
   text-decoration: none;
   letter-spacing: .02em;
-  box-shadow: 0 8px 28px rgba(101, 184, 159,.35);
+  box-shadow: 0 8px 28px rgba(53, 207, 223,.35);
   transition: transform .15s ease, box-shadow .15s ease;
 }
 
 .progress-teaser-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(101, 184, 159,.5);
+  box-shadow: 0 14px 36px rgba(53, 207, 223,.5);
 }
 
 @media (max-width: 600px) {
@@ -2111,5 +2111,5 @@ html[data-theme="light"] .schedule-day.is-today {
 .skeleton-card { height: 200px; margin-bottom: 16px; }
 
 /* ── Share Button ── */
-.share-btn { padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(101, 184, 159,.3); background: rgba(101, 184, 159,.1); color: #9d8fc7; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s ease; }
-.share-btn:hover { background: rgba(101, 184, 159,.2); border-color: rgba(101, 184, 159,.5); }
+.share-btn { padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(53, 207, 223,.3); background: rgba(53, 207, 223,.1); color: #9d8fc7; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s ease; }
+.share-btn:hover { background: rgba(53, 207, 223,.2); border-color: rgba(53, 207, 223,.5); }

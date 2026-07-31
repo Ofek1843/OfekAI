@@ -31,7 +31,7 @@ body {
   background:
     radial-gradient(
       circle at top,
-      rgba(101, 184, 159, 0.18),
+      rgba(82, 201, 138, 0.18),
       transparent 35%
     ),
     var(--background);
@@ -55,7 +55,7 @@ textarea {
 .condition-options label { position:relative; cursor:pointer; }
 .condition-options input { position:absolute; opacity:0; pointer-events:none; }
 .condition-options span { display:flex; min-height:46px; align-items:center; padding:10px 12px; border:1px solid var(--border); border-radius:11px; color:var(--muted); background:rgba(255,255,255,.035); transition:.18s ease; }
-.condition-options input:checked + span { border-color:#65b89f; color:#ede9fe; background:rgba(101, 184, 159,.2); box-shadow:0 0 0 2px rgba(101, 184, 159,.08); }
+.condition-options input:checked + span { border-color:#52c98a; color:#ede9fe; background:rgba(82, 201, 138,.2); box-shadow:0 0 0 2px rgba(82, 201, 138,.08); }
 .condition-options input:focus-visible + span { outline:2px solid #6e9fc2; outline-offset:2px; }
 .youth-consent { display:flex; gap:10px; align-items:flex-start; padding:14px; border:1px solid rgba(214, 164, 93,.32); border-radius:12px; color:#e8cfa2; background:rgba(214, 164, 93,.08); line-height:1.5; }
 .youth-consent input { width:auto; margin-top:4px; accent-color:#d6a45d; }
@@ -88,10 +88,10 @@ textarea {
   display: inline-flex;
   margin-bottom: 14px;
   padding: 7px 12px;
-  border: 1px solid rgba(101, 184, 159, 0.35);
+  border: 1px solid rgba(82, 201, 138, 0.35);
   border-radius: 999px;
   color: #bcc6c2;
-  background: rgba(101, 184, 159, 0.12);
+  background: rgba(82, 201, 138, 0.12);
   font-size: 13px;
   font-weight: 700;
 }
@@ -156,7 +156,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(101, 184, 159, 0.14);
+  box-shadow: 0 0 0 4px rgba(82, 201, 138, 0.14);
 }
 
 .checkbox-grid {
@@ -313,12 +313,12 @@ textarea:focus {
   position: relative;
   overflow: hidden;
   padding: 34px;
-  border: 1px solid rgba(101, 184, 159, 0.28);
+  border: 1px solid rgba(82, 201, 138, 0.28);
   border-radius: 28px;
   background:
     radial-gradient(
       circle at top right,
-      rgba(101, 184, 159, 0.18),
+      rgba(82, 201, 138, 0.18),
       transparent 32%
     ),
     linear-gradient(
@@ -384,8 +384,8 @@ textarea:focus {
 
 .print-program-button:hover {
   transform: translateY(-2px);
-  border-color: rgba(101, 184, 159, 0.75);
-  background: rgba(101, 184, 159, 0.16);
+  border-color: rgba(82, 201, 138, 0.75);
+  background: rgba(82, 201, 138, 0.16);
 }
 
 .program-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
@@ -452,7 +452,7 @@ textarea:focus {
 .workout-day {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-top: 4px solid #65b89f;
+  border-top: 4px solid #52c98a;
   border-radius: 20px;
   background: rgba(15, 23, 39, 0.82);
 }
@@ -612,7 +612,7 @@ textarea:focus {
 }
 
 .workout-table tbody tr:hover {
-  background: rgba(101, 184, 159, 0.065);
+  background: rgba(82, 201, 138, 0.065);
 }
 
 .workout-table tbody tr:last-child td {
@@ -666,7 +666,7 @@ textarea:focus {
 }
 
 .muscle-badge {
-  background: rgba(101, 184, 159, 0.15);
+  background: rgba(82, 201, 138, 0.15);
   color: #b9a8ff;
 }
 
@@ -1042,7 +1042,7 @@ html[dir="ltr"] .nutrition-food-table td {
   --card-text: #0f172a;
   --card-text-secondary: #3d4a48;
   --card-text-muted: #64748b;
-  --card-accent: #4f9f88;
+  --card-accent: #52c98a;
   --card-accent-soft: #f3f0ff;
   --card-surface: #f3f0e8;
   --card-border: #e7eaf0;
@@ -1139,11 +1139,11 @@ html[dir="ltr"] .nutrition-food-table td {
 .visually-hidden-select{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 
 /* Progress bar */
-.wizard-progress{margin-bottom:24px;padding:16px 18px;border:1px solid rgba(101, 184, 159,.2);border-radius:16px;background:rgba(101, 184, 159,.07)}
+.wizard-progress{margin-bottom:24px;padding:16px 18px;border:1px solid rgba(82, 201, 138,.2);border-radius:16px;background:rgba(82, 201, 138,.07)}
 .wizard-progress-topline{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:11px;color:#bcc6c2;font-size:13px}
 .wizard-progress-topline strong{color:#fff;font-size:15px}
 .wizard-progress-track{height:8px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.07)}
-.wizard-progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#65b89f,#59ad78);transition:width .28s ease}
+.wizard-progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#52c98a,#59ad78);transition:width .28s ease}
 
 /* Steps */
 .wizard-step{display:none;animation:nutrStepIn .25s ease-out}
@@ -1151,7 +1151,7 @@ html[dir="ltr"] .nutrition-food-table td {
 @keyframes nutrStepIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
 
 .wizard-step-heading{display:flex;align-items:flex-start;gap:16px;margin-bottom:22px}
-.wizard-step-heading>span{display:grid;width:44px;height:44px;place-items:center;flex:0 0 44px;border:1px solid rgba(101, 184, 159,.35);border-radius:14px;color:#bcc6c2;background:rgba(101, 184, 159,.12);font-weight:900}
+.wizard-step-heading>span{display:grid;width:44px;height:44px;place-items:center;flex:0 0 44px;border:1px solid rgba(82, 201, 138,.35);border-radius:14px;color:#bcc6c2;background:rgba(82, 201, 138,.12);font-weight:900}
 .wizard-step-heading h2{margin:0;color:#fff;font-size:clamp(22px,4vw,32px)}
 .wizard-step-heading p{margin:7px 0 0;color:var(--muted);line-height:1.55}
 
@@ -1164,14 +1164,14 @@ html[dir="ltr"] .nutrition-food-table td {
 
 /* Youth consent */
 .youth-consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:14px;border:1px solid rgba(255,200,0,.2);border-radius:12px;background:rgba(255,200,0,.06);color:#e8cfa2;font-size:13px;line-height:1.5;cursor:pointer}
-.youth-consent input{margin-top:2px;accent-color:#65b89f}
+.youth-consent input{margin-top:2px;accent-color:#52c98a}
 
 /* Visual goal cards grid — 3 equal columns */
 .nutr-goal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 
 /* Shared visual card styles */
 .visual-choice-card{position:relative;display:block;min-height:220px;overflow:hidden;border:2px solid rgba(255,255,255,.09);border-radius:19px;cursor:pointer;background:#202b2c;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-.visual-choice-card:hover{transform:translateY(-2px);border-color:rgba(101, 184, 159,.55);box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.visual-choice-card:hover{transform:translateY(-2px);border-color:rgba(82, 201, 138,.55);box-shadow:0 18px 40px rgba(0,0,0,.28)}
 .visual-choice-card input{position:absolute;opacity:0;pointer-events:none}
 .visual-choice-image,.visual-choice-shade{position:absolute;inset:0}
 .visual-choice-image{background-size:cover;background-repeat:no-repeat;background-position:center;transition:transform .28s ease}
@@ -1181,7 +1181,7 @@ html[dir="ltr"] .nutrition-food-table td {
 .visual-choice-content strong{color:#fff;font-size:20px;font-weight:900;text-shadow:0 2px 10px rgba(0,0,0,.5)}
 .visual-choice-content small{color:#d6deeb;line-height:1.35;text-shadow:0 1px 6px rgba(0,0,0,.5)}
 .visual-choice-check{position:absolute;top:14px;right:14px;z-index:3;display:none;width:36px;height:36px;place-items:center;border-radius:50%;color:var(--fp-text-inverse);background:#59ad78;box-shadow:0 10px 22px rgba(89, 173, 120,.3);font-weight:950}
-.visual-choice-card:has(input:checked){border-color:#65b89f;box-shadow:0 0 0 3px rgba(101, 184, 159,.18),0 20px 45px rgba(0,0,0,.34)}
+.visual-choice-card:has(input:checked){border-color:#52c98a;box-shadow:0 0 0 3px rgba(82, 201, 138,.18),0 20px 45px rgba(0,0,0,.34)}
 .visual-choice-card:has(input:checked) .visual-choice-check{display:grid}
 .visual-choice-card--wide{grid-column:1/-1;min-height:420px}
 .nutr-goal-grid .visual-choice-card--wide{grid-column:auto;min-height:300px}
@@ -1218,7 +1218,7 @@ html[dir="ltr"] .nutrition-food-table td {
 .wizard-button{min-height:52px;border:0;border-radius:14px;color:#fff;font:inherit;font-weight:900;cursor:pointer;transition:opacity .15s}
 .wizard-button:disabled{opacity:.4;cursor:not-allowed}
 .wizard-button--back{min-width:130px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06)}
-.wizard-button--next,.wizard-button--generate{background:linear-gradient(135deg,#6d4aff,#65b89f)}
+.wizard-button--next,.wizard-button--generate{background:linear-gradient(135deg,#167fdc,#2f9bff)}
 .wizard-button--generate{grid-column:2}
 .wizard-button.hidden{display:none!important}
 
@@ -1516,7 +1516,7 @@ html[dir="ltr"] .nutrition-food-table td {
   border-radius: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(101, 184, 159, 0.2);
+  border: 1px solid rgba(82, 201, 138, 0.2);
 }
 
 .meal-photo img {
@@ -1631,9 +1631,9 @@ html[dir="ltr"] .nutrition-food-table td {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   padding: 18px 16px;
-  border: 1px solid rgba(101, 184, 159, 0.2);
+  border: 1px solid rgba(82, 201, 138, 0.2);
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(101, 184, 159, 0.08), rgba(101, 184, 159, 0.04));
+  background: linear-gradient(135deg, rgba(82, 201, 138, 0.08), rgba(82, 201, 138, 0.04));
   text-align: center;
   margin-top: 18px;
 }
@@ -1662,8 +1662,8 @@ html[dir="ltr"] .nutrition-food-table td {
   gap: 18px;
   margin-top: 20px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(101, 184, 159, 0.08), rgba(101, 184, 159, 0.04));
-  border: 1px solid rgba(101, 184, 159, 0.15);
+  background: linear-gradient(135deg, rgba(82, 201, 138, 0.08), rgba(82, 201, 138, 0.04));
+  border: 1px solid rgba(82, 201, 138, 0.15);
   border-radius: 14px;
 }
 

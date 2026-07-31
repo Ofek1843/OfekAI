@@ -6,122 +6,125 @@
    available from the first paint and no page can flash the old theme.
 
    This file changes COLOUR ONLY. It defines no layout, spacing, sizing,
-   typography, radius or animation property, so it cannot move anything on the
-   page.
+   typography or radius property, so it cannot move anything on the page.
+   The one exception is the purely decorative, non-interactive "ocean depth"
+   motion layer at the bottom of this file (background-position/opacity
+   animation only, `pointer-events: none`, meant to be marked
+   `aria-hidden="true"` in markup), added for atmosphere per product
+   direction; it never affects layout or intercepts input.
 
-   Identity — "Deep Ocean Sport": deep petrol-ink foundation, sky-blue primary
-   action, fresh mint secondary, warm sand highlight. Replaces the original
-   navy + saturated purple/blue palette (a generic AI-SaaS look), the
-   graphite/sage direction (too muted and gray-green) and the coral direction.
-
-   Blue carries interaction -- primary actions, active navigation, links, focus
-   and workout accents -- NOT every surface. Mint carries secondary actions,
-   nutrition and positive states. Warm sand is a restrained supporting accent
-   only. The petrol background stays deep and neutral so photographs, copy and
-   CTAs dominate.
+   Identity — "Blue Abyss": a strongly blue-dominant, deep-ocean palette.
+   Replaces the earlier "Deep Ocean Sport" direction, whose petrol-leaning
+   surface tones and teal Coach accent read as green rather than blue.
+   Electric blue carries interaction; cyan is a restrained secondary accent;
+   green stays reserved for the Nutrition category and success states; gold
+   for Progress and warnings. No violet or coral as a dominant accent.
 
    Structure:
      1. --fp-*  semantic tokens (the real palette; reference these in new work)
      2. legacy aliases -- the shared variable names existing stylesheets
         already consume (--bg, --text, --surface ...). Pointing them here
         re-themes those pages without touching their rules.
-     3. category accents, harmonised with the palette
+     3. category accents, chart series
+     4. "Ocean Daylight" light-mode token overrides
+     5. decorative, non-interactive ocean-depth motion layer
    ========================================================================== */
 
 :root {
   /* ---- 1. surface hierarchy: deepest page → raised modal ---- */
-  --fp-bg-deep: #081316;
-  --fp-bg-page: #0d1b20;
-  --fp-bg-section: #13252b;
-  --fp-surface: #192f36;
-  --fp-surface-raised: #203b43;
-  --fp-surface-soft: #294850;
-  --fp-surface-input: #102329;
+  --fp-bg-deep: #050b16;
+  --fp-bg-page: #081426;
+  --fp-bg-section: #0c1c32;
+  --fp-surface: #102743;
+  --fp-surface-raised: #173654;
+  --fp-surface-soft: #204563;
+  --fp-surface-input: #0a1f38;
 
   /* Navigation/sidebar sit BELOW content cards in the ramp, so chrome recedes
      and cards come forward instead of the whole page reading as one plane. */
-  --fp-nav-surface: #0f2126;
+  --fp-nav-surface: #06101e;
 
   /* ---- borders ---- */
-  --fp-border: #35545c;
-  --fp-border-strong: #52717a;
+  --fp-border: #285477;
+  --fp-border-strong: #3e739d;
 
   /* ---- text ---- */
-  --fp-text-primary: #f4f6f1;
-  --fp-text-secondary: #c4d1cf;
-  --fp-text-muted: #91a6a4;
-  --fp-text-inverse: #0c1719;
+  --fp-text-primary: #f4f8ff;
+  --fp-text-secondary: #c5d5e8;
+  --fp-text-muted: #8fa8c2;
+  --fp-text-inverse: #06111f;
 
-  /* ---- brand ---- */
-  --fp-brand-primary: #55b8e8;
-  --fp-brand-primary-hover: #73c8ee;
-  --fp-brand-primary-active: #389bc9;
-  --fp-brand-secondary: #8ed081;
-  --fp-brand-secondary-hover: #a5dd99;
+  /* ---- brand: electric blue primary, restrained cyan secondary ---- */
+  --fp-brand-primary: #2f9bff;
+  --fp-brand-primary-hover: #58b1ff;
+  --fp-brand-primary-active: #167fdc;
+  --fp-brand-secondary: #35cfdf;
+  --fp-brand-secondary-hover: #60dce8;
 
   /* Supporting highlight: streaks, badges, small emphasis. Never a surface. */
-  --fp-highlight: #e7bd67;
-  --fp-highlight-soft: rgba(231, 189, 103, 0.16);
+  --fp-highlight: #78d9ff;
+  --fp-highlight-soft: rgba(120, 217, 255, 0.16);
 
   /* Tinted fills for soft brand backgrounds, so components do not invent
      their own low-opacity variants. */
-  --fp-brand-primary-soft: rgba(85, 184, 232, 0.16);
-  --fp-brand-primary-softer: rgba(85, 184, 232, 0.09);
-  --fp-brand-secondary-soft: rgba(142, 208, 129, 0.16);
+  --fp-brand-primary-soft: rgba(47, 155, 255, 0.16);
+  --fp-brand-primary-softer: rgba(47, 155, 255, 0.09);
+  --fp-brand-secondary-soft: rgba(53, 207, 223, 0.16);
 
   /* ---- status ---- */
-  --fp-success: #69c58d;
-  --fp-warning: #e1ad5b;
-  --fp-danger: #ea7076;
-  --fp-info: #65bce3;
-  --fp-success-soft: rgba(105, 197, 141, 0.16);
-  --fp-warning-soft: rgba(225, 173, 91, 0.16);
-  --fp-danger-soft: rgba(234, 112, 118, 0.16);
-  --fp-info-soft: rgba(101, 188, 227, 0.16);
+  --fp-success: #55c98a;
+  --fp-warning: #e1b75d;
+  --fp-danger: #ef6f7f;
+  --fp-info: #5aaeff;
+  --fp-success-soft: rgba(85, 201, 138, 0.16);
+  --fp-warning-soft: rgba(225, 183, 93, 0.16);
+  --fp-danger-soft: rgba(239, 111, 127, 0.16);
+  --fp-info-soft: rgba(90, 174, 255, 0.16);
 
   /* ---- interaction ---- */
-  --fp-overlay: rgba(4, 10, 12, 0.74);
-  --fp-focus-ring: rgba(85, 184, 232, 0.5);
+  --fp-overlay: rgba(3, 10, 22, 0.78);
+  --fp-focus-ring: rgba(47, 155, 255, 0.52);
   --fp-hover-surface: rgba(255, 255, 255, 0.05);
   --fp-active-surface: rgba(255, 255, 255, 0.08);
-  --fp-disabled-surface: #142b31;
-  --fp-disabled-text: #74908e;
-  --fp-disabled-border: #24444b;
+  --fp-disabled-surface: #0e2036;
+  --fp-disabled-text: #6f89a6;
+  --fp-disabled-border: #1c3a55;
 
   /* ---- shadows (colour only; no geometry change) ---- */
-  --fp-shadow-soft: 0 10px 26px rgba(3, 8, 10, 0.45);
-  --fp-shadow-raised: 0 18px 40px rgba(3, 8, 10, 0.55);
+  --fp-shadow-soft: 0 10px 26px rgba(2, 6, 14, 0.5);
+  --fp-shadow-raised: 0 18px 40px rgba(2, 6, 14, 0.6);
 
   /* =====================================================================
      3. Product category accents.
-     Kept because they carry meaning, but pulled toward the palette so they
-     read as accents rather than as separate themes. Use for icons, active
-     tabs, thin borders, small status dots and charts -- never as a dominant
-     page background.
+     Equal saturation/weight, carried through accent border, icon
+     background, small glow and label colour -- never as a full-fill
+     fourth colour per card. Blue owns the site; only Nutrition (green)
+     and Progress (gold) keep non-blue-family accents, per their semantic
+     role.
      ===================================================================== */
-  --fp-cat-workout: #55b8e8;   /* controlled blue   */
-  --fp-cat-nutrition: #8ed081; /* controlled green  */
-  --fp-cat-progress: #e7bd67;  /* controlled copper */
-  --fp-cat-coach: #35c2ae;     /* controlled violet */
-  --fp-cat-workout-soft: rgba(85, 184, 232, 0.16);
-  --fp-cat-nutrition-soft: rgba(142, 208, 129, 0.16);
-  --fp-cat-progress-soft: rgba(231, 189, 103, 0.16);
-  --fp-cat-coach-soft: rgba(53, 194, 174, 0.16);
+  --fp-cat-workout: #2f9bff;   /* bright blue      */
+  --fp-cat-nutrition: #52c98a; /* controlled green */
+  --fp-cat-progress: #e0a940;  /* warm gold        */
+  --fp-cat-coach: #35cfdf;     /* restrained cyan  */
+  --fp-cat-workout-soft: rgba(47, 155, 255, 0.16);
+  --fp-cat-nutrition-soft: rgba(82, 201, 138, 0.16);
+  --fp-cat-progress-soft: rgba(224, 169, 64, 0.16);
+  --fp-cat-coach-soft: rgba(53, 207, 223, 0.16);
 
-  /* Chart series, ordered for maximum separation against the graphite
+  /* Chart series, ordered for maximum separation against the deep-blue
      background. Distinct in hue AND lightness so they stay readable for
      colour-vision differences and in greyscale. */
-  --fp-chart-1: #55b8e8;
-  --fp-chart-2: #8ed081;
-  --fp-chart-3: #e7bd67;
-  --fp-chart-4: #ea7076;
-  --fp-chart-5: #35c2ae;
-  --fp-chart-6: #a99adf;
-  --fp-chart-grid: #24444b;
-  --fp-chart-axis: #91a6a4;
-  --fp-chart-label: #c4d1cf;
-  --fp-chart-tooltip-bg: #203b43;
-  --fp-chart-tooltip-text: #f4f6f1;
+  --fp-chart-1: #2f9bff;
+  --fp-chart-2: #52c98a;
+  --fp-chart-3: #e1b75d;
+  --fp-chart-4: #ef6f7f;
+  --fp-chart-5: #35cfdf;
+  --fp-chart-6: #8f7fe0;
+  --fp-chart-grid: #1c3a55;
+  --fp-chart-axis: #8fa8c2;
+  --fp-chart-label: #c5d5e8;
+  --fp-chart-tooltip-bg: #173654;
+  --fp-chart-tooltip-text: #f4f8ff;
 
   /* =====================================================================
      2. Legacy aliases.
@@ -162,8 +165,7 @@
 
   --shadow: var(--fp-shadow-soft);
 
-  /* Category aliases used by dashboard cards. Coral stays the brand action
-     colour; these only distinguish product areas. */
+  /* Category aliases used by dashboard cards. */
   --workout: var(--fp-cat-workout);
   --nutrition: var(--fp-cat-nutrition);
   --progress: var(--fp-cat-progress);
@@ -172,9 +174,93 @@
   color-scheme: dark;
 }
 
+/* =====================================================================
+   4. "Ocean Daylight" light mode.
+   Light Mode previously left several pages showing ad hoc, page-specific
+   light overrides with no shared token layer. This gives every page that
+   consumes --fp-* (or the legacy aliases) a real, intentional light
+   palette instead of inheriting dark tokens -- pale blue-gray surfaces,
+   dark navy text, blue actions, restrained cyan highlights. No green page
+   background.
+   ===================================================================== */
+html[data-theme="light"] {
+  --fp-bg-deep: #eef4fc;
+  --fp-bg-page: #f3f8fd;
+  --fp-bg-section: #e7f0fa;
+  --fp-surface: #ffffff;
+  --fp-surface-raised: #ffffff;
+  --fp-surface-soft: #eaf2fb;
+  --fp-surface-input: #ffffff;
+  --fp-nav-surface: #e7f0fa;
+
+  --fp-border: #c3d6ea;
+  --fp-border-strong: #8fb0d1;
+
+  --fp-text-primary: #0c2135;
+  --fp-text-secondary: #33526e;
+  --fp-text-muted: #5c7893;
+  --fp-text-inverse: #f4f8ff;
+
+  --fp-brand-primary: #167fdc;
+  --fp-brand-primary-hover: #2f9bff;
+  --fp-brand-primary-active: #0f65b0;
+  --fp-brand-secondary: #1aa9ba;
+  --fp-brand-secondary-hover: #35cfdf;
+
+  --fp-highlight: #167fdc;
+  --fp-highlight-soft: rgba(22, 127, 220, 0.12);
+
+  --fp-brand-primary-soft: rgba(22, 127, 220, 0.1);
+  --fp-brand-primary-softer: rgba(22, 127, 220, 0.05);
+  --fp-brand-secondary-soft: rgba(26, 169, 186, 0.12);
+
+  --fp-success: #1f9d63;
+  --fp-warning: #b2790f;
+  --fp-danger: #d43f52;
+  --fp-info: #167fdc;
+  --fp-success-soft: rgba(31, 157, 99, 0.12);
+  --fp-warning-soft: rgba(178, 121, 15, 0.12);
+  --fp-danger-soft: rgba(212, 63, 82, 0.12);
+  --fp-info-soft: rgba(22, 127, 220, 0.12);
+
+  --fp-overlay: rgba(12, 33, 53, 0.4);
+  --fp-focus-ring: rgba(22, 127, 220, 0.4);
+  --fp-hover-surface: rgba(12, 33, 53, 0.045);
+  --fp-active-surface: rgba(12, 33, 53, 0.08);
+  --fp-disabled-surface: #e9eff5;
+  --fp-disabled-text: #8ea1b3;
+  --fp-disabled-border: #d3dee8;
+
+  --fp-shadow-soft: 0 10px 26px rgba(15, 40, 65, 0.1);
+  --fp-shadow-raised: 0 18px 40px rgba(15, 40, 65, 0.14);
+
+  --fp-cat-workout: #167fdc;
+  --fp-cat-nutrition: #1f9d63;
+  --fp-cat-progress: #b2790f;
+  --fp-cat-coach: #1aa9ba;
+  --fp-cat-workout-soft: rgba(22, 127, 220, 0.1);
+  --fp-cat-nutrition-soft: rgba(31, 157, 99, 0.1);
+  --fp-cat-progress-soft: rgba(178, 121, 15, 0.1);
+  --fp-cat-coach-soft: rgba(26, 169, 186, 0.1);
+
+  --fp-chart-1: #167fdc;
+  --fp-chart-2: #1f9d63;
+  --fp-chart-3: #b2790f;
+  --fp-chart-4: #d43f52;
+  --fp-chart-5: #1aa9ba;
+  --fp-chart-6: #6a5cc2;
+  --fp-chart-grid: #d3dee8;
+  --fp-chart-axis: #5c7893;
+  --fp-chart-label: #33526e;
+  --fp-chart-tooltip-bg: #ffffff;
+  --fp-chart-tooltip-text: #0c2135;
+
+  color-scheme: light;
+}
+
 /* The page canvas itself. Set here so the correct background exists on the
    very first paint rather than arriving with a page stylesheet, which is what
-   allowed a flash of the previous navy theme. Colour properties only. */
+   allowed a flash of the previous theme. Colour properties only. */
 html {
   background-color: var(--fp-bg-deep);
 }
@@ -235,4 +321,113 @@ select {
 .pricing-nav,
 .page-nav {
   background-color: var(--fp-nav-surface);
+}
+
+/* =====================================================================
+   5. Ocean-depth motion layer.
+   Purely decorative, non-interactive atmosphere: slow blue light bands
+   near the left/right edges plus a soft drifting glow field, evoking
+   depth and fluidity without any literal ocean imagery (no waves, bubbles,
+   fish or photography). Pure CSS background-position/opacity animation --
+   no JS, no WebGL, no canvas, 0 added animation-related script bytes.
+
+   Usage: add a fixed, empty `<div class="ocean-depth-layer" aria-hidden=
+   "true"></div>` once per page, typically just inside <body>. It never
+   intercepts pointer events, never affects layout (position: fixed, its
+   own stacking context, z-index: 0), and sits behind all real content.
+   ===================================================================== */
+.ocean-depth-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.ocean-depth-layer::before,
+.ocean-depth-layer::after {
+  content: "";
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  width: min(22vw, 260px);
+  opacity: 0.1;
+  filter: blur(2px);
+  background:
+    linear-gradient(180deg,
+      transparent 0%,
+      rgba(47, 155, 255, 0.5) 20%,
+      rgba(53, 207, 223, 0.35) 50%,
+      rgba(47, 155, 255, 0.5) 80%,
+      transparent 100%);
+  background-size: 100% 220%;
+  animation: fp-edge-drift 24s ease-in-out infinite;
+}
+
+.ocean-depth-layer::before {
+  left: -6%;
+  animation-duration: 24s;
+}
+
+.ocean-depth-layer::after {
+  right: -6%;
+  animation-duration: 30s;
+  animation-delay: -9s;
+  filter: blur(3px) hue-rotate(-4deg);
+}
+
+.ocean-depth-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(47, 155, 255, 0.09), transparent 32%),
+    radial-gradient(circle at 84% 18%, rgba(53, 207, 223, 0.07), transparent 30%),
+    radial-gradient(circle at 50% 92%, rgba(47, 155, 255, 0.06), transparent 38%);
+  background-size: 140% 140%;
+  animation: fp-glow-drift 34s ease-in-out infinite;
+  contain: strict;
+}
+
+@keyframes fp-edge-drift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 0% 40%; }
+  100% { background-position: 0% 0%; }
+}
+
+@keyframes fp-glow-drift {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 8% 6%; }
+  100% { background-position: 0% 0%; }
+}
+
+html[data-theme="light"] .ocean-depth-layer::before,
+html[data-theme="light"] .ocean-depth-layer::after {
+  opacity: 0.06;
+}
+
+html[data-theme="light"] .ocean-depth-glow {
+  opacity: 0.5;
+}
+
+@media (max-width: 700px) {
+  .ocean-depth-layer::before,
+  .ocean-depth-layer::after {
+    width: min(14vw, 140px);
+    opacity: 0.06;
+  }
+
+  .ocean-depth-glow {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ocean-depth-layer::before,
+  .ocean-depth-layer::after,
+  .ocean-depth-glow {
+    animation: none !important;
+  }
 }

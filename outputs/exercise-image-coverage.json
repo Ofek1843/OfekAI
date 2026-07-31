@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-31T04:40:08.794Z",
+  "generatedAt": "2026-07-31T09:12:32.029Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {

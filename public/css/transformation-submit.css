@@ -28,9 +28,9 @@
 
 .submission-privacy-note {
   padding: 10px 14px;
-  border: 1px solid rgba(89, 173, 120, 0.22);
+  border: 1px solid rgba(224, 169, 64, 0.22);
   border-radius: 999px;
-  background: rgba(89, 173, 120, 0.08);
+  background: rgba(224, 169, 64, 0.08);
 }
 
 .submission-card {
@@ -43,7 +43,7 @@
   border-radius: 34px;
   background:
     radial-gradient(circle at 12% 0%, rgba(110, 159, 194, 0.13), transparent 32%),
-    radial-gradient(circle at 88% 8%, rgba(101, 184, 159, 0.13), transparent 34%),
+    radial-gradient(circle at 88% 8%, rgba(224, 169, 64, 0.13), transparent 34%),
     rgba(32, 43, 44, 0.76);
 }
 
@@ -189,11 +189,11 @@ html[dir="rtl"] .image-preview:empty::before {
   min-width: 18px;
   height: 18px;
   margin-top: 3px;
-  accent-color: #59ad78;
+  accent-color: #e0a940;
 }
 
 .consent-fieldset {
-  border-color: rgba(89, 173, 120, 0.22);
+  border-color: rgba(224, 169, 64, 0.22);
 }
 
 .submission-status {

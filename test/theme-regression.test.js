@@ -22,13 +22,19 @@ const THEME = fs.readFileSync(path.join(CSS_DIR, "theme.css"), "utf8");
 const htmlPages = fs.readdirSync(PUBLIC_DIR).filter(f => f.endsWith(".html"));
 const stylesheets = fs.readdirSync(CSS_DIR).filter(f => f.endsWith(".css") && f !== "theme.css");
 
-// The dominant values of the previous palette. Category accents are NOT in
-// this list -- those are allowed to survive where they carry meaning.
+// The dominant values of previous palettes. Category accents that still
+// carry meaning (nutrition green #52c98a/#8ed081/#6cb45f, progress gold)
+// are NOT in this list.
 const RETIRED_COLOURS = [
   "#7c5cff", "#7c3aed", "#8b5cf6", "#6c4cff", "#4f46e5", // purple brand
   "#2563eb", "#3b82f6", "#60a5fa", "#38bdf8",             // electric blue
   "#070b14", "#050812", "#050810", "#060912",             // navy page backgrounds
-  "#101725", "#10192b", "#0b1220", "#171f30"              // navy surfaces
+  "#101725", "#10192b", "#0b1220", "#171f30",             // navy surfaces
+  // "Deep Ocean Sport" petrol/teal direction (rejected as too green):
+  "#081316", "#0d1b20", "#13252b", "#192f36", "#203b43", "#294850", "#102329",
+  "#0f2126", "#35545c", "#52717a",
+  "#55b8e8", "#389bc9", "#73c8ee",                        // old sky-blue brand
+  "#35c2ae", "#65b89f", "#2aa294", "#4f9f88"              // old teal/mint accent
 ];
 
 const REQUIRED_TOKENS = [
@@ -100,6 +106,18 @@ test("the theme sets the page canvas so the palette exists on first paint", () =
   assert.match(THEME, /body\s*\{[^}]*color:\s*var\(--fp-text-primary\)/);
 });
 
+// The decorative ocean-depth motion layer is an explicitly authorised
+// exception: it is allowed position/size properties because it is a
+// standalone, non-interactive, fixed-position overlay that cannot move any
+// real page content (it has its own stacking context and no other rule in
+// this file may reference its selectors). Everything else in theme.css must
+// stay colour-only.
+const DECORATIVE_MARKER = "5. Ocean-depth motion layer.";
+const decorativeStart = THEME.indexOf(DECORATIVE_MARKER);
+assert.ok(decorativeStart > -1, "the ocean-depth motion layer section must exist");
+const THEME_COLOUR_ONLY = THEME.slice(0, decorativeStart);
+const THEME_DECORATIVE = THEME.slice(decorativeStart);
+
 test("the theme changes colour only and cannot move anything on the page", () => {
   // Properties that would alter layout, size, spacing, type or motion.
   const layoutProps = [
@@ -108,7 +126,7 @@ test("the theme changes colour only and cannot move anything on the page", () =>
     "border-radius", "grid", "flex", "gap", "transform", "animation", "transition"
   ];
   const offenders = [];
-  for (const line of THEME.split("\n")) {
+  for (const line of THEME_COLOUR_ONLY.split("\n")) {
     const declaration = line.trim();
     // Skip comments and custom-property definitions (a token may be named
     // anything; only real CSS declarations can affect layout).
@@ -120,7 +138,7 @@ test("the theme changes colour only and cannot move anything on the page", () =>
       offenders.push(declaration);
     }
   }
-  assert.deepEqual(offenders, [], "theme.css must not declare layout, sizing, typography or motion");
+  assert.deepEqual(offenders, [], "theme.css must not declare layout, sizing, typography or motion outside the decorative ocean-depth layer");
 });
 
 test("surface hierarchy stays visually distinguishable", () => {
@@ -195,6 +213,115 @@ test("chart series stay distinguishable against the chart surface", () => {
       assert.ok(distance > 30, `${series[i]} and ${series[j]} are too close to read as separate series`);
     }
   }
+});
+
+// --- Blue Abyss direction --------------------------------------------
+
+function hexToRgb(hex) {
+  return [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+}
+
+function isBlueDominant([r, g, b]) {
+  // Blue-dominant: blue is the largest channel and strictly ahead of green
+  // (the specific failure mode being guarded against -- a petrol/teal
+  // surface where green creeps up to or past blue). No absolute-delta
+  // threshold, since the deepest surface tones are dark enough that every
+  // channel is small in absolute terms -- what matters is channel order.
+  return b > r && b > g;
+}
+
+test("page/surface/brand tokens are blue-dominant, not green-leaning", () => {
+  const tokens = [
+    "--fp-bg-deep", "--fp-bg-page", "--fp-bg-section",
+    "--fp-surface", "--fp-surface-raised", "--fp-surface-soft",
+    "--fp-brand-primary", "--fp-nav-surface"
+  ];
+  const offenders = [];
+  for (const token of tokens) {
+    const match = new RegExp(`${token}:\\s*(#[0-9a-fA-F]{6})`).exec(THEME_COLOUR_ONLY);
+    assert.ok(match, `${token} should be a hex value`);
+    if (!isBlueDominant(hexToRgb(match[1]))) offenders.push(`${token}: ${match[1]}`);
+  }
+  assert.deepEqual(offenders, [], "these tokens must read as blue, not green/petrol");
+});
+
+test("green is never used as a global page/surface background token", () => {
+  const surfaceTokens = ["--fp-bg-deep", "--fp-bg-page", "--fp-bg-section", "--fp-surface", "--fp-surface-raised", "--fp-nav-surface"];
+  const offenders = [];
+  for (const token of surfaceTokens) {
+    const match = new RegExp(`${token}:\\s*(#[0-9a-fA-F]{6})`).exec(THEME_COLOUR_ONLY);
+    const [r, g, b] = hexToRgb(match[1]);
+    if (g > r && g > b) offenders.push(`${token}: ${match[1]}`);
+  }
+  assert.deepEqual(offenders, [], "no page/surface background may be green-dominant");
+});
+
+test("the Coach category accent is cyan/blue, not the old teal", () => {
+  const match = /--fp-cat-coach:\s*(#[0-9a-fA-F]{6})/.exec(THEME_COLOUR_ONLY);
+  assert.ok(match);
+  const [r, g, b] = hexToRgb(match[1]);
+  assert.ok(b >= g, "Coach accent must not be teal (green channel exceeding blue)");
+});
+
+test("the landing hero headline gradient uses only warm-white/blue stops, no green or magenta", () => {
+  const landing = fs.readFileSync(path.join(CSS_DIR, "landing.css"), "utf8");
+  const heroFirst = /\.hero h1 span:first-child\s*\{[^}]*background:\s*([^;]+);/.exec(landing);
+  const heroLast = /\.hero h1 span:last-child\s*\{[^}]*background:\s*([^;]+);/.exec(landing);
+  assert.ok(heroFirst && heroLast, "both hero headline span gradients must exist");
+  const disallowed = ["#8ed081", "#6cb45f", "#74c268", "#16a34a", "#59ad78", "#ff", "magenta", "violet", "purple"];
+  for (const [label, decl] of [["first", heroFirst[1]], ["last", heroLast[1]]]) {
+    const lower = decl.toLowerCase();
+    for (const bad of disallowed) {
+      assert.ok(!lower.includes(bad), `hero h1 span:${label}-child must not include "${bad}": ${decl}`);
+    }
+  }
+});
+
+test("the ocean-depth decorative layer is non-interactive and only animates background/opacity", () => {
+  assert.match(THEME_DECORATIVE, /\.ocean-depth-layer\s*\{[^}]*pointer-events:\s*none/);
+  assert.match(THEME_DECORATIVE, /\.ocean-depth-glow\s*\{[^}]*pointer-events:\s*none/);
+  // Keyframes must not touch layout/paint-affecting properties beyond
+  // background-position (which does not reflow or repaint outside its box).
+  const keyframeBlocks = THEME_DECORATIVE.match(/@keyframes[^{]+\{[\s\S]*?\n\}/g) || [];
+  assert.ok(keyframeBlocks.length >= 2, "expected fp-edge-drift and fp-glow-drift keyframes");
+  const disallowedInKeyframes = ["transform", "width", "height", "margin", "padding", "left:", "top:", "right:", "bottom:"];
+  for (const block of keyframeBlocks) {
+    for (const bad of disallowedInKeyframes) {
+      assert.ok(!block.includes(bad), `decorative keyframe must not animate "${bad}": ${block}`);
+    }
+  }
+});
+
+test("decorative ocean-depth animation is disabled under prefers-reduced-motion", () => {
+  const reducedMotionBlock = /@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/.exec(THEME_DECORATIVE);
+  assert.ok(reducedMotionBlock, "a prefers-reduced-motion block must exist in the decorative section");
+  assert.match(reducedMotionBlock[1], /\.ocean-depth-layer::before/);
+  assert.match(reducedMotionBlock[1], /\.ocean-depth-layer::after/);
+  assert.match(reducedMotionBlock[1], /\.ocean-depth-glow/);
+  assert.match(reducedMotionBlock[1], /animation:\s*none/);
+});
+
+test("the ocean-depth layer markup is present on the pages that were verified, each loading the layer once", () => {
+  const pages = ["index.html", "dashboard.html", "app.html", "auth.html", "workout-builder.html", "workout-tracker.html", "nutrition-builder.html", "progress.html", "transformation-submit.html"];
+  for (const page of pages) {
+    const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
+    const count = (html.match(/class="ocean-depth-layer"/g) || []).length;
+    assert.equal(count, 1, `${page} should include exactly one ocean-depth-layer element`);
+    assert.match(html, /ocean-depth-layer"\s+aria-hidden="true"/, `${page} must mark the decorative layer aria-hidden`);
+  }
+});
+
+test("no theme-preview infrastructure has crept back in", () => {
+  const offenders = [];
+  for (const page of htmlPages) {
+    const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
+    if (/data-theme-preview=/.test(html) || /themePreview/.test(html)) offenders.push(page);
+  }
+  const stray = ["theme-previews.css", "theme-preview.html"].filter(f =>
+    fs.existsSync(path.join(CSS_DIR, f)) || fs.existsSync(path.join(PUBLIC_DIR, f))
+  );
+  assert.deepEqual(offenders, [], "no page should reference the removed theme-preview mechanism");
+  assert.deepEqual(stray, [], "no theme-preview files should exist");
 });
 
 test("the light meal card keeps its own dark text after the theme change", () => {
