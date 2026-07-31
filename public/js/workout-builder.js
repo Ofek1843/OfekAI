@@ -70,7 +70,19 @@ const ui = isHebrew
       weeks: "שבועות",
 
       general: "כללי",
-      equipmentFallback: "ציוד"
+      equipmentFallback: "ציוד",
+
+      weeklyVolumeTitle: "נפח אימון שבועי לפי קבוצת שריר",
+      weeklyVolumeSubtitle:
+        "טווח מומלץ שבועי לפי הפרופיל שלך — לא יעד רפואי מדויק ואוניברסלי.",
+      weeklyVolumeSets: (count) => `${count} סטים שבועיים`,
+      weeklyVolumeRecommendedRange: (min, max) => `טווח מומלץ: ${min}–${max}`,
+      weeklyVolumeBelow: "מתחת לטווח",
+      weeklyVolumeInRange: "בטווח",
+      weeklyVolumeAbove: "מעל הטווח",
+      weeklyVolumeDetails: (direct, fractional) =>
+        `${direct} ישירים + ${fractional} עקיפים`,
+      weeklyVolumeUnmapped: "כמה תרגילים לא נכללו בחישוב (אין מיפוי שריר ידוע)."
     }
   : {
       pageTitle: "Workout Builder",
@@ -112,7 +124,19 @@ const ui = isHebrew
       weeks: "weeks",
 
       general: "General",
-      equipmentFallback: "Equipment"
+      equipmentFallback: "Equipment",
+
+      weeklyVolumeTitle: "Weekly Muscle Volume",
+      weeklyVolumeSubtitle:
+        "Recommended weekly range for your profile — not a universal or medically exact optimum.",
+      weeklyVolumeSets: (count) => `${count} weekly sets`,
+      weeklyVolumeRecommendedRange: (min, max) => `Recommended range: ${min}–${max}`,
+      weeklyVolumeBelow: "Below range",
+      weeklyVolumeInRange: "In range",
+      weeklyVolumeAbove: "Above range",
+      weeklyVolumeDetails: (direct, fractional) =>
+        `${direct} direct + ${fractional} indirect`,
+      weeklyVolumeUnmapped: "A few exercises were not included in this calculation (no known muscle mapping)."
     };
     function setText(selector, text) {
   const element = document.querySelector(selector);
@@ -548,11 +572,13 @@ if (data.program) {
         : createWeeklyScheduleDays(sessionCount)
   };
 
+  window.currentWeeklyVolume = data.weeklyVolume || null;
+
   trackEvent("workout_generated", {
     source: "ai_workout_builder"
   });
 
-  renderProgram(data.program);
+  renderProgram(data.program, data.weeklyVolume);
   return;
 }
     resultElement.innerHTML = `
@@ -673,6 +699,8 @@ const hebrewWorkoutTerms = {
   Chest: "חזה",
   Back: "גב",
   Shoulders: "כתפיים",
+  "Rear Delts": "כתפיים אחוריות",
+  Traps: "טרפז",
   Biceps: "יד קדמית",
   Triceps: "יד אחורית",
   Quads: "ארבע ראשי",
@@ -719,7 +747,102 @@ function translateWorkoutValue(value = "") {
 
   return translated;
 }
-function renderProgram(program) {
+// Maps the canonical setCredits muscle keys (lib/workout-setcredits-map.js)
+// to the English display label translateWorkoutValue()/hebrewWorkoutTerms
+// already know how to localize. Display-only: the muscle KEY used for
+// calculation always stays the canonical lowercase key from the server.
+const MUSCLE_DISPLAY_NAMES = {
+  chest: "Chest",
+  back: "Back",
+  delts: "Shoulders",
+  rear_delts: "Rear Delts",
+  biceps: "Biceps",
+  triceps: "Triceps",
+  quads: "Quads",
+  hamstrings: "Hamstrings",
+  glutes: "Glutes",
+  calves: "Calves",
+  core: "Core",
+  traps: "Traps"
+};
+
+// Whole numbers render without a decimal; a value only carrying fractional
+// (indirect) credit renders with exactly one decimal place, never more.
+function formatVolumeNumber(value) {
+  const rounded = Math.round((Number(value) || 0) * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function renderWeeklyVolumeSummary(weeklyVolume) {
+  const perMuscle = weeklyVolume?.perMuscle || {};
+  const muscles = Object.keys(perMuscle).filter((key) => MUSCLE_DISPLAY_NAMES[key]);
+
+  if (!muscles.length) return "";
+
+  const rows = muscles
+    .map((muscleKey) => {
+      const entry = perMuscle[muscleKey];
+      const range = entry.targetRange;
+      const total = Number(entry.total) || 0;
+      const direct = Number(entry.direct) || 0;
+      const fractional = Number(entry.fractional) || 0;
+
+      const statusLabel = {
+        below: ui.weeklyVolumeBelow,
+        "in-range": ui.weeklyVolumeInRange,
+        above: ui.weeklyVolumeAbove
+      }[entry.status] || "";
+      const statusClass = entry.status || "unknown";
+
+      // The range bar fills to `total`'s position between 0 and max(range.max,
+      // total) * 1.15 -- so an above-range value still visibly overflows the
+      // marked target band instead of clipping at 100%.
+      const barMax = range ? Math.max(range.max, total) * 1.15 : Math.max(total, 1) * 1.15;
+      const fillPercent = Math.min(100, Math.round((total / barMax) * 100));
+      const rangeStartPercent = range ? Math.round((range.min / barMax) * 100) : 0;
+      const rangeEndPercent = range ? Math.round((range.max / barMax) * 100) : 100;
+
+      return `
+        <div class="muscle-volume-row" data-status="${statusClass}">
+          <div class="muscle-volume-row-header">
+            <span class="muscle-volume-name">${escapeHtml(translateWorkoutValue(MUSCLE_DISPLAY_NAMES[muscleKey]))}</span>
+            <span class="muscle-volume-status muscle-volume-status--${statusClass}">${escapeHtml(statusLabel)}</span>
+          </div>
+          <div class="muscle-volume-numbers">
+            <strong>${escapeHtml(ui.weeklyVolumeSets(formatVolumeNumber(total)))}</strong>
+            ${range ? `<span class="muscle-volume-range">${escapeHtml(ui.weeklyVolumeRecommendedRange(range.min, range.max))}</span>` : ""}
+          </div>
+          <div class="muscle-volume-bar" title="${escapeHtml(ui.weeklyVolumeDetails(formatVolumeNumber(direct), formatVolumeNumber(fractional)))}">
+            ${range ? `<span class="muscle-volume-bar-target" style="left:${rangeStartPercent}%;width:${Math.max(0, rangeEndPercent - rangeStartPercent)}%"></span>` : ""}
+            <span class="muscle-volume-bar-fill" style="width:${fillPercent}%"></span>
+          </div>
+          <details class="muscle-volume-detail">
+            <summary>${escapeHtml(ui.weeklyVolumeDetails(formatVolumeNumber(direct), formatVolumeNumber(fractional)))}</summary>
+          </details>
+        </div>
+      `;
+    })
+    .join("");
+
+  const unmappedNotice = Number(weeklyVolume?.unknownExercises) > 0
+    ? `<p class="muscle-volume-unmapped-notice">${escapeHtml(ui.weeklyVolumeUnmapped)}</p>`
+    : "";
+
+  return `
+    <section class="weekly-volume-summary">
+      <header class="weekly-volume-header">
+        <h3>${escapeHtml(ui.weeklyVolumeTitle)}</h3>
+        <p>${escapeHtml(ui.weeklyVolumeSubtitle)}</p>
+      </header>
+      <div class="muscle-volume-grid">
+        ${rows}
+      </div>
+      ${unmappedNotice}
+    </section>
+  `;
+}
+
+function renderProgram(program, weeklyVolume) {
   const sessions = Array.isArray(program.sessions)
     ? program.sessions
     : [];
@@ -917,6 +1040,10 @@ function renderProgram(program) {
       <div class="program-days">
         ${sessionsHtml}
       </div>
+
+      <div id="weekly-volume-container">
+        ${renderWeeklyVolumeSummary(weeklyVolume)}
+      </div>
     </section>
   `;
 
@@ -1074,6 +1201,15 @@ try {
     } else if (note) {
       note.remove();
     }
+  }
+
+  // The reroll changed the program's exercise mix, so the previous Weekly
+  // Muscle Volume numbers are now stale — never leave the pre-reroll
+  // summary displayed next to a program that no longer matches it.
+  window.currentWeeklyVolume = data.weeklyVolume || null;
+  const volumeContainer = resultElement.querySelector("#weekly-volume-container");
+  if (volumeContainer) {
+    volumeContainer.innerHTML = renderWeeklyVolumeSummary(data.weeklyVolume);
   }
 }
 } finally {

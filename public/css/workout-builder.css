@@ -491,6 +491,125 @@ textarea:focus {
   gap: 26px;
 }
 
+.weekly-volume-summary {
+  margin-top: 30px;
+  padding: 22px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  background: rgba(15, 23, 39, 0.82);
+}
+.weekly-volume-header h3 {
+  margin: 0 0 6px;
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: #ffffff;
+}
+.weekly-volume-header p {
+  margin: 0 0 18px;
+  color: rgba(226, 232, 240, 0.68);
+  font-size: 13.5px;
+}
+.muscle-volume-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.muscle-volume-row {
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.muscle-volume-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.muscle-volume-name {
+  font-weight: 800;
+  color: #f1f5f9;
+  font-size: 14px;
+}
+.muscle-volume-status {
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.muscle-volume-status--below {
+  color: var(--fp-warning, #e1b75d);
+  background: var(--fp-warning-soft, rgba(225, 183, 93, 0.16));
+}
+.muscle-volume-status--in-range {
+  color: var(--fp-success, #55c98a);
+  background: var(--fp-success-soft, rgba(85, 201, 138, 0.16));
+}
+.muscle-volume-status--above {
+  color: var(--fp-danger, #ef6f7f);
+  background: var(--fp-danger-soft, rgba(239, 111, 127, 0.16));
+}
+.muscle-volume-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.muscle-volume-numbers strong {
+  font-size: 16px;
+  color: #ffffff;
+}
+.muscle-volume-range {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.6);
+}
+.muscle-volume-bar {
+  position: relative;
+  margin-top: 10px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.muscle-volume-bar-target {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+.muscle-volume-bar-fill {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #2f9bff, #35cfdf);
+}
+.muscle-volume-row[data-status="below"] .muscle-volume-bar-fill,
+.muscle-volume-row[data-status="above"] .muscle-volume-bar-fill {
+  background: linear-gradient(90deg, #e1b75d, #ef6f7f);
+}
+.muscle-volume-detail {
+  margin-top: 8px;
+}
+.muscle-volume-detail summary {
+  cursor: pointer;
+  font-size: 11.5px;
+  color: rgba(226, 232, 240, 0.55);
+}
+.muscle-volume-unmapped-notice {
+  margin: 16px 0 0;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.55);
+}
+@media (max-width: 640px) {
+  .muscle-volume-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .workout-day {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.09);

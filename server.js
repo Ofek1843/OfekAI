@@ -13,7 +13,8 @@ const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram } = require("./lib/workout-repair");
-const { translateValidationMessages } = require("./lib/workout-validation-i18n");
+const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
+const { allTargetRanges, volumeStatus } = require("./lib/workout-volume-targets");
 const {
   buildMealSlots,
   filterMeals,
@@ -2180,6 +2181,30 @@ ${repairPrompt}`
 
 const { sanitizeLanguageLeakage, findLanguageLeaks } = require("./lib/workout-language-sanitizer");
 
+// Merges calculateWeeklyVolume()'s per-muscle credited sets with this
+// profile's deterministic target range and below/in-range/above status (see
+// lib/workout-volume-targets.js). The single source of truth for both the
+// numbers (calculateWeeklyVolume) and the ranges (allTargetRanges) so the
+// Weekly Muscle Volume summary can never show a UI-only recomputation that
+// drifts from what generation/repair/validation actually used.
+function buildPerMuscleWithTargets(perMuscle, profile) {
+  const targets = allTargetRanges(profile);
+  const muscles = new Set([...Object.keys(perMuscle || {}), ...Object.keys(targets)]);
+  const merged = {};
+  for (const muscle of muscles) {
+    const volume = perMuscle?.[muscle] || { direct: 0, fractional: 0, total: 0 };
+    const targetRange = targets[muscle] || null;
+    merged[muscle] = {
+      direct: volume.direct,
+      fractional: volume.fractional,
+      total: volume.total,
+      targetRange,
+      status: volumeStatus(volume.total, targetRange)
+    };
+  }
+  return merged;
+}
+
 app.post("/api/workout-builder", async (req, res) => {
   let dedupeKey = null;
   try {
@@ -2261,21 +2286,15 @@ app.post("/api/workout-builder", async (req, res) => {
 const outputLanguage =
   language === "he" ? "Hebrew" : "English";
 
-    // Calisthenics style implies bodyweight training is available even if
-    // the user never checked the Bodyweight box — the wizard shows this as
-    // automatic (see public/js/workout-builder.js), and the server must
-    // honor the same rule for generation, repair and validation, or every
-    // bodyweight exercise the model correctly generates for this goal gets
-    // rejected as "unselected equipment".
-    const equipmentForGeneration = (() => {
-      const set = new Set(
-        (Array.isArray(equipment) ? equipment : [])
-          .map((item) => String(item || "").trim().toLowerCase())
-          .filter(Boolean)
-      );
-      if (String(trainingStyle).toLowerCase() === "calisthenics") set.add("bodyweight");
-      return [...set];
-    })();
+    // Single canonical source of truth for allowed equipment (see
+    // lib/workout-equipment-policy.js): only explicitly selected equipment
+    // for Gym/Hybrid, plus bodyweight added for Calisthenics (where it's
+    // intrinsic to the style). This exact result must be used for
+    // generation, repair, catalog substitution, reroll and validation.
+    const equipmentForGeneration = deriveAllowedEquipment({
+      trainingStyle,
+      selectedEquipment: equipment
+    }).allowed;
 
     const workoutResponse = await createChatCompletion({
       temperature: 0.3,
@@ -2499,7 +2518,11 @@ Injuries, limitations or special requests: ${String(limitations)}
     // existing rules wherever possible; it never loosens or skips a rule.
     let repairsAll = repairGeneratedWorkoutProgram(program, {
       sessionDuration: parsedDuration,
-      equipment: equipmentForGeneration
+      equipment: equipmentForGeneration,
+      experience,
+      priority: canonicalPriority,
+      daysPerWeek: parsedDays,
+      applyVolumeTargets: true
     }).repairs;
     if (repairsAll.length > 0) {
       console.info(`Workout repair applied for user ${user.uid}:`, repairsAll);
@@ -2540,7 +2563,11 @@ Injuries, limitations or special requests: ${String(limitations)}
           repairsAll = repairsAll.concat(
             repairGeneratedWorkoutProgram(program, {
               sessionDuration: parsedDuration,
-              equipment: equipmentForGeneration
+              equipment: equipmentForGeneration,
+              experience,
+              priority: canonicalPriority,
+              daysPerWeek: parsedDays,
+              applyVolumeTargets: true
             }).repairs
           );
 
@@ -2605,7 +2632,11 @@ Injuries, limitations or special requests: ${String(limitations)}
       success: true,
       program,
       weeklyVolume: {
-        perMuscle,
+        perMuscle: buildPerMuscleWithTargets(perMuscle, {
+          experience,
+          priority: canonicalPriority,
+          daysPerWeek: parsedDays
+        }),
         totalHardSets,
         mappedExercises,
         unknownExercises,
@@ -2614,6 +2645,7 @@ Injuries, limitations or special requests: ${String(limitations)}
       sessionDurations,
       validationSummary: {
         passed: validation.ok,
+        equipmentPassed: Boolean(validation.equipmentOk),
         errors: [],
         warnings: [...validation.warnings, ...volumeWarnings]
       }
@@ -2696,18 +2728,12 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
       });
     }
 
-    // Normalize equipment constraint for validation. Same implicit-bodyweight
-    // rule as /api/workout-builder: Calisthenics style makes bodyweight
-    // available even if it wasn't explicitly checked.
-    const selectedEquipment = (() => {
-      const set = new Set(
-        (Array.isArray(equipment) ? equipment : [])
-          .map((item) => String(item || "").trim().toLowerCase())
-          .filter(Boolean)
-      );
-      if (String(trainingStyle).toLowerCase() === "calisthenics") set.add("bodyweight");
-      return [...set];
-    })();
+    // Same canonical allowed-equipment derivation as /api/workout-builder
+    // (see lib/workout-equipment-policy.js) — must never diverge.
+    const selectedEquipment = deriveAllowedEquipment({
+      trainingStyle,
+      selectedEquipment: equipment
+    }).allowed;
     const canonicalPriority = priority || derivePriorityFromGoal(goal);
 
     const rerollPrompt = `
@@ -2800,6 +2826,10 @@ Required JSON format:
           .filter((_, index) => index !== exerciseIndex)
           .map((exercise) => exercise?.exerciseId)
           .filter(Boolean)
+        // applyVolumeTargets intentionally omitted: a single-exercise
+        // synthetic session has no meaningful "weekly volume" of its own.
+        // That repair pass runs where it belongs, against the full real
+        // program, in /api/workout-builder below.
       }
     );
     if (rerollRepairs.length > 0) {
@@ -2813,7 +2843,11 @@ Required JSON format:
     if (selectedEquipment.length > 0) {
       const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment).filter(Boolean));
       const newEquipNorm = normalizeEquipment(newExercise.equipment);
-      const isAllowed = newEquipNorm !== "" && (newEquipNorm === "bodyweight" || selectedNorm.has(newEquipNorm));
+      // No unconditional bodyweight exemption here either — selectedEquipment
+      // is already the final canonical allowed set from
+      // deriveAllowedEquipment(), which includes "bodyweight" itself when
+      // it's actually allowed (e.g. Calisthenics).
+      const isAllowed = newEquipNorm !== "" && selectedNorm.has(newEquipNorm);
 
       if (!isAllowed) {
         console.warn(
@@ -2838,13 +2872,15 @@ Required JSON format:
     });
 
     if (!programValidation.ok) {
+      // Raw validator lines are internal diagnostics (already logged
+      // server-side above) — never echoed to the client. See the same
+      // policy on /api/workout-builder's 422 response.
       console.warn(`Reroll validation failed:`, programValidation.errors);
       return res.status(422).json({
         success: false,
         error: language === "he"
           ? "התרגיל החלופי הופך את התוכנית ללא תקינה."
-          : "Replacement exercise makes the program invalid.",
-        details: translateValidationMessages(programValidation.errors.slice(0, 3), language)
+          : "Replacement exercise makes the program invalid."
       });
     }
 
@@ -2861,7 +2897,11 @@ Required JSON format:
       success: true,
       exercise: newExercise,
       weeklyVolume: {
-        perMuscle,
+        perMuscle: buildPerMuscleWithTargets(perMuscle, {
+          experience,
+          priority: canonicalPriority,
+          daysPerWeek: program.daysPerWeek || program.sessions.length
+        }),
         totalHardSets,
         mappedExercises,
         unknownExercises,
@@ -2870,6 +2910,7 @@ Required JSON format:
       sessionDurations,
       validationSummary: {
         passed: programValidation.ok,
+        equipmentPassed: Boolean(programValidation.equipmentOk),
         errors: [],
         warnings: [...programValidation.warnings, ...volumeWarnings]
       }
