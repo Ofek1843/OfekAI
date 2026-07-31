@@ -126,7 +126,7 @@ test("deterministic workout engine stays wired into both workout endpoints", () 
   assert.match(serverSource, /validateWorkoutProgram\(program, \{/);
   assert.match(
     serverSource,
-    /repairGeneratedWorkoutProgram\(program, \{\s*sessionDuration: parsedDuration,\s*equipment: equipmentForGeneration\s*\}\)/
+    /repairGeneratedWorkoutProgram\(program, \{\s*sessionDuration: parsedDuration,\s*equipment: equipmentForGeneration,/
   );
   assert.match(serverSource, /program\.weeklyScheduleDays = \[\]/);
 
