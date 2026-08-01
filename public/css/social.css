@@ -201,6 +201,10 @@ html[data-theme="light"] .message-bubble { background: #f4f9fd; } html[data-them
 .message-failed button { border: 0; color: inherit; background: transparent; text-decoration: underline; cursor: pointer; }
 .message-skeletons { display: grid; gap: 10px; }
 .message-skeletons span { width: 45%; height: 48px; border-radius: 16px; background: rgba(108,185,232,.08); animation: shimmer 1.5s linear infinite; }.message-skeletons span:nth-child(even) { margin-inline-start: auto; width: 56%; }
+.typing-indicator { min-height: 25px; margin: 0; padding: 0 22px 4px; color: var(--social-muted); font-size: 12px; }
+.typing-indicator span { display: inline-flex; gap: 3px; margin-inline-start: 4px; vertical-align: middle; }
+.typing-indicator i { width: 4px; height: 4px; border-radius: 50%; background: var(--social-cyan); animation: typing-dot 1.2s ease-in-out 999; }
+.typing-indicator i:nth-child(2) { animation-delay: .15s; }.typing-indicator i:nth-child(3) { animation-delay: .3s; }
 
 .artifact-card { width: min(100%, 520px); overflow: hidden; border: 1px solid rgba(94, 208, 236, .25); border-radius: 20px; background: linear-gradient(145deg, rgba(15, 40, 68, .96), rgba(9, 27, 47, .96)); box-shadow: 0 18px 48px rgba(0, 8, 24, .28); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
 html[data-theme="light"] .artifact-card { background: linear-gradient(145deg, #f9fcff, #edf7ff); }
@@ -247,6 +251,7 @@ html[data-theme="light"] .share-form select { background: #fff; }
 .mobile-only { display: none; }
 
 @keyframes shimmer { from { background-position: 180% 0; } to { background-position: -40% 0; } }
+@keyframes typing-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-3px); opacity: 1; } }
 @keyframes card-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes message-in { from { opacity: 0; transform: translateY(7px) scale(.985); } to { opacity: 1; transform: none; } }
 @keyframes send-pulse { 50% { transform: translate(4px, -4px) scale(.84); opacity: .55; } }

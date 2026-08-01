@@ -3,10 +3,13 @@ import { guardProtectedPage } from "./verification-gate.js";
 import { trackPageView } from "./analytics.js";
 import {
   collection,
+  doc,
+  getDoc,
   limit,
   onSnapshot,
   orderBy,
-  query
+  query,
+  where
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import {
   escapeHtml,
@@ -20,8 +23,8 @@ import {
 } from "./social-core.mjs";
 
 const $ = (selector) => document.querySelector(selector);
-const language = (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
-const ui = socialStrings(language);
+let language = "en";
+let ui = socialStrings(language);
 const state = {
   user: null,
   profile: null,
@@ -31,9 +34,15 @@ const state = {
   messages: [],
   nextCursor: null,
   unsubscribe: null,
+  subscriptions: [],
+  typingAbort: null,
+  typingActive: false,
+  typingStopTimer: null,
+  typingReader: null,
   shareType: null,
   shareSources: [],
   activeArtifact: null,
+  unsubscribeArtifact: null,
   copiedArtifacts: new Map(),
   failedMessages: new Map()
 };
@@ -64,7 +73,17 @@ function applyTranslations() {
   }
   $("#userSearchInput").placeholder = ui.searchPlaceholder;
   $("#messageInput").placeholder = ui.messagePlaceholder;
-  $("#languageButton").textContent = language === "he" ? "EN" : "HE";
+}
+
+async function loadSavedLanguage() {
+  const snapshot = await getDoc(doc(db, "users", state.user.uid, "settings", "main"));
+  const saved = snapshot.data()?.language;
+  language = saved === "he" || saved === "en" ? saved : "en";
+  localStorage.setItem("ofek-ai-language", language);
+  ui = socialStrings(language);
+  document.documentElement.lang = language;
+  document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+  applyTranslations();
 }
 
 function toast(message, isError = false) {
@@ -172,7 +191,48 @@ async function loadRelationships() {
 async function loadConversations() {
   const data = await api("/conversations");
   state.conversations = data.conversations || [];
+  if (state.activeConversation && !state.conversations.some((item) => item.id === state.activeConversation.id)) {
+    stopTypingChannel();
+    state.unsubscribe?.();
+    state.unsubscribe = null;
+    state.activeConversation = null;
+    $("#chatPanel").hidden = true;
+    $("#chatEmpty").hidden = false;
+  }
   renderConversations();
+}
+
+function stopRealtimeSubscriptions() {
+  for (const unsubscribe of state.subscriptions.splice(0)) unsubscribe?.();
+}
+
+function startRealtimeSubscriptions() {
+  stopRealtimeSubscriptions();
+  const uid = state.user.uid;
+  let relationshipRefresh = null;
+  const refreshRelationships = () => {
+    if (relationshipRefresh) return;
+    relationshipRefresh = setTimeout(async () => {
+      relationshipRefresh = null;
+      try { await loadRelationships(); } catch (error) { toast(error.message, true); }
+    }, 60);
+  };
+  const relationshipQueries = [
+    query(collection(db, "friendRequests"), where("toUid", "==", uid), where("status", "==", "pending"), limit(50)),
+    query(collection(db, "friendRequests"), where("fromUid", "==", uid), where("status", "==", "pending"), limit(50)),
+    query(collection(db, "friendships"), where("participants", "array-contains", uid), limit(100)),
+    query(collection(db, "users", uid, "blocks"), limit(100))
+  ];
+  for (const relationshipQuery of relationshipQueries) {
+    state.subscriptions.push(onSnapshot(relationshipQuery, refreshRelationships, (error) => {
+      console.warn("Social relationship listener unavailable", error?.code);
+      toast(error?.code === "failed-precondition" ? ui.liveChatIndex : ui.liveChatUnavailable, true);
+    }));
+  }
+  const summaryQuery = query(collection(db, "users", uid, "conversationSummaries"), orderBy("updatedAt", "desc"), limit(50));
+  state.subscriptions.push(onSnapshot(summaryQuery, async () => {
+    try { await loadConversations(); } catch (error) { toast(error.message, true); }
+  }, (error) => toast(error?.code === "failed-precondition" ? ui.liveChatIndex : ui.liveChatUnavailable, true)));
 }
 
 function setView(view) {
@@ -197,6 +257,7 @@ function artifactCard(message) {
 
 function renderMessages({ preserveScroll = false } = {}) {
   const scroller = $("#messageScroller");
+  const nearBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 140;
   const previousHeight = scroller.scrollHeight;
   $("#messageList").innerHTML = state.messages.map((message) => {
     const sent = message.senderUid === state.user.uid;
@@ -210,7 +271,68 @@ function renderMessages({ preserveScroll = false } = {}) {
   }).join("");
   $("#loadOlderButton").hidden = !state.nextCursor;
   if (preserveScroll) scroller.scrollTop += scroller.scrollHeight - previousHeight;
-  else requestAnimationFrame(() => { scroller.scrollTop = scroller.scrollHeight; });
+  else if (nearBottom || state.messages.length <= 1) requestAnimationFrame(() => { scroller.scrollTop = scroller.scrollHeight; });
+}
+
+function setTypingIndicator(typing, profile = state.activeConversation?.profile) {
+  const indicator = $("#typingIndicator");
+  if (!indicator) return;
+  indicator.hidden = !typing;
+  indicator.innerHTML = typing ? `${escapeHtml(profile?.displayName || profile?.username || "FuelPhysique member")} ${escapeHtml(ui.typing)} <span aria-hidden="true"><i></i><i></i><i></i></span>` : "";
+}
+
+function stopTypingChannel() {
+  if (state.typingStopTimer) clearTimeout(state.typingStopTimer);
+  state.typingStopTimer = null;
+  if (state.typingActive && state.activeConversation) {
+    api(`/conversations/${encodeURIComponent(state.activeConversation.id)}/typing`, { method: "POST", body: JSON.stringify({ typing: false }) }).catch(() => {});
+  }
+  state.typingActive = false;
+  state.typingAbort?.abort();
+  state.typingAbort = null;
+  state.typingReader = null;
+  setTypingIndicator(false);
+}
+
+function sendTypingState(typing) {
+  if (!state.activeConversation) return;
+  state.typingActive = typing;
+  api(`/conversations/${encodeURIComponent(state.activeConversation.id)}/typing`, { method: "POST", body: JSON.stringify({ typing }) }).catch(() => {});
+  if (state.typingStopTimer) clearTimeout(state.typingStopTimer);
+  if (typing) state.typingStopTimer = setTimeout(() => stopTypingChannel(), 2800);
+}
+
+async function startTypingChannel(conversationId) {
+  state.typingAbort?.abort();
+  const controller = new AbortController();
+  state.typingAbort = controller;
+  try {
+    const token = await state.user.getIdToken();
+    const response = await fetch(`/api/social/conversations/${encodeURIComponent(conversationId)}/typing/stream`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal
+    });
+    if (!response.ok || !response.body) return;
+    const reader = response.body.getReader();
+    state.typingReader = reader;
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (!controller.signal.aborted) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split("\n\n");
+      buffer = events.pop() || "";
+      for (const event of events) {
+        const line = event.split("\n").find((item) => item.startsWith("data: "));
+        if (!line) continue;
+        const payload = JSON.parse(line.slice(6));
+        if (payload.type === "typing" && payload.uid !== state.user.uid) setTypingIndicator(payload.typing);
+      }
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") console.warn("Typing channel unavailable", error?.message || error);
+  }
 }
 
 function subscribeToActiveConversation() {
@@ -225,6 +347,7 @@ function subscribeToActiveConversation() {
     state.messages = mergeMessages(state.messages.filter((message) => message.status === "failed"), incoming);
     renderMessages();
   }, (error) => {
+    console.warn("Social message listener unavailable", error?.code);
     const message = error?.code === "permission-denied" ? ui.liveChatPermission
       : error?.code === "failed-precondition" ? ui.liveChatIndex
       : ui.liveChatUnavailable;
@@ -233,6 +356,9 @@ function subscribeToActiveConversation() {
 }
 
 async function openConversation(conversationOrId) {
+  stopTypingChannel();
+  state.unsubscribe?.();
+  state.unsubscribe = null;
   setView("messages");
   let conversation = typeof conversationOrId === "string" ? state.conversations.find((item) => item.id === conversationOrId) : conversationOrId;
   if (!conversation) return;
@@ -255,6 +381,7 @@ async function openConversation(conversationOrId) {
     conversation.unreadCount = 0;
     renderConversations();
     subscribeToActiveConversation();
+    startTypingChannel(conversation.id);
   } catch (error) {
     toast(error.message, true);
   } finally {
@@ -330,6 +457,7 @@ async function sendMessage(event, retryText = null) {
   const input = $("#messageInput");
   const text = (retryText ?? input.value).trim();
   if (!text) return;
+  stopTypingChannel();
   const clientId = safeClientId();
   const optimisticId = `sending_${clientId}`;
   const optimistic = { id: optimisticId, senderUid: state.user.uid, type: "text", text, createdAt: new Date().toISOString(), status: "sending", clientId };
@@ -482,6 +610,8 @@ function simpleArtifactPreview(type, snapshot) {
 }
 
 async function previewArtifact(artifactId) {
+  state.unsubscribeArtifact?.();
+  state.unsubscribeArtifact = null;
   if (!history.state?.socialPreview) history.pushState({ socialPreview: artifactId }, "");
   $("#previewDialog").showModal();
   $("#previewTitle").textContent = ui.loading;
@@ -491,6 +621,13 @@ async function previewArtifact(artifactId) {
     const data = await api(`/artifacts/${encodeURIComponent(artifactId)}`);
     const artifact = data.artifact;
     state.activeArtifact = artifact;
+    state.unsubscribeArtifact = onSnapshot(doc(db, "sharedArtifacts", artifact.id), (snapshot) => {
+      if (snapshot.exists && snapshot.data()?.revokedAt) {
+        state.activeArtifact = { ...state.activeArtifact, unavailable: true };
+        $("#previewContent").innerHTML = `<div class="empty-state"><h3>${ui.unavailable}</h3></div>`;
+        $("#copyArtifactButton").hidden = true;
+      }
+    }, () => {});
     $("#previewType").textContent = shareTypeLabel(artifact.type).toUpperCase();
     $("#previewTitle").textContent = artifact.snapshot?.title || artifact.snapshot?.exerciseName || shareTypeLabel(artifact.type);
     $("#previewAttribution").textContent = `${ui.createdBy} @${artifact.snapshot?.creatorUsername || artifact.metadata?.creatorUsername || "FuelPhysique"}`;
@@ -567,6 +704,7 @@ async function saveIdentity(event) {
     $("#socialApp").hidden = false;
     renderIdentityCard();
     await Promise.all([loadRelationships(), loadConversations()]);
+    startRealtimeSubscriptions();
     toast(ui.usernameSaved);
   } catch (error) {
     $("#identityError").textContent = error.message;
@@ -590,7 +728,10 @@ function bindEvents() {
   $("#newConversationButton").addEventListener("click", () => { setView("friends"); $("#userSearchInput").focus(); });
   $("#chatFindFriendsButton").addEventListener("click", () => setView("friends"));
   $("#messageForm").addEventListener("submit", sendMessage);
-  $("#messageInput").addEventListener("input", updateComposer);
+  $("#messageInput").addEventListener("input", () => {
+    updateComposer();
+    sendTypingState(Boolean($("#messageInput").value.trim()));
+  });
   $("#messageInput").addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); sendMessage(event); }
   });
@@ -617,11 +758,10 @@ function bindEvents() {
   $("#closePreviewButton").addEventListener("click", () => history.state?.socialPreview ? history.back() : $("#previewDialog").close());
   $("#copyArtifactButton").addEventListener("click", () => copyArtifact());
   $("#mobileConversationBack").addEventListener("click", () => $("#socialApp").classList.add("show-conversations"));
-  $("#languageButton").addEventListener("click", () => { localStorage.setItem("ofek-ai-language", language === "he" ? "en" : "he"); location.reload(); });
   $("#chatFriendMenu").addEventListener("click", async () => {
     const targetUid = state.activeConversation?.profile?.uid;
     if (!targetUid || !window.confirm(language === "he" ? "לחסום את המשתמש?" : "Block this user and stop new messages?")) return;
-    try { await api("/blocks", { method: "POST", body: JSON.stringify({ targetUid }) }); state.activeConversation = null; $("#chatPanel").hidden = true; $("#chatEmpty").hidden = false; await Promise.all([loadRelationships(), loadConversations()]); }
+    try { stopTypingChannel(); await api("/blocks", { method: "POST", body: JSON.stringify({ targetUid }) }); state.activeConversation = null; $("#chatPanel").hidden = true; $("#chatEmpty").hidden = false; await Promise.all([loadRelationships(), loadConversations()]); }
     catch (error) { toast(error.message, true); }
   });
   window.addEventListener("popstate", () => {
@@ -632,6 +772,7 @@ function bindEvents() {
 async function initialize(currentUser) {
   state.user = currentUser;
   try {
+    await loadSavedLanguage();
     const data = await api("/identity");
     state.profile = data.profile;
     if (!state.profile) {
@@ -644,6 +785,7 @@ async function initialize(currentUser) {
     $("#socialApp").hidden = false;
     renderIdentityCard();
     await Promise.all([loadRelationships(), loadConversations()]);
+    startRealtimeSubscriptions();
     const params = new URLSearchParams(location.search);
     const shareType = params.get("share");
     if (shareType && state.conversations.length) await openShareDialog(shareType, params.get("sourceId") || "");
@@ -657,4 +799,8 @@ async function initialize(currentUser) {
 applyTranslations();
 bindEvents();
 guardProtectedPage({ onAuthenticated: initialize });
-window.addEventListener("beforeunload", () => state.unsubscribe?.());
+window.addEventListener("beforeunload", () => {
+  stopTypingChannel();
+  state.unsubscribe?.();
+  stopRealtimeSubscriptions();
+});

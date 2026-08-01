@@ -118,13 +118,14 @@ test("the resolution is case-insensitive but exact-match only -- no subdomain wi
   assert.equal(resolveAuthDomain("notfuelphysique.com"), CLIENT_FIREBASE_DOMAIN);
 });
 
-test("firebase-config.js resolves authDomain per-environment via the shared helper, apiKey/projectId/appId/storageBucket/messagingSenderId stay fixed", () => {
+test("firebase-config.js resolves authDomain per-environment and uses the demo project only for loopback emulators", () => {
   const source = fs.readFileSync(path.join(ROOT, "public", "js", "firebase-config.js"), "utf8");
   assert.match(source, /resolveAuthDomain\(window\.location\.hostname\)/);
   assert.match(source, /from\s*["']\.\/firebase-environment\.mjs["']/);
-  // Everything else must remain a plain literal, not environment-derived.
+  // Production identifiers remain fixed; loopback pages use the matching demo
+  // project so Firebase client listeners authenticate against local emulators.
   assert.match(source, /apiKey:\s*"AIzaSyB5EAK98RQP_LNd0fgj3UtCwE17lwXTADU"/);
-  assert.match(source, /projectId:\s*"ofek-ai-55f1d"/);
+  assert.match(source, /projectId:\s*localEmulatorMode\s*\?\s*"demo-fuelphysique"\s*:\s*"ofek-ai-55f1d"/);
   assert.match(source, /appId:\s*"1:644398760036:web:aa34bd6a283d686560df71"/);
   assert.match(source, /storageBucket:\s*"ofek-ai-55f1d\.firebasestorage\.app"/);
   assert.match(source, /messagingSenderId:\s*"644398760036"/);

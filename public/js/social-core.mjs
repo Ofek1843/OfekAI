@@ -1,5 +1,6 @@
 export const SOCIAL_STRINGS = {
   en: {
+    typing: "is typing…",
     friends: "Friends", messages: "Messages", dashboard: "Dashboard", identityEyebrow: "YOUR SOCIAL ID",
     identityTitle: "Choose your FuelPhysique username", identityText: "Friends will use this username to find you. Your email and private fitness data are never shown.",
     username: "Username", usernameHint: "3-20 letters, numbers, underscores or periods. No repeated periods.", discoverable: "Let friends find me by username", createProfile: "Create social profile",
@@ -17,6 +18,7 @@ export const SOCIAL_STRINGS = {
     copyAsIs: "Copy As-Is", copiedFrom: "Copied from", graphSummary: "Accessible graph summary", noData: "There is not enough data to share this graph yet."
   },
   he: {
+    typing: "מקליד…",
     friends: "חברים", messages: "הודעות", dashboard: "לוח הבקרה", identityEyebrow: "הזהות החברתית שלך",
     identityTitle: "בחרו שם משתמש ב־FuelPhysique", identityText: "חברים ימצאו אתכם בעזרת שם המשתמש. האימייל ונתוני הכושר הפרטיים לעולם אינם מוצגים.",
     username: "שם משתמש", usernameHint: "3–20 אותיות באנגלית, מספרים, קו תחתון או נקודה. ללא נקודות רצופות.", discoverable: "לאפשר לחברים למצוא אותי לפי שם משתמש", createProfile: "יצירת פרופיל חברתי",
@@ -63,7 +65,14 @@ export function formatMessageTime(value, language = "en") {
 
 export function mergeMessages(current = [], incoming = []) {
   const byId = new Map(current.map((message) => [message.id, message]));
-  for (const message of incoming) byId.set(message.id, { ...byId.get(message.id), ...message });
+  for (const message of incoming) {
+    if (message.clientId) {
+      for (const [id, existing] of byId) {
+        if (id !== message.id && existing.clientId === message.clientId && String(id).startsWith("sending_")) byId.delete(id);
+      }
+    }
+    byId.set(message.id, { ...byId.get(message.id), ...message });
+  }
   return [...byId.values()].sort((a, b) => timestampMs(a.createdAt) - timestampMs(b.createdAt));
 }
 

@@ -1,5 +1,15 @@
 require("dotenv").config();
 
+// Local demo mode is deliberately opt-in and server-controlled. When it is
+// enabled, make the emulator endpoints available before Firebase-dependent
+// modules are initialized. Production keeps its existing configuration.
+const localDemoMode = process.env.FUELPHYSIQUE_LOCAL_DEMO === "1";
+if (localDemoMode) {
+  process.env.FIREBASE_AUTH_EMULATOR_HOST ||= "127.0.0.1:9099";
+  process.env.FIRESTORE_EMULATOR_HOST ||= "127.0.0.1:8080";
+  process.env.FIREBASE_PROJECT_ID ||= "demo-fuelphysique";
+}
+
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -16,6 +26,8 @@ const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-ca
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
+const { buildLocalWorkoutProgram } = require("./lib/local-demo-generators");
+const socialTyping = require("./lib/social-typing");
 const {
   allTargetRanges,
   allVolumePolicies,
@@ -2423,7 +2435,7 @@ app.post("/api/workout-builder", async (req, res) => {
       });
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY && !localDemoMode) {
       return res.status(500).json({
         error: "OPENAI_API_KEY is missing"
       });
@@ -2442,7 +2454,20 @@ const outputLanguage =
       selectedEquipment: equipment
     }).allowed;
 
-    const workoutResponse = await createChatCompletion({
+    if (localDemoMode) {
+      console.info("[local-demo] deterministic workout generation", { uid: user.uid });
+    }
+    const workoutResponse = localDemoMode
+      ? JSON.stringify(buildLocalWorkoutProgram({
+        goal,
+        daysPerWeek: parsedDays,
+        sessionDuration: parsedDuration,
+        equipment: equipmentForGeneration,
+        trainingStyle,
+        limitations,
+        language
+      }))
+      : await createChatCompletion({
       temperature: 0.3,
       maxTokens: 3500,
       model: resolveWorkoutModel(),
@@ -3506,7 +3531,7 @@ const targetCarbs = Math.round(
       ? `YOUTH MODE IS ACTIVE. The user is ${parsedAge}. Support growth, development and training performance. Do not create a calorie deficit, aggressive bulk, rapid weight-change target, or adult bodybuilding diet. The calculated calories are an age-specific energy estimate, not a prescription. Use balanced meals and include adequate calcium, iron, essential fats, fruit, vegetables and varied carbohydrate sources. If the selected goal is loseFat, reinterpret it as healthy habits and weight maintenance; do not promise weight loss. Add a prominent note recommending review by a pediatric dietitian or physician for weight change, medical conditions, delayed growth, fatigue, menstrual changes or eating-disorder concerns.`
       : "Youth Mode is not active.";
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.OPENAI_API_KEY && !localDemoMode) {
       return res.status(500).json({
         error: "OPENAI_API_KEY is missing"
       });
@@ -3559,8 +3584,9 @@ const targetCarbs = Math.round(
       .map(([slotName, pool]) => `${slotName.toUpperCase()} options:\n${catalogForPrompt(pool, isHebrew)}`)
       .join("\n\n");
 
+    if (localDemoMode) console.info("[local-demo] deterministic nutrition generation", { uid: user.uid });
     console.time("Nutrition AI");
-    const nutritionResponse = await createChatCompletion({
+    const nutritionResponse = localDemoMode ? "" : await createChatCompletion({
       temperature: 0.2,
       maxTokens: 1200,
       messages: [
@@ -3641,6 +3667,19 @@ ${slots
     }
 
     const selectionByMealNumber = new Map();
+    if (localDemoMode) {
+      for (const slot of slots) {
+        const pool = slotPools.get(slot.slot) || [];
+        const slotTargetCalories = Math.round((targetCalories * slot.weight) / totalWeight);
+        selectionByMealNumber.set(slot.mealNumber, selectMeals({
+          pool,
+          slot: slot.slot,
+          targetCalories: slotTargetCalories,
+          count: 3,
+          preferNutrients
+        }));
+      }
+    }
     if (aiPlan && Array.isArray(aiPlan.selections)) {
       for (const entry of aiPlan.selections) {
         const mealNumber = Number(entry?.mealNumber);

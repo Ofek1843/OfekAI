@@ -19,7 +19,6 @@
         <button class="social-tab" type="button" data-view="messages" id="messagesTab">Messages <span id="unreadBadge" class="unread-badge" hidden>0</span></button>
       </nav>
       <div class="social-top-actions">
-        <button id="languageButton" class="icon-button" type="button" aria-label="Switch language">HE</button>
         <a id="dashboardLink" class="back-link" href="/dashboard.html">Dashboard</a>
       </div>
     </header>
@@ -116,6 +115,7 @@
             <div id="messageSkeletons" class="message-skeletons" hidden><span></span><span></span><span></span></div>
             <ol id="messageList" class="message-list" aria-live="polite"></ol>
           </div>
+          <p id="typingIndicator" class="typing-indicator" hidden role="status" aria-live="polite"></p>
           <form id="messageForm" class="composer">
             <button id="shareMenuButton" class="composer-tool" type="button" aria-label="Share with friend" aria-expanded="false">＋</button>
             <div id="shareMenu" class="share-menu" hidden>

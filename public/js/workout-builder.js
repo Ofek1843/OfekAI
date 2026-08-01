@@ -6,6 +6,7 @@ import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.m
 import { derivePriorityFromGoal } from "./workout-priority.js";
 import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
 import { guardProtectedPage } from "./verification-gate.js";
+import { builderErrorMessage } from "./builder-errors.mjs";
 
 // This builder has no data to load on page open (generation is entirely
 // user-interaction-driven via the Generate button, which reads
@@ -574,8 +575,14 @@ form.addEventListener("submit", async (event) => {
     const data = await response.json();
 
     if (!response.ok) {
+      const mappedMessage = builderErrorMessage({
+        status: response.status,
+        data,
+        language: currentLanguage,
+        fallback: isHebrew ? "לא ניתן היה ליצור את תוכנית האימון" : "Could not generate the workout program"
+      });
       const error = new Error(
-        data.error ||
+        mappedMessage || data.error ||
           (
             isHebrew
               ? "לא ניתן היה ליצור את תוכנית האימונים"

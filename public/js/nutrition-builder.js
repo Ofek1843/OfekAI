@@ -3,6 +3,7 @@ import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
+import { builderErrorMessage } from "./builder-errors.mjs";
 
 // Same reasoning as workout-builder.js: nothing here loads private data on
 // page open, but Generate and Save both call authenticated product
@@ -320,10 +321,15 @@ form.addEventListener("submit", async (event) => {
     });
 
     const data = await response.json();
-console.log(data);
     if (!response.ok) {
+      const mappedMessage = builderErrorMessage({
+        status: response.status,
+        data,
+        language: currentLanguage,
+        fallback: isHebrew ? "לא ניתן היה ליצור את תוכנית התזונה" : "Could not generate the nutrition plan"
+      });
       throw new Error(
-        data.error ||
+        mappedMessage || data.error ||
           (isHebrew
             ? "לא ניתן היה ליצור את תוכנית התזונה"
             : "Could not generate the nutrition plan")
