@@ -16,6 +16,9 @@ import {
 import {
  getIdToken, onAuthStateChanged, signOut }
  from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {
+  shouldBlockUnverifiedAccess, renderVerificationGate, removeVerificationGate
+} from "./verification-gate.js";
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 let activeNutritionPlanForQuickFood = null;
@@ -985,6 +988,16 @@ trackPageView({
 );
 onAuthStateChanged(auth, async user => {
   if (!user) return location.replace("/auth.html");
+
+  // Product policy: the dashboard exposes saved plans and progress, so it's
+  // blocked until the signed-in user's email is verified (Google accounts
+  // are always emailVerified === true, so this never blocks a Google user).
+  if (shouldBlockUnverifiedAccess(user)) {
+    renderVerificationGate(user);
+    return;
+  }
+  removeVerificationGate();
+
   try {
     await load(user);
   }

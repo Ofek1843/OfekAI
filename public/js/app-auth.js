@@ -10,6 +10,12 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
+import {
+  shouldBlockUnverifiedAccess,
+  renderVerificationGate,
+  removeVerificationGate
+} from "./verification-gate.js";
+
 document.body.style.visibility = "hidden";
 
 async function getVisibleUserName(user) {
@@ -173,6 +179,17 @@ onAuthStateChanged(
 
   return;
 }
+
+    // Product policy: sensitive/saved product features are blocked until
+    // the signed-in user's email is verified (Google accounts are always
+    // emailVerified === true, so this never blocks a Google user). See
+    // verification-gate.js for the shared gate implementation.
+    if (shouldBlockUnverifiedAccess(user)) {
+      renderVerificationGate(user);
+      document.body.style.visibility = "visible";
+      return;
+    }
+    removeVerificationGate();
 
     const visibleName =
       await getVisibleUserName(user);
