@@ -2309,6 +2309,32 @@ function volumeFailureMessage(cause, language) {
     : "We couldn't finish balancing this program. Please try generating it again.";
 }
 
+function workoutValidationFailureMessage(validation, language) {
+  const errors = Array.isArray(validation?.errors) ? validation.errors : [];
+  const hasEmptySession = errors.some((error) => /no exercises array|no exercises/i.test(String(error)));
+  const hasDuplicateExercise = errors.some((error) => /duplicate|more than once/i.test(String(error)));
+  const hasDurationOverflow = errors.some((error) => /exceeds .* limit/i.test(String(error)));
+  const hasScheduleIssue = errors.some((error) => /scheduled|training days/i.test(String(error)));
+  const hasEquipmentIssue = validation?.equipmentOk === false ||
+    errors.some((error) => /equipment|not selected|recognizable equipment/i.test(String(error)));
+
+  if (language === "he") {
+    if (hasEquipmentIssue) return "הציוד שנבחר אינו מספיק לתרגילים הזמינים. הוסיפו ציוד תואם או שנו את סגנון האימון.";
+    if (hasEmptySession) return "לא הצלחנו ליצור תרגילים שימושיים לכל אחד מימי האימון שנבחרו. נסו להרחיב את הציוד או לבחור פחות ימי אימון.";
+    if (hasDurationOverflow) return "התוכנית שנוצרה ארוכה מדי עבור משך האימון שנבחר. נסו להגדיל את משך האימון או לבחור פחות תרגילים.";
+    if (hasScheduleIssue) return "לא הצלחנו להתאים את האימונים לימי הזמינות שנבחרו. בדקו את ימי האימון ונסו שוב.";
+    if (hasDuplicateExercise) return "התוכנית שנוצרה כוללת תרגיל כפול באותו אימון. נסו ליצור את התוכנית שוב.";
+    return "לא הצלחנו ליצור תוכנית אימונים תקינה מהבחירות שנבחרו. נסו שוב.";
+  }
+
+  if (hasEquipmentIssue) return "The selected equipment does not provide a valid exercise for every required session. Add compatible equipment or change the training style.";
+  if (hasEmptySession) return "We couldn't create usable exercises for every selected training day. Try widening the equipment or choosing fewer training days.";
+  if (hasDurationOverflow) return "The generated plan is too long for the selected session duration. Increase the duration or choose fewer exercises.";
+  if (hasScheduleIssue) return "We couldn't fit the plan into the selected available days. Check the schedule and try again.";
+  if (hasDuplicateExercise) return "The generated plan contains a duplicate exercise in one session. Please try generating it again.";
+  return "We couldn't put together a valid workout program with the selected preferences. Please try again.";
+}
+
 // Five-state DISPLAY status for a required muscle (see
 // lib/workout-volume-targets.js's detailedVolumeStatus): a value sitting at
 // its bare minimumEffective is a genuinely different quality outcome than
@@ -2455,6 +2481,16 @@ const outputLanguage =
     }).allowed;
 
     if (localDemoMode) {
+      console.info("[local-demo] workout request normalized", {
+        uid: user.uid,
+        goal: String(goal),
+        experience: String(experience),
+        trainingStyle: String(trainingStyle),
+        equipment: equipmentForGeneration,
+        daysPerWeek: parsedDays,
+        sessionDuration: parsedDuration,
+        availableDays: availableDayIndexes
+      });
       console.info("[local-demo] deterministic workout generation", { uid: user.uid });
     }
     const workoutResponse = localDemoMode
@@ -2693,10 +2729,20 @@ Injuries, limitations or special requests: ${String(limitations)}
       experience,
       priority: canonicalPriority,
       daysPerWeek: parsedDays,
-      applyVolumeTargets: true
+      applyVolumeTargets: !localDemoMode
     }).repairs;
     if (repairsAll.length > 0) {
       console.info(`Workout repair applied for user ${user.uid}:`, repairsAll);
+    }
+
+    if (localDemoMode) {
+      console.info("[local-demo] workout candidate", {
+        uid: user.uid,
+        sessions: program.sessions.length,
+        exercisesPerSession: program.sessions.map((session) => session.exercises.length),
+        equipment: [...new Set(program.sessions.flatMap((session) =>
+          session.exercises.map((exercise) => normalizeEquipment(exercise.equipment))))]
+      });
     }
 
     let validation = validateWorkoutProgram(program, {
@@ -2707,8 +2753,18 @@ Injuries, limitations or special requests: ${String(limitations)}
       goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
     });
 
-    if (!validation.ok) {
+    if (!validation.ok && !localDemoMode) {
       console.warn(`Workout validation failed for user ${user.uid} (after deterministic repair):`, validation.errors);
+    }
+
+    if (localDemoMode) {
+      console.info("[local-demo] workout validation", {
+        uid: user.uid,
+        ok: validation.ok,
+        equipmentOk: validation.equipmentOk,
+        errorCount: validation.errors.length,
+        warningCount: validation.warnings.length
+      });
     }
 
     // The deterministic repair above only substitutes exercises the catalog
@@ -2716,7 +2772,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     // overshoot caused by content it can't safely trim further. If the
     // program is still invalid, give the model one corrective pass with the
     // exact validator errors before giving up — this is the only retry.
-    if (!validation.ok) {
+    if (!validation.ok && !localDemoMode) {
       try {
         const correctedProgram = await repairWorkoutProgramWithAi({
           program,
@@ -2799,7 +2855,7 @@ Injuries, limitations or special requests: ${String(limitations)}
         success: false,
         error: language === "he"
           ? "לא הצלחנו להרכיב תוכנית אימונים תקינה עם הציוד שנבחר. נסה שוב, או הרחב את הציוד הזמין."
-          : "We couldn't put together a valid workout program with the selected equipment. Please try again, or widen your available equipment."
+          : workoutValidationFailureMessage(validation, language)
       });
     }
 
@@ -2815,6 +2871,16 @@ Injuries, limitations or special requests: ${String(limitations)}
     const mappingComplete = mappingCoveragePercent === 100 && unknownExercises === 0;
     const outOfRangeRequired = requiredMusclesOutOfRange(perMuscle, volumeProfile);
     const volumePassed = mappingComplete && outOfRangeRequired.length === 0;
+
+    if (localDemoMode) {
+      console.info("[local-demo] workout volume", {
+        uid: user.uid,
+        mappingCoveragePercent,
+        unknownExercises,
+        outOfRangeRequired: outOfRangeRequired.map((entry) => entry.muscle),
+        passed: volumePassed
+      });
+    }
 
     if (!volumePassed) {
       // Diagnose WHY before choosing the user-facing message: check the
@@ -3671,10 +3737,15 @@ ${slots
       for (const slot of slots) {
         const pool = slotPools.get(slot.slot) || [];
         const slotTargetCalories = Math.round((targetCalories * slot.weight) / totalWeight);
+        const macroScale = slotTargetCalories / Math.max(1, targetCalories);
         selectionByMealNumber.set(slot.mealNumber, selectMeals({
           pool,
           slot: slot.slot,
           targetCalories: slotTargetCalories,
+          targetProteinGrams: targetProtein * macroScale,
+          targetCarbsGrams: targetCarbs * macroScale,
+          targetFatGrams: targetFat * macroScale,
+          macroAware: true,
           count: 3,
           preferNutrients
         }));
@@ -3706,10 +3777,15 @@ ${slots
       }
 
       if (validIds.length < 3) {
+        const macroScale = slotTargetCalories / Math.max(1, targetCalories);
         const fallbackIds = selectMeals({
           pool,
           slot: slot.slot,
           targetCalories: slotTargetCalories,
+          targetProteinGrams: targetProtein * macroScale,
+          targetCarbsGrams: targetCarbs * macroScale,
+          targetFatGrams: targetFat * macroScale,
+          macroAware: localDemoMode,
           count: 3 - validIds.length,
           exclude: [...validIds, ...usedMealIds],
           preferNutrients
