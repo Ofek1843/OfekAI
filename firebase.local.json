@@ -1,0 +1,17 @@
+{
+  "firestore": {
+    "rules": "docs/social/firestore-rules-merged-candidate.txt",
+    "indexes": "docs/social/firestore-indexes-merged-candidate.json"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": false
+    }
+  }
+}
