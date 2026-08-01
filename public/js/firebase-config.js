@@ -1,10 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
 import {
+  connectAuthEmulator,
   getAuth
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
+  connectFirestoreEmulator,
   getFirestore
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
@@ -35,5 +37,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Loopback pages are never production pages, so all local navigation stays on
+// the emulators even when a protected-page redirect drops the query string.
+const localEmulatorMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+if (localEmulatorMode) {
+  connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
+  connectFirestoreEmulator(db, "127.0.0.1", 8080);
+}
 
 export { auth, db, storage };

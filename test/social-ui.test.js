@@ -54,6 +54,12 @@ test("English and Hebrew social tables have matching keys", async () => {
   assert.match(SOCIAL_STRINGS.he.friends, /[\u0590-\u05ff]/);
 });
 
+test("locale switching preserves the messages unread badge", () => {
+  assert.doesNotMatch(JS, /messagesTab:\s*"messages"/);
+  assert.match(JS, /messagesTab\.firstChild\?\.nodeType === 3/);
+  assert.match(HTML, /id="unreadBadge"/);
+});
+
 test("RTL, mixed-direction text and accessible focus are explicit", () => {
   assert.match(JS, /document\.documentElement\.dir = language === "he" \? "rtl" : "ltr"/);
   assert.match(CSS, /unicode-bidi:\s*plaintext/);

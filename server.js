@@ -541,7 +541,12 @@ async function requireFirebaseUser(req, res) {
   }
 
   try {
-    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_WEB_API_KEY}`, {
+    const emulatorHost = String(process.env.FIREBASE_AUTH_EMULATOR_HOST || "").trim().replace(/^https?:\/\//i, "");
+    const emulatorEnabled = /^(127\.0\.0\.1|localhost)(:\d+)?$/i.test(emulatorHost);
+    const lookupBase = emulatorEnabled
+      ? `http://${emulatorHost}/identitytoolkit.googleapis.com/v1/accounts:lookup`
+      : "https://identitytoolkit.googleapis.com/v1/accounts:lookup";
+    const response = await fetch(`${lookupBase}?key=${FIREBASE_WEB_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ idToken: token })

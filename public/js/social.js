@@ -44,7 +44,7 @@ trackPageView({ page: "social" });
 
 function applyTranslations() {
   const labels = {
-    friendsTab: "friends", messagesTab: "messages", dashboardLink: "dashboard", identityEyebrow: "identityEyebrow",
+    friendsTab: "friends", dashboardLink: "dashboard", identityEyebrow: "identityEyebrow",
     identityTitle: "identityTitle", identityText: "identityText", usernameLabel: "username", usernameHint: "usernameHint",
     discoverableLabel: "discoverable", saveUsernameButton: "createProfile", inboxEyebrow: "private", inboxTitle: "messages",
     friendsEyebrow: "circle", friendsTitle: "friends", friendsIntro: "friendsIntro", searchButton: "search",
@@ -57,6 +57,11 @@ function applyTranslations() {
     privacyTrend: "privacyTrend", privacyExact: "privacyExact", confirmShareButton: "shareWithFriend"
   };
   for (const [id, key] of Object.entries(labels)) if ($(`#${id}`)) $(`#${id}`).textContent = ui[key];
+  const messagesTab = $("#messagesTab");
+  const unreadBadge = $("#unreadBadge");
+  if (messagesTab && unreadBadge && messagesTab.firstChild?.nodeType === 3) {
+    messagesTab.firstChild.nodeValue = `${ui.messages} `;
+  }
   $("#userSearchInput").placeholder = ui.searchPlaceholder;
   $("#messageInput").placeholder = ui.messagePlaceholder;
   $("#languageButton").textContent = language === "he" ? "EN" : "HE";

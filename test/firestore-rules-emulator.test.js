@@ -87,7 +87,7 @@ async function seed() {
     batch.set(doc(db, "usernames/alice"), { uid: "alice", usernameLower: "alice" });
     batch.set(doc(db, "friendRequests/alice_bob"), { fromUid: "alice", toUid: "bob", status: "pending" });
     batch.set(doc(db, "friendships/alice_bob"), { participants: ["alice", "bob"], status: "accepted" });
-    batch.set(doc(db, "users/alice/blocks/bob"), { blockedUid: "bob" });
+    batch.delete(doc(db, "users/alice/blocks/bob"));
     batch.set(doc(db, "users/alice/conversationSummaries/alice_bob"), { conversationId: "alice_bob", updatedAt: 1 });
     batch.set(doc(db, "users/alice/sharedImports/artifact-active"), { artifactId: "artifact-active", copyId: "copy-a" });
     batch.set(doc(db, "conversations/alice_bob"), {
@@ -195,6 +195,11 @@ test("social conversation reads require accepted friendship and reciprocal block
     type: "text", text: "forged", senderUid: "bob", schemaVersion: 1, createdAt: 1
   }));
   await assertFails(updateDoc(doc(a, "conversations/alice_bob"), { participants: ["alice", "carol"] }));
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "users/alice/blocks/bob"), { blockedUid: "bob" });
+  });
+  await assertFails(getDoc(doc(a, "conversations/alice_bob")));
+  await assertFails(getDoc(doc(b, "conversations/alice_bob")));
   await assertFails(setDoc(doc(a, "users/alice/blocks/carol"), { blockedUid: "carol" }));
 
   await testEnv.withSecurityRulesDisabled(async (context) => {
