@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
+const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
 const payPlusBilling = require("./lib/payplus-billing");
 const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
@@ -111,6 +112,12 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Registered BEFORE the body parsers below: http-proxy-middleware forwards
+// the original request stream to Firebase's OAuth helper, and a POST body
+// already consumed by express.json()/urlencoded() would never reach it.
+// See lib/auth-proxy.js for what this proxies and why.
+app.use(AUTH_PROXY_PATH, createAuthProxy());
 
 app.use(express.json({ limit: "512kb" }));
 app.use(express.urlencoded({ extended: false, limit: "64kb" }));

@@ -12,9 +12,17 @@ import {
   getStorage
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 
+import { resolveAuthDomain } from "./firebase-environment.mjs";
+
+// apiKey/projectId/appId/storageBucket/messagingSenderId/measurementId are
+// NOT environment-dependent and must never change here -- only authDomain
+// varies, and only because Google's OAuth consent screen displays it
+// verbatim ("Continue to {authDomain}"). See firebase-environment.mjs for
+// why production uses fuelphysique.com (via the /__/auth/* reverse proxy in
+// server.js) while every other hostname uses the Firebase project domain.
 const firebaseConfig = {
   apiKey: "AIzaSyB5EAK98RQP_LNd0fgj3UtCwE17lwXTADU",
-  authDomain: "ofek-ai-55f1d.firebaseapp.com",
+  authDomain: resolveAuthDomain(window.location.hostname),
   projectId: "ofek-ai-55f1d",
   storageBucket: "ofek-ai-55f1d.firebasestorage.app",
   messagingSenderId: "644398760036",
