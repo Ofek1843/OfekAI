@@ -167,25 +167,17 @@ test("no user at all is never treated as 'blocked' — that state means signed o
   assert.equal(shouldBlockUnverifiedAccess(undefined), false);
 });
 
-test("both app.html and dashboard.html enforce the gate before rendering saved content", () => {
-  assert.match(APP_AUTH_JS, /shouldBlockUnverifiedAccess\(user\)/);
-  assert.match(APP_AUTH_JS, /renderVerificationGate\(user\)/);
-  assert.match(DASHBOARD_JS, /shouldBlockUnverifiedAccess\(user\)/);
-  assert.match(DASHBOARD_JS, /renderVerificationGate\(user\)/);
-
-  // The gate must run BEFORE the page loads its saved data.
-  const dashboardGuardStart = DASHBOARD_JS.indexOf("onAuthStateChanged(auth, async user =>");
-  assert.ok(dashboardGuardStart !== -1, "expected the dashboard auth guard");
-  const dashboardGuard = DASHBOARD_JS.slice(dashboardGuardStart);
-  const gateIndex = dashboardGuard.indexOf("shouldBlockUnverifiedAccess");
-  const loadIndex = dashboardGuard.indexOf("await load(user)");
-  assert.ok(gateIndex !== -1 && loadIndex !== -1 && gateIndex < loadIndex, "the gate check must run before saved data loads");
-
-  const appAuthGuard = APP_AUTH_JS.match(/onAuthStateChanged\(\s*auth,[\s\S]*?\n\);/);
-  assert.ok(appAuthGuard);
-  const appGateIndex = appAuthGuard[0].indexOf("shouldBlockUnverifiedAccess");
-  const appControlsIndex = appAuthGuard[0].indexOf("createUserControls");
-  assert.ok(appGateIndex !== -1 && appControlsIndex !== -1 && appGateIndex < appControlsIndex);
+test("both app.html and dashboard.html enforce the gate before rendering saved content, via the shared guardProtectedPage", () => {
+  // Superseded by the centralization task: both pages now delegate the
+  // gate decision entirely to verification-gate.js's guardProtectedPage
+  // rather than each importing shouldBlockUnverifiedAccess/
+  // renderVerificationGate directly — see
+  // test/verification-gate-coverage.test.js for the full centralization
+  // regression suite (every protected page, ordering, direct-URL bypass).
+  assert.match(APP_AUTH_JS, /guardProtectedPage\(/);
+  assert.match(DASHBOARD_JS, /guardProtectedPage\(/);
+  assert.doesNotMatch(APP_AUTH_JS, /shouldBlockUnverifiedAccess|renderVerificationGate|removeVerificationGate/, "app-auth.js must not duplicate the gate implementation");
+  assert.doesNotMatch(DASHBOARD_JS, /shouldBlockUnverifiedAccess|renderVerificationGate|removeVerificationGate/, "dashboard.js must not duplicate the gate implementation");
 });
 
 test("the gate never sends a verification email automatically — only an explicit resend click does", () => {
@@ -203,8 +195,9 @@ test("the gate never sends a verification email automatically — only an explic
 });
 
 test("verified users never see the gate — it's removed, not merely hidden", () => {
-  assert.match(APP_AUTH_JS, /removeVerificationGate\(\)/);
-  assert.match(DASHBOARD_JS, /removeVerificationGate\(\)/);
+  const guardFn = GATE_JS.match(/export function guardProtectedPage\([\s\S]*?\n\}/);
+  assert.ok(guardFn, "expected a guardProtectedPage function");
+  assert.match(guardFn[0], /removeVerificationGate\(\)/);
   const removeFn = GATE_JS.match(/export function removeVerificationGate\([\s\S]*?\n\}/);
   assert.match(removeFn[0], /\.remove\(\)/, "the gate element must be removed from the DOM, not just hidden");
 });
