@@ -1,0 +1,175 @@
+// DO NOT DEPLOY UNTIL MERGED WITH THE COMPLETE CURRENT PRODUCTION RULESET.
+//
+// This is an isolated social-only design fragment. It is NOT a complete
+// firestore.rules file, intentionally omits every existing non-social path,
+// and has not been compared with the rules currently published in Firebase.
+// FuelPhysique's Render server uses Firebase Admin for trusted social writes;
+// Admin writes bypass Firestore rules. These rules are defense-in-depth for
+// client reads and reject client mutation for server-owned collections.
+//
+// Before any deployment: export the complete live rules, preserve an untouched
+// dated backup, add regression tests for every existing collection, merge this
+// fragment by hand, run Emulator tests, review the diff, and obtain explicit
+// deployment approval. Never replace live rules with this file.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function participantsAreImmutable() {
+      return request.resource.data.participants == resource.data.participants
+        && request.resource.data.participantKey == resource.data.participantKey;
+    }
+
+    function isConversationParticipant(conversationId) {
+      return signedIn()
+        && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+    }
+
+    function otherParticipant(conversationId) {
+      let participants = get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+      return participants[0] == request.auth.uid ? participants[1] : participants[0];
+    }
+
+    function friendshipKey(firstUid, secondUid) {
+      // Production route IDs are canonical, URL-encoded pair keys. Firestore
+      // Rules cannot sort arbitrary strings, so direct-client social writes
+      // remain denied; accepted-friend validation uses conversation key.
+      return get(/databases/$(database)/documents/conversations/$(firstUid)).data.participantKey;
+    }
+
+    function acceptedFriends(conversationId) {
+      return isConversationParticipant(conversationId)
+        && exists(/databases/$(database)/documents/friendships/$(conversationId))
+        && get(/databases/$(database)/documents/friendships/$(conversationId)).data.status == 'accepted';
+    }
+
+    function notBlocked(conversationId) {
+      let otherUid = otherParticipant(conversationId);
+      return !exists(/databases/$(database)/documents/users/$(request.auth.uid)/blocks/$(otherUid))
+        && !exists(/databases/$(database)/documents/users/$(otherUid)/blocks/$(request.auth.uid));
+    }
+
+    function validMessageFields() {
+      return request.resource.data.keys().hasOnly([
+          'type', 'text', 'senderUid', 'schemaVersion', 'createdAt',
+          'artifactId', 'artifactType', 'artifactTitle', 'deletedAt', 'deletedBy'
+        ])
+        && request.resource.data.senderUid == request.auth.uid
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.type in ['text', 'artifact']
+        && (request.resource.data.type != 'text'
+          || (request.resource.data.text is string
+            && request.resource.data.text.size() > 0
+            && request.resource.data.text.size() <= 2000));
+    }
+
+    function validArtifactFields() {
+      return request.resource.data.keys().hasOnly([
+          'ownerUid', 'recipientIds', 'conversationId', 'type', 'schemaVersion',
+          'sourceId', 'snapshot', 'metadata', 'createdAt', 'revokedAt', 'revokedBy'
+        ])
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.recipientIds is list
+        && request.resource.data.recipientIds.size() == 1
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.type in [
+          'workout', 'nutrition', 'personal_record', 'progress_graph',
+          'weight_progress', 'completed_workout'
+        ];
+    }
+
+    // Username lookup is served through a rate-limited authenticated route.
+    // No client may reserve, rename, enumerate, or delete directory entries.
+    match /usernames/{usernameKey} {
+      allow read, write: if false;
+    }
+
+    // Minimal social projection; root users/{uid} remains private and is not
+    // made socially readable by this fragment.
+    match /socialProfiles/{uid} {
+      allow get: if isSelf(uid) || (signedIn() && resource.data.discoverable == true);
+      allow list, create, update, delete: if false;
+    }
+
+    match /friendRequests/{requestId} {
+      allow get, list: if signedIn()
+        && (resource.data.fromUid == request.auth.uid || resource.data.toUid == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    match /friendships/{friendshipId} {
+      allow get, list: if signedIn() && request.auth.uid in resource.data.participants;
+      allow create, update, delete: if false;
+    }
+
+    match /users/{uid}/blocks/{blockedUid} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
+    match /users/{uid}/conversationSummaries/{conversationId} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
+    match /conversations/{conversationId} {
+      allow get: if isConversationParticipant(conversationId);
+      allow list: if signedIn() && request.auth.uid in resource.data.participants;
+      allow create, delete: if false;
+      allow update: if false && participantsAreImmutable();
+
+      match /messages/{messageId} {
+        allow get, list: if acceptedFriends(conversationId) && notBlocked(conversationId);
+        // Trusted Render routes derive senderUid from the verified ID token,
+        // enforce idempotency and limits, and perform all message writes.
+        allow create: if false && acceptedFriends(conversationId) && notBlocked(conversationId) && validMessageFields();
+        allow update: if false
+          && acceptedFriends(conversationId)
+          && resource.data.senderUid == request.auth.uid
+          && request.resource.data.senderUid == resource.data.senderUid;
+        allow delete: if false;
+      }
+    }
+
+    match /sharedArtifacts/{artifactId} {
+      allow get: if signedIn()
+        && (resource.data.ownerUid == request.auth.uid || request.auth.uid in resource.data.recipientIds);
+      allow list: if false;
+      allow create: if false && validArtifactFields();
+      allow update: if false
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.recipientIds == resource.data.recipientIds
+        && request.resource.data.conversationId == resource.data.conversationId
+        && request.resource.data.type == resource.data.type
+        && request.resource.data.schemaVersion == resource.data.schemaVersion
+        && request.resource.data.snapshot == resource.data.snapshot
+        && request.resource.data.revokedAt != null;
+      allow delete: if false;
+    }
+
+    match /users/{uid}/sharedImports/{artifactId} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
+    // MERGE NOTE: the complete live users/{uid}/workoutPlans and
+    // users/{uid}/nutritionPlans rules must continue to require uid ownership.
+    // Imported documents carry sourceType='shared-copy' and are created only
+    // by the trusted server. This fragment intentionally does not redefine
+    // those production paths.
+    //
+    // Firestore Rules cannot measure serialized document bytes. The trusted
+    // route enforces 64 KiB workout, 96 KiB nutrition, 16 KiB record/graph and
+    // 24 KiB completed-workout caps before writing. Rules above additionally
+    // cap text and array/card structure where expressible.
+  }
+}

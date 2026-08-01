@@ -1,0 +1,27 @@
+{
+  "warning": "DRAFT ONLY - compare with the complete live index list before creating or deploying anything.",
+  "indexes": [
+    {
+      "collectionGroup": "friendRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "toUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "friendRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "fromUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "singleFieldQueries": [
+    "usernames document ID prefix, limited to 10",
+    "friendships participants array-contains, limited to 100",
+    "conversationSummaries updatedAt descending, limited to 50",
+    "messages createdAt descending, paged 25 at a time"
+  ]
+}
