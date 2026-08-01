@@ -6,6 +6,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
+const { createSocialRouter } = require("./lib/social-router");
 const payPlusBilling = require("./lib/payplus-billing");
 const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
@@ -75,7 +76,11 @@ const rateLimiters = {
   uploads: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOADS_PER_UID_PER_MINUTE || 8), keyPrefix: "upload" }),
   auth: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOAD_AUTH_PER_UID_PER_MINUTE || 10), keyPrefix: "upload-auth" }),
   analytics: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ANALYTICS_PER_IP_PER_MINUTE || 180), keyPrefix: "analytics" }),
-  feedback: createRateLimiter({ windowMs: 60_000, max: Number(process.env.FEEDBACK_PER_IP_PER_MINUTE || 6), keyPrefix: "feedback" })
+  feedback: createRateLimiter({ windowMs: 60_000, max: Number(process.env.FEEDBACK_PER_IP_PER_MINUTE || 6), keyPrefix: "feedback" }),
+  socialSearch: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_SEARCHES_PER_UID_PER_MINUTE || 20), keyPrefix: "social-search" }),
+  socialRelationships: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_RELATIONSHIPS_PER_UID_PER_MINUTE || 12), keyPrefix: "social-relationship" }),
+  socialMessages: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_MESSAGES_PER_UID_PER_MINUTE || 30), keyPrefix: "social-message" }),
+  socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
 const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
@@ -552,6 +557,16 @@ async function requireFirebaseUser(req, res) {
     return null;
   }
 }
+
+app.use("/api/social", createSocialRouter({
+  authenticate: requireFirebaseUser,
+  rateLimiters: {
+    search: rateLimiters.socialSearch,
+    relationships: rateLimiters.socialRelationships,
+    messages: rateLimiters.socialMessages,
+    artifacts: rateLimiters.socialArtifacts
+  }
+}));
 
 app.get("/api/imagekit/upload-auth", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
