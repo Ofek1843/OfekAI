@@ -77,6 +77,7 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const BUILD_ID = String(process.env.RENDER_GIT_COMMIT || "local").trim() || "local";
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 180000);
@@ -193,7 +194,7 @@ app.use(express.static(path.join(__dirname, "public"), {
 }));
 
 app.get("/health", (req, res) => {
-  res.json({ ok: true, uptime: Math.round(process.uptime()), now: new Date().toISOString() });
+  res.json({ ok: true, buildId: BUILD_ID, uptime: Math.round(process.uptime()), now: new Date().toISOString() });
 });
 
 app.post("/api/analytics/event", (req, res) => {

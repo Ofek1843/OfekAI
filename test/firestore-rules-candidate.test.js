@@ -7,10 +7,16 @@ const ROOT = path.join(__dirname, "..");
 const BASELINE_PATH = path.join(ROOT, "docs", "social", "firestore-rules-production-baseline-2026-08-01.txt");
 const RULES_PATH = path.join(ROOT, "docs", "social", "firestore-rules-merged-candidate.txt");
 const INDEX_PATH = path.join(ROOT, "docs", "social", "firestore-indexes-merged-candidate.json");
+const FINAL_RULES_PATH = path.join(ROOT, "firestore.rules");
+const FINAL_INDEX_PATH = path.join(ROOT, "firestore.indexes.json");
+const FIREBASE_CONFIG_PATH = path.join(ROOT, "firebase.json");
 
 const BASELINE = fs.readFileSync(BASELINE_PATH, "utf8");
 const RULES = fs.readFileSync(RULES_PATH, "utf8");
 const INDEXES = JSON.parse(fs.readFileSync(INDEX_PATH, "utf8"));
+const FINAL_RULES = fs.readFileSync(FINAL_RULES_PATH, "utf8");
+const FINAL_INDEXES = JSON.parse(fs.readFileSync(FINAL_INDEX_PATH, "utf8"));
+const FIREBASE_CONFIG = JSON.parse(fs.readFileSync(FIREBASE_CONFIG_PATH, "utf8"));
 
 function withoutComments(source) {
   return source.replace(/\/\/.*$/gm, "");
@@ -92,4 +98,21 @@ test("the candidate indexes contain exactly the two required friend-request comp
   ]);
   assert.match(INDEXES.review.composites[0].requirement, /strictly required/);
   assert.match(INDEXES.review.composites[1].requirement, /strictly required/);
+});
+
+test("the deployable Firestore files exactly preserve the audited candidate", () => {
+  assert.equal(
+    withoutComments(FINAL_RULES).replace(/\s+/g, " ").trim(),
+    withoutComments(RULES).replace(/\s+/g, " ").trim()
+  );
+  assert.deepEqual(FINAL_INDEXES, {
+    indexes: INDEXES.indexes,
+    fieldOverrides: []
+  });
+  assert.deepEqual(FIREBASE_CONFIG, {
+    firestore: {
+      rules: "firestore.rules",
+      indexes: "firestore.indexes.json"
+    }
+  });
 });

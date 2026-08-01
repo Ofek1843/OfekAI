@@ -1021,7 +1021,9 @@ export function getLanguage() {
     return saved;
   }
 
-  return detectBrowserLanguage();
+  // English is the explicit product default. A browser locale is not a user
+  // preference and must never switch a new or anonymous visitor into Hebrew.
+  return "en";
 }
 
 export function setLanguage(lang) {

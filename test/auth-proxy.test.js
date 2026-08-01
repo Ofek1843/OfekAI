@@ -307,11 +307,11 @@ test("no proxyReq/proxyRes hook logs headers, query strings, or bodies", () => {
 test("the service worker never caches /__/auth/* -- OAuth helper responses always go to the network", () => {
   const sw = fs.readFileSync(path.join(ROOT, "public", "sw.js"), "utf8");
   assert.match(sw, /AUTH_PROXY_PREFIX\s*=\s*['"]\/__\/auth\/['"]/);
-  assert.match(sw, /pathname\.startsWith\(AUTH_PROXY_PREFIX\)/);
+  assert.match(sw, /requestPath\.startsWith\(AUTH_PROXY_PREFIX\)/);
 
   // The exclusion check must appear before the code path that calls
   // caches.open(...).put(...) -- i.e. before any actual cache write.
-  const exclusionIndex = sw.indexOf("pathname.startsWith(AUTH_PROXY_PREFIX)");
+  const exclusionIndex = sw.indexOf("requestPath.startsWith(AUTH_PROXY_PREFIX)");
   const cachePutIndex = sw.indexOf("cache.put(");
   assert.ok(exclusionIndex !== -1 && cachePutIndex !== -1);
   assert.ok(exclusionIndex < cachePutIndex, "the exclusion must be checked before any cache write is reachable");
@@ -319,7 +319,7 @@ test("the service worker never caches /__/auth/* -- OAuth helper responses alway
 
 test("the service worker's cache version was bumped so no stale pre-fix worker keeps caching auth traffic", () => {
   const sw = fs.readFileSync(path.join(ROOT, "public", "sw.js"), "utf8");
-  assert.match(sw, /CACHE_NAME = 'fuelphysique-v3'/);
+  assert.match(sw, /CACHE_NAME = 'fuelphysique-v4'/);
 });
 
 // --- Existing Google popup/redirect flow regression -------------------------

@@ -23,7 +23,7 @@ const {
 } = require("firebase/firestore");
 
 const ROOT = path.join(__dirname, "..");
-const RULES = fs.readFileSync(path.join(ROOT, "docs", "social", "firestore-rules-merged-candidate.txt"), "utf8");
+const RULES = fs.readFileSync(path.join(ROOT, "firestore.rules"), "utf8");
 
 let testEnv;
 

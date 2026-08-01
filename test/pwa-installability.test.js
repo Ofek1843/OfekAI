@@ -71,6 +71,18 @@ test("sw.js exists and is syntactically valid", () => {
   execFileSync(process.execPath, ["--check", swPath]);
 });
 
+test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
+  const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
+  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v4['"]/);
+  assert.match(source, /NETWORK_ONLY_PREFIXES\s*=\s*\[['"]\/api\/['"]\]/);
+  assert.match(source, /requestPath\.startsWith\(prefix\)/);
+  assert.match(source, /if \(NETWORK_ONLY_PREFIXES\.some\(prefix => requestPath\.startsWith\(prefix\)\)\) \{\s*return;/s);
+  assert.match(source, /AUTH_PROXY_PREFIX/);
+  assert.match(source, /social\.html/);
+  assert.match(source, /social\.css/);
+  assert.match(source, /social\.js/);
+});
+
 for (const page of PAGES_WITH_INSTALL_PROMOTION) {
   test(`${page}: links the manifest, registers the service worker, and loads pwa-install.js`, () => {
     const html = fs.readFileSync(path.join(PUBLIC, page), "utf8");

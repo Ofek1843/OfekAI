@@ -609,9 +609,13 @@ function simpleArtifactPreview(type, snapshot) {
   return graphPreview(snapshot);
 }
 
-async function previewArtifact(artifactId) {
+function stopArtifactSubscription() {
   state.unsubscribeArtifact?.();
   state.unsubscribeArtifact = null;
+}
+
+async function previewArtifact(artifactId) {
+  stopArtifactSubscription();
   if (!history.state?.socialPreview) history.pushState({ socialPreview: artifactId }, "");
   $("#previewDialog").showModal();
   $("#previewTitle").textContent = ui.loading;
@@ -755,7 +759,11 @@ function bindEvents() {
   $("#shareForm").addEventListener("submit", shareArtifact);
   $("#shareSourceSelect").addEventListener("change", updateShareSummary);
   document.querySelectorAll('input[name="privacyMode"]').forEach((input) => input.addEventListener("change", updateShareSummary));
-  $("#closePreviewButton").addEventListener("click", () => history.state?.socialPreview ? history.back() : $("#previewDialog").close());
+  $("#closePreviewButton").addEventListener("click", () => {
+    stopArtifactSubscription();
+    if (history.state?.socialPreview) history.back();
+    else $("#previewDialog").close();
+  });
   $("#copyArtifactButton").addEventListener("click", () => copyArtifact());
   $("#mobileConversationBack").addEventListener("click", () => $("#socialApp").classList.add("show-conversations"));
   $("#chatFriendMenu").addEventListener("click", async () => {
@@ -765,8 +773,17 @@ function bindEvents() {
     catch (error) { toast(error.message, true); }
   });
   window.addEventListener("popstate", () => {
+    stopArtifactSubscription();
     if ($("#previewDialog").open) $("#previewDialog").close();
   });
+}
+
+function cleanupSocial() {
+  stopTypingChannel();
+  state.unsubscribe?.();
+  state.unsubscribe = null;
+  stopArtifactSubscription();
+  stopRealtimeSubscriptions();
 }
 
 async function initialize(currentUser) {
@@ -798,9 +815,7 @@ async function initialize(currentUser) {
 
 applyTranslations();
 bindEvents();
-guardProtectedPage({ onAuthenticated: initialize });
+guardProtectedPage({ onAuthenticated: initialize, onSignedOut: cleanupSocial });
 window.addEventListener("beforeunload", () => {
-  stopTypingChannel();
-  state.unsubscribe?.();
-  stopRealtimeSubscriptions();
+  cleanupSocial();
 });

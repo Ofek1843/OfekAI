@@ -38,6 +38,14 @@ test("only the active conversation receives a realtime listener", () => {
   assert.match(JS, /failed-precondition/);
 });
 
+test("chat and artifact listeners clean up on logout, navigation and preview close", () => {
+  assert.match(JS, /function cleanupSocial\(\)/);
+  assert.match(JS, /onSignedOut:\s*cleanupSocial/);
+  assert.match(JS, /function stopArtifactSubscription\(\)/);
+  assert.match(JS, /stopArtifactSubscription\(\);[\s\S]*history\.back\(\)/);
+  assert.match(JS, /beforeunload[\s\S]*cleanupSocial\(\)/);
+});
+
 test("artifact previews and copy actions are keyboard-accessible controls", () => {
   assert.match(HTML, /<dialog id="previewDialog"/);
   assert.match(HTML, /id="closePreviewButton"[\s\S]*type="button"/);

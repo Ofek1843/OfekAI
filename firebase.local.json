@@ -1,7 +1,7 @@
 {
   "firestore": {
-    "rules": "docs/social/firestore-rules-merged-candidate.txt",
-    "indexes": "docs/social/firestore-indexes-merged-candidate.json"
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
   },
   "emulators": {
     "auth": {
