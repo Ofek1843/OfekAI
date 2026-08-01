@@ -15,7 +15,9 @@ import {
   signInWithRedirect,
   getRedirectResult,
   linkWithCredential,
-  signOut
+  signOut,
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import {
@@ -31,8 +33,21 @@ import {
   getAuthStrings
 } from "./auth-google-core.mjs";
 
+import {
+  buildActionCodeSettings,
+  getVerificationStrings
+} from "./email-verification-core.mjs";
+
 const locale = (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
 const strings = getAuthStrings(locale);
+const verificationStrings = getVerificationStrings(locale);
+const actionCodeSettings = buildActionCodeSettings(window.location.origin);
+
+// Firebase's own emailed templates (verification, password reset) render in
+// whatever language this is set to — must be set before either is
+// triggered so the recipient gets a template matching the app's language,
+// not always English.
+auth.languageCode = locale;
 
 // The requested destination survives a full-page signInWithRedirect round
 // trip via sessionStorage — the ?next= query string is gone by the time the
@@ -87,6 +102,13 @@ const linkPassword = document.getElementById("linkPassword");
 const linkSubmit = document.getElementById("linkSubmit");
 const linkCancel = document.getElementById("linkCancel");
 const linkMessage = document.getElementById("linkMessage");
+
+const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+const forgotPasswordPanel = document.getElementById("forgotPasswordPanel");
+const forgotPasswordEmail = document.getElementById("forgotPasswordEmail");
+const forgotPasswordSubmit = document.getElementById("forgotPasswordSubmit");
+const forgotPasswordCancel = document.getElementById("forgotPasswordCancel");
+const forgotPasswordMessage = document.getElementById("forgotPasswordMessage");
 
 let currentMode = "login";
 let authenticationCompleted = false;
@@ -214,11 +236,18 @@ function applyLocalizedLabels() {
   if (linkSubmit) linkSubmit.textContent = strings.linkSubmit;
   if (linkCancel) linkCancel.textContent = strings.linkCancel;
 
+  if (forgotPasswordLink) forgotPasswordLink.textContent = verificationStrings.forgotPasswordLink;
+  setTextById("forgotPasswordTitle", verificationStrings.forgotPasswordTitle);
+  setTextById("forgotPasswordBody", verificationStrings.forgotPasswordBody);
+  setTextById("forgotPasswordEmailLabel", verificationStrings.forgotPasswordEmailLabel);
+  if (forgotPasswordSubmit) forgotPasswordSubmit.textContent = verificationStrings.forgotPasswordSubmit;
+  if (forgotPasswordCancel) forgotPasswordCancel.textContent = verificationStrings.forgotPasswordCancel;
+
   if (locale === "he") {
     // Scoped to the elements this feature introduced, NOT the whole document:
     // the email/password form on this page is still English, and flipping
     // <html dir> would right-align that pre-existing layout too.
-    for (const element of [googleButton, termsGatePanel, linkAccountPanel]) {
+    for (const element of [googleButton, termsGatePanel, linkAccountPanel, forgotPasswordLink, forgotPasswordPanel]) {
       element?.setAttribute("dir", "rtl");
       element?.setAttribute("lang", "he");
     }
@@ -259,18 +288,18 @@ function setGoogleButtonBusy(isBusy) {
   }
 }
 
+const ALL_PANELS = [termsGatePanel, linkAccountPanel, forgotPasswordPanel];
+
 function openPanel(panel) {
   document.body.classList.add("auth-panel-open");
-  termsGatePanel?.classList.remove("visible");
-  linkAccountPanel?.classList.remove("visible");
+  for (const element of ALL_PANELS) element?.classList.remove("visible");
   panel?.classList.add("visible");
   revealPage();
 }
 
 function closePanels() {
   document.body.classList.remove("auth-panel-open");
-  termsGatePanel?.classList.remove("visible");
-  linkAccountPanel?.classList.remove("visible");
+  for (const element of ALL_PANELS) element?.classList.remove("visible");
 }
 
 function redirectToProduct() {
@@ -527,6 +556,57 @@ async function cancelTermsAcceptance() {
   clearMessage();
 }
 
+// --- Forgot password -------------------------------------------------------
+// Requesting a reset link must never reveal whether an email address is
+// actually registered — that is an account-enumeration leak. Firebase's
+// sendPasswordResetEmail already rejects unregistered addresses with
+// auth/user-not-found; that specific code is deliberately treated as SUCCESS
+// here so the confirmation shown is identical either way.
+function openForgotPassword() {
+  clearMessage();
+  if (forgotPasswordEmail) forgotPasswordEmail.value = emailInput.value.trim();
+  showPanelMessage(forgotPasswordMessage, "", "");
+  openPanel(forgotPasswordPanel);
+  forgotPasswordEmail?.focus();
+  trackEvent("password_reset_requested");
+}
+
+async function submitForgotPassword() {
+  const email = forgotPasswordEmail?.value?.trim();
+
+  if (!email) {
+    showPanelMessage(forgotPasswordMessage, getFriendlyAuthError("auth/invalid-email", locale), "error");
+    return;
+  }
+
+  forgotPasswordSubmit.disabled = true;
+  forgotPasswordSubmit.textContent = verificationStrings.forgotPasswordSubmitting;
+
+  try {
+    await sendPasswordResetEmail(auth, email, actionCodeSettings);
+    showPanelMessage(forgotPasswordMessage, verificationStrings.forgotPasswordConfirmation, "success");
+  } catch (error) {
+    console.error("Password reset request error:", error?.code || "unknown");
+
+    // Privacy-safe by design: an unregistered address is not distinguishable
+    // from a registered one that was just emailed.
+    if (error?.code === "auth/user-not-found" || error?.code === "auth/invalid-email") {
+      showPanelMessage(forgotPasswordMessage, verificationStrings.forgotPasswordConfirmation, "success");
+      return;
+    }
+
+    showPanelMessage(forgotPasswordMessage, getFriendlyError(error?.code), "error");
+  } finally {
+    forgotPasswordSubmit.disabled = false;
+    forgotPasswordSubmit.textContent = verificationStrings.forgotPasswordSubmit;
+  }
+}
+
+function cancelForgotPassword() {
+  closePanels();
+  clearMessage();
+}
+
 // --- Wiring --------------------------------------------------------------
 loginTab.addEventListener("click", () => {
   changeMode("login");
@@ -545,6 +625,13 @@ termsGateSubmit?.addEventListener("click", submitTermsAcceptance);
 termsGateCancel?.addEventListener("click", cancelTermsAcceptance);
 linkSubmit?.addEventListener("click", submitAccountLinking);
 linkCancel?.addEventListener("click", cancelAccountLinking);
+
+forgotPasswordLink?.addEventListener("click", (event) => {
+  event.preventDefault();
+  openForgotPassword();
+});
+forgotPasswordSubmit?.addEventListener("click", submitForgotPassword);
+forgotPasswordCancel?.addEventListener("click", cancelForgotPassword);
 
 authForm.addEventListener(
   "submit",
@@ -635,12 +722,27 @@ authForm.addEventListener(
           termsAcceptedAt: serverTimestamp()
         }, { merge: true });
 
+        // auth.languageCode was already set at module load, before this call,
+        // so the emailed template renders in the visitor's language.
+        try {
+          await sendEmailVerification(userCredential.user, actionCodeSettings);
+        } catch (verificationError) {
+          // The account and profile document both already exist at this
+          // point — a verification-send failure (e.g. a transient
+          // auth/too-many-requests from rapid test signups) must not be
+          // treated as signup failing outright. The user can resend from the
+          // verification gate once they reach the product.
+          console.error("Could not send the verification email:", verificationError?.code || "unknown");
+        }
+
         authenticationCompleted = true;
         trackEvent("signup", { method: "email_password" });
         trackEvent("signup_completed", { method: "email_password" });
 
+        // Never claims the address is already verified — the account is
+        // created, but verifying the emailed link is a separate step.
         showMessage(
-          "Account created successfully. Redirecting...",
+          verificationStrings.checkEmailBody,
           "success"
         );
       } else {

@@ -204,6 +204,9 @@
     .terms-consent a,.privacy-note a { color:#a99bff; }
     .remember-consent { display:flex; gap:9px; align-items:center; margin:2px 0 16px; color:#bcc6c2; font-size:13px; font-weight:700; }
     .remember-consent input { width:auto; accent-color:#6e9fc2; }
+    .forgot-password-row { display:flex; justify-content:flex-end; margin:-8px 0 16px; }
+    .forgot-password-link { color:#9ddcff; font-size:13px; font-weight:700; text-decoration:none; }
+    .forgot-password-link:hover { text-decoration:underline; }
     body.auth-checking .auth-container { visibility:hidden; }
 
     /* Google sign-in. Surface stays light per Google's brand guidance (the
@@ -413,6 +416,10 @@
           />
         </div>
 
+        <div class="forgot-password-row">
+          <a href="#" id="forgotPasswordLink" class="forgot-password-link">Forgot password?</a>
+        </div>
+
         <label class="remember-consent" for="rememberMe">
           <input id="rememberMe" type="checkbox" checked>
           <span>Remember me on this device</span>
@@ -502,6 +509,36 @@
         </button>
 
         <div id="linkMessage" class="message" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- Forgot password: requests a reset link for the entered email.
+           The confirmation shown is identical whether or not the address is
+           actually registered — see auth.js's submitForgotPassword. -->
+      <section id="forgotPasswordPanel" class="auth-panel" aria-live="polite">
+        <h2 id="forgotPasswordTitle">Reset your password</h2>
+        <p id="forgotPasswordBody">
+          Enter the email address on your account and we'll send you a link
+          to reset your password.
+        </p>
+
+        <div class="form-group">
+          <label for="forgotPasswordEmail" id="forgotPasswordEmailLabel">Email address</label>
+          <input
+            id="forgotPasswordEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <button id="forgotPasswordSubmit" class="submit-button" type="button">
+          Send reset link
+        </button>
+        <button id="forgotPasswordCancel" class="panel-cancel" type="button">
+          Cancel
+        </button>
+
+        <div id="forgotPasswordMessage" class="message" role="status" aria-live="polite"></div>
       </section>
 
       <p class="privacy-note">
