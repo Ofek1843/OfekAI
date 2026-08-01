@@ -1,0 +1,159 @@
+// NOT DEPLOYED. REVIEW CANDIDATE ONLY.
+//
+// This file preserves the dated production baseline in
+// firestore-rules-production-baseline-2026-08-01.txt and adds the social
+// read protections. It is not a replacement for a Firebase Console publish.
+// Trusted social writes are performed by the authenticated server through
+// Firebase Admin and therefore bypass these client rules.
+//
+// The baseline contained a broad users/{userId}/{document=**} grant. That
+// grant would also allow a client to write social subcollections, so it has
+// been replaced here with the documented legacy user collections only. This
+// preserves the known legacy paths while preventing the new social paths from
+// inheriting an unsafe catch-all grant.
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isLeaderboardAdmin() {
+      return signedIn()
+        && request.auth.token.email == "ofek1845@gmail.com";
+    }
+
+    // These are the user-owned legacy collections confirmed in the local
+    // production-code audit. Social collections are intentionally absent.
+    function isLegacyUserCollection(name) {
+      return name in [
+        'athleteCore', 'settings', 'workoutPlans', 'nutritionPlans',
+        'workoutLogs', 'weightEntries', 'bodyMeasurements', 'progressPhotos',
+        'runs', 'conversations', 'leaderboardSubmissions',
+        'transformationSubmissions', 'waitlists'
+      ];
+    }
+
+    function conversationDataIsValid(data, conversationId) {
+      return data.status == 'active'
+        && data.participantKey == conversationId
+        && data.participants is list
+        && data.participants.size() == 2
+        && request.auth.uid in data.participants;
+    }
+
+    function canReadConversationData(data, conversationId) {
+      let friendship = get(/databases/$(database)/documents/friendships/$(conversationId));
+      let participants = data.participants;
+      let otherUid = participants[0] == request.auth.uid ? participants[1] : participants[0];
+      return signedIn()
+        && conversationDataIsValid(data, conversationId)
+        && friendship.data.status == 'accepted'
+        && friendship.data.participants == participants
+        && !exists(/databases/$(database)/documents/users/$(request.auth.uid)/blocks/$(otherUid))
+        && !exists(/databases/$(database)/documents/users/$(otherUid)/blocks/$(request.auth.uid));
+    }
+
+    function canReadConversation(conversationId) {
+      let conversation = get(/databases/$(database)/documents/conversations/$(conversationId));
+      return canReadConversationData(conversation.data, conversationId);
+    }
+
+    // Legacy root profile behavior is unchanged.
+    match /users/{userId} {
+      allow create: if isSelf(userId);
+      allow read, update, delete: if isSelf(userId);
+    }
+
+    // The former catch-all is narrowed to the documented legacy paths. This
+    // keeps owner CRUD for existing application behavior without granting
+    // client writes to social server-owned collections.
+    match /users/{userId}/{legacyCollection}/{document=**} {
+      allow read, write: if isSelf(userId) && isLegacyUserCollection(legacyCollection);
+    }
+
+    // Leaderboard moderation retains both the owner's existing access and the
+    // production administrator access from the baseline.
+    match /users/{userId}/leaderboardSubmissions/{submissionId} {
+      allow read, update, delete: if isLeaderboardAdmin();
+    }
+
+    match /{path=**}/leaderboardSubmissions/{submissionId} {
+      allow read, update, delete: if isLeaderboardAdmin();
+    }
+
+    match /leaderboardEntries/{entryId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isLeaderboardAdmin();
+    }
+
+    // Username reservations are server-owned. This blocks client-side
+    // username theft, renaming, enumeration, and deletion.
+    match /usernames/{usernameLower} {
+      allow read, write: if false;
+    }
+
+    // Only the minimal social projection is readable. Root users/{uid}
+    // remains private through the legacy rule above.
+    match /socialProfiles/{uid} {
+      allow get: if isSelf(uid)
+        || (signedIn() && resource.data.discoverable == true);
+      allow list, create, update, delete: if false;
+    }
+
+    match /friendRequests/{requestId} {
+      allow get, list: if signedIn()
+        && (resource.data.fromUid == request.auth.uid
+          || resource.data.toUid == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    match /friendships/{friendshipId} {
+      allow get, list: if signedIn()
+        && request.auth.uid in resource.data.participants;
+      allow create, update, delete: if false;
+    }
+
+    match /users/{uid}/blocks/{blockedUid} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
+    match /users/{uid}/conversationSummaries/{conversationId} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
+    match /conversations/{conversationId} {
+      allow get: if canReadConversationData(resource.data, conversationId);
+      allow list, create, update, delete: if false;
+
+      match /messages/{messageId} {
+        allow get, list: if canReadConversation(conversationId);
+        allow create, update, delete: if false;
+      }
+    }
+
+    match /sharedArtifacts/{artifactId} {
+      // Revoked artifacts remain inaccessible through direct Firestore reads.
+      // The owner/recipient checks also prevent cross-user snapshot access.
+      allow get: if signedIn()
+        && resource.data.revokedAt == null
+        && (resource.data.ownerUid == request.auth.uid
+          || request.auth.uid in resource.data.recipientIds);
+      allow list, create, update, delete: if false;
+    }
+
+    match /users/{uid}/sharedImports/{artifactId} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+  }
+}

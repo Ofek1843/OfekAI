@@ -1,0 +1,61 @@
+{
+  "warning": "NOT DEPLOYED. Review against the live Firebase Console index list before publishing.",
+  "indexes": [
+    {
+      "collectionGroup": "friendRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "toUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "friendRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "fromUid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [],
+  "review": {
+    "manualCompositeBaseline": "empty",
+    "automaticSingleFieldQueries": [
+      {
+        "query": "usernames ordered by document ID with startAt/endAt and limit(10)",
+        "requirement": "automatic index"
+      },
+      {
+        "query": "friendships where participants array-contains the current UID",
+        "requirement": "automatic array index"
+      },
+      {
+        "query": "users/{uid}/conversationSummaries ordered by updatedAt descending, limit(50)",
+        "requirement": "automatic single-field index"
+      },
+      {
+        "query": "conversations/{conversationId}/messages ordered by createdAt descending, limit(25)",
+        "requirement": "automatic single-field index"
+      }
+    ],
+    "collectionGroupQueries": [
+      {
+        "query": "leaderboardSubmissions collection-group moderation lookup",
+        "requirement": "no additional composite index identified"
+      }
+    ],
+    "composites": [
+      {
+        "index": "friendRequests(toUid ASC, status ASC)",
+        "query": "where('toUid', '==', uid).where('status', '==', 'pending').limit(50)",
+        "requirement": "strictly required for the received-request query"
+      },
+      {
+        "index": "friendRequests(fromUid ASC, status ASC)",
+        "query": "where('fromUid', '==', uid).where('status', '==', 'pending').limit(50)",
+        "requirement": "strictly required for the sent-request query"
+      }
+    ]
+  }
+}
