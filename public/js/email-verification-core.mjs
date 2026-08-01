@@ -92,6 +92,9 @@ export const VERIFICATION_STRINGS = {
     resendLoading: "Sending...",
     resendSuccess: "Verification email sent. Please check your inbox.",
     resendCooldown: (seconds) => `You can request another email in ${seconds}s.`,
+    checkVerifiedButton: "I've verified my email",
+    checkVerifiedLoading: "Checking...",
+    stillNotVerified: "Still not verified. Please open the link from the email first.",
     signOutButton: "Sign out",
     changeEmailHint: "Used the wrong email address? Sign out and create a new account with the correct one.",
 
@@ -118,6 +121,9 @@ export const VERIFICATION_STRINGS = {
     resendLoading: "שולח...",
     resendSuccess: "אימייל האימות נשלח. יש לבדוק את תיבת הדואר.",
     resendCooldown: (seconds) => `ניתן לבקש אימייל נוסף בעוד ${seconds} שניות.`,
+    checkVerifiedButton: "אימתתי את האימייל שלי",
+    checkVerifiedLoading: "בודק...",
+    stillNotVerified: "עדיין לא אומת. יש לפתוח קודם את הקישור מתוך האימייל.",
     signOutButton: "התנתקות",
     changeEmailHint: "השתמשת בכתובת אימייל שגויה? התנתק/י וצור/י חשבון חדש עם הכתובת הנכונה.",
 
