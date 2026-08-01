@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { guardProtectedPage } from "./verification-gate.js";
 
 const $ = s => document.querySelector(s);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
@@ -283,13 +283,14 @@ $("#nextSetBtn").addEventListener("click", () => {
 });
 $("#saveButton").addEventListener("click", saveWorkout);
 
-onAuthStateChanged(auth, async current => {
-  if (!current) return location.replace("/auth.html");
-  user = current;
-  try {
-    await load();
-  } catch (err) {
-    $("#status").textContent = err.message === "NO_PLAN" ? ui.noPlan : ui.error;
-    $("#status").classList.add("error");
+guardProtectedPage({
+  onAuthenticated: async (current) => {
+    user = current;
+    try {
+      await load();
+    } catch (err) {
+      $("#status").textContent = err.message === "NO_PLAN" ? ui.noPlan : ui.error;
+      $("#status").classList.add("error");
+    }
   }
 });

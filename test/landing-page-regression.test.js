@@ -125,7 +125,11 @@ test("transformation submission remains visible before auth and localizes Hebrew
   assert.match(html, /id="submissionAuthWarning"/);
   assert.doesNotMatch(html, /id="submissionAuthWarning" hidden/);
   assert.doesNotMatch(submitJs, /form\.hidden\s*=/);
-  assert.match(submitJs, /authWarning\.hidden = Boolean\(user\)/);
+  // The warning is hidden only for a signed-in AND verified user -- an
+  // unverified email/password user must still see it (see
+  // shouldBlockUnverifiedAccess in verification-gate.js).
+  assert.match(submitJs, /authWarning\.hidden = isUsable/);
+  assert.match(submitJs, /shouldBlockUnverifiedAccess/);
   assert.match(submitJs, /אפשר למלא את הטופס עכשיו/);
   assert.match(submitJs, /שליחת התהליך שלך/);
   assert.match(submitJs, /missingTools/);

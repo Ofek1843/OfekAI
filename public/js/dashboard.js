@@ -16,6 +16,7 @@ import {
 import {
  getIdToken, onAuthStateChanged, signOut }
  from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { guardProtectedPage } from "./verification-gate.js";
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 let activeNutritionPlanForQuickFood = null;
@@ -983,15 +984,20 @@ initLogout();
 trackPageView({
  page: "dashboard" }
 );
-onAuthStateChanged(auth, async user => {
-  if (!user) return location.replace("/auth.html");
-  try {
-    await load(user);
+// Product policy: the dashboard exposes saved plans and progress, so it's
+// blocked until the signed-in user's email is verified. guardProtectedPage
+// resolves auth state -> verifies sign-in -> verifies the email policy ->
+// only then calls onAuthenticated to load private data (see
+// verification-gate.js for the shared implementation, including the "I've
+// verified my email" recovery flow that restores this exact page in place).
+guardProtectedPage({
+  onAuthenticated: async (user) => {
+    try {
+      await load(user);
+    } catch (error) {
+      console.error(error);
+      $("#dashboardStatus").textContent = ui.error;
+      $("#dashboardStatus").classList.add("error");
+    }
   }
- catch (error) {
-    console.error(error);
-    $("#dashboardStatus").textContent = ui.error;
-    $("#dashboardStatus").classList.add("error");
-  }
-}
-);
+});

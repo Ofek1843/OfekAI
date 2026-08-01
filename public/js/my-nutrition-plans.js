@@ -2,7 +2,7 @@ import { auth, db } from "./firebase-config.js";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { guardProtectedPage } from "./verification-gate.js";
 
 const grid = document.querySelector("#plansGrid");
 const status = document.querySelector("#plansStatus");
@@ -94,20 +94,21 @@ async function remove(id) {
 
 function showError() { status.textContent = ui.error; status.classList.add("error"); }
 
-onAuthStateChanged(auth, async (currentUser) => {
-  if (!currentUser) return window.location.replace("/auth.html");
-  user = currentUser;
-  try {
-    const [plansSnapshot, userSnapshot] = await Promise.all([
-      getDocs(query(collection(db, "users", user.uid, "nutritionPlans"), orderBy("createdAt", "desc"), limit(5))),
-      getDoc(doc(db, "users", user.uid))
-    ]);
-    plans = plansSnapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
-    const userData = userSnapshot.exists() ? userSnapshot.data() : {};
-    activeId = userData.activeNutritionPlanId || null;
-    subscription = normalizeSubscription(userData.subscription);
-    render();
-  } catch (error) { console.error(error); showError(); }
+guardProtectedPage({
+  onAuthenticated: async (currentUser) => {
+    user = currentUser;
+    try {
+      const [plansSnapshot, userSnapshot] = await Promise.all([
+        getDocs(query(collection(db, "users", user.uid, "nutritionPlans"), orderBy("createdAt", "desc"), limit(5))),
+        getDoc(doc(db, "users", user.uid))
+      ]);
+      plans = plansSnapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+      const userData = userSnapshot.exists() ? userSnapshot.data() : {};
+      activeId = userData.activeNutritionPlanId || null;
+      subscription = normalizeSubscription(userData.subscription);
+      render();
+    } catch (error) { console.error(error); showError(); }
+  }
 });
 
 if (isHebrew) document.querySelector("#earlyAccessNote").innerHTML = "<strong>גישה מוקדמת:</strong> כל חמשת המקומות לתוכניות תזונה פתוחים עכשיו בחינם. מקומות 2–5 מתוכננים לעבור ל־Pro בהמשך.";

@@ -2,6 +2,12 @@ import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
 import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { guardProtectedPage } from "./verification-gate.js";
+
+// Same reasoning as workout-builder.js: nothing here loads private data on
+// page open, but Generate and Save both call authenticated product
+// APIs/Firestore. Keep the page hidden and un-clickable until verified.
+guardProtectedPage({});
 
 const form = document.querySelector("#nutrition-builder-form");
 const button = document.querySelector("#generate-button");

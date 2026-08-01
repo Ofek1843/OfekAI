@@ -12,6 +12,8 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
+import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
+
 const DEFAULT_ATHLETE_CORE = {
   goal: "",
   trainingLevel: "",
@@ -290,6 +292,14 @@ onAuthStateChanged(auth, async (user) => {
       ...DEFAULT_ATHLETE_CORE
     };
 
+    return;
+  }
+
+  // app-auth.js (loaded on the same page) owns the visible verification
+  // gate; this guard exists so this module's own independent Firestore
+  // read/write never runs ahead of that decision -- see the identical note
+  // in settings.js.
+  if (shouldBlockUnverifiedAccess(user)) {
     return;
   }
 

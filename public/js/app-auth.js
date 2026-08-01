@@ -6,11 +6,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 import {
-  onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-document.body.style.visibility = "hidden";
+import { guardProtectedPage } from "./verification-gate.js";
 
 async function getVisibleUserName(user) {
   if (user.displayName?.trim()) {
@@ -163,26 +162,15 @@ function createUserControls(user, visibleName) {
   document.body.appendChild(container);
 }
 
-onAuthStateChanged(
-  auth,
-  async (user) => {
- if (!user) {
-  window.location.replace(
-    "/auth.html"
-  );
-
-  return;
-}
-
-    const visibleName =
-      await getVisibleUserName(user);
-
-    createUserControls(
-      user,
-      visibleName
-    );
-
-    document.body.style.visibility =
-      "visible";
+// Product policy: sensitive/saved product features (this page's AI Coach,
+// settings and profile data) are blocked until the signed-in user's email
+// is verified. guardProtectedPage resolves auth state -> verifies a user is
+// signed in -> verifies the email policy -> only then reveals the page and
+// calls onAuthenticated; see verification-gate.js for the shared
+// implementation (including the "I've verified my email" recovery flow).
+guardProtectedPage({
+  onAuthenticated: async (user) => {
+    const visibleName = await getVisibleUserName(user);
+    createUserControls(user, visibleName);
   }
-);
+});

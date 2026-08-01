@@ -1,0 +1,292 @@
+/* Firebase email action handler (public/auth-action.html).
+   Built entirely on the shared --fp-* Blue Ocean tokens from theme.css so
+   this page inherits the product palette rather than redefining it. No
+   Firebase branding appears anywhere — to the user this is a FuelPhysique
+   page that happens to complete an account action. */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color: var(--fp-text-primary);
+  background:
+    radial-gradient(circle at top, rgba(53, 207, 223, 0.16), transparent 38%),
+    var(--fp-bg-page);
+}
+
+.action-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.brand {
+  margin-bottom: 26px;
+  text-align: center;
+}
+
+.brand h1 {
+  margin-bottom: 6px;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.brand p {
+  color: var(--fp-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.action-card {
+  padding: 32px;
+  border: 1px solid var(--fp-border);
+  border-radius: 24px;
+  background: var(--fp-surface);
+  box-shadow: var(--fp-shadow-raised);
+}
+
+/* Only one state panel is ever mounted at a time; the others are removed
+   from the layout entirely rather than merely hidden, so a screen reader
+   never announces a state the user isn't in. */
+.state-panel { display: none; }
+.state-panel.visible { display: block; }
+
+.state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 20px;
+  border-radius: 999px;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.state-icon--success {
+  color: var(--fp-success);
+  background: var(--fp-success-soft);
+  border: 1px solid rgba(85, 201, 138, 0.4);
+}
+
+.state-icon--info {
+  color: var(--fp-info);
+  background: var(--fp-info-soft);
+  border: 1px solid rgba(90, 174, 255, 0.4);
+}
+
+.state-icon--warning {
+  color: var(--fp-warning);
+  background: var(--fp-warning-soft);
+  border: 1px solid rgba(225, 183, 93, 0.4);
+}
+
+.state-panel h2 {
+  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.state-lead {
+  margin-bottom: 10px;
+  color: var(--fp-text-secondary);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.state-body {
+  margin-bottom: 26px;
+  color: var(--fp-text-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* Loading state: a calm, self-contained spinner. Respects reduced-motion. */
+.spinner {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 22px;
+  border: 3px solid var(--fp-border);
+  border-top-color: var(--fp-brand-primary);
+  border-radius: 999px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 3s; }
+}
+
+/* Form */
+.form-group { margin-bottom: 18px; }
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--fp-text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+input[type="password"] {
+  width: 100%;
+  padding: 15px 16px;
+  border: 1px solid var(--fp-border);
+  border-radius: 13px;
+  outline: none;
+  color: var(--fp-text-primary);
+  background: var(--fp-surface-input);
+  font: inherit;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="password"]:focus {
+  border-color: var(--fp-brand-primary);
+  box-shadow: 0 0 0 3px var(--fp-focus-ring);
+}
+
+input[type="password"]::placeholder { color: var(--fp-text-muted); }
+
+/* Inline validation: the invalid field is marked visually AND via
+   aria-invalid in the JS, never by color alone. */
+input[type="password"].invalid {
+  border-color: var(--fp-danger);
+  box-shadow: 0 0 0 3px var(--fp-danger-soft);
+}
+
+.field-error {
+  display: none;
+  margin-top: 7px;
+  color: var(--fp-danger);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.field-error.visible { display: block; }
+
+/* Buttons */
+.primary-button {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 15px;
+  border: 0;
+  border-radius: 13px;
+  color: var(--fp-text-inverse);
+  background: linear-gradient(135deg, var(--fp-brand-primary), var(--fp-brand-secondary));
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s, filter 0.15s;
+}
+
+.primary-button:hover { transform: translateY(-1px); filter: brightness(1.06); }
+
+.primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  filter: none;
+}
+
+.secondary-button {
+  display: block;
+  width: 100%;
+  margin-top: 11px;
+  padding: 13px;
+  border: 1px solid var(--fp-border);
+  border-radius: 13px;
+  color: var(--fp-text-secondary);
+  background: transparent;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.secondary-button:hover {
+  border-color: var(--fp-border-strong);
+  color: var(--fp-text-primary);
+}
+
+.message {
+  display: none;
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.message.error {
+  display: block;
+  color: var(--fp-danger);
+  border: 1px solid rgba(239, 111, 127, 0.35);
+  background: var(--fp-danger-soft);
+}
+
+.message.success {
+  display: block;
+  color: var(--fp-success);
+  border: 1px solid rgba(85, 201, 138, 0.35);
+  background: var(--fp-success-soft);
+}
+
+.support-note {
+  margin-top: 22px;
+  color: var(--fp-text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.support-note a { color: var(--fp-highlight); }
+
+/* RTL: mirrors only what direction actually affects. The centered card
+   layout is direction-agnostic, so this stays deliberately small. */
+[dir="rtl"] .state-lead,
+[dir="rtl"] .state-body,
+[dir="rtl"] label,
+[dir="rtl"] .field-error {
+  text-align: right;
+}
+
+[dir="rtl"] .state-lead,
+[dir="rtl"] .state-body {
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  body { padding: 16px; }
+  .action-card { padding: 24px; border-radius: 20px; }
+  .brand h1 { font-size: 29px; }
+  .state-panel h2 { font-size: 21px; }
+}

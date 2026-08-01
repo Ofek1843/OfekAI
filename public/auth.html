@@ -204,7 +204,88 @@
     .terms-consent a,.privacy-note a { color:#a99bff; }
     .remember-consent { display:flex; gap:9px; align-items:center; margin:2px 0 16px; color:#bcc6c2; font-size:13px; font-weight:700; }
     .remember-consent input { width:auto; accent-color:#6e9fc2; }
+    .forgot-password-row { display:flex; justify-content:flex-end; margin:-8px 0 16px; }
+    .forgot-password-link { color:#9ddcff; font-size:13px; font-weight:700; text-decoration:none; }
+    .forgot-password-link:hover { text-decoration:underline; }
     body.auth-checking .auth-container { visibility:hidden; }
+
+    /* Google sign-in. Surface stays light per Google's brand guidance (the
+       icon must sit on white or a very light neutral), but the radius,
+       weight and motion match the Blue Abyss submit button so it reads as
+       part of the same card rather than a pasted-in widget. */
+    .google-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #dadce0;
+      border-radius: 13px;
+      color: #1f1f1f;
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+    .google-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+    }
+    .google-button:disabled { cursor: not-allowed; opacity: 0.6; transform: none; }
+    .google-button svg { flex-shrink: 0; width: 20px; height: 20px; }
+
+    .auth-separator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: #76829c;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .auth-separator::before,
+    .auth-separator::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Terms gate / account-linking panels replace the form in place rather
+       than opening a modal, so a mobile redirect return lands on a single
+       focused screen with no layering or scroll-lock problems. */
+    .auth-panel { display: none; }
+    .auth-panel.visible { display: block; }
+    .auth-panel h2 { margin-bottom: 10px; font-size: 20px; font-weight: 800; }
+    .auth-panel > p {
+      margin-bottom: 18px;
+      color: #aab4cc;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .auth-panel .submit-button { margin-top: 14px; }
+    .panel-cancel {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 13px;
+      color: #93a0bb;
+      background: transparent;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .panel-cancel:hover { color: #dce3f3; border-color: rgba(255, 255, 255, 0.28); }
+    body.auth-panel-open #authForm,
+    body.auth-panel-open .auth-tabs,
+    body.auth-panel-open #googleSection { display: none; }
 
     @media (max-width: 520px) {
       body {
@@ -231,8 +312,8 @@
       <h1>FuelPhysique</h1>
 
       <p>
-        Sign in to continue your conversations and
-        access your personal fitness assistant.
+        Build the physique you're working for.
+        Personalized workouts, nutrition, progress tracking and AI coaching.
       </p>
     </header>
 
@@ -253,6 +334,30 @@
         >
           Sign up
         </button>
+      </div>
+
+      <div id="googleSection">
+        <button
+          id="googleButton"
+          class="google-button"
+          type="button"
+        >
+          <!-- Official Google "G" mark. Inlined as SVG (not a remote image)
+               so it renders on the first paint, works offline in the
+               installed PWA, and never depends on a third-party host. The
+               four path fills are Google's exact brand colors and must not
+               be recolored to match the theme. -->
+          <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="none" d="M0 0h48v48H0z"/>
+          </svg>
+          <span id="googleButtonLabel">Continue with Google</span>
+        </button>
+
+        <div class="auth-separator" id="authSeparator" aria-hidden="true">or</div>
       </div>
 
       <form id="authForm">
@@ -311,6 +416,10 @@
           />
         </div>
 
+        <div class="forgot-password-row">
+          <a href="#" id="forgotPasswordLink" class="forgot-password-link">Forgot password?</a>
+        </div>
+
         <label class="remember-consent" for="rememberMe">
           <input id="rememberMe" type="checkbox" checked>
           <span>Remember me on this device</span>
@@ -331,6 +440,106 @@
           aria-live="polite"
         ></div>
       </form>
+
+      <!-- Terms gate: shown after a FIRST-TIME Google sign-in (or after the
+           terms version changes) INSTEAD of redirecting into the product.
+           Google sign-up must never bypass the acceptance that the
+           email/password signup form already requires. -->
+      <section id="termsGatePanel" class="auth-panel" aria-live="polite">
+        <h2 id="termsGateTitle">One last step</h2>
+        <p id="termsGateBody">
+          Before you start, please review and accept our Terms, Health
+          Disclaimer and Privacy Notice.
+        </p>
+
+        <label class="terms-consent" for="termsGateAccepted">
+          <input id="termsGateAccepted" type="checkbox" />
+          <span id="termsGateCheckboxLabel">
+            I have read and agree to the
+            <a href="/terms.html" target="_blank" rel="noopener">Terms, Health Disclaimer and Privacy Notice</a>.
+            If I am under 18, my parent or legal guardian has approved my use
+            of FuelPhysique.
+          </span>
+        </label>
+
+        <button id="termsGateSubmit" class="submit-button" type="button">
+          Accept and continue
+        </button>
+        <button id="termsGateCancel" class="panel-cancel" type="button">
+          Cancel
+        </button>
+
+        <div id="termsGateMessage" class="message" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- Account-linking panel: shown when Google returns
+           auth/account-exists-with-different-credential, i.e. this email
+           already has an email/password account. The user proves ownership
+           with their existing password, then the Google credential is LINKED
+           to that same uid — never a second, duplicate identity. -->
+      <section id="linkAccountPanel" class="auth-panel" aria-live="polite">
+        <h2 id="linkTitle">Connect Google to your account</h2>
+        <p id="linkBody">
+          You already have a FuelPhysique account with this email address.
+          Enter your existing password once and we'll connect Google to it —
+          all your plans and history stay exactly as they are.
+        </p>
+
+        <div class="form-group">
+          <label for="linkEmail">Email address</label>
+          <input id="linkEmail" type="email" autocomplete="email" readonly />
+        </div>
+
+        <div class="form-group">
+          <label for="linkPassword" id="linkPasswordLabel">Your existing password</label>
+          <input
+            id="linkPassword"
+            type="password"
+            autocomplete="current-password"
+            minlength="6"
+            placeholder="Enter your password"
+          />
+        </div>
+
+        <button id="linkSubmit" class="submit-button" type="button">
+          Connect and continue
+        </button>
+        <button id="linkCancel" class="panel-cancel" type="button">
+          Cancel
+        </button>
+
+        <div id="linkMessage" class="message" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- Forgot password: requests a reset link for the entered email.
+           The confirmation shown is identical whether or not the address is
+           actually registered — see auth.js's submitForgotPassword. -->
+      <section id="forgotPasswordPanel" class="auth-panel" aria-live="polite">
+        <h2 id="forgotPasswordTitle">Reset your password</h2>
+        <p id="forgotPasswordBody">
+          Enter the email address on your account and we'll send you a link
+          to reset your password.
+        </p>
+
+        <div class="form-group">
+          <label for="forgotPasswordEmail" id="forgotPasswordEmailLabel">Email address</label>
+          <input
+            id="forgotPasswordEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <button id="forgotPasswordSubmit" class="submit-button" type="button">
+          Send reset link
+        </button>
+        <button id="forgotPasswordCancel" class="panel-cancel" type="button">
+          Cancel
+        </button>
+
+        <div id="forgotPasswordMessage" class="message" role="status" aria-live="polite"></div>
+      </section>
 
       <p class="privacy-note">
         Your account will be used to save

@@ -1,5 +1,6 @@
 import { auth, db, storage } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
 import { collection, doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 import { ref, uploadBytes } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
 import { trackClick, trackPageView } from "./analytics.js";
@@ -342,9 +343,15 @@ updatePreview("afterPhoto", "afterPhotoPreview");
 trackPageView({ page: "transformation_submit" });
 
 onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-  authWarning.hidden = Boolean(user);
-  if (authLink) authLink.href = user ? "/dashboard.html" : "/auth.html?next=transformation-submit.html";
+  // This page is a public form (unlike the fully-gated pages), so it keeps
+  // its existing inline-warning pattern rather than the full-page overlay
+  // -- but an unverified user must be treated the same as a signed-out one:
+  // currentUser stays null so handleSubmit's existing "not signed in" guard
+  // also blocks a private-photo upload for an unverified account.
+  const isUsable = Boolean(user) && !shouldBlockUnverifiedAccess(user);
+  currentUser = isUsable ? user : null;
+  authWarning.hidden = isUsable;
+  if (authLink) authLink.href = isUsable ? "/dashboard.html" : "/auth.html?next=transformation-submit.html";
 });
 
 form.addEventListener("submit", handleSubmit);

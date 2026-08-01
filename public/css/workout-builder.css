@@ -541,9 +541,19 @@ textarea:focus {
   color: var(--fp-warning, #e1b75d);
   background: var(--fp-warning-soft, rgba(225, 183, 93, 0.16));
 }
-.muscle-volume-status--in-range {
+/* In the preferred zone: the only status that reads as fully "done". */
+.muscle-volume-status--in-preferred-zone {
   color: var(--fp-success, #55c98a);
   background: var(--fp-success-soft, rgba(85, 201, 138, 0.16));
+}
+/* Valid but below/above the preferred target: a genuinely different, less
+   confident visual from "in-preferred-zone" -- this is the fix for "10
+   sets of chest reads the same as a well-targeted 16". Still not a warning
+   color (the plan IS valid), just a softer, more neutral affirmative. */
+.muscle-volume-status--valid-below-preferred,
+.muscle-volume-status--valid-above-preferred {
+  color: var(--fp-accent, #7fb3e0);
+  background: var(--fp-accent-soft, rgba(127, 179, 224, 0.16));
 }
 .muscle-volume-status--above {
   color: var(--fp-danger, #ef6f7f);
@@ -558,6 +568,12 @@ textarea:focus {
   color: rgba(226, 232, 240, 0.65);
   background: rgba(255, 255, 255, 0.06);
   cursor: help;
+}
+.muscle-volume-quality-score,
+.muscle-volume-starting-week-note {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.65);
 }
 .muscle-volume-numbers {
   display: flex;

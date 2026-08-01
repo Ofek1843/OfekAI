@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- This page is reached only from a one-time emailed link. Keeping it out
+       of search indexes also keeps the action code out of any crawler log. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <!-- The action code lives in the query string; a referrer header would
+       hand it to any third party this page ever links to. -->
+  <meta name="referrer" content="no-referrer" />
+
+  <title>Account action | FuelPhysique</title>
+
+  <link rel="stylesheet" href="/css/theme.css" />
+  <link rel="stylesheet" href="/css/auth-action.css" />
+</head>
+
+<body>
+  <div class="ocean-depth-layer" aria-hidden="true"></div>
+  <div class="ocean-depth-glow" aria-hidden="true"></div>
+
+  <main class="action-container">
+    <header class="brand">
+      <h1>FuelPhysique</h1>
+      <p id="brandTagline">Build the physique you're working for.</p>
+    </header>
+
+    <section class="action-card">
+      <!-- Loading ------------------------------------------------------- -->
+      <div id="loadingPanel" class="state-panel visible" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <h2 id="loadingTitle">Just a moment</h2>
+        <p class="state-body" id="loadingBody">Verifying your secure link...</p>
+      </div>
+
+      <!-- Verify email success ------------------------------------------ -->
+      <div id="verifyPanel" class="state-panel" role="status" aria-live="polite">
+        <div class="state-icon state-icon--success" aria-hidden="true">&check;</div>
+        <h2 id="verifyTitle">Email verified</h2>
+        <p class="state-lead" id="verifyLead">Your account is now fully activated.</p>
+        <p class="state-body" id="verifyBody">
+          You can now access your workout plans, nutrition plans, AI Coach and
+          progress tracking.
+        </p>
+        <a class="primary-button" id="verifyPrimary" href="/dashboard.html">Go to Dashboard</a>
+        <a class="secondary-button" id="verifySecondary" href="/auth.html">Back to Login</a>
+      </div>
+
+      <!-- Reset password form ------------------------------------------- -->
+      <div id="resetPanel" class="state-panel">
+        <h2 id="resetTitle">Choose a new password</h2>
+        <p class="state-body" id="resetBody">
+          Set a new password for your FuelPhysique account.
+        </p>
+
+        <form id="resetForm" novalidate>
+          <div class="form-group">
+            <label for="newPassword" id="resetNewLabel">New password</label>
+            <input
+              id="newPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="6"
+              placeholder="At least 6 characters"
+              aria-describedby="newPasswordError"
+            />
+            <p class="field-error" id="newPasswordError" role="alert"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" id="resetConfirmLabel">Confirm password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="6"
+              placeholder="At least 6 characters"
+              aria-describedby="confirmPasswordError"
+            />
+            <p class="field-error" id="confirmPasswordError" role="alert"></p>
+          </div>
+
+          <button class="primary-button" id="resetSubmit" type="submit">Update password</button>
+        </form>
+
+        <div class="message" id="resetMessage" role="status" aria-live="polite"></div>
+      </div>
+
+      <!-- Reset password success ---------------------------------------- -->
+      <div id="resetSuccessPanel" class="state-panel" role="status" aria-live="polite">
+        <div class="state-icon state-icon--success" aria-hidden="true">&check;</div>
+        <h2 id="resetSuccessTitle">Password updated successfully</h2>
+        <p class="state-body" id="resetSuccessBody">
+          You can now sign in with your new password.
+        </p>
+        <a class="primary-button" id="resetPrimary" href="/auth.html">Sign in</a>
+      </div>
+
+      <!-- Recover email -------------------------------------------------- -->
+      <div id="recoverPanel" class="state-panel" role="status" aria-live="polite">
+        <div class="state-icon state-icon--info" aria-hidden="true">&#8635;</div>
+        <h2 id="recoverTitle">Email address restored</h2>
+        <p class="state-lead" id="recoverLead">Your sign-in email has been changed back.</p>
+        <p class="state-body" id="recoverBody">
+          We received a request to change the email address on your account, so
+          we've restored the previous one. If you didn't make that request, we
+          recommend resetting your password now to secure your account.
+        </p>
+        <button class="primary-button" id="recoverPrimary" type="button">Reset password</button>
+        <a class="secondary-button" id="recoverSecondary" href="/auth.html">Back to Login</a>
+        <div class="message" id="recoverMessage" role="status" aria-live="polite"></div>
+      </div>
+
+      <!-- Failure (expired / invalid / generic / network) ----------------- -->
+      <div id="failurePanel" class="state-panel" role="alert">
+        <div class="state-icon state-icon--warning" aria-hidden="true">!</div>
+        <h2 id="failureTitle">This link is no longer valid</h2>
+        <p class="state-body" id="failureBody">
+          It may have already been used, or it was only partly copied. Please
+          request a new one and try again.
+        </p>
+        <a class="primary-button" id="failurePrimary" href="/auth.html">Return to Login</a>
+      </div>
+    </section>
+
+    <p class="support-note" id="supportNote">
+      Need help? <a href="/contact.html">Contact support</a>
+    </p>
+  </main>
+
+  <script type="module" src="/js/auth-action.js"></script>
+</body>
+</html>
