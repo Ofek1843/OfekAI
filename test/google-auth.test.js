@@ -197,7 +197,15 @@ test("Hebrew RTL is scoped to the new elements, never applied to the whole docum
     /documentElement\.setAttribute\(\s*"dir"/,
     "flipping <html dir> would right-align the pre-existing English email/password form"
   );
-  assert.match(apply[0], /\[googleButton, termsGatePanel, linkAccountPanel\]/, "RTL must be scoped to the elements this feature added");
+  // The scoped element list may grow as new feature panels are added (e.g.
+  // the forgot-password panel) — what must hold is that it's a specific,
+  // named list of elements, not the whole document.
+  const scopedListMatch = apply[0].match(/for \(const element of \[([^\]]+)\]\)/);
+  assert.ok(scopedListMatch, "expected a scoped element list, not a document-wide RTL flip");
+  const scopedElements = scopedListMatch[1].split(",").map((s) => s.trim());
+  for (const required of ["googleButton", "termsGatePanel", "linkAccountPanel"]) {
+    assert.ok(scopedElements.includes(required), `${required} must remain in the RTL-scoped element list`);
+  }
 });
 
 test("the terms-gate consent sentence is localized and keeps a real link to the terms", () => {
