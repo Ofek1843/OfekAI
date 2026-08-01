@@ -34,6 +34,8 @@ test("only the active conversation receives a realtime listener", () => {
   assert.match(JS, /collection\(db, "conversations", conversationId, "messages"\)/);
   assert.match(JS, /limit\(25\)/);
   assert.doesNotMatch(JS, /collectionGroup\(/);
+  assert.match(JS, /permission-denied/);
+  assert.match(JS, /failed-precondition/);
 });
 
 test("artifact previews and copy actions are keyboard-accessible controls", () => {

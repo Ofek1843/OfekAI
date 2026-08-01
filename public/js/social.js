@@ -219,9 +219,11 @@ function subscribeToActiveConversation() {
     const incoming = snapshot.docs.map((item) => ({ id: item.id, ...item.data() })).reverse();
     state.messages = mergeMessages(state.messages.filter((message) => message.status === "failed"), incoming);
     renderMessages();
-  }, () => {
-    // Until the isolated draft is merged into the complete live rules, the
-    // authenticated REST fallback below remains the source of chat updates.
+  }, (error) => {
+    const message = error?.code === "permission-denied" ? ui.liveChatPermission
+      : error?.code === "failed-precondition" ? ui.liveChatIndex
+      : ui.liveChatUnavailable;
+    toast(message, true);
   });
 }
 
