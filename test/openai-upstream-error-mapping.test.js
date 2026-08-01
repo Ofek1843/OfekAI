@@ -105,7 +105,7 @@ function buildWorkoutPayload(overrides = {}) {
 let upstreamFailureServer;
 
 test.before(async () => {
-  upstreamFailureServer = await startServer(4180, { MOCK_OPENAI_UPSTREAM_FAILURE: "true" });
+  upstreamFailureServer = await startServer(0, { MOCK_OPENAI_UPSTREAM_FAILURE: "true" });
 });
 
 test.after(() => {
@@ -201,7 +201,7 @@ test("Startup diagnostics log key presence/length without the full key", async (
 let normalServer;
 
 test("A successful mocked OpenAI response still returns 200", async (t) => {
-  normalServer = await startServer(4181);
+  normalServer = await startServer(0);
   t.after(() => stopServer(normalServer));
 
   const res = await fetch(`${normalServer.baseUrl}/api/workout-builder`, {
@@ -221,7 +221,7 @@ test("Internal validation 422 remains 422 (not remapped to 502)", async (t) => {
   // lib/workout-repair.js) only fills in a MISSING exerciseId, it never
   // silently rewrites one already provided, so this stays invalid (Rule 9)
   // even after repair, deterministically forcing this 422 path.
-  const server = await startServer(4182, { MOCK_OPENAI_FORCE_EMPTY_SESSION: "true" });
+  const server = await startServer(0, { MOCK_OPENAI_FORCE_EMPTY_SESSION: "true" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
@@ -236,7 +236,7 @@ test("Internal validation 422 remains 422 (not remapped to 502)", async (t) => {
 });
 
 test("Internal rate limit 429 remains 429 (not remapped to 502)", async (t) => {
-  const server = await startServer(4183, { AI_PER_UID_PER_MINUTE: "1" });
+  const server = await startServer(0, { AI_PER_UID_PER_MINUTE: "1" });
   t.after(() => stopServer(server));
 
   const headers = authHeaders(); // same token/uid for both requests, deliberately
@@ -274,7 +274,7 @@ test("Workout Builder uses the dedicated workout model fallback", async (t) => {
 });
 
 test("GPT-5 empty visible content returns the local incomplete-response 502", async (t) => {
-  const server = await startServer(4191, {
+  const server = await startServer(0, {
     OPENAI_WORKOUT_MODEL: "gpt-5-mini",
     MOCK_OPENAI_CHAT_RESPONSE_MODE: "empty-content"
   });
@@ -293,7 +293,7 @@ test("GPT-5 empty visible content returns the local incomplete-response 502", as
 });
 
 test("finish_reason length is treated as truncated output and returns 502 after one retry", async (t) => {
-  const server = await startServer(4192, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "length" });
+  const server = await startServer(0, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "length" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
@@ -309,7 +309,7 @@ test("finish_reason length is treated as truncated output and returns 502 after 
 });
 
 test("model refusal is not retried and returns incomplete-response 502", async (t) => {
-  const server = await startServer(4193, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "refusal" });
+  const server = await startServer(0, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "refusal" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
@@ -326,7 +326,7 @@ test("model refusal is not retried and returns incomplete-response 502", async (
 });
 
 test("malformed JSON after visible text returns invalid-format 502 without retry", async (t) => {
-  const server = await startServer(4194, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "malformed-json" });
+  const server = await startServer(0, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "malformed-json" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
@@ -343,7 +343,7 @@ test("malformed JSON after visible text returns invalid-format 502 without retry
 });
 
 test("a transient empty response is retried once and then succeeds", async (t) => {
-  const server = await startServer(4195, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "retry-success" });
+  const server = await startServer(0, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "retry-success" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
@@ -359,7 +359,7 @@ test("a transient empty response is retried once and then succeeds", async (t) =
 });
 
 test("a repeated empty response fails with 502 after the single retry", async (t) => {
-  const server = await startServer(4196, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "retry-fail" });
+  const server = await startServer(0, { MOCK_OPENAI_CHAT_RESPONSE_MODE: "retry-fail" });
   t.after(() => stopServer(server));
 
   const res = await fetch(`${server.baseUrl}/api/workout-builder`, {
