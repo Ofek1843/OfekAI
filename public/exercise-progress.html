@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="/css/theme.css">
 <link rel="stylesheet" href="/css/exercise-progress.css"></head>
 <body><main class="progress-page">
-  <nav class="page-nav"><a id="backLink" href="/dashboard.html">← Back to FuelPhysique</a><a id="historyLink" href="/workout-history.html">Workout History</a></nav>
+  <nav class="page-nav"><a id="backLink" href="/dashboard.html">← Back to FuelPhysique</a><span><a id="shareRecordLink" href="/social.html?share=personal_record">Share personal record</a> · <a id="historyLink" href="/workout-history.html">Workout History</a></span></nav>
   <header class="page-header"><span class="brand-badge">FuelPhysique</span><h1 id="pageTitle">Exercise Progress</h1><p id="pageDescription">See how your strength and training volume change over time.</p></header>
   <p id="progressStatus" class="status" role="status" aria-live="polite">Loading your workouts...</p>
   <section id="emptyPanel" class="empty-panel hidden"><h2 id="emptyTitle">Not enough workout data yet</h2><p id="emptyText">Complete sets with weight and reps in the Workout Tracker to unlock analytics.</p><a id="startLink" href="/workout-tracker.html">Start Workout</a></section>
@@ -20,6 +20,6 @@
     <section id="recommendation" class="recommendation"></section>
     <section class="records-card"><h2 id="recordsTitle">Workout records</h2><div id="recordsList"></div></section>
   </section>
-</main><script type="module" src="/js/exercise-progress.js"></script>
+</main><script>if((localStorage.getItem("ofek-ai-language")||"en")==="he")document.querySelector("#shareRecordLink").textContent="שיתוף שיא אישי";</script><script type="module" src="/js/exercise-progress.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body></html>

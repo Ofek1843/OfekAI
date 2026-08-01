@@ -56,7 +56,7 @@ function render() {
     return `<article class="plan-card${active ? " active" : ""}" data-id="${esc(saved.id)}">
       <span class="active-badge">${ui.active}</span><h2>${esc(saved.name || plan.planName || "Nutrition Plan")}</h2>
       <div class="plan-meta"><span>${esc(plan.dailyCalories ?? "-")} ${ui.calories}</span><span>${esc(plan.proteinGrams ?? "-")} ${ui.protein}</span></div>
-      <div class="plan-actions"><button class="activate-button" type="button" ${active ? "disabled" : ""}>${active ? ui.current : ui.use}</button>
+      <div class="plan-actions"><button class="activate-button" type="button" ${active ? "disabled" : ""}>${active ? ui.current : ui.use}</button><a class="share-social-link" href="/social.html?share=nutrition&amp;sourceId=${encodeURIComponent(saved.id)}">${isHebrew ? "שיתוף עם חבר" : "Share with friend"}</a>
       <div class="manage-actions"><button class="rename-button" type="button">✏️ ${ui.rename}</button><button class="delete-button" type="button">🗑️ ${ui.remove}</button></div></div></article>`;
   }).join("") + lockedSlotsMarkup();
   grid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => button.addEventListener("click", () => activate(button.closest(".plan-card").dataset.id)));

@@ -421,6 +421,7 @@ function renderPlans() {
           <button class="activate-button" type="button" ${isActive ? "disabled" : ""}>
             ${isActive ? ui.currentPlan : ui.usePlan}
           </button>
+          <a class="share-social-link" href="/social.html?share=workout&amp;sourceId=${encodeURIComponent(id)}">${isHebrew ? "שיתוף עם חבר" : "Share with friend"}</a>
           <div class="manage-actions">
             <button class="rename-button" type="button">✏️ ${ui.rename}</button>
             <button class="edit-button" type="button">🛠️ ${ui.edit}</button>

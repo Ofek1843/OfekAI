@@ -47,6 +47,7 @@ const navLabels = he ? {
   programs: "תוכניות אימון",
   workouts: "מעקב אימון",
   nutrition: "תזונה",
+  social: "חברים והודעות",
   progress: "התקדמות",
   settings: "הגדרות",
   plans: "מסלולים",
@@ -56,6 +57,7 @@ const navLabels = he ? {
   programs: "Workout Plans",
   workouts: "Workout Tracker",
   nutrition: "Nutrition",
+  social: "Friends & Messages",
   progress: "Progress",
   settings: "Settings",
   plans: "Plans",
@@ -151,6 +153,13 @@ const searchableItems = [
     titleHe: "התקדמות",
     route: "/progress.html",
     keywords: ["progress", "analytics", "charts", "weight", "measurements", "graphs", "התקדמות", "גרפים", "מדדים", "משקל", "מדידות", "ניתוח"]
+  },
+  {
+    id: "social",
+    title: "Friends & Messages",
+    titleHe: "חברים והודעות",
+    route: "/social.html",
+    keywords: ["friends", "messages", "social", "chat", "share plan", "חברים", "הודעות", "שיתוף", "צאט"]
   },
   {
     id: "settings",
@@ -984,6 +993,20 @@ initLogout();
 trackPageView({
  page: "dashboard" }
 );
+async function loadSocialUnread(user) {
+  try {
+    const response = await fetch("/api/social/conversations", { headers: { Authorization: `Bearer ${await user.getIdToken()}` } });
+    if (!response.ok) return;
+    const data = await response.json();
+    const unread = (data.conversations || []).reduce((sum, item) => sum + Number(item.unreadCount || 0), 0);
+    const badge = $("#socialUnreadBadge");
+    if (!badge) return;
+    badge.hidden = unread === 0;
+    badge.textContent = String(Math.min(99, unread));
+  } catch {
+    // Social setup is isolated from the rest of the dashboard.
+  }
+}
 // Product policy: the dashboard exposes saved plans and progress, so it's
 // blocked until the signed-in user's email is verified. guardProtectedPage
 // resolves auth state -> verifies sign-in -> verifies the email policy ->
@@ -993,7 +1016,7 @@ trackPageView({
 guardProtectedPage({
   onAuthenticated: async (user) => {
     try {
-      await load(user);
+      await Promise.all([load(user), loadSocialUnread(user)]);
     } catch (error) {
       console.error(error);
       $("#dashboardStatus").textContent = ui.error;

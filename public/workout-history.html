@@ -9,7 +9,7 @@
 </head>
 <body>
   <main class="history-page">
-    <nav class="page-nav"><a id="backLink" href="/dashboard.html">← Back to FuelPhysique</a><span style="display:flex;align-items:center;gap:18px"><a id="analyticsLink" href="/exercise-progress.html">Exercise Progress</a><a id="trackerLink" class="primary-link" href="/workout-tracker.html">+ Start Workout</a></span></nav>
+    <nav class="page-nav"><a id="backLink" href="/dashboard.html">← Back to FuelPhysique</a><span style="display:flex;align-items:center;gap:18px"><a id="shareCompletedLink" href="/social.html?share=completed_workout">Share completed workout</a><a id="analyticsLink" href="/exercise-progress.html">Exercise Progress</a><a id="trackerLink" class="primary-link" href="/workout-tracker.html">+ Start Workout</a></span></nav>
     <header class="history-header"><span class="brand-badge">FuelPhysique</span><h1 id="pageTitle">Workout History</h1><p id="pageDescription">Review every workout and every completed set.</p></header>
     <section class="stats-grid" aria-label="Workout summary">
       <article><span id="workoutsLabel">Workouts</span><strong id="workoutCount">0</strong></article>
@@ -19,7 +19,7 @@
     <p id="historyStatus" class="status" role="status" aria-live="polite">Loading workout history...</p>
     <section id="historyList" class="history-list"></section>
   </main>
-  <script>if((localStorage.getItem("ofek-ai-language")||"en")==="he")document.querySelector("#analyticsLink").textContent="התקדמות בתרגילים";</script>
+  <script>if((localStorage.getItem("ofek-ai-language")||"en")==="he"){document.querySelector("#analyticsLink").textContent="התקדמות בתרגילים";document.querySelector("#shareCompletedLink").textContent="שיתוף אימון שהושלם";}</script>
   <script type="module" src="/js/workout-history.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
