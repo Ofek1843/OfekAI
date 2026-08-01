@@ -68,13 +68,16 @@ test("workout snapshots keep useful fields and remove private inputs", () => {
 });
 
 test("workout copy creates a recipient-owned shape and recalculates volume", () => {
-  const snapshot = sanitizeWorkoutSnapshot({ plan: { sessions: [{ name: "A", exercises: [{ name: "Bench Press", sets: 3, reps: "5" }] }] } }, "Creator");
+  const snapshot = sanitizeWorkoutSnapshot({ plan: { sessions: [{ name: "A", exercises: [{ name: "Barbell Bench Press", sets: 3, reps: "5" }] }] } }, "Creator");
+  assert.equal(snapshot.sessions[0].exercises[0].exerciseId, "barbell-bench-press");
+  assert.equal(snapshot.weeklyVolume.perMuscle.chest, 3);
   snapshot.weeklyVolume.totalHardSets = 999;
   const copy = buildWorkoutCopy(snapshot, "Copied from @Creator", "artifact-1");
   assert.equal(copy.sourceType, "shared-copy");
   assert.equal(copy.sourceArtifactId, "artifact-1");
   assert.equal(copy.attribution, "Copied from @Creator");
   assert.notEqual(copy.plan.weeklyVolume.totalHardSets, 999);
+  assert.equal(copy.plan.weeklyVolume.perMuscle.chest.total, 3);
 });
 
 test("nutrition snapshots exclude private dietary and body data and recompute visible totals", () => {
@@ -151,4 +154,12 @@ test("artifact copy is recipient-only, immutable and duplicate-safe", () => {
   assert.match(STORE, /if \(previousImport\.exists\) return \{ duplicate: true/);
   assert.match(STORE, /transaction\.create\(copyRef/);
   assert.match(STORE, /artifact\.data\(\)\?\.ownerUid !== uid/);
+});
+
+test("stale conversations and revoked artifacts cannot be read through social paths", () => {
+  assert.match(STORE, /assertAcceptedFriendsRead\(db, uid, otherUid\)/);
+  assert.match(STORE, /assertAcceptedFriendsRead\(db, uid, conversation\.data\(\)\.participants\.find/);
+  assert.match(STORE, /const visibleDocs = \[\];[\s\S]*visibleDocs\.push\(item\)/);
+  assert.match(STORE, /artifact\.revokedAt\) \{[\s\S]*snapshot: null/);
+  assert.match(STORE, /if \(result\.duplicate\) \{[\s\S]*artifactId: result\.message\?\.artifactId/);
 });
