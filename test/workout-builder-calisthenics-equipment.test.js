@@ -11,7 +11,9 @@ const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
 
-const PORT = 4174;
+// Keep this integration server distinct from workout-tracker-exercise-images
+// (4174) and pwa-installability (4175): node --test runs files concurrently.
+const PORT = 4176;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 let tokenCounter = 0;
