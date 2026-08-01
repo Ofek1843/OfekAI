@@ -1,7 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 import { exerciseImageUrl } from "./exercise-image.js";
+import { guardProtectedPage } from "./verification-gate.js";
 
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
@@ -1624,15 +1624,19 @@ $("#anotherWorkoutButton").addEventListener("click", () => {
 $("#discardWorkoutButton").addEventListener("click", discardDraft);
 $("#discardWorkoutToolbarButton")?.addEventListener("click", discardDraft);
 
-onAuthStateChanged(auth, async current => {
-  if (!current) return location.replace("/auth.html");
-  user = current;
-  try {
-    await load();
-  } catch (error) {
-    console.error(error);
-    $("#trackerStatus").textContent = ui.loadError;
-    $("#trackerStatus").classList.add("error");
-    show("#emptyPanel");
+// Workout Tracker opens drafts and writes completed-set data, so it's
+// gated the same way as every other protected page — see
+// verification-gate.js's guardProtectedPage.
+guardProtectedPage({
+  onAuthenticated: async (current) => {
+    user = current;
+    try {
+      await load();
+    } catch (error) {
+      console.error(error);
+      $("#trackerStatus").textContent = ui.loadError;
+      $("#trackerStatus").classList.add("error");
+      show("#emptyPanel");
+    }
   }
 });

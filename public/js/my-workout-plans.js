@@ -20,9 +20,7 @@ import {
   writeBatch
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { guardProtectedPage } from "./verification-gate.js";
 
 const plansGrid = document.querySelector("#plansGrid");
 const plansStatus = document.querySelector("#plansStatus");
@@ -650,18 +648,15 @@ document.querySelector("#manualBuilderLink")?.addEventListener("click", (event) 
   }
 });
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.replace("/auth.html");
-    return;
-  }
-
-  currentUser = user;
-  try {
-    await loadPlans(user);
-  } catch (error) {
-    console.error("Could not load workout plans:", error);
-    plansStatus.textContent = ui.loadError;
-    plansStatus.classList.add("error");
+guardProtectedPage({
+  onAuthenticated: async (user) => {
+    currentUser = user;
+    try {
+      await loadPlans(user);
+    } catch (error) {
+      console.error("Could not load workout plans:", error);
+      plansStatus.textContent = ui.loadError;
+      plansStatus.classList.add("error");
+    }
   }
 });

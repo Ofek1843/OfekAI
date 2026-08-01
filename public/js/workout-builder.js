@@ -5,6 +5,16 @@ import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
 import { derivePriorityFromGoal } from "./workout-priority.js";
 import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
+import { guardProtectedPage } from "./verification-gate.js";
+
+// This builder has no data to load on page open (generation is entirely
+// user-interaction-driven via the Generate button, which reads
+// auth.currentUser at click time) -- but it DOES call an authenticated
+// product API and write a saved plan once generated. guardProtectedPage
+// keeps the whole page hidden (and therefore un-clickable) until the
+// signed-in user's email is verified, so there is no window where an
+// unverified user could open this page directly and generate/save a plan.
+guardProtectedPage({});
 
 import {
   collection,
