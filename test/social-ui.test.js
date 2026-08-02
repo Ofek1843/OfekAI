@@ -89,6 +89,23 @@ test("mobile chat has a responsive composer and no horizontal page overflow", ()
   assert.match(CSS, /env\(safe-area-inset-bottom\)/);
 });
 
+test("Social keeps an accessible Dashboard link in the mobile header", () => {
+  assert.match(HTML, /<a[^>]+id="dashboardLink"[^>]*>/);
+  assert.match(HTML, /id="dashboardLink"[^>]*href="\/dashboard\.html"/);
+  assert.match(HTML, /id="dashboardLink"[^>]*>Dashboard<\/a>/);
+  assert.match(HTML, /id="dashboardLink"[^>]+class="back-link"/);
+});
+
+test("Social mobile header keeps Dashboard visible and safe-area aware", () => {
+  assert.match(CSS, /\.social-shell\s*\{[^}]*env\(safe-area-inset-top\)/s);
+  assert.match(CSS, /\.social-shell\s*\{[^}]*env\(safe-area-inset-bottom\)/s);
+  assert.match(CSS, /\.social-topbar\s*\{[^}]*position:\s*sticky/);
+  assert.match(CSS, /button:focus-visible, a:focus-visible/);
+  assert.match(CSS, /@media\s*\(max-width:\s*900px\)[\s\S]*?\.back-link\s*\{[^}]*display:\s*inline-flex/);
+  assert.doesNotMatch(CSS, /@media\s*\(max-width:\s*900px\)[\s\S]*?\.back-link\s*\{[^}]*display:\s*none/);
+  assert.match(CSS, /max-width:\s*42vw/);
+});
+
 test("social navigation and plan share discovery are present", () => {
   assert.match(DASHBOARD, /href="\/social\.html"/);
   assert.match(DASHBOARD, /socialUnreadBadge/);
