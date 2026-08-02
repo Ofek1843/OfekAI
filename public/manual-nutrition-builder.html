@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Build a nutrition plan manually · FuelPhysique</title>
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/manual-nutrition-builder.css">
+</head>
+<body>
+  <main class="manual-nutrition-page">
+    <nav class="manual-nav"><a href="/my-nutrition-plans.html">← My Nutrition Plans</a><a href="/dashboard.html">Dashboard</a></nav>
+    <header class="manual-hero"><span class="manual-kicker">FUELPHYSIQUE · ZERO-COST BUILDER</span><h1 id="pageTitle">Build nutrition manually</h1><p id="pageIntro">Set your estimated targets, choose meals from the local catalog, and save a plan without AI generation.</p></header>
+    <p id="pageStatus" class="manual-status" role="status" aria-live="polite"></p>
+
+    <section class="builder-step panel" aria-labelledby="targetsTitle">
+      <div class="step-heading"><span>01</span><div><h2 id="targetsTitle">Set your targets</h2><p>These values are estimates, not medical advice.</p></div></div>
+      <form id="targetForm" class="target-form">
+        <label>Age<input id="age" type="number" min="18" max="100" value="30" required></label>
+        <label>Calculation sex<select id="gender"><option value="male">Male</option><option value="female">Female</option></select></label>
+        <label>Height (cm)<input id="height" type="number" min="120" max="230" value="180" required></label>
+        <label>Weight (kg)<input id="weight" type="number" min="30" max="300" step="0.1" value="80" required></label>
+        <label>Activity<select id="activityLevel"><option value="sedentary">Sedentary</option><option value="lightlyActive">Lightly active</option><option value="moderatelyActive" selected>Moderately active</option><option value="veryActive">Very active</option><option value="extremelyActive">Extremely active</option></select></label>
+        <label>Goal<select id="goal"><option value="fat-loss">Fat loss</option><option value="maintenance" selected>Maintenance</option><option value="muscle-gain">Muscle gain</option></select></label>
+        <label>Meals per day<input id="mealsPerDay" type="number" min="2" max="8" value="4" required></label>
+        <label>Dietary style<select id="diet"><option value="omnivore">Omnivore</option><option value="pescatarian">Pescatarian</option><option value="vegetarian">Vegetarian</option><option value="vegan">Vegan</option></select></label>
+        <label class="wide">Allergies<input id="allergies" maxlength="300" placeholder="For example: nuts, dairy"></label>
+        <label class="wide">Excluded foods<input id="exclusions" maxlength="300" placeholder="For example: mushrooms, banana"></label>
+        <button class="primary-action" type="submit">Calculate estimates</button>
+      </form>
+      <div id="targetSummary" class="target-summary" hidden></div>
+    </section>
+
+    <section class="builder-step panel" aria-labelledby="libraryTitle">
+      <div class="step-heading"><span>02</span><div><h2 id="libraryTitle">Choose from the meal library</h2><p>Search titles, ingredients, tags and English or Hebrew names.</p></div></div>
+      <form id="mealSearchForm" class="meal-search"><label class="sr-only" for="mealQuery">Search meals</label><input id="mealQuery" placeholder="Try banana, breakfast, high-protein or בננה"><select id="mealSlot"><option value="">All meal times</option><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select><button class="secondary-action" type="submit">Search</button></form>
+      <div id="mealResults" class="meal-results" aria-live="polite"></div>
+    </section>
+
+    <section class="builder-step panel" aria-labelledby="selectedTitle">
+      <div class="step-heading"><span>03</span><div><h2 id="selectedTitle">Your daily menu</h2><p>Adjust portions and order. Totals always equal the visible meals.</p></div></div>
+      <div id="selectedMeals" class="selected-meals"></div>
+      <div id="runningTotals" class="running-totals" hidden></div>
+      <div class="save-row"><label>Plan title<input id="planTitle" maxlength="80" placeholder="My manual nutrition plan"></label><button id="savePlan" class="primary-action" type="button">Save plan</button></div>
+      <p id="saveStatus" class="manual-status" role="status" aria-live="polite"></p>
+      <a id="shareSavedPlan" class="secondary-action share-saved" href="#" hidden>Share this plan with a friend</a>
+    </section>
+  </main>
+  <script type="module" src="/js/manual-nutrition-builder.js"></script>
+  <script type="module" src="/js/site-feedback.js"></script>
+</body>
+</html>
