@@ -21,6 +21,7 @@ document.querySelector("#pageTitle").textContent = ui.title;
 document.querySelector("#pageDescription").textContent = ui.description;
 document.querySelector("#backLink").textContent = ui.back;
 document.querySelector("#builderLink").textContent = ui.create;
+document.querySelector("#manualBuilderLink")?.setAttribute("aria-label", isHebrew ? "׳‘׳ ׳™׳™׳× ׳×׳•׳›׳ ׳™׳× ׳×׳–׳•׳ ׳” ׳‘׳™׳“׳ ׳™׳×" : "Build a nutrition plan manually");
 document.querySelector("#planCountLabel").textContent = ui.count;
 status.textContent = ui.loading;
 
@@ -59,6 +60,10 @@ function render() {
       <div class="plan-actions"><button class="activate-button" type="button" ${active ? "disabled" : ""}>${active ? ui.current : ui.use}</button><a class="share-social-link" href="/social.html?share=nutrition&amp;sourceId=${encodeURIComponent(saved.id)}">${isHebrew ? "שיתוף עם חבר" : "Share with friend"}</a>
       <div class="manage-actions"><button class="rename-button" type="button">✏️ ${ui.rename}</button><button class="delete-button" type="button">🗑️ ${ui.remove}</button></div></div></article>`;
   }).join("") + lockedSlotsMarkup();
+  plans.filter((saved) => saved.sourceType === "manual").forEach((saved) => {
+    const actions = grid.querySelector(`[data-id="${CSS.escape(saved.id)}"] .manage-actions`);
+    actions?.insertAdjacentHTML("afterbegin", `<a class="edit-button" href="/manual-nutrition-builder.html?edit=${encodeURIComponent(saved.id)}">${isHebrew ? "׳¢׳¨׳™׳›׳”" : "Edit"}</a><a class="duplicate-button" href="/manual-nutrition-builder.html?duplicate=${encodeURIComponent(saved.id)}">${isHebrew ? "׳©׳›׳₪׳•׳" : "Duplicate"}</a>`);
+  });
   grid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => button.addEventListener("click", () => activate(button.closest(".plan-card").dataset.id)));
   grid.querySelectorAll(".rename-button").forEach((button) => button.addEventListener("click", () => rename(button.closest(".plan-card").dataset.id)));
   grid.querySelectorAll(".delete-button").forEach((button) => button.addEventListener("click", () => remove(button.closest(".plan-card").dataset.id)));
