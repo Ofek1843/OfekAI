@@ -4,6 +4,8 @@ import { guardProtectedPage } from "./verification-gate.js";
 
 const $ = (selector) => document.querySelector(selector);
 const state = { user: null, targets: null, selected: [], editingId: null, language: localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en" };
+document.documentElement.lang = state.language;
+document.documentElement.dir = state.language === "he" ? "rtl" : "ltr";
 const esc = (value = "") => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const number = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const parseList = (value) => String(value || "").split(/[,;|\n]+/).map((item) => item.trim()).filter(Boolean);

@@ -5,6 +5,8 @@ const assert = require("node:assert/strict");
 const { calculateNutritionTargets } = require("../lib/nutrition-targets");
 const { searchManualMeals } = require("../lib/manual-nutrition");
 const SERVER = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "server.js"), "utf8");
+const MANUAL_BUILDER = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "public", "js", "manual-nutrition-builder.js"), "utf8");
+const MANUAL_CSS = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "public", "css", "manual-nutrition-builder.css"), "utf8");
 
 test("manual targets reuse the nutrition engine for fat loss, maintenance and muscle gain", () => {
   const input = { age: 30, gender: "male", height: 180, weight: 80, activityLevel: "moderatelyActive" };
@@ -45,4 +47,11 @@ test("manual meal rows contain the visible macros used by the future cumulative 
   assert.ok(Array.isArray(meal.foods) && meal.foods.length);
   assert.equal(meal.calories, meal.foods.reduce((sum, food) => sum + food.calories, 0));
   assert.equal(meal.proteinGrams, meal.foods.reduce((sum, food) => sum + food.proteinGrams, 0));
+});
+
+test("manual builder applies Settings locale direction and keeps keyboard focus visible", () => {
+  assert.match(MANUAL_BUILDER, /document\.documentElement\.lang = state\.language/);
+  assert.match(MANUAL_BUILDER, /document\.documentElement\.dir = state\.language === "he" \? "rtl" : "ltr"/);
+  assert.match(MANUAL_CSS, /button:focus-visible, a:focus-visible/);
+  assert.match(MANUAL_CSS, /prefers-reduced-motion: reduce/);
 });
