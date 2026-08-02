@@ -27,6 +27,8 @@ const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
 const { buildLocalWorkoutProgram } = require("./lib/local-demo-generators");
+const { calculateNutritionTargets } = require("./lib/nutrition-targets");
+const { mealById, searchManualMeals } = require("./lib/manual-nutrition");
 const socialTyping = require("./lib/social-typing");
 const {
   allTargetRanges,
@@ -3440,6 +3442,41 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
   }
 });
 
+app.post("/api/nutrition/manual/targets", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  try {
+    const targets = calculateNutritionTargets(req.body || {});
+    if (targets.isYouth) return res.status(400).json({ error: "Manual nutrition targets are available for adults 18 and older." });
+    res.json({ targets, estimateNotice: "These are estimates, not medical advice." });
+  } catch (error) {
+    res.status(400).json({ error: error.message || "Invalid nutrition targets." });
+  }
+});
+
+app.get("/api/nutrition/manual/meals", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  const split = (value) => String(value || "").split(/[,;|\n]+/).map((item) => item.trim()).filter(Boolean).slice(0, 20);
+  res.json({ meals: searchManualMeals({
+    query: req.query.q,
+    diet: req.query.diet,
+    allergies: split(req.query.allergies),
+    exclusions: split(req.query.exclusions),
+    slot: req.query.slot || null,
+    language: req.query.language === "he" ? "he" : "en",
+    limit: req.query.limit
+  }) });
+});
+
+app.get("/api/nutrition/manual/meals/:mealId", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  const meal = mealById(req.params.mealId, { language: req.query.language === "he" ? "he" : "en" });
+  if (!meal) return res.status(404).json({ error: "Meal not found." });
+  res.json({ meal });
+});
+
 app.post("/api/nutrition-builder", async (req, res) => {
   console.log("Nutrition Builder endpoint reached");
   try {
@@ -3495,55 +3532,8 @@ app.post("/api/nutrition-builder", async (req, res) => {
     const safeConditions = Array.isArray(diagnosedConditions)
       ? diagnosedConditions.filter((condition) => allowedConditions.has(condition)).slice(0, 5)
       : [];
-    const genderOffset =
-  String(gender).toLowerCase() === "male" ? 5 : -161;
-
-const isYouth = parsedAge >= 15 && parsedAge < 18;
-const heightMeters = parsedHeight / 100;
-const bmr = 10 * parsedWeight + 6.25 * parsedHeight - 5 * parsedAge + genderOffset;
-
-const activityMultipliers = {
-  sedentary: 1.2,
-  lightlyActive: 1.375,
-  moderatelyActive: 1.55,
-  veryActive: 1.725,
-  extremelyActive: 1.9
-};
-
-const activityMultiplier =
-  activityMultipliers[activityLevel] || 1.2;
-
-const youthActivityCoefficients = String(gender).toLowerCase() === "male"
-  ? { sedentary: 1, lightlyActive: 1.13, moderatelyActive: 1.26, veryActive: 1.42, extremelyActive: 1.42 }
-  : { sedentary: 1, lightlyActive: 1.16, moderatelyActive: 1.31, veryActive: 1.56, extremelyActive: 1.56 };
-const youthPa = youthActivityCoefficients[activityLevel] || 1;
-const youthEstimatedEnergy = String(gender).toLowerCase() === "male"
-  ? 88.5 - 61.9 * parsedAge + youthPa * (26.7 * parsedWeight + 903 * heightMeters) + 25
-  : 135.3 - 30.8 * parsedAge + youthPa * (10 * parsedWeight + 934 * heightMeters) + 25;
-const maintenanceCalories = isYouth ? youthEstimatedEnergy : bmr * activityMultiplier;
-
-const isOlderAdult = parsedAge >= 65;
-const goalAdjustment = {
-  loseFat: isYouth ? 0 : isOlderAdult ? -250 : -400,
-  buildMuscle: isYouth ? 100 : isOlderAdult ? 150 : 250,
-  maintainWeight: 0,
-  improvePerformance: isYouth ? 100 : isOlderAdult ? 100 : 150
-};
-
-const targetCalories = Math.round(
-  (maintenanceCalories + (goalAdjustment[goal] || 0)) / 50
-) * 50;
-const targetProtein = Math.round(parsedWeight * (isYouth ? 1.5 : isOlderAdult ? 1.6 : 2));
-
-const targetFat = Math.round(
-  (targetCalories * 0.25) / 9
-);
-
-const targetCarbs = Math.round(
-  (targetCalories -
-    targetProtein * 4 -
-    targetFat * 9) / 4
-);
+const targets = calculateNutritionTargets({ age: parsedAge, gender, height: parsedHeight, weight: parsedWeight, activityLevel, goal });
+const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGrams: targetProtein, carbsGrams: targetCarbs, fatGrams: targetFat, isYouth, isOlderAdult } = targets;
 
     if (
       !Number.isFinite(parsedAge) ||
