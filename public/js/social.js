@@ -54,7 +54,7 @@ trackPageView({ page: "social" });
 function applyTranslations() {
   const labels = {
     friendsTab: "friends", dashboardLink: "dashboard", identityEyebrow: "identityEyebrow",
-    identityTitle: "identityTitle", identityText: "identityText", usernameLabel: "username", usernameHint: "usernameHint",
+    identityTitle: "identityTitle", identityText: "identityText", usernameLabel: "username", usernameHint: "usernameHint", profilePreviewTitle: "profile", profilePreviewEyebrow: "socialProfile",
     discoverableLabel: "discoverable", saveUsernameButton: "createProfile", inboxEyebrow: "private", inboxTitle: "messages",
     friendsEyebrow: "circle", friendsTitle: "friends", friendsIntro: "friendsIntro", searchButton: "search",
     searchResultsTitle: "searchResults", receivedTitle: "received", sentTitle: "sent", friendListTitle: "yourFriends",
@@ -115,7 +115,13 @@ async function api(path, options = {}) {
 }
 
 function avatar(profile = {}, large = false) {
-  return `<span class="avatar${large ? " avatar-large" : ""}" aria-hidden="true">${escapeHtml(profile.initials || initials(profile))}</span>`;
+  const fallback = escapeHtml(profile.initials || initials(profile));
+  const photo = typeof profile.photoURL === "string" && /^https:\/\//i.test(profile.photoURL)
+    ? `<img src="${escapeHtml(profile.photoURL)}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">`
+    : "";
+  const body = `${photo}<span${photo ? " hidden" : ""}>${fallback}</span>`;
+  const label = escapeHtml(profile.displayName || profile.username || "Open profile");
+  return `<${profile.interactive ? "button" : "span"} class="avatar${large ? " avatar-large" : ""}${profile.interactive ? " avatar-button" : ""}"${profile.interactive ? ` type="button" data-profile-uid="${escapeHtml(profile.uid)}" aria-label="Open ${label} profile"` : " aria-hidden=\"true\""}>${body}</${profile.interactive ? "button" : "span"}>`;
 }
 
 function profileName(profile = {}) {
@@ -127,16 +133,22 @@ function username(profile = {}) {
 }
 
 function personCard(profile, actions = []) {
+  const cardProfile = { ...profile, interactive: true };
   return `<article class="person-card" data-uid="${escapeHtml(profile.uid)}">
-    ${avatar(profile)}
-    <div class="person-main"><strong>${profileName(profile)}</strong><span>${username(profile)}</span></div>
+    ${avatar(cardProfile)}
+    <div class="person-main"><button class="profile-link" type="button" data-profile-uid="${escapeHtml(profile.uid)}"><strong>${profileName(profile)}</strong><span>${username(profile)}</span></button>${badgeMarkup(profile)}</div>
     <div class="person-actions">${actions.map((action) => `<button type="button" data-action="${escapeHtml(action.action)}" data-uid="${escapeHtml(profile.uid)}"${action.id ? ` data-request-id="${escapeHtml(action.id)}"` : ""}>${escapeHtml(action.label)}</button>`).join("")}</div>
   </article>`;
 }
 
+function badgeMarkup(profile = {}) {
+  const labels = { athlete: ui.athleteBadge, pro: ui.proBadge, coach: ui.coachBadge, developer: ui.developerBadge };
+  return `<div class="profile-badges" aria-label="Badges">${(profile.badges || ["athlete"]).map((badge) => `<span class="profile-badge" data-badge="${escapeHtml(badge)}">${escapeHtml(labels[badge] || badge)}</span>`).join("")}</div>`;
+}
+
 function renderIdentityCard() {
   if (!state.profile) return;
-  $("#myIdentityCard").innerHTML = `${avatar(state.profile)}<div><strong>${profileName(state.profile)}</strong><span>@${escapeHtml(state.profile.username)}</span></div>`;
+  $("#myIdentityCard").innerHTML = `${avatar({ ...state.profile, interactive: true })}<div><button class="profile-link" type="button" data-profile-uid="${escapeHtml(state.profile.uid)}"><strong>${profileName(state.profile)}</strong><span>@${escapeHtml(state.profile.username)}</span></button>${badgeMarkup(state.profile)}<a class="profile-edit-link" href="/app.html?settings=open&section=profile">${escapeHtml(ui.editProfile)}</a></div>`;
 }
 
 function renderRelationships() {
@@ -370,7 +382,7 @@ async function openConversation(conversationOrId) {
   $("#chatPanel").hidden = false;
   $("#chatFriendName").textContent = conversation.profile?.displayName || conversation.profile?.username || "FuelPhysique member";
   $("#chatFriendUsername").textContent = conversation.profile?.username ? `@${conversation.profile.username}` : "";
-  $("#chatAvatar").textContent = conversation.profile?.initials || initials(conversation.profile);
+  $("#chatAvatar").innerHTML = avatar({ ...conversation.profile, interactive: true }, true);
   $("#messageSkeletons").hidden = false;
   try {
     const data = await api(`/conversations/${encodeURIComponent(conversation.id)}/messages`);
@@ -717,11 +729,39 @@ async function saveIdentity(event) {
   }
 }
 
+function renderProfilePreview(profile) {
+  $("#profilePreviewAvatar").innerHTML = avatar(profile, true).replace(/data-profile-uid="[^"]*"/g, "");
+  $("#profilePreviewTitle").textContent = profile.displayName || profile.username || ui.profile;
+  $("#profilePreviewUsername").textContent = profile.username ? `@${profile.username}` : "";
+  $("#profilePreviewBio").textContent = profile.bio || "";
+  $("#profilePreviewBadges").innerHTML = badgeMarkup(profile);
+  const action = $("#profilePreviewAction");
+  const friend = state.relationships.friends.some((item) => item.profile.uid === profile.uid);
+  const pending = [...state.relationships.sent, ...state.relationships.received].some((item) => item.profile.uid === profile.uid);
+  action.hidden = profile.uid === state.user.uid;
+  action.textContent = friend ? ui.messageAction : pending ? ui.requested : ui.addFriend;
+  action.disabled = pending;
+  action.dataset.profileAction = friend ? "message" : "request";
+  action.dataset.uid = profile.uid;
+}
+
+async function openProfilePreview(uid) {
+  try {
+    const data = await api(`/profiles/${encodeURIComponent(uid)}`);
+    renderProfilePreview(data.profile);
+    $("#profileDialog").showModal();
+  } catch (error) {
+    toast(error.message, true);
+  }
+}
+
 function bindEvents() {
   document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => setView(button.dataset.view)));
   $("#identityForm").addEventListener("submit", saveIdentity);
   $("#userSearchForm").addEventListener("submit", searchUsers);
   $("#friendsView").addEventListener("click", (event) => {
+    const profileTarget = event.target.closest("[data-profile-uid]");
+    if (profileTarget) { openProfilePreview(profileTarget.dataset.profileUid); return; }
     const button = event.target.closest("button[data-action]");
     if (button) relationshipAction(button);
   });
@@ -771,6 +811,21 @@ function bindEvents() {
     if (!targetUid || !window.confirm(language === "he" ? "לחסום את המשתמש?" : "Block this user and stop new messages?")) return;
     try { stopTypingChannel(); await api("/blocks", { method: "POST", body: JSON.stringify({ targetUid }) }); state.activeConversation = null; $("#chatPanel").hidden = true; $("#chatEmpty").hidden = false; await Promise.all([loadRelationships(), loadConversations()]); }
     catch (error) { toast(error.message, true); }
+  });
+  $("#chatAvatar").addEventListener("click", (event) => {
+    const profileTarget = event.target.closest("[data-profile-uid]");
+    if (profileTarget) openProfilePreview(state.activeConversation?.profile?.uid);
+  });
+  $("#profilePreviewAction").addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    if (button.dataset.profileAction === "message") {
+      $("#profileDialog").close();
+      await startConversation(button.dataset.uid);
+    } else if (button.dataset.profileAction === "request") {
+      button.disabled = true;
+      try { await api("/friend-requests", { method: "POST", body: JSON.stringify({ targetUid: button.dataset.uid }) }); $("#profileDialog").close(); await Promise.all([loadRelationships(), loadConversations()]); }
+      catch (error) { toast(error.message, true); button.disabled = false; }
+    }
   });
   window.addEventListener("popstate", () => {
     stopArtifactSubscription();

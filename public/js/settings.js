@@ -13,6 +13,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
+import { directImageKitUpload } from "./imagekit-upload.js";
 
 /*
  * FuelPhysique AI — Settings Controller
@@ -36,6 +37,12 @@ const elements = {
 
     fullName: document.getElementById("settingsFullName"),
     email: document.getElementById("settingsEmail"),
+    socialPhoto: document.getElementById("settingsSocialPhoto"),
+    socialPhotoPreview: document.getElementById("settingsSocialPhotoPreview"),
+    socialPhotoFallback: document.getElementById("settingsSocialPhotoFallback"),
+    socialDisplayName: document.getElementById("settingsSocialDisplayName"),
+    socialUsername: document.getElementById("settingsSocialUsername"),
+    socialBio: document.getElementById("settingsSocialBio"),
     age: document.getElementById("settingsAge"),
     weight: document.getElementById("settingsWeight"),
     height: document.getElementById("settingsHeight"),
@@ -75,6 +82,7 @@ let activeUser = null;
 let loadedSettings = {};
 let isSaving = false;
 let systemThemeQuery = null;
+let loadedSocialProfile = null;
 
 function normalizeText(value) {
     return typeof value === "string"
@@ -114,6 +122,78 @@ function setCheckboxValue(element, value = false) {
     if (element) {
         element.checked = Boolean(value);
     }
+}
+
+async function socialApi(path, options = {}) {
+    const user = auth.currentUser || activeUser;
+    if (!user) throw new Error("Authentication is required.");
+    const response = await fetch(`/api/social${path}`, {
+        ...options,
+        headers: {
+            Authorization: `Bearer ${await user.getIdToken()}`,
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...(options.headers || {})
+        }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || "Could not save your Social profile.");
+    return data;
+}
+
+function renderSocialPhoto(profile = {}, user = activeUser) {
+    const source = profile.photoURL || user?.photoURL || "";
+    if (elements.socialPhotoPreview && source) {
+        elements.socialPhotoPreview.src = source;
+        elements.socialPhotoPreview.hidden = false;
+        if (elements.socialPhotoFallback) elements.socialPhotoFallback.hidden = true;
+    } else {
+        if (elements.socialPhotoPreview) elements.socialPhotoPreview.hidden = true;
+        if (elements.socialPhotoFallback) {
+            elements.socialPhotoFallback.hidden = false;
+            elements.socialPhotoFallback.textContent = (profile.initials || "FP").slice(0, 3);
+        }
+    }
+}
+
+async function loadSocialProfile(user) {
+    try {
+        const data = await socialApi("/identity");
+        loadedSocialProfile = data.profile || null;
+        setInputValue(elements.socialDisplayName, loadedSocialProfile?.displayName || user.displayName || "");
+        setInputValue(elements.socialUsername, loadedSocialProfile?.username || "");
+        setInputValue(elements.socialBio, loadedSocialProfile?.bio || "");
+        renderSocialPhoto(loadedSocialProfile || {}, user);
+    } catch (error) {
+        loadedSocialProfile = null;
+        renderSocialPhoto({}, user);
+        console.warn("Could not load Social profile settings:", error.message);
+    }
+}
+
+async function saveSocialProfile(user) {
+    const username = normalizeText(elements.socialUsername?.value);
+    const displayName = normalizeText(elements.socialDisplayName?.value) || normalizeText(elements.fullName?.value) || user.displayName || username;
+    if (!username) return null;
+    const file = elements.socialPhoto?.files?.[0];
+    let photoURL = loadedSocialProfile?.photoURL || user.photoURL || "";
+    if (file) {
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) throw new Error("Profile photos must be JPEG, PNG or WebP.");
+        if (file.size > 5 * 1024 * 1024) throw new Error("Profile photos must be 5 MB or smaller.");
+        const extension = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+        const upload = await directImageKitUpload({
+            file,
+            fileName: `profile-${user.uid}.${extension}`,
+            folder: `/fuelphysique/users/${user.uid}/social-profile`,
+            isPrivateFile: false,
+            tags: ["social-profile"]
+        });
+        photoURL = upload.url || upload.filePath || photoURL;
+    }
+    const body = { username, displayName, bio: elements.socialBio?.value || "", photoURL };
+    const data = await socialApi(loadedSocialProfile ? "/profile" : "/identity/username", { method: "PUT", body: JSON.stringify(body) });
+    loadedSocialProfile = data.profile || loadedSocialProfile;
+    renderSocialPhoto(loadedSocialProfile || {}, user);
+    return loadedSocialProfile;
 }
 
 function getSelectedTheme() {
@@ -667,6 +747,7 @@ async function loadSettings(user) {
             user,
             loadedSettings
         );
+        await loadSocialProfile(user);
         window.dispatchEvent(
             new CustomEvent(
                 "ofekai:settings-loaded",
@@ -766,6 +847,8 @@ async function saveSettings() {
                 merge: true
             }
         );
+
+        await saveSocialProfile(user);
 
         if (
             user.displayName !==
@@ -908,6 +991,22 @@ function bindEvents() {
             );
         }
     );
+
+    elements.socialPhoto?.addEventListener("change", () => {
+        const file = elements.socialPhoto.files?.[0];
+        if (!file) return renderSocialPhoto(loadedSocialProfile || {}, activeUser);
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 5 * 1024 * 1024) {
+            setStatus("Choose a JPEG, PNG or WebP image up to 5 MB.", "error");
+            elements.socialPhoto.value = "";
+            return;
+        }
+        const previewUrl = URL.createObjectURL(file);
+        if (elements.socialPhotoPreview) {
+            elements.socialPhotoPreview.src = previewUrl;
+            elements.socialPhotoPreview.hidden = false;
+        }
+        if (elements.socialPhotoFallback) elements.socialPhotoFallback.hidden = true;
+    });
 }
 
 applyStoredThemeImmediately();

@@ -25,6 +25,11 @@ service cloud.firestore {
       return signedIn() && request.auth.uid == uid;
     }
 
+    function validPublicProfilePhoto(data) {
+      return data.photoURL == ''
+        || data.photoURL.matches('https://(ik\\.imagekit\\.io|lh3\\.googleusercontent\\.com)/.*');
+    }
+
     function isLeaderboardAdmin() {
       return signedIn()
         && request.auth.token.email == "ofek1845@gmail.com";
@@ -105,7 +110,21 @@ service cloud.firestore {
     match /socialProfiles/{uid} {
       allow get: if isSelf(uid)
         || (signedIn() && resource.data.discoverable == true);
-      allow list, create, update, delete: if false;
+      allow update: if isSelf(uid)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.username == resource.data.username
+        && request.resource.data.usernameLower == resource.data.usernameLower
+        && request.resource.data.publicRole == resource.data.publicRole
+        && request.resource.data.badges == resource.data.badges
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'bio', 'photoURL', 'discoverable', 'allowFriendRequests', 'updatedAt'
+        ])
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 80
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 160
+        && validPublicProfilePhoto(request.resource.data);
+      allow list, create, delete: if false;
     }
 
     match /friendRequests/{requestId} {

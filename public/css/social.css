@@ -136,6 +136,8 @@ html[data-theme="light"] .conversation-rail { background: rgba(240,248,255,.7); 
 .conversation-meta { display: grid; justify-items: end; gap: 5px; color: var(--social-muted); font-size: 10px; }
 .conversation-meta b { min-width: 18px; min-height: 18px; display: grid; place-items: center; border-radius: 50%; color: #062031; background: var(--social-cyan); font-size: 10px; }
 .avatar { position: relative; display: grid; place-items: center; width: 46px; height: 46px; flex: 0 0 auto; border: 1px solid rgba(108, 215, 247, .34); border-radius: 50%; color: #effcff; background: linear-gradient(145deg, rgba(39, 128, 212, .8), rgba(30, 179, 190, .55)); box-shadow: 0 0 0 4px rgba(72, 179, 228, .06), 0 8px 24px rgba(24, 102, 176, .2); font-weight: 900; }
+.avatar img { width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.avatar-button { padding: 0; cursor: pointer; }
 .avatar-large { width: 52px; height: 52px; }
 .rail-empty { padding: 40px 18px; text-align: center; color: var(--social-muted); }
 .rail-empty span { color: var(--social-cyan); font-size: 28px; }
@@ -164,6 +166,14 @@ html[data-theme="light"] .user-search { background: rgba(255,255,255,.74); }
 .person-main { min-width: 0; }
 .person-main strong, .person-main > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .person-main > span { color: var(--social-muted); font-size: 13px; }
+.profile-link { display: block; max-width: 100%; padding: 0; border: 0; color: inherit; background: transparent; text-align: start; cursor: pointer; }
+.profile-link strong, .profile-link span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.profile-link span { color: var(--social-muted); font-size: 13px; }
+.profile-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.profile-badge { display: inline-flex; align-items: center; min-height: 21px; padding: 2px 7px; border: 1px solid rgba(154, 190, 212, .3); border-radius: 999px; color: #d7e9f4; background: rgba(106, 145, 170, .14); font-size: 10px; font-weight: 900; letter-spacing: .02em; }
+.profile-badge[data-badge="pro"] { border-color: rgba(241, 190, 98, .42); color: #ffe3a2; background: rgba(200, 145, 37, .14); }
+.profile-badge[data-badge="coach"] { border-color: rgba(91, 224, 177, .42); color: #b5ffdf; background: rgba(39, 168, 121, .14); }
+.profile-badge[data-badge="developer"] { border-color: rgba(170, 139, 255, .42); color: #d9cfff; background: rgba(111, 77, 205, .17); }
 .person-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 7px; }
 .person-actions button { min-height: 36px; padding: 6px 11px; border: 1px solid var(--social-border); border-radius: 10px; color: var(--social-text); background: rgba(68, 169, 255, .06); font-weight: 800; cursor: pointer; }
 .person-actions button[data-action="accept"], .person-actions button[data-action="message"], .person-actions button[data-action="request"] { border-color: rgba(83, 218, 187, .28); background: rgba(61, 190, 150, .1); }
@@ -233,6 +243,7 @@ html[data-theme="light"] .composer { background: rgba(250,253,255,.92); }
 .share-menu button { padding: 9px 11px; border: 0; border-radius: 9px; color: var(--social-text); background: transparent; text-align: start; cursor: pointer; }.share-menu button:hover { background: rgba(59, 166, 228, .1); }
 
 .social-dialog { width: min(650px, calc(100% - 24px)); max-height: calc(100vh - 30px); overflow: auto; padding: 24px; border: 1px solid var(--social-border-hot); border-radius: 24px; color: var(--social-text); background: var(--social-panel-strong); box-shadow: 0 36px 120px rgba(0, 5, 18, .7); }
+.profile-preview-head { display: flex; align-items: center; gap: 14px; }.profile-preview-head h2 { margin: 4px 0; }.profile-preview-head p { margin: 0; color: var(--social-muted); }.profile-preview-bio { min-height: 1.5em; margin: 20px 0 12px; white-space: pre-wrap; overflow-wrap: anywhere; unicode-bidi: plaintext; }.profile-preview-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
 .social-dialog::backdrop { background: rgba(1, 7, 14, .76); backdrop-filter: blur(7px); }
 .dialog-close-row { display: flex; justify-content: flex-end; }.dialog-copy h2 { margin: 5px 0; font-size: 30px; }.dialog-copy p { color: var(--social-muted); }
 .share-form { display: grid; gap: 10px; margin-top: 22px; }.share-form select { min-height: 48px; padding: 8px 12px; border: 1px solid var(--social-border); border-radius: 13px; color: var(--social-text); background: rgba(19, 40, 62, .9); }

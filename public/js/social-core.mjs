@@ -1,5 +1,6 @@
 export const SOCIAL_STRINGS = {
   en: {
+    socialProfile: "SOCIAL PROFILE", profile: "Profile", editProfile: "Edit profile", athleteBadge: "Athlete", proBadge: "Pro", coachBadge: "Coach", developerBadge: "Developer",
     typing: "is typing…",
     friends: "Friends", messages: "Messages", dashboard: "Dashboard", identityEyebrow: "YOUR SOCIAL ID",
     identityTitle: "Choose your FuelPhysique username", identityText: "Friends will use this username to find you. Your email and private fitness data are never shown.",
@@ -18,6 +19,7 @@ export const SOCIAL_STRINGS = {
     copyAsIs: "Copy As-Is", copiedFrom: "Copied from", graphSummary: "Accessible graph summary", noData: "There is not enough data to share this graph yet."
   },
   he: {
+    socialProfile: "פרופיל חברתי", profile: "פרופיל", editProfile: "עריכת פרופיל", athleteBadge: "ספורטאי", proBadge: "Pro", coachBadge: "מאמן", developerBadge: "מפתח",
     typing: "מקליד…",
     friends: "חברים", messages: "הודעות", dashboard: "לוח הבקרה", identityEyebrow: "הזהות החברתית שלך",
     identityTitle: "בחרו שם משתמש ב־FuelPhysique", identityText: "חברים ימצאו אתכם בעזרת שם המשתמש. האימייל ונתוני הכושר הפרטיים לעולם אינם מוצגים.",

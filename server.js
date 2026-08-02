@@ -578,6 +578,7 @@ async function requireFirebaseUser(req, res) {
 
 app.use("/api/social", createSocialRouter({
   authenticate: requireFirebaseUser,
+  authorizeAdmin: isLeaderboardAdmin,
   rateLimiters: {
     search: rateLimiters.socialSearch,
     relationships: rateLimiters.socialRelationships,

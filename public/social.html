@@ -156,6 +156,17 @@
     </form>
   </dialog>
 
+  <dialog id="profileDialog" class="social-dialog profile-dialog" aria-labelledby="profilePreviewTitle">
+    <form method="dialog" class="dialog-close-row"><button class="icon-button" aria-label="Close profile preview">×</button></form>
+    <div class="profile-preview-head">
+      <div id="profilePreviewAvatar" class="avatar avatar-large" aria-hidden="true"></div>
+      <div><span class="eyebrow" id="profilePreviewEyebrow">SOCIAL PROFILE</span><h2 id="profilePreviewTitle">Profile</h2><p id="profilePreviewUsername"></p></div>
+    </div>
+    <p id="profilePreviewBio" class="profile-preview-bio"></p>
+    <div id="profilePreviewBadges" class="profile-badges" aria-label="Badges"></div>
+    <div class="profile-preview-actions"><button id="profilePreviewAction" class="primary-button" type="button" hidden></button></div>
+  </dialog>
+
   <dialog id="previewDialog" class="social-dialog preview-dialog" aria-labelledby="previewTitle">
     <div class="preview-sticky-head"><div><span id="previewType" class="eyebrow"></span><h2 id="previewTitle">Shared item</h2><p id="previewAttribution"></p></div><button id="closePreviewButton" class="icon-button" type="button" aria-label="Close preview">✕</button></div>
     <div id="previewWarnings" class="preview-warnings" hidden></div>

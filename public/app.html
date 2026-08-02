@@ -567,6 +567,26 @@ html[data-theme="light"] .coach-back-link {
       resize: vertical;
     }
 
+    .settings-social-photo {
+      width: 88px;
+      height: 88px;
+      display: grid;
+      place-items: center;
+      margin: 0 0 14px;
+      overflow: hidden;
+      border: 1px solid rgba(110, 159, 194, 0.35);
+      border-radius: 50%;
+      color: #dff8ff;
+      background: linear-gradient(145deg, #197fc6, #1aa5ac);
+      font-weight: 900;
+    }
+
+    .settings-social-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .settings-field input:focus,
     .settings-field select:focus,
     .settings-field textarea:focus {
@@ -1112,6 +1132,30 @@ html[data-theme="light"] .coach-back-link {
       autocomplete="email"
       disabled
     />
+  </label>
+
+  <h4>Social profile</h4>
+  <p class="settings-description">This public profile is limited to your photo, name, username and short bio. Private fitness data is never shown.</p>
+  <div class="settings-social-photo">
+    <img id="settingsSocialPhotoPreview" alt="Social profile preview" hidden>
+    <span id="settingsSocialPhotoFallback" aria-hidden="true">FP</span>
+  </div>
+  <label class="settings-field">
+    <span>Profile photo</span>
+    <input id="settingsSocialPhoto" type="file" accept="image/jpeg,image/png,image/webp">
+    <small>JPEG, PNG or WebP up to 5 MB. A square crop is used in Social.</small>
+  </label>
+  <label class="settings-field">
+    <span>Social display name</span>
+    <input id="settingsSocialDisplayName" type="text" maxlength="80" autocomplete="name">
+  </label>
+  <label class="settings-field">
+    <span>Username</span>
+    <input id="settingsSocialUsername" type="text" maxlength="20" autocomplete="username" pattern="[A-Za-z0-9_](?:[A-Za-z0-9_.]{1,18}[A-Za-z0-9_])?">
+  </label>
+  <label class="settings-field">
+    <span>Bio</span>
+    <textarea id="settingsSocialBio" rows="3" maxlength="160" placeholder="A short public description"></textarea>
   </label>
 </section>
 
