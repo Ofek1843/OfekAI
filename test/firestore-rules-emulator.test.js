@@ -81,9 +81,9 @@ async function seed() {
     batch.set(doc(db, "leaderboardEntries/entry-a"), { status: "approved", displayName: "Alice" });
     batch.set(doc(db, "shares/legacy-share"), { userId: "alice", planId: "plan-a" });
 
-    batch.set(doc(db, "socialProfiles/alice"), { uid: "alice", username: "alice", discoverable: true });
-    batch.set(doc(db, "socialProfiles/bob"), { uid: "bob", username: "bob", discoverable: true });
-    batch.set(doc(db, "socialProfiles/carol"), { uid: "carol", username: "carol", discoverable: false });
+    batch.set(doc(db, "socialProfiles/alice"), { uid: "alice", username: "alice", usernameLower: "alice", displayName: "Alice", initials: "A", bio: "", photoURL: "", publicRole: "athlete", badges: ["athlete"], discoverable: true, allowFriendRequests: true });
+    batch.set(doc(db, "socialProfiles/bob"), { uid: "bob", username: "bob", usernameLower: "bob", displayName: "Bob", initials: "B", bio: "", photoURL: "", publicRole: "athlete", badges: ["athlete"], discoverable: true, allowFriendRequests: true });
+    batch.set(doc(db, "socialProfiles/carol"), { uid: "carol", username: "carol", usernameLower: "carol", displayName: "Carol", initials: "C", bio: "", photoURL: "", publicRole: "athlete", badges: ["athlete"], discoverable: false, allowFriendRequests: true });
     batch.set(doc(db, "usernames/alice"), { uid: "alice", usernameLower: "alice" });
     batch.set(doc(db, "friendRequests/alice_bob"), { fromUid: "alice", toUid: "bob", status: "pending" });
     batch.set(doc(db, "friendships/alice_bob"), { participants: ["alice", "bob"], status: "accepted" });
@@ -179,6 +179,24 @@ test("social reads are authenticated and participant/owner scoped", async () => 
   await assertSucceeds(getDoc(doc(a, "sharedArtifacts/artifact-active")));
   await assertFails(getDoc(doc(c, "sharedArtifacts/artifact-active")));
   await assertFails(getDoc(doc(b, "sharedArtifacts/artifact-revoked")));
+});
+
+test("profile updates are self-only and cannot change username, badges or arbitrary fields", async () => {
+  await seed();
+  const a = alice();
+  const b = bob();
+  await assertSucceeds(updateDoc(doc(a, "socialProfiles/alice"), {
+    displayName: "Alice Updated",
+    bio: "Strong and steady",
+    photoURL: "https://lh3.googleusercontent.com/a/profile"
+  }));
+  await assertFails(updateDoc(doc(b, "socialProfiles/alice"), { bio: "forged" }));
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), { badges: ["athlete", "coach"] }));
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), { publicRole: "pro" }));
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), { username: "forged_username" }));
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), { privateNote: "secret" }));
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), { photoURL: "https://evil.example/profile" }));
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), { bio: "x".repeat(161) }));
 });
 
 test("social conversation reads require accepted friendship and reciprocal block state", async () => {

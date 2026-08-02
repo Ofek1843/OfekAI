@@ -13,6 +13,11 @@ const DASHBOARD = fs.readFileSync(path.join(ROOT, "public", "dashboard.html"), "
 const WORKOUTS = fs.readFileSync(path.join(ROOT, "public", "js", "my-workout-plans.js"), "utf8");
 const NUTRITION = fs.readFileSync(path.join(ROOT, "public", "js", "my-nutrition-plans.js"), "utf8");
 
+// Keep the focused release regressions in the regular npm test graph as well.
+require("./social-profile.test.js");
+require("./manual-nutrition.test.js");
+require("./nutrition-targets.test.js");
+
 test("social page exposes friends, requests, conversations and username onboarding", () => {
   for (const id of ["identityForm", "userSearchForm", "receivedRequests", "sentRequests", "friendList", "conversationList", "messageForm"]) {
     assert.match(HTML, new RegExp(`id="${id}"`));
