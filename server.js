@@ -3458,15 +3458,18 @@ app.get("/api/nutrition/manual/meals", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   const split = (value) => String(value || "").split(/[,;|\n]+/).map((item) => item.trim()).filter(Boolean).slice(0, 20);
-  res.json({ meals: searchManualMeals({
+  const result = searchManualMeals({
     query: req.query.q,
     diet: req.query.diet,
     allergies: split(req.query.allergies),
     exclusions: split(req.query.exclusions),
     slot: req.query.slot || null,
+    categories: split(req.query.categories),
     language: req.query.language === "he" ? "he" : "en",
-    limit: req.query.limit
-  }) });
+    limit: req.query.limit || 8,
+    offset: req.query.offset || 0
+  });
+  res.json(result);
 });
 
 app.get("/api/nutrition/manual/meals/:mealId", async (req, res) => {

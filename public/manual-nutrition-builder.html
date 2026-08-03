@@ -10,7 +10,7 @@
 <body>
   <main class="manual-nutrition-page">
     <nav class="manual-nav"><a href="/my-nutrition-plans.html">← My Nutrition Plans</a><a href="/dashboard.html">Dashboard</a></nav>
-    <header class="manual-hero"><span class="manual-kicker">FUELPHYSIQUE · ZERO-COST BUILDER</span><h1 id="pageTitle">Build nutrition manually</h1><p id="pageIntro">Set your estimated targets, choose meals from the local catalog, and save a plan without AI generation.</p></header>
+    <header class="manual-hero"><span class="manual-kicker">FUELPHYSIQUE · ZERO-COST BUILDER</span><h1 id="pageTitle">Build nutrition manually</h1><p id="pageIntro">Set your estimated targets, discover compatible meals, and save a plan without AI generation.</p></header>
     <p id="pageStatus" class="manual-status" role="status" aria-live="polite"></p>
 
     <section class="builder-step panel" aria-labelledby="targetsTitle">
@@ -31,21 +31,31 @@
       <div id="targetSummary" class="target-summary" hidden></div>
     </section>
 
-    <section class="builder-step panel" aria-labelledby="libraryTitle">
-      <div class="step-heading"><span>02</span><div><h2 id="libraryTitle">Choose from the meal library</h2><p>Search titles, ingredients, tags and English or Hebrew names.</p></div></div>
-      <form id="mealSearchForm" class="meal-search"><label class="sr-only" for="mealQuery">Search meals</label><input id="mealQuery" placeholder="Try banana, breakfast, high-protein or בננה"><select id="mealSlot"><option value="">All meal times</option><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select><button class="secondary-action" type="submit">Search</button></form>
-      <div id="mealResults" class="meal-results" aria-live="polite"></div>
-    </section>
+    <div class="builder-workspace">
+      <section class="builder-step panel discovery-panel" aria-labelledby="libraryTitle">
+        <div class="step-heading"><span>02</span><div><h2 id="libraryTitle">Discover meals</h2><p>Search after two characters, or browse a category. Results stay bounded for a faster builder.</p></div></div>
+        <form id="mealSearchForm" class="meal-search">
+          <label class="sr-only" for="mealQuery">Search meals</label>
+          <input id="mealQuery" autocomplete="off" placeholder="Try banana, chicken, quinoa or a Hebrew name">
+          <select id="mealSlot" aria-label="Meal time"><option value="">All meal times</option><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select>
+          <button class="secondary-action" type="submit">Search</button>
+        </form>
+        <div class="category-toolbar"><div id="categoryChips" class="category-chips" aria-label="Meal categories"></div><button id="clearMealFilters" type="button" class="text-action">Clear filters</button></div>
+        <div id="mealResults" class="meal-results" aria-live="polite"></div>
+        <button id="loadMoreMeals" type="button" class="secondary-action load-more" hidden>Load more</button>
+      </section>
 
-    <section class="builder-step panel" aria-labelledby="selectedTitle">
-      <div class="step-heading"><span>03</span><div><h2 id="selectedTitle">Your daily menu</h2><p>Adjust portions and order. Totals always equal the visible meals.</p></div></div>
-      <div id="selectedMeals" class="selected-meals"></div>
-      <div id="runningTotals" class="running-totals" hidden></div>
-      <div class="save-row"><label>Plan title<input id="planTitle" maxlength="80" placeholder="My manual nutrition plan"></label><button id="savePlan" class="primary-action" type="button">Save plan</button></div>
-      <p id="saveStatus" class="manual-status" role="status" aria-live="polite"></p>
-      <a id="shareSavedPlan" class="secondary-action share-saved" href="#" hidden>Share this plan with a friend</a>
-    </section>
+      <aside id="dailyMenuPanel" class="daily-menu-panel panel" aria-labelledby="selectedTitle" aria-hidden="false">
+        <div class="menu-panel-heading"><div class="step-heading"><span>03</span><div><h2 id="selectedTitle">Your daily menu</h2><p>Adjust portions and order. Totals equal the visible meals.</p></div></div><button id="closeMenuDrawer" class="drawer-close" type="button" aria-label="Close menu">×</button></div>
+        <div id="selectedMeals" class="selected-meals"></div>
+        <div id="runningTotals" class="running-totals" hidden></div>
+        <div class="save-row"><label>Plan title<input id="planTitle" maxlength="80" placeholder="My manual nutrition plan"></label><button id="savePlan" class="primary-action" type="button">Save plan</button></div>
+        <p id="saveStatus" class="manual-status" role="status" aria-live="polite"></p>
+        <a id="shareSavedPlan" class="secondary-action share-saved" href="#" hidden>Share this plan with a friend</a>
+      </aside>
+    </div>
   </main>
+  <button id="mobileMenuToggle" class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="dailyMenuPanel" hidden><span id="mobileMenuCount">0 meals</span><strong id="mobileMenuCalories">0 kcal</strong><span>View menu</span></button>
   <script type="module" src="/js/manual-nutrition-builder.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
