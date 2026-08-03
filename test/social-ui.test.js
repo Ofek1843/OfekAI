@@ -31,6 +31,7 @@ test("chat has bounded history, retry, tombstones and duplicate-send keys", () =
   assert.match(JS, /retry-message/);
   assert.match(JS, /delete-message/);
   assert.match(JS, /safeClientId\(\)/);
+  assert.match(JS, /if \(state\.activeConversation\) startTypingChannel\(state\.activeConversation\.id\)/);
   assert.match(HTML, /maxlength="2000"/);
 });
 

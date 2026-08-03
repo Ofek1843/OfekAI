@@ -54,4 +54,7 @@ test("manual builder applies Settings locale direction and keeps keyboard focus 
   assert.match(MANUAL_BUILDER, /document\.documentElement\.dir = state\.language === "he" \? "rtl" : "ltr"/);
   assert.match(MANUAL_CSS, /button:focus-visible, a:focus-visible/);
   assert.match(MANUAL_CSS, /prefers-reduced-motion: reduce/);
+  assert.match(MANUAL_BUILDER, /servings: item\.servings/);
+  assert.match(MANUAL_BUILDER, /baseFoods: item\.foods/);
+  assert.match(MANUAL_BUILDER, /foods: option\.baseFoods \|\| option\.foods/);
 });

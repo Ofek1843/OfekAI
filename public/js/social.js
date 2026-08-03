@@ -491,6 +491,7 @@ async function sendMessage(event, retryText = null) {
     state.messages = mergeMessages(state.messages.filter((message) => message.id !== optimisticId), [optimistic]);
     renderMessages();
   } finally {
+    if (state.activeConversation) startTypingChannel(state.activeConversation.id);
     window.setTimeout(() => $("#sendButton").classList.remove("is-sending"), 450);
   }
 }
