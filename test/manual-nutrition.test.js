@@ -128,7 +128,7 @@ test("selection state and serving controls remain client-side across discovery c
   assert.match(MANUAL_BUILDER, /AbortController/);
 });
 
-test("catalog expansion has 50 unique slugs, derived nutrition and image fallbacks", () => {
+test("catalog expansion has 50 unique slugs, derived nutrition and imported images", () => {
   assert.equal(CATALOG.length, 125);
   assert.equal(new Set(CATALOG.map(meal => meal.id)).size, 125);
   assert.equal(MANIFEST.newMeals.length, 50);
@@ -138,7 +138,7 @@ test("catalog expansion has 50 unique slugs, derived nutrition and image fallbac
     assert.ok(meal, entry.slug);
     assert.equal(entry.imageKey, entry.slug);
     assert.notEqual(meal.he, meal.en, `${entry.slug} needs Hebrew display copy`);
-    assert.equal(meal.image, null);
+    assert.equal(meal.image, `/images/meals/${entry.slug}.png`);
     assert.match(entry.expectedPng, new RegExp(entry.slug + "\\.png$"));
     assert.match(entry.expectedWebp, new RegExp(entry.slug + "\\.webp$"));
   }
