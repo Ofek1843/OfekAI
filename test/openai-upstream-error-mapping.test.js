@@ -12,6 +12,7 @@ const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const net = require("node:net");
 const path = require("node:path");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 function getAvailablePort() {
   return new Promise((resolve, reject) => {
@@ -71,7 +72,7 @@ async function startServer(port, extraEnv = {}) {
 }
 
 function stopServer(server) {
-  if (server?.child && !server.child.killed) server.child.kill();
+  stopChildProcess(server?.child);
 }
 
 let tokenCounter = 0;
@@ -102,6 +103,7 @@ function buildWorkoutPayload(overrides = {}) {
 
 // --- Server with upstream failure simulation active ---
 
+test.describe("OpenAI upstream error mapping", { concurrency: false }, () => {
 let upstreamFailureServer;
 
 test.before(async () => {
@@ -373,4 +375,5 @@ test("a repeated empty response fails with 502 after the single retry", async (t
   assert.equal(data.error, "The workout service returned an incomplete response. Please try again.");
   const stderr = server.getStderr();
   assert.equal((stderr.match(/retrying once/g) || []).length, 1, "Only one retry is allowed");
+});
 });

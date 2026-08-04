@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -37,6 +38,6 @@ test("/health exposes the Render commit as a non-secret build identifier", async
     assert.equal(typeof body.uptime, "number");
     assert.equal(typeof body.now, "string");
   } finally {
-    server.kill();
+    stopChildProcess(server);
   }
 });

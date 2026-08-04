@@ -10,6 +10,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 function startServer(port, extraEnv = {}) {
   return new Promise((resolve, reject) => {
@@ -51,7 +52,7 @@ function startServer(port, extraEnv = {}) {
 }
 
 function stopServer(server) {
-  if (server?.child && !server.child.killed) server.child.kill();
+  stopChildProcess(server?.child);
 }
 
 let tokenCounter = 0;

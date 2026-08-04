@@ -10,6 +10,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 // Keep this integration server distinct from workout-tracker-exercise-images
 // (4174) and pwa-installability (4175): node --test runs files concurrently.
@@ -63,9 +64,7 @@ test.before(async () => {
 });
 
 test.after(() => {
-  if (serverProcess && !serverProcess.killed) {
-    serverProcess.kill();
-  }
+  stopChildProcess(serverProcess);
 });
 
 function buildRepro(overrides = {}) {

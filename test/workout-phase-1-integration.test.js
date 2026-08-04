@@ -14,6 +14,7 @@ const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
 const { normalizeEquipment } = require("../lib/workout-validator");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 const PORT = 4173;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
@@ -70,9 +71,7 @@ test.before(async () => {
 });
 
 test.after(() => {
-  if (serverProcess && !serverProcess.killed) {
-    serverProcess.kill();
-  }
+  stopChildProcess(serverProcess);
 });
 
 function buildWorkoutPayload(overrides = {}) {

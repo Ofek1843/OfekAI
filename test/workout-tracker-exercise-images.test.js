@@ -15,6 +15,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 const ROOT = path.join(__dirname, "..");
 const EXERCISE_DIR = path.join(ROOT, "public", "images", "exercises");
@@ -354,5 +355,5 @@ test("resolved exercise image URLs return HTTP 200 from the real server", async 
     await res.arrayBuffer();
   });
 
-  if (serverProcess && !serverProcess.killed) serverProcess.kill();
+  stopChildProcess(serverProcess);
 });

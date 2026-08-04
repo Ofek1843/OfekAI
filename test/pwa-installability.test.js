@@ -21,6 +21,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { stopChildProcess } = require("./child-process-cleanup");
 
 const ROOT = path.join(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
@@ -214,5 +215,5 @@ test("manifest.json and sw.js are served with 200 by the real server", async (t)
     });
   }
 
-  if (serverProcess && !serverProcess.killed) serverProcess.kill();
+  stopChildProcess(serverProcess);
 });
