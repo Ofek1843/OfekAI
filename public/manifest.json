@@ -1,5 +1,5 @@
 {
-  "name": "FuelPhysique - AI Fitness Coach",
+  "name": "FuelPhysique",
   "short_name": "FuelPhysique",
   "description": "Personalized workout plans, nutrition plans, real-time tracking, and progress analytics with AI coaching.",
   "start_url": "/dashboard.html",

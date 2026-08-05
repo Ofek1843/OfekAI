@@ -6,10 +6,10 @@
 //
 // localStorage dismissal keys (documented for QA / support -- each holds a
 // ms timestamp the banner for that platform stays suppressed until):
-//   ofek-ai-pwa-install-dismissed-until:android     Android Chrome/Chromium native-prompt banner
-//   ofek-ai-pwa-install-dismissed-until:desktop     Desktop Chrome/Edge native-prompt banner
-//   ofek-ai-pwa-install-dismissed-until:ios-safari  iOS Safari "Add to Home Screen" instructions
-//   ofek-ai-pwa-install-dismissed-until:ios-other   iOS Chrome/Edge/Firefox "open in Safari" notice
+//   fuelphysique-pwa-install-dismissed-until:android     Android Chrome/Chromium native-prompt banner
+//   fuelphysique-pwa-install-dismissed-until:desktop     Desktop Chrome/Edge native-prompt banner
+//   fuelphysique-pwa-install-dismissed-until:ios-safari  iOS Safari "Add to Home Screen" instructions
+//   fuelphysique-pwa-install-dismissed-until:ios-other   iOS Chrome/Edge/Firefox "open in Safari" notice
 // Keys are per-platform on purpose: a desktop user dismissing the banner
 // must not suppress the iOS instructional prompt for a phone visit, and
 // vice versa.
@@ -18,7 +18,7 @@
 // `resetFuelPhysiquePwaInstallDismissal()`, or load any page with
 // ?resetPwaInstall=1 in the URL.
 
-const DISMISS_KEY_PREFIX = "ofek-ai-pwa-install-dismissed-until";
+const DISMISS_KEY_PREFIX = "fuelphysique-pwa-install-dismissed-until";
 const DISMISS_DAYS = 14;
 
 const isHebrew = (localStorage.getItem("ofek-ai-language") || "en") === "he";

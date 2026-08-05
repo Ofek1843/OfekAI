@@ -43,6 +43,8 @@ test("manifest.json is valid and satisfies install-criteria fields", () => {
   assert.ok(manifest.name.length > 0);
   assert.equal(typeof manifest.short_name, "string");
   assert.ok(manifest.short_name.length > 0);
+  assert.equal(manifest.name, "FuelPhysique");
+  assert.equal(manifest.short_name, "FuelPhysique");
   assert.equal(manifest.display, "standalone");
   assert.equal(manifest.start_url, "/dashboard.html");
   assert.equal(manifest.scope, "/");
@@ -74,7 +76,8 @@ test("sw.js exists and is syntactically valid", () => {
 
 test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
-  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v4['"]/);
+  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v5['"]/);
+  assert.match(source, /['"]\/manifest\.json['"]/);
   assert.match(source, /NETWORK_ONLY_PREFIXES\s*=\s*\[['"]\/api\/['"]\]/);
   assert.match(source, /requestPath\.startsWith\(prefix\)/);
   assert.match(source, /if \(NETWORK_ONLY_PREFIXES\.some\(prefix => requestPath\.startsWith\(prefix\)\)\) \{\s*return;/s);
@@ -91,8 +94,21 @@ for (const page of PAGES_WITH_INSTALL_PROMOTION) {
     assert.match(html, /navigator\.serviceWorker\.register\(['"]\/sw\.js['"]\)/, `${page} must register the service worker`);
     assert.match(html, /src="\/js\/pwa-install\.js"/, `${page} must load pwa-install.js`);
     assert.match(html, /theme-color" content="#2f9bff"/, `${page} theme-color meta must match Blue Abyss`);
+    assert.match(html, /<meta name="application-name" content="FuelPhysique">/);
+    assert.match(html, /<meta name="apple-mobile-web-app-title" content="FuelPhysique">/);
+    assert.doesNotMatch(html, /<title>[^<]*(?:AI Fitness|AI Coach|AI Workout|Ofek AI)/i);
   });
 }
+
+test("install-facing metadata has no stale product label", () => {
+  const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC, "manifest.json"), "utf8"));
+  const installSource = [
+    JSON.stringify({ name: manifest.name, short_name: manifest.short_name }),
+    fs.readFileSync(path.join(PUBLIC, "js", "pwa-install.js"), "utf8")
+  ].join("\n");
+  assert.doesNotMatch(installSource, /AI Fitness|AI Coach|AI Workout|Ofek AI/);
+  assert.match(installSource, /FuelPhysique/);
+});
 
 test("pwa-install.js implements distinct platform detection, not a single generic banner", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "js", "pwa-install.js"), "utf8");
@@ -133,7 +149,7 @@ test("pwa-install.js implements distinct platform detection, not a single generi
 test("pwa-install.js: dismissal is namespaced per platform", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "js", "pwa-install.js"), "utf8");
 
-  assert.match(source, /DISMISS_KEY_PREFIX\s*=\s*"ofek-ai-pwa-install-dismissed-until"/);
+  assert.match(source, /DISMISS_KEY_PREFIX\s*=\s*"fuelphysique-pwa-install-dismissed-until"/);
   assert.match(source, /dismissKey\(key\)/);
   assert.match(source, /`\$\{DISMISS_KEY_PREFIX\}:\$\{key\}`/);
 
