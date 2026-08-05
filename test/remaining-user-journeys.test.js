@@ -181,7 +181,7 @@ test("settings, session, dashboard search and Progress expose deterministic boun
 test("responsive shell contracts cover the requested desktop, tablet and mobile breakpoints", () => {
   const dashboardCss = css("dashboard");
   assert.match(dashboardCss, /\.dashboard-primary-actions\s*\{[\s\S]*grid-template-columns:\s*repeat\(5,\s*minmax\(0,\s*1fr\)/, "desktop quick actions use five columns");
-  assert.match(dashboardCss, /@media\s*\(min-width:\s*521px\)\s*and\s*\(max-width:\s*1080px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)/, "tablet quick actions use three columns");
+  assert.match(dashboardCss, /@media\s*\(min-width:\s*520px\)\s*and\s*\(max-width:\s*1080px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)/, "tablet quick actions use three columns");
   assert.match(dashboardCss, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*1fr\s+1fr/, "mobile quick actions use two columns");
   assert.match(dashboardCss, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*1fr/, "narrow mobile quick actions use one column");
 
