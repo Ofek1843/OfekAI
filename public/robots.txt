@@ -1,0 +1,21 @@
+# FuelPhysique crawl policy.
+#
+# Private application pages (dashboard, saved plans, progress, social,
+# settings) and transitional pages (login, password action, billing result)
+# are kept out of search results by a `noindex` robots meta tag in their own
+# HTML, and are protected from access by Firebase Authentication. They are
+# deliberately NOT listed as Disallow here: a crawler that is blocked from
+# fetching a URL can never read its noindex, so blocking them would make the
+# noindex unenforceable. robots.txt is a crawl directive, not access control.
+#
+# Only machine endpoints that serve no crawlable HTML are disallowed.
+
+User-agent: *
+Allow: /
+
+# JSON APIs and the Firebase Auth reverse proxy. These return no indexable
+# document and nothing here depends on them being crawled.
+Disallow: /api/
+Disallow: /__/auth/
+
+Sitemap: https://fuelphysique.com/sitemap.xml

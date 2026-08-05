@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Public, indexable FuelPhysique routes only.
+
+  Every URL below renders useful standalone content without authentication.
+  Authenticated application pages, login and password-action pages, the
+  billing result page and the transformation submission page are excluded:
+  each carries a noindex robots meta tag and must never appear here.
+
+  lastmod is intentionally omitted. Git commit dates track when a file was
+  edited, not when its content meaningfully changed, so publishing them would
+  be a fabricated freshness signal. changefreq and priority are omitted for
+  the same reason -- they would be decorative guesses.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://fuelphysique.com/</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/pricing.html</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/faq.html</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/contact.html</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/terms.html</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/privacy.html</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/refund-policy.html</loc>
+  </url>
+  <url>
+    <loc>https://fuelphysique.com/subscription-policy.html</loc>
+  </url>
+</urlset>
