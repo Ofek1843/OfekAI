@@ -1152,15 +1152,11 @@ html[data-theme="light"] .schedule-day.is-today {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 1100px) {
-  .dashboard-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .sidebar {
-    position: static;
-  }
-}
+/* The sidebar used to collapse to a single static column here while the
+   off-canvas drawer only started at 520px, so every width from 521px to
+   1100px rendered the full-height sidebar stacked ABOVE the dashboard and
+   pushed the primary actions off the first screen. The drawer block below
+   now covers this whole band instead. */
 
 @media (max-width: 900px) {
   .stats-grid,
@@ -1191,15 +1187,16 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 }
 
-@media (max-width: 520px) {
+/* Off-canvas drawer navigation. This covers every width up to the desktop
+   two-column breakpoint -- phones AND tablets -- so the sidebar never
+   consumes the top of the page in flow. Phone-only cosmetics stay in the
+   520px block further down. */
+@media (max-width: 1100px) {
   body.drawer-open {
     overflow: hidden;
   }
 
   .dashboard-shell {
-    width: 100%;
-    padding: 0 0 18px;
-    gap: 0;
     display: block;
   }
 
@@ -1395,6 +1392,17 @@ html[data-theme="light"] .schedule-day.is-today {
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+/* Phone-only layout. Everything below here is sizing/spacing that must NOT
+   leak into the tablet band -- the drawer behaviour it used to be bundled
+   with now lives in the 1100px block above. */
+@media (max-width: 520px) {
+  .dashboard-shell {
+    width: 100%;
+    padding: 0 0 18px;
+    gap: 0;
   }
 
   .hero-row {

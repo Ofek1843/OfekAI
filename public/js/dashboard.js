@@ -358,6 +358,8 @@ function localize() {
   if (desktopSearch) desktopSearch.placeholder = drawerSearchCopy.placeholder;
 }
 
+const DRAWER_MAX_WIDTH = 1100;
+
 function initMobileDrawer() {
   const body = document.body;
   const menuButton = $("#mobileMenuButton");
@@ -387,8 +389,11 @@ function initMobileDrawer() {
   sidebar.querySelectorAll("a").forEach(link => {
     link.addEventListener("click", () => setOpen(false));
   });
+  // Must match the drawer's CSS breakpoint in public/css/dashboard.css.
+  // Above it the sidebar is a permanent sticky column, so a drawer left
+  // "open" would keep body scroll locked with no visible way to close it.
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 520) setOpen(false);
+    if (window.innerWidth > DRAWER_MAX_WIDTH) setOpen(false);
   });
 }
 
