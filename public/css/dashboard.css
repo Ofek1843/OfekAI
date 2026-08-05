@@ -1724,7 +1724,7 @@ html[data-theme="light"] .schedule-day.is-today {
 
   .dashboard-primary-actions {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 12px;
     width: 100%;
   }
@@ -1747,6 +1747,8 @@ html[data-theme="light"] .schedule-day.is-today {
     line-height: 1.2;
     text-align: center;
     text-decoration: none;
+    min-width: 0;
+    height: 100%;
     box-shadow: 0 14px 34px rgba(8, 13, 13, 0.22);
     transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
   }
@@ -1770,7 +1772,16 @@ html[data-theme="light"] .schedule-day.is-today {
   .dashboard-action:focus-visible {
     transform: translateY(-2px);
     filter: brightness(1.08);
-    outline: none;
+  }
+
+  .dashboard-action:focus-visible {
+    outline: 3px solid #f3f7ff;
+    outline-offset: 3px;
+  }
+
+  .dashboard-action:active {
+    transform: translateY(0);
+    filter: brightness(.96);
   }
 
   .dashboard-action--coach {
@@ -1806,6 +1817,15 @@ html[data-theme="light"] .schedule-day.is-today {
     box-shadow: 0 16px 38px rgba(231, 189, 103, .2);
     color: var(--fp-text-inverse);
   }
+
+  .dashboard-action--social {
+    background: linear-gradient(135deg, #4f64c8, #7286f5);
+    border-color: rgba(114, 134, 245, .5);
+    box-shadow: 0 16px 38px rgba(79, 100, 200, .24);
+    color: var(--fp-text-inverse);
+  }
+
+  .dashboard-action--social::before { content: "💬"; }
 
   .dashboard-action--progress::before { content: "📈"; }
 
@@ -1846,7 +1866,7 @@ html[data-theme="light"] .schedule-day.is-today {
 
 @media (min-width: 521px) and (max-width: 1080px) {
   .dashboard-primary-actions {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -1872,6 +1892,8 @@ html[data-theme="light"] .schedule-day.is-today {
     line-height: 1.25;
     text-align: center;
     text-decoration: none;
+    min-width: 0;
+    height: 100%;
   }
 
   .dashboard-action--coach {
@@ -1902,9 +1924,33 @@ html[data-theme="light"] .schedule-day.is-today {
     color: var(--fp-text-inverse);
   }
 
+  .dashboard-action--social {
+    background: linear-gradient(135deg, #4f64c8, #7286f5);
+    border-color: rgba(114, 134, 245, .5);
+    box-shadow: 0 16px 38px rgba(79, 100, 200, .24);
+    color: var(--fp-text-inverse);
+  }
+
+  .dashboard-action--social::before { content: "💬"; }
+
+  .dashboard-action:focus-visible {
+    outline: 3px solid #f3f7ff;
+    outline-offset: 3px;
+  }
+
+  .dashboard-action:active {
+    filter: brightness(.96);
+  }
+
   .workout-history-card { order: 3; }
   .missed-card { order: 4; }
   .tools-accordion { order: 5; }
+}
+
+@media (max-width: 360px) {
+  .dashboard-primary-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 

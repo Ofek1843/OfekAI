@@ -325,6 +325,12 @@ function initDashboardSearch() {
 function localize() {
   document.documentElement.lang = he ? "he" : "en";
   document.documentElement.dir = he ? "rtl" : "ltr";
+  const socialQuickAction = he ? "צ׳אט עם חברים" : "Chat with friends";
+  const socialLink = $("#heroSocialLink");
+  if (socialLink) {
+    socialLink.textContent = socialQuickAction;
+    socialLink.setAttribute("aria-label", socialQuickAction);
+  }
   for (const [id, key] of [["todayLabel", "today"], ["welcomeText", "intro"], ["chatLink", "chat"], ["weekLabel", "week"], ["streakLabel", "streak"], ["weightLabel", "weight"], ["setsLabel", "sets"], ["weightLink", "update"], ["nextLabel", "next"], ["startWorkoutLink", "start"], ["nutritionLabel", "nutrition"], ["caloriesLabel", "calories"], ["proteinLabel", "protein"], ["nutritionLink", "manageNutrition"], ["recentLabel", "recent"], ["historyAction", "history"], ["missedLabel", "missedLabel"], ["missedTitle", "missedTitle"], ["missedText", "missedText"], ["missedAction", "missedAction"], ["progressLabel", "progress"], ["progressTitle", "momentum"], ["analyticsAction", "analytics"], ["scheduleLabel", "scheduleLabel"], ["scheduleTitle", "scheduleTitle"], ["scheduleHint", "scheduleHint"], ["shiftScheduleButton", "scheduleShift"], ["quickFoodLabel", "quickFoodLabel"], ["quickFoodTitle", "quickFoodTitle"], ["quickFoodText", "quickFoodText"], ["quickFoodEstimate", "quickFoodEstimate"], ["quickFoodClear", "quickFoodClear"], ["heroWorkoutBuilderLink", "buildWorkout"], ["heroNutritionBuilderLink", "buildNutrition"], ["heroProgressLink", "trackProgress"], ["heroHistoryLink", "heroHistory"], ["drawerCoachLink", "drawerCoach"], ["drawerPrimaryLabel", "drawerPrimary"], ["drawerTrainingLabel", "drawerTraining"], ["drawerSupportLabel", "drawerSupport"], ["manualLabel", "manualLabel"], ["manualTitle", "manualTitle"], ["manualText", "manualText"], ["manualAction", "manualAction"], ["drawerManualBuilderLink", "manualNav"], ["toolsKicker", "toolsKicker"], ["toolsSummary", "toolsSummary"], ["toolsText", "toolsText"], ["dashboardLogoutButton", "logout"]]) {
     const node = $("#" + id);
     if (node) node.textContent = ui[key];
