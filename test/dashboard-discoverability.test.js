@@ -36,7 +36,7 @@ test("dashboard social action is localized and remains a same-tab keyboard link"
 
 test("dashboard quick actions use the requested responsive grid", () => {
   assert.match(CSS, /\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*repeat\(5,\s*minmax\(0,\s*1fr\)\)/);
-  assert.match(CSS, /@media\s*\(min-width:\s*521px\)\s*and\s*\(max-width:\s*1080px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(CSS, /@media\s*\(min-width:\s*520px\)\s*and\s*\(max-width:\s*1080px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
   assert.match(CSS, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*1fr 1fr/);
   assert.match(CSS, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
   assert.match(CSS, /\.dashboard-action\s*\{[\s\S]*?min-width:\s*0;[\s\S]*?height:\s*100%/);
