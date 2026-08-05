@@ -102,14 +102,16 @@ test("VX-002: the verified quick-action grid breakpoints are unchanged", () => {
   assert.match(mediaBlock(DASHBOARD_CSS, "(max-width: 360px)"), /\.dashboard-primary-actions\s*{[^}]*grid-template-columns:\s*1fr\s*;/);
   // 390/430px -> 2 columns
   assert.match(mediaBlock(DASHBOARD_CSS, "(max-width: 520px)"), /\.dashboard-primary-actions\s*{[^}]*grid-template-columns:\s*1fr 1fr/);
-  // 768px -> 3 columns (3 + 2 with five actions)
+  // 768px -> 3 columns (3 + 2 with five actions). The tablet edge sits at
+  // 520px, deliberately overlapping the phone block rather than meeting it at
+  // 521px -- see test/dashboard-breakpoint-coverage.test.js.
   assert.match(
-    mediaBlock(DASHBOARD_CSS, "(min-width: 521px) and (max-width: 1080px)"),
+    mediaBlock(DASHBOARD_CSS, "(min-width: 520px) and (max-width: 1080px)"),
     /\.dashboard-primary-actions\s*{[^}]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\)/
   );
   // 1280/1440px -> 5 columns
   assert.match(
-    mediaBlock(DASHBOARD_CSS, "(min-width: 521px)"),
+    mediaBlock(DASHBOARD_CSS, "(min-width: 520px)"),
     /\.dashboard-primary-actions\s*{[^}]*grid-template-columns:\s*repeat\(5, minmax\(0, 1fr\)\)/
   );
 });

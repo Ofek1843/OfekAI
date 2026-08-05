@@ -1710,7 +1710,14 @@ html[data-theme="light"] .schedule-day.is-today {
    FuelPhysique dashboard layout refresh
    ========================================================= */
 
-@media (min-width: 521px) {
+/* Paired with the max-width:520px phone block below. The two deliberately
+   OVERLAP at exactly 520px rather than meeting at 520/521: a CSS viewport
+   width is fractional, so a 520.5px viewport matched neither `max-width:
+   520px` nor `min-width: 521px` and the quick-action grid lost its
+   `display: grid` entirely, falling back to block layout. Overlap is safe
+   because the phone block is later in source order and wins at 520px; a gap
+   is not. Keep both edges on the same number. */
+@media (min-width: 520px) {
   .drawer-coach-link {
     display: none !important;
   }
@@ -1872,7 +1879,7 @@ html[data-theme="light"] .schedule-day.is-today {
   }
 }
 
-@media (min-width: 521px) and (max-width: 1080px) {
+@media (min-width: 520px) and (max-width: 1080px) {
   .dashboard-primary-actions {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
