@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FuelPhysique</title>
+    <meta name="description" content="FuelPhysique is a web app for building workout and nutrition plans, logging your training and tracking body progress in one connected system.">
+    <link rel="canonical" href="https://fuelphysique.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="FuelPhysique">
+    <meta property="og:title" content="FuelPhysique — Workout, Nutrition and Progress Tracking">
+    <meta property="og:description" content="FuelPhysique is a web app for building workout and nutrition plans, logging your training and tracking body progress in one connected system.">
+    <meta property="og:url" content="https://fuelphysique.com/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="FuelPhysique — Workout, Nutrition and Progress Tracking">
+    <meta name="twitter:description" content="FuelPhysique is a web app for building workout and nutrition plans, logging your training and tracking body progress in one connected system.">
+    <title>FuelPhysique — Workout, Nutrition and Progress Tracking</title>
     <meta name="application-name" content="FuelPhysique">
     <meta name="apple-mobile-web-app-title" content="FuelPhysique">
 <link rel="stylesheet" href="/css/theme.css">
@@ -26,6 +36,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/landing.css">
+    <!--
+      Structured data for the landing page only. Deliberately limited to
+      facts the site itself demonstrates: identity, the site URL, and what
+      the application does. No aggregateRating, review, offers or price --
+      there are no published ratings, reviews or checkout prices to back
+      them, and asserting any would be fabricated. Organization/logo is
+      omitted because the only brand mark in the repository is a 64x64 SVG
+      favicon, which does not meet the raster logo requirements.
+    -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://fuelphysique.com/#organization",
+          "name": "FuelPhysique",
+          "url": "https://fuelphysique.com/"
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://fuelphysique.com/#website",
+          "name": "FuelPhysique",
+          "url": "https://fuelphysique.com/",
+          "publisher": { "@id": "https://fuelphysique.com/#organization" }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://fuelphysique.com/#webapplication",
+          "name": "FuelPhysique",
+          "url": "https://fuelphysique.com/",
+          "applicationCategory": "HealthApplication",
+          "operatingSystem": "Web",
+          "description": "Build workout and nutrition plans, log training sessions and track body progress in one connected system.",
+          "publisher": { "@id": "https://fuelphysique.com/#organization" }
+        }
+      ]
+    }
+    </script>
 </head>
 <body>
     <div class="ocean-depth-layer" aria-hidden="true"></div>
