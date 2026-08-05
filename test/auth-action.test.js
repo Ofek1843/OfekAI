@@ -31,10 +31,21 @@ const {
 } = require("../public/js/auth-action-core.mjs");
 
 const ROOT = path.join(__dirname, "..");
-const ACTION_HTML = fs.readFileSync(path.join(ROOT, "public", "auth-action.html"), "utf8");
-const ACTION_JS = fs.readFileSync(path.join(ROOT, "public", "js", "auth-action.js"), "utf8");
-const ACTION_CSS = fs.readFileSync(path.join(ROOT, "public", "css", "auth-action.css"), "utf8");
-const AUTH_HTML = fs.readFileSync(path.join(ROOT, "public", "auth.html"), "utf8");
+
+// These tests assert on source TEXT, and several of their patterns anchor on
+// "\n}" to find the end of a function. The repository has no .gitattributes,
+// so on a Windows checkout with core.autocrlf=true every file arrives with
+// CRLF terminators and those patterns silently stop matching -- a green suite
+// on CI and a red one on a developer's machine, for a file nobody edited.
+// Normalize on read so the assertions describe the code rather than the
+// checkout's line-ending flavour.
+const readSource = (...segments) =>
+  fs.readFileSync(path.join(ROOT, ...segments), "utf8").replace(/\r\n/g, "\n");
+
+const ACTION_HTML = readSource("public", "auth-action.html");
+const ACTION_JS = readSource("public", "js", "auth-action.js");
+const ACTION_CSS = readSource("public", "css", "auth-action.css");
+const AUTH_HTML = readSource("public", "auth.html");
 
 // --- Landing copy --------------------------------------------------------
 
@@ -268,6 +279,31 @@ test("a weak password keeps the user on the form instead of dropping them on a f
   const submit = ACTION_JS.match(/async function submitNewPassword\([\s\S]*?\n\}\n/);
   assert.ok(submit, "expected a submitNewPassword function");
   assert.match(submit[0], /if \(kind === "weakPassword"\)[\s\S]*?showFieldError\("weakPassword"\)/);
+});
+
+test("the source-text assertions survive a CRLF checkout", () => {
+  // Regression cover for the root cause above: with core.autocrlf=true and no
+  // .gitattributes, auth-action.js arrives with CRLF terminators, and a
+  // pattern anchored on "\n}" cannot match "\r\n}\r\n". The test above then
+  // failed claiming submitNewPassword did not exist, on a file nobody had
+  // touched. Feed the same pattern a deliberately CRLF-terminated copy and
+  // require it to still match, so the normalization in readSource() cannot be
+  // dropped without something going red.
+  const crlf = ACTION_JS.replace(/\n/g, "\r\n");
+  assert.match(crlf, /\r\n/, "the fixture must actually be CRLF-terminated");
+
+  const normalized = crlf.replace(/\r\n/g, "\n");
+  const submit = normalized.match(/async function submitNewPassword\([\s\S]*?\n\}\n/);
+  assert.ok(submit, "the function must still be found after CRLF normalization");
+  assert.match(submit[0], /if \(kind === "weakPassword"\)[\s\S]*?showFieldError\("weakPassword"\)/);
+
+  // And prove the hazard is real rather than hypothetical: the un-normalized
+  // CRLF text must NOT match, which is exactly what broke.
+  assert.doesNotMatch(
+    crlf,
+    /async function submitNewPassword\([\s\S]*?\n\}\n/,
+    "if raw CRLF text matches, this guard is no longer testing anything"
+  );
 });
 
 // --- Password policy -----------------------------------------------------
