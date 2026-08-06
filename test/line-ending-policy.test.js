@@ -64,39 +64,34 @@ test("Git actually resolves the intended attributes", () => {
 
 test("the policy renormalizes nothing that is already committed", () => {
   // The dangerous failure mode of adding .gitattributes is a repository-wide
-  // line-ending rewrite. For every tracked file, the blob Git would store
-  // under the current rules must equal the blob already stored.
-  const tracked = execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 28 })
-    .split(/\r?\n/)
-    .filter(Boolean)
-    .filter(file => !file.startsWith("node_modules/"));
+  // line-ending rewrite. `git ls-files --eol` reports what is actually in the
+  // index ("i/") per file, which is the thing that would have to change.
+  //
+  // Deliberately NOT comparing worktree hashes against the index: that
+  // reports every genuinely edited file too, so it would fail on any branch
+  // with work in progress and say nothing about line endings.
+  const listing = execFileSync("git", ["ls-files", "--eol"], {
+    cwd: ROOT,
+    encoding: "utf8",
+    maxBuffer: 1 << 28
+  });
 
-  const stored = new Map();
-  const listing = execFileSync("git", ["ls-files", "-s"], { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 28 });
+  const offenders = [];
   for (const line of listing.split(/\r?\n/).filter(Boolean)) {
-    const match = line.match(/^\d+ ([0-9a-f]{40}) \d\t(.*)$/);
-    if (match) stored.set(match[2], match[1]);
-  }
-
-  const wouldChange = [];
-  for (const file of tracked) {
-    if (!fs.existsSync(path.join(ROOT, file))) continue;
-    let hash;
-    try {
-      hash = execFileSync("git", ["hash-object", "--path", file, "--", file], {
-        cwd: ROOT,
-        encoding: "utf8"
-      }).trim();
-    } catch {
-      continue;
-    }
-    if (stored.get(file) && stored.get(file) !== hash) wouldChange.push(file);
+    // e.g. "i/lf    w/crlf  attr/text=auto eol=lf   	path/to/file"
+    const match = line.match(/^i\/(\S+)\s+w\/(\S+)\s+attr\/(\S*)\s*\t(.*)$/);
+    if (!match) continue;
+    const [, index, , attrs, file] = match;
+    if (file.startsWith("node_modules/")) continue;
+    // Binary files report i/-text and are irrelevant here.
+    if (index === "-text" || attrs.includes("-text") || attrs.includes("binary")) continue;
+    if (index === "crlf" || index === "mixed") offenders.push(`${file} (index=${index})`);
   }
 
   assert.deepEqual(
-    wouldChange.slice(0, 20),
+    offenders.slice(0, 20),
     [],
-    `${wouldChange.length} tracked files would be rewritten by the line-ending policy`
+    `${offenders.length} tracked text files are stored with non-LF endings and would be rewritten`
   );
 });
 
