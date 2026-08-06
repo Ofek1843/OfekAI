@@ -1,2 +1,26 @@
 node_modules/
 .env
+
+# Editor, OS and backup artifacts. These matter more than usual here:
+# everything under public/ is served verbatim by express.static, so a stray
+# *.bak or *.backup-<date> next to a page is a publicly retrievable copy of
+# application source. See test/public-artifact-hygiene.test.js.
+*.bak
+*.backup
+*.backup-*
+*.old
+*.orig
+*.rej
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# Emulator and tooling debug output.
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
