@@ -15,7 +15,8 @@
     "test:openai-upstream-errors": "node --test --test-concurrency=1 test/openai-upstream-error-mapping.test.js",
     "test": "npm run lint && node scripts/run-tests.js && npm run load:test",
     "images:optimize": "node scripts/optimize-images.js",
-    "test:standard": "node scripts/run-tests.js --standard"
+    "test:standard": "node scripts/run-tests.js --standard",
+    "test:with-emulators": "node scripts/run-tests-with-emulators.js"
   },
   "keywords": [],
   "author": "",
