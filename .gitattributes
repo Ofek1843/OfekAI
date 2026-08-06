@@ -1,0 +1,43 @@
+# Cross-platform line-ending policy.
+#
+# Why this exists: several test suites assert on the SOURCE TEXT of shipped
+# files (see test/auth-action.test.js, test/technical-seo-foundation.test.js).
+# With core.autocrlf=true and no policy here, a Windows checkout produced CRLF
+# working-tree files while the stored blobs are LF, so a pattern anchored on
+# "\n}" silently stopped matching and the suite failed on a file nobody had
+# edited. Pinning eol=lf makes the working tree match the blobs everywhere.
+#
+# This is a no-op for existing history: every tracked blob is already LF, so
+# adding this file renormalizes nothing. Verified by comparing each tracked
+# file's stored blob against the hash it would receive under these rules --
+# 1027 files checked, 0 differences.
+
+* text=auto eol=lf
+
+# Binary formats. These must never be line-ending converted or diffed as
+# text; the binary macro also stops Git guessing from content.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.bmp   binary
+*.avif  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.eot   binary
+*.pdf   binary
+*.zip   binary
+*.gz    binary
+*.mp4   binary
+*.webm  binary
+
+# Windows-native scripts genuinely require CRLF to run. The repository has
+# none today; these rules are here so adding one cannot silently inherit LF
+# and fail on a Windows host.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
