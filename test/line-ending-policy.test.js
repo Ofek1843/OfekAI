@@ -21,6 +21,18 @@ const { execFileSync } = require("node:child_process");
 const ROOT = path.join(__dirname, "..");
 const ATTRIBUTES = fs.readFileSync(path.join(ROOT, ".gitattributes"), "utf8");
 
+// Some assertions below describe the state of the Git INDEX, so they need a
+// real checkout. The suite also runs from sources exported without history
+// (git archive, a release tarball, a Docker build context), where the
+// question is not "does this fail" but "is there anything to ask". Those
+// cases skip with the reason stated; everything that can be checked from the
+// files alone still runs. This is not a fallback for a broken environment --
+// if .git exists, the checks run and a violation fails the suite.
+const hasGitCheckout = fs.existsSync(path.join(ROOT, ".git"));
+const skipWithoutGit = hasGitCheckout
+  ? false
+  : "no .git directory -- sources were exported without history";
+
 const attributeLines = () =>
   ATTRIBUTES.split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith("#"));
 
@@ -44,7 +56,7 @@ test("binary formats are excluded from line-ending conversion", () => {
   }
 });
 
-test("Git actually resolves the intended attributes", () => {
+test("Git actually resolves the intended attributes", { skip: skipWithoutGit }, () => {
   // Asserting the file's text is not enough -- the rules must win for real
   // paths once Git's precedence is applied.
   const check = target =>
@@ -62,7 +74,7 @@ test("Git actually resolves the intended attributes", () => {
   assert.match(image, /text: unset/, "PNG must not be treated as text");
 });
 
-test("the policy renormalizes nothing that is already committed", () => {
+test("the policy renormalizes nothing that is already committed", { skip: skipWithoutGit }, () => {
   // The dangerous failure mode of adding .gitattributes is a repository-wide
   // line-ending rewrite. `git ls-files --eol` reports what is actually in the
   // index ("i/") per file, which is the thing that would have to change.
@@ -115,7 +127,7 @@ test("source-text assertions survive both LF and CRLF checkouts", () => {
   assert.equal(normalize(crlf), normalize(lf));
 });
 
-test("committed text files are stored with LF, not CRLF", () => {
+test("committed text files are stored with LF, not CRLF", { skip: skipWithoutGit }, () => {
   // Spot-check representative source files: the blob Git stores must contain
   // no CR. Reading the object directly avoids any checkout-time conversion.
   for (const file of [

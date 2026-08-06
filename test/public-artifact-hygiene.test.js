@@ -19,6 +19,12 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
 const ROOT = path.join(__dirname, "..");
+
+// See test/line-ending-policy.test.js: the git ls-files check needs a real
+// checkout, and the suite also runs from history-less exports.
+const skipWithoutGit = fs.existsSync(path.join(__dirname, "..", ".git"))
+  ? false
+  : "no .git directory -- sources were exported without history";
 const PUBLIC_DIR = path.join(ROOT, "public");
 
 // The specific files that were exposed. Named individually so a regression
@@ -87,7 +93,7 @@ test("no backup, editor or OS artifact is served from public/", () => {
   );
 });
 
-test("no artifact is tracked by Git under public/", () => {
+test("no artifact is tracked by Git under public/", { skip: skipWithoutGit }, () => {
   // Catches the case where a file is committed but not present in this
   // checkout, which the filesystem walk above would miss.
   const tracked = execFileSync("git", ["ls-files", "public/"], { cwd: ROOT, encoding: "utf8" })
