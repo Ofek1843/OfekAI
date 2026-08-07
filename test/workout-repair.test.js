@@ -322,7 +322,7 @@ test("repairSchemaDefects coerces numeric-string sets/restSeconds and stringifie
   assert.equal(typeof exercise.reps, "string");
 });
 
-test("trimAccessoryExercisesForDuration removes exercises from the end when a session exceeds the cap", () => {
+test("trimAccessoryExercisesForDuration preserves higher-value movement coverage instead of trimming by position", () => {
   // Real canonical exerciseIds (not placeholders) so this fixture exercises
   // ONLY the duration-trim pass, not repairExercisesMissingFromCatalog's
   // "no catalog entry / no muscle group" removal path — both passes can
@@ -350,9 +350,15 @@ test("trimAccessoryExercisesForDuration removes exercises from the end when a se
   assert.ok(program.sessions[0].exercises.length >= 3, "Must never trim below the minimum floor");
   assert.ok(repairs.some((r) => r.includes("removed accessory exercise")));
 
-  // The exercises that remain must be the FIRST ones (primary lifts kept,
-  // accessories from the end removed first).
-  assert.equal(program.sessions[0].exercises[0].exerciseId, "push-up");
+  const remainingIds = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
+  assert.ok(remainingIds.includes("australian-row"), "the only back compound must remain");
+  assert.ok(remainingIds.includes("pistol-squat"), "the only quad compound must remain");
+  assert.equal(
+    remainingIds.filter((id) => ["push-up", "diamond-push-up", "pike-push-up"].includes(id)).length,
+    1,
+    "redundant press patterns should be trimmed before unique compound coverage"
+  );
+  assert.ok(!remainingIds.includes("push-up"), "value-based trimming may remove an early exercise; list position is not authoritative");
 });
 
 test("trimAccessoryExercisesForDuration never trims below the minimum floor even if still over budget", () => {

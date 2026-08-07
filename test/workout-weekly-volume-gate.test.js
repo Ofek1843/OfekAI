@@ -260,7 +260,7 @@ test("a required muscle below its minimum triggers repair (sets increased or an 
   assert.ok(after.perMuscle.chest.total >= before.perMuscle.chest.total, "chest volume must not decrease");
 });
 
-test("a required muscle above its maximum triggers repair (sets reduced on the lowest-credit contributor)", () => {
+test("a required muscle above its maximum triggers isolation-first repair", () => {
   // Beginner + 2 days/week caps chest at a low max (see
   // lib/workout-volume-targets.js's daysPerWeekMultiplier) — three
   // high-set chest exercises comfortably overshoot it, forcing the
@@ -275,10 +275,14 @@ test("a required muscle above its maximum triggers repair (sets reduced on the l
       ]
     }]
   };
+  const before = calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
   const { repairs } = repairWorkoutProgram(program, {
     sessionDuration: 90, equipment: ["machine", "dumbbell"], experience: "beginner", priority: "hypertrophy", daysPerWeek: 2, applyVolumeTargets: true
   });
-  assert.ok(repairs.some((r) => /above its recommended range/.test(r)), "expected at least one above-range repair message");
+  const after = calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+  assert.ok(repairs.some((r) => /direct isolation/.test(r)), "expected isolation-first excess repair");
+  assert.ok(after.perMuscle.chest.total < before.perMuscle.chest.total, "excess chest volume must be reduced");
+  assert.ok(program.sessions[0].exercises.some((item) => item.exerciseId !== "machine-chest-fly"), "compound chest work must remain");
 });
 
 test("an optional/secondary muscle status never appears as a below/above blocker even when its actual volume is 0", () => {
