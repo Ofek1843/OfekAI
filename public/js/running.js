@@ -1,5 +1,5 @@
 import { auth, db } from "/js/firebase-config.js";
-import { addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "/js/verification-gate.js";
 
 const $=s=>document.querySelector(s),he=(localStorage.getItem("ofek-ai-language")||"en")==="he";

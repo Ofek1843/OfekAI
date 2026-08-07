@@ -19,16 +19,49 @@
 // the introduction of Google sign-in.
 export const TERMS_VERSION = "2026-07-21";
 
-// Only these two deep-link destinations may be requested via ?next=. Anything
+// Only these deep-link destinations may be requested via ?next=. Anything
 // else (including absolute URLs, protocol-relative "//evil.com" and path
 // traversal) falls back to the dashboard — an open redirect on a login page
 // is a phishing vector, so this is an allowlist, never a sanitizer.
-export const ALLOWED_NEXT_PATHS = ["workout-builder.html", "nutrition-builder.html"];
+export const ALLOWED_NEXT_PATHS = [
+  "workout-builder.html",
+  "nutrition-builder.html",
+  "social.html",
+  "workout-tracker.html"
+];
 
 export const DEFAULT_NEXT_PATH = "/dashboard.html";
 
 export function resolveNextPath(requestedNext) {
-  return ALLOWED_NEXT_PATHS.includes(requestedNext) ? `/${requestedNext}` : DEFAULT_NEXT_PATH;
+  if (typeof requestedNext !== "string" || !requestedNext || requestedNext.includes("\\")) return DEFAULT_NEXT_PATH;
+  let url;
+  try {
+    url = new URL(requestedNext.startsWith("/") ? requestedNext : `/${requestedNext}`, "https://fuelphysique.invalid");
+  } catch {
+    return DEFAULT_NEXT_PATH;
+  }
+  if (url.origin !== "https://fuelphysique.invalid" || url.username || url.password) return DEFAULT_NEXT_PATH;
+  const filename = url.pathname.slice(1);
+  if (!ALLOWED_NEXT_PATHS.includes(filename) || url.hash) return DEFAULT_NEXT_PATH;
+
+  if (["workout-builder.html", "nutrition-builder.html"].includes(filename)) {
+    return url.search ? DEFAULT_NEXT_PATH : `/${filename}`;
+  }
+
+  const safeId = value => /^[A-Za-z0-9_-]{1,160}$/.test(value || "");
+  const keys = [...url.searchParams.keys()];
+  if (filename === "social.html") {
+    if (!safeId(url.searchParams.get("conversation"))) return DEFAULT_NEXT_PATH;
+    if (keys.some(key => !["conversation", "artifact"].includes(key))) return DEFAULT_NEXT_PATH;
+    const artifact = url.searchParams.get("artifact");
+    if (artifact !== null && !safeId(artifact)) return DEFAULT_NEXT_PATH;
+  } else {
+    if (!safeId(url.searchParams.get("plan")) || !safeId(url.searchParams.get("session"))) return DEFAULT_NEXT_PATH;
+    if (keys.some(key => !["plan", "session", "date"].includes(key))) return DEFAULT_NEXT_PATH;
+    const date = url.searchParams.get("date");
+    if (date !== null && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return DEFAULT_NEXT_PATH;
+  }
+  return `${url.pathname}${url.search}`;
 }
 
 // Mobile browsers (and installed PWAs on any platform) handle

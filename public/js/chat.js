@@ -4,7 +4,7 @@ import { auth, db } from "./firebase-config.js";
 import {
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 const chat = document.getElementById("chat");
 const input = document.getElementById("messageInput");

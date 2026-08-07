@@ -18,7 +18,7 @@ import {
   confirmPasswordReset,
   verifyPasswordResetCode,
   sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 import {
   isSupportedMode,

@@ -18,7 +18,7 @@ import {
   setDoc,
   updateDoc,
   writeBatch
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import { guardProtectedPage } from "./verification-gate.js";
 

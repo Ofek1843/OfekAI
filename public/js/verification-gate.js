@@ -19,7 +19,7 @@ import {
   onAuthStateChanged,
   signOut,
   sendEmailVerification
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 import {
   buildActionCodeSettings,
@@ -28,7 +28,8 @@ import {
   shouldBlockUnverifiedAccess,
   getVerificationStrings
 } from "./email-verification-core.mjs";
-import { getFriendlyAuthError } from "./auth-google-core.mjs";
+import { getFriendlyAuthError, resolveNextPath } from "./auth-google-core.mjs";
+import { disassociateCurrentInstallation } from "./push-notifications.js";
 
 export { shouldBlockUnverifiedAccess };
 
@@ -286,6 +287,7 @@ export function renderVerificationGate(user, { onVerified } = {}) {
   signOutButton.addEventListener("click", async () => {
     signOutButton.disabled = true;
     try {
+      await disassociateCurrentInstallation();
       await signOut(auth);
       window.location.replace("/auth.html");
     } catch (error) {
@@ -352,7 +354,13 @@ export function guardProtectedPage({ onAuthenticated, onSignedOut } = {}) {
     if (!user) {
       removeVerificationGate();
       if (onSignedOut) onSignedOut();
-      else window.location.replace("/auth.html");
+      else {
+        const nextPath = resolveNextPath(`${window.location.pathname}${window.location.search}`);
+        const destination = nextPath === "/dashboard.html"
+          ? "/auth.html"
+          : `/auth.html?next=${encodeURIComponent(nextPath)}`;
+        window.location.replace(destination);
+      }
       return;
     }
 

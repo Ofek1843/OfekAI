@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 
 const $ = s => document.querySelector(s);

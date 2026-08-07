@@ -3,13 +3,14 @@ import { auth, db } from "./firebase-config.js";
 import {
   doc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import {
   signOut
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 import { guardProtectedPage } from "./verification-gate.js";
+import { disassociateCurrentInstallation } from "./push-notifications.js";
 
 async function getVisibleUserName(user) {
   if (user.displayName?.trim()) {
@@ -128,6 +129,7 @@ function createUserControls(user, visibleName) {
       logoutButton.style.opacity = "0.7";
 
       try {
+        await disassociateCurrentInstallation();
         await signOut(auth);
         window.location.replace(
           "/auth.html"

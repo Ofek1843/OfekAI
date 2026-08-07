@@ -11,7 +11,7 @@ import {
   limit,
   serverTimestamp,
   writeBatch
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 /**
  * Creates a new conversation for the currently signed-in user.

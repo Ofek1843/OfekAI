@@ -1,7 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js";
-import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 

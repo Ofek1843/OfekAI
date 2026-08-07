@@ -10,7 +10,7 @@ import {
   orderBy,
   query,
   where
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import {
   escapeHtml,
   formatMessageTime,
@@ -882,6 +882,16 @@ async function initialize(currentUser) {
     const params = new URLSearchParams(location.search);
     const shareType = params.get("share");
     if (shareType && state.conversations.length) await openShareDialog(shareType, params.get("sourceId") || "");
+    const conversationId = params.get("conversation");
+    const artifactId = params.get("artifact");
+    if (/^[A-Za-z0-9_-]{1,160}$/.test(conversationId || "")) {
+      await openConversation(conversationId);
+      if (artifactId && /^[A-Za-z0-9_-]{1,160}$/.test(artifactId)
+          && state.activeConversation?.id === conversationId
+          && state.messages.some(message => message.artifactId === artifactId)) {
+        await previewArtifact(artifactId);
+      }
+    }
   } catch (error) {
     $("#globalStatus").classList.remove("sr-only");
     $("#globalStatus").textContent = error.message;

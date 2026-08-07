@@ -21,7 +21,7 @@ import {
   collection,
   addDoc,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 const form = document.querySelector("#workout-builder-form");
 const button = document.querySelector("#generate-button");
 const statusElement = document.querySelector("#builder-status");

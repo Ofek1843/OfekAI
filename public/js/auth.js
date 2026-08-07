@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
-import { doc, getDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { doc, getDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import {
   createUserWithEmailAndPassword,
@@ -18,7 +18,7 @@ import {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 import {
   TERMS_VERSION,

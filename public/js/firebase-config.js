@@ -1,18 +1,18 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
 import {
   connectAuthEmulator,
   getAuth
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 import {
   connectFirestoreEmulator,
   getFirestore
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import {
   getStorage
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
 
 import { resolveAuthDomain } from "./firebase-environment.mjs";
 
@@ -47,4 +47,4 @@ if (localEmulatorMode) {
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
 }
 
-export { auth, db, storage };
+export { app, auth, db, storage, firebaseConfig };

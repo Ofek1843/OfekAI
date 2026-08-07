@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
-import { collection, doc, getDoc, setDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { collection, doc, getDoc, setDoc, serverTimestamp, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 const ui = he ? {

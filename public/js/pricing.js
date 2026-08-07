@@ -1,5 +1,5 @@
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import { doc, getDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { doc, getDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { SUBSCRIPTION_PLANS } from "./subscription-plans.js";

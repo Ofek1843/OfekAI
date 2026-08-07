@@ -1,7 +1,7 @@
 import { t, getLanguage, setLanguage } from "./i18n.js?v=20260722-3";
 import { trackPageView, trackClick } from "./analytics.js";
 import { auth } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const LANDING_FALLBACKS = {
   en: {

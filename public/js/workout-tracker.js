@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { exerciseImageUrl } from "./exercise-image.js";
 import { guardProtectedPage } from "./verification-gate.js";
 
@@ -1566,7 +1566,20 @@ async function load() {
     localStorage.removeItem(timeBudgetKey());
   }
   renderSetup();
-  restoreDraft();
+  const params = new URLSearchParams(window.location.search);
+  const requestedPlan = params.get("plan");
+  const requestedSession = params.get("session");
+  const sessions = savedPlan.plan?.sessions || [];
+  const requestedIndex = sessions.findIndex((session, index) => String(session.id ?? index) === requestedSession);
+  const validNotificationLink = requestedPlan === activePlanId && requestedIndex >= 0;
+  if (validNotificationLink) {
+    $("#sessionSelect").value = String(requestedIndex);
+    $("#trackerStatus").textContent = he ? "האימון המתוזמן שלך מוכן." : "Your scheduled workout is ready.";
+    $("#trackerStatus").classList.remove("error");
+    renderTimeFitSummary(sessions[requestedIndex], Number($("#timeBudgetMinutes")?.value) || null);
+  } else {
+    restoreDraft();
+  }
 }
 
 populateWeightOptions();

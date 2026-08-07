@@ -12,11 +12,12 @@ import {
  from "./schedule-utils.js";
 import {
  collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, updateDoc }
- from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+ from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import {
  getIdToken, onAuthStateChanged, signOut }
- from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+ from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { guardProtectedPage } from "./verification-gate.js";
+import { disassociateCurrentInstallation } from "./push-notifications.js";
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 let activeNutritionPlanForQuickFood = null;
@@ -409,6 +410,7 @@ function initLogout() {
 
     try {
       sessionStorage.removeItem("fuelphysique-athlete-core-prompt-dismissed");
+      await disassociateCurrentInstallation();
       await signOut(auth);
       window.location.replace("/");
     } catch (error) {

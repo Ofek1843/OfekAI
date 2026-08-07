@@ -1,7 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 
 const grid = document.querySelector("#plansGrid");

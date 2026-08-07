@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v5';
+const CACHE_NAME = 'fuelphysique-v6';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -38,8 +38,39 @@ const urlsToCache = [
   '/css/pricing.css',
   '/css/social.css',
   '/js/social.js',
-  '/js/social-core.mjs'
+  '/js/social-core.mjs',
+  '/css/push-notifications.css',
+  '/js/push-notifications.js',
+  '/js/push-client-core.mjs'
 ];
+
+const NOTIFICATION_PATHS = new Set([
+  '/dashboard.html',
+  '/social.html',
+  '/workout-tracker.html'
+]);
+
+function safeNotificationUrl(value) {
+  try {
+    const url = new URL(String(value || '/dashboard.html'), self.location.origin);
+    if (url.origin !== self.location.origin || !NOTIFICATION_PATHS.has(url.pathname)) {
+      return new URL('/dashboard.html', self.location.origin).href;
+    }
+    return url.href;
+  } catch {
+    return new URL('/dashboard.html', self.location.origin).href;
+  }
+}
+
+function readPushData(event) {
+  if (!event.data) return {};
+  try {
+    const json = event.data.json();
+    return json?.data && typeof json.data === 'object' ? json.data : json || {};
+  } catch {
+    return { body: event.data.text?.() || '' };
+  }
+}
 
 // Install event
 self.addEventListener('install', event => {
@@ -121,4 +152,44 @@ self.addEventListener('fetch', event => {
         });
       })
   );
+});
+
+// Firebase sends data-only messages. Keeping display logic here avoids the
+// SDK creating a second, generic notification and gives us one audited click
+// path for both installed and browser-mode PWAs.
+self.addEventListener('push', event => {
+  const data = readPushData(event);
+  const destination = safeNotificationUrl(data.url);
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const visible = windows.find(client => client.visibilityState === 'visible');
+    if (visible) {
+      windows.forEach(client => client.postMessage({ type: 'FUELPHYSIQUE_PUSH_FOREGROUND', data: { ...data, url: destination } }));
+      return;
+    }
+    await self.registration.showNotification(String(data.title || 'FuelPhysique').slice(0, 100), {
+      body: String(data.body || '').slice(0, 180),
+      icon: '/favicon.svg',
+      badge: '/favicon.svg',
+      tag: String(data.eventId || data.type || 'fuelphysique').slice(0, 120),
+      renotify: false,
+      data: { url: destination, type: String(data.type || 'unknown').slice(0, 40) }
+    });
+  })());
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const destination = safeNotificationUrl(event.notification.data?.url);
+  event.waitUntil((async () => {
+    const windows = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const sameOrigin = windows.find(client => {
+      try { return new URL(client.url).origin === self.location.origin; } catch { return false; }
+    });
+    if (sameOrigin) {
+      await sameOrigin.navigate(destination);
+      return sameOrigin.focus();
+    }
+    return self.clients.openWindow(destination);
+  })());
 });

@@ -1,7 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { directImageKitUpload } from "./imagekit-upload.js";
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 
 const form=document.querySelector("#weightForm"),dateInput=document.querySelector("#weightDate"),weightInput=document.querySelector("#weightValue"),status=document.querySelector("#progressStatus"),chart=document.querySelector("#weightChart"),history=document.querySelector("#weightHistory");

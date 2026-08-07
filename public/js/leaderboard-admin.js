@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
-import { collectionGroup, doc, getDocs, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { collectionGroup, doc, getDocs, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 const ADMIN_EMAILS = ["leaderboard@fuelphysique.com"];
 const exercises = {pull_ups:["Pull-ups","reps"],muscle_ups:["Muscle-ups","reps"],one_arm_pull_up:["One-arm pull-up","reps"],weighted_pull_up:["Weighted pull-up","kg added"],bench_press:["Bench press","kg"],squat:["Squat","kg"],deadlift:["Deadlift","kg"]};

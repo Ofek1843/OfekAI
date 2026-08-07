@@ -1,8 +1,8 @@
 import { auth, db, storage } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
-import { collection, doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-import { ref, uploadBytes } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+import { collection, doc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { ref, uploadBytes } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
 import { trackClick, trackPageView } from "./analytics.js";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;

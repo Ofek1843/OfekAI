@@ -28,6 +28,7 @@
 
   <link rel="stylesheet" href="/css/settings.css" />
   <link rel="stylesheet" href="/css/theme-toggle.css" />
+  <link rel="stylesheet" href="/css/push-notifications.css" />
 
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800;900&display=swap");
@@ -1099,6 +1100,8 @@ html[data-theme="light"] .coach-back-link {
 
 <button id="languageTab" class="settings-tab" type="button" data-page="languageSettings">Language</button>
 
+<button id="notificationsTab" class="settings-tab" type="button" data-page="notificationsSettings">Notifications</button>
+
 <button id="appearanceTab" class="settings-tab" type="button" data-page="appearanceSettings">Appearance</button>
         </nav>
       </aside>
@@ -1480,6 +1483,25 @@ html[data-theme="light"] .coach-back-link {
   </label>
 </section>
 
+<section id="notificationsSettings" class="settings-page" aria-labelledby="notificationsTitle">
+  <h3 id="notificationsTitle">Notifications</h3>
+  <p id="notificationsDescription" class="settings-description">Choose useful updates for this device. FuelPhysique does not send marketing notifications.</p>
+  <p id="pushSettingsStatus" class="push-settings-status" role="status" aria-live="polite">Checking notification support…</p>
+  <p id="pushIosGuidance" class="push-ios-guidance" hidden></p>
+  <label class="settings-switch-row"><span id="pushEnabledLabel">Allow notifications</span><input id="pushEnabled" type="checkbox"></label>
+  <label class="settings-switch-row"><span id="pushMessagesLabel">New chat messages</span><input id="pushMessages" type="checkbox"></label>
+  <label class="settings-switch-row"><span id="pushSharesLabel">Shared workout and nutrition plans</span><input id="pushShares" type="checkbox"></label>
+  <label class="settings-switch-row"><span id="pushWorkoutsLabel">Workout-day reminders</span><input id="pushWorkouts" type="checkbox"></label>
+  <label class="settings-switch-row"><span id="pushPreviewsLabel">Show message previews</span><input id="pushPreviews" type="checkbox"></label>
+  <label class="settings-field" for="pushReminderTime"><span id="pushReminderTimeLabel">Reminder time</span><input id="pushReminderTime" type="time" value="18:00"></label>
+  <p id="pushSettingsHelp" class="push-settings-help">Workout reminders use your active plan, chosen training days and this device’s timezone. Completed sessions and rest days are skipped.</p>
+  <div class="push-settings-actions">
+    <button id="pushEnableDevice" class="push-settings-secondary" type="button" disabled>Enable on this device</button>
+    <button id="pushSavePreferences" class="push-settings-primary" type="button">Save notification preferences</button>
+    <button id="pushTestDevice" class="push-settings-secondary" type="button" hidden>Send test to this device</button>
+  </div>
+</section>
+
 <section
   id="appearanceSettings"
   class="settings-page"
@@ -1551,6 +1573,7 @@ html[data-theme="light"] .coach-back-link {
   <script type="module" src="/js/user-profile.js"></script>
   <script type="module" src="/js/theme-toggle.js"></script>
   <script type="module" src="/js/settings.js"></script>
+  <script type="module" src="/js/push-notifications.js"></script>
 <script>
   const mobileHistoryToggle = document.getElementById("mobileHistoryToggle");
   const conversationHistory = document.querySelector(".conversation-history");
