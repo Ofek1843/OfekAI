@@ -68,6 +68,21 @@ const ui = isHebrew
       sets: "סטים",
       reps: "חזרות",
       rest: "מנוחה",
+      targetReps: "חזרות יעד",
+      effort: "מאמץ",
+      rirUnit: (value) => `${value} RIR`,
+      rirGuidance:
+        "בחרו משקל שהופך את החזרות האחרונות למאתגרות. סיימו את הסט כשנותרו לכם בערך מספר החזרות הנקיות המוצג.",
+      rirHelpLabel: "מה זה RIR?",
+      rirHelpTitle: "RIR — חזרות שנותרו במלאי",
+      rirHelpClose: "סגירה",
+      rirHelpBody: [
+        "RIR הוא ראשי תיבות של Reps In Reserve — כמה חזרות נקיות נשארו לכם בסיום הסט.",
+        "RIR 2 אומר שבסיום הסט אתם מעריכים שיכולתם לבצע עוד כשתי חזרות נקיות.",
+        "אל תעצרו רק בגלל שהגעתם לתחתית טווח החזרות. אם היעד הוא 10–12 והגעתם ל-12 בזמן שנותרו לכם עוד כמה חזרות נקיות — העלו משקל בפעם הבאה.",
+        "חזרה שבה הטכניקה מתקלקלת אינה נחשבת חזרה נקייה במלאי.",
+        "לבניית שריר, סיימו כל סט עבודה קרוב לכשל תוך שמירה על טכניקה טובה. אין צורך להגיע לכשל מוחלט בכל סט."
+      ],
       print: "הדפס / שמור",
 
       personalizedPlan: "תוכנית אישית של FuelPhysique",
@@ -131,6 +146,21 @@ const ui = isHebrew
       sets: "Sets",
       reps: "Reps",
       rest: "Rest",
+      targetReps: "Target reps",
+      effort: "Effort",
+      rirUnit: (value) => `${value} RIR`,
+      rirGuidance:
+        "Choose a load that makes the final reps challenging. Finish with roughly the shown number of clean reps still in reserve.",
+      rirHelpLabel: "What does RIR mean?",
+      rirHelpTitle: "RIR — Reps In Reserve",
+      rirHelpClose: "Close",
+      rirHelpBody: [
+        "RIR stands for Reps In Reserve — how many clean reps you have left when you end the set.",
+        "RIR 2 means that when you finish the set, you estimate you could have completed about 2 more clean repetitions.",
+        "Do not stop solely because you reached the bottom of the rep range. If your target is 10–12 reps and you reach 12 while still being able to perform several more clean repetitions, use a more challenging load next time.",
+        "If your form breaks down, that repetition should not be counted as a clean reserve rep.",
+        "For muscle growth, finish each working set close to failure while keeping good form. You do not need to train to complete failure on every set."
+      ],
       print: "Print / Save",
 
       personalizedPlan: "FuelPhysique Personalized Plan",
@@ -945,9 +975,9 @@ function renderProgram(program, weeklyVolume) {
       exercises.forEach((exercise, exerciseIndex) => {
           const exerciseName = translateWorkoutValue(exercise.name);
           const muscleName = translateWorkoutValue(exercise.muscleGroup || ui.general);
-          const rirTitle = isHebrew
-            ? "RIR — כמה חזרות נוספות נשארו לך לפני כשל. לדוגמה, RIR 2 פירושו שיכולת לבצע עוד כשתי חזרות."
-            : "RIR (Reps In Reserve) — how many more reps you could complete before failure. RIR 2 means about two reps remained.";
+          // The old title="" tooltip was hover-only: unreachable by keyboard,
+          // by touch, and by screen readers. Replaced by the focusable
+          // .rir-help-trigger button and the shared #rirHelpPopover dialog.
 
           const cardHtml = `
             <article class="exercise-card" data-session="${sessionIndex}" data-exercise="${exerciseIndex}">
@@ -984,18 +1014,32 @@ function renderProgram(program, weeklyVolume) {
                     <span class="exercise-stat-value">${escapeHtml(String(exercise.sets))}</span>
                   </div>
                   <div class="exercise-stat">
-                    <span class="exercise-stat-label">${ui.reps}</span>
+                    <span class="exercise-stat-label">${ui.targetReps}</span>
                     <span class="exercise-stat-value">${escapeHtml(String(exercise.reps))}</span>
                   </div>
                   <div class="exercise-stat">
                     <span class="exercise-stat-label">${ui.rest}</span>
                     <span class="exercise-stat-value">${escapeHtml(String(exercise.restSeconds))}s</span>
                   </div>
-                  <div class="exercise-stat" title="${rirTitle}">
-                    <span class="exercise-stat-label">RIR</span>
-                    <span class="exercise-stat-value">${escapeHtml(String(exercise.rir || "—"))}</span>
+                  <div class="exercise-stat exercise-stat--effort">
+                    <span class="exercise-stat-label">
+                      ${escapeHtml(ui.effort)}
+                      <button
+                        type="button"
+                        class="rir-help-trigger"
+                        data-rir-help
+                        aria-label="${escapeHtml(ui.rirHelpLabel)}"
+                        aria-expanded="false"
+                        aria-haspopup="dialog"
+                      >i</button>
+                    </span>
+                    <span class="exercise-stat-value">${
+                      exercise.rir ? escapeHtml(ui.rirUnit(String(exercise.rir))) : "—"
+                    }</span>
                   </div>
                 </div>
+
+                <p class="exercise-effort-guidance">${escapeHtml(ui.rirGuidance)}</p>
 
                 ${
                   exercise.notes
@@ -1319,6 +1363,90 @@ function escapeHtml(value = "") {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+
+// --- RIR help dialog ---------------------------------------------------
+//
+// One shared dialog for every exercise card. The trigger is a real <button>,
+// so it is reachable by keyboard and touch -- the previous title="" tooltip
+// was hover-only and therefore invisible on mobile and to screen readers.
+// Escape closes it, focus returns to the trigger that opened it, and the
+// content is in the DOM (not a title attribute) so assistive technology can
+// read it.
+let rirHelpDialog = null;
+let rirHelpLastTrigger = null;
+
+function ensureRirHelpDialog() {
+  if (rirHelpDialog) return rirHelpDialog;
+
+  rirHelpDialog = document.createElement("div");
+  rirHelpDialog.id = "rirHelpPopover";
+  rirHelpDialog.className = "rir-help-popover";
+  rirHelpDialog.setAttribute("role", "dialog");
+  rirHelpDialog.setAttribute("aria-modal", "false");
+  rirHelpDialog.setAttribute("aria-labelledby", "rirHelpPopoverTitle");
+  rirHelpDialog.hidden = true;
+  rirHelpDialog.innerHTML = `
+    <h4 id="rirHelpPopoverTitle" class="rir-help-title">${escapeHtml(ui.rirHelpTitle)}</h4>
+    ${ui.rirHelpBody.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("")}
+    <button type="button" class="rir-help-close" data-rir-help-close>${escapeHtml(ui.rirHelpClose)}</button>
+  `;
+  document.body.appendChild(rirHelpDialog);
+
+  rirHelpDialog.querySelector("[data-rir-help-close]")?.addEventListener("click", () => closeRirHelp());
+  return rirHelpDialog;
+}
+
+function closeRirHelp({ restoreFocus = true } = {}) {
+  if (!rirHelpDialog || rirHelpDialog.hidden) return;
+  rirHelpDialog.hidden = true;
+  rirHelpLastTrigger?.setAttribute("aria-expanded", "false");
+  if (restoreFocus) rirHelpLastTrigger?.focus();
+  rirHelpLastTrigger = null;
+}
+
+function openRirHelp(trigger) {
+  const dialog = ensureRirHelpDialog();
+  if (rirHelpLastTrigger === trigger && !dialog.hidden) {
+    closeRirHelp();
+    return;
+  }
+
+  rirHelpLastTrigger?.setAttribute("aria-expanded", "false");
+  rirHelpLastTrigger = trigger;
+  trigger.setAttribute("aria-expanded", "true");
+  trigger.setAttribute("aria-controls", "rirHelpPopover");
+  dialog.hidden = false;
+
+  // Anchor under the trigger, then clamp inside the viewport so the panel
+  // can never hang off-screen on a narrow phone or in RTL.
+  const rect = trigger.getBoundingClientRect();
+  const width = Math.min(320, document.documentElement.clientWidth - 24);
+  dialog.style.width = `${width}px`;
+  const left = Math.min(
+    Math.max(12, rect.left + window.scrollX - width / 2 + rect.width / 2),
+    document.documentElement.clientWidth - width - 12 + window.scrollX
+  );
+  dialog.style.top = `${rect.bottom + window.scrollY + 8}px`;
+  dialog.style.left = `${left}px`;
+
+  dialog.querySelector("[data-rir-help-close]")?.focus();
+}
+
+document.addEventListener("click", (event) => {
+  const trigger = event.target.closest?.("[data-rir-help]");
+  if (trigger) {
+    event.preventDefault();
+    openRirHelp(trigger);
+    return;
+  }
+  if (rirHelpDialog && !rirHelpDialog.hidden && !event.target.closest?.("#rirHelpPopover")) {
+    closeRirHelp({ restoreFocus: false });
+  }
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeRirHelp();
+});
 
 async function initializeExerciseDemosSafely() {
   try {

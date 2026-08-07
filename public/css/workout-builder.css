@@ -1188,3 +1188,136 @@ textarea:focus {
 .visual-choice-card--equipment.is-implied{opacity:.85}
 .visual-choice-card--equipment.is-implied .visual-choice-check{background:#35cfdf}
 
+
+/* ── Effort / RIR guidance ──────────────────────────────────────────────
+   The RIR value used to be explained by a title="" tooltip, which is
+   hover-only: unusable on touch, unreachable by keyboard and invisible to
+   screen readers. It is now a real button opening a shared dialog. */
+
+/* .exercise-card is a two-column grid whose body column can shrink to its
+   300px minimum, leaving ~52px stat tiles. Grid items default to
+   min-width:auto and therefore refuse to shrink, so the tile contents
+   overflowed instead of wrapping. (At that width the pre-existing "10-12"
+   and "75s" values clip too -- this makes all four tiles resilient rather
+   than only the new one.) */
+.exercise-card-stats > .exercise-stat {
+  min-width: 0;
+}
+
+.exercise-stat-value {
+  overflow-wrap: anywhere;
+}
+
+/* Uppercase + letter-spacing makes a single label word wider than a 52px
+   tile, so it has to be allowed to break rather than overflow. */
+.exercise-card-stats .exercise-stat-label {
+  overflow-wrap: anywhere;
+}
+
+/* "1-2 RIR" is longer than the bare "1-2" this tile used to show, so it gets
+   a slightly smaller ceiling than the other three values. */
+.exercise-stat--effort .exercise-stat-value {
+  font-size: clamp(15px, 1.5vw, 20px);
+}
+
+.exercise-stat--effort .exercise-stat-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* The stat tiles are narrow grid columns. Without wrapping, "Effort" plus
+     the 24px button overflows the tile and the label text is clipped. */
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.rir-help-trigger {
+  /* 24px keeps the control usable on touch without enlarging the stat tile;
+     the tile itself remains the larger hit area around it. flex: 0 0 auto is
+     required -- inside the flex label the button otherwise shrinks to a few
+     pixels wide and stops being tappable. */
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(142, 181, 214, 0.5);
+  border-radius: 999px;
+  color: #8fb5d6;
+  background: rgba(143, 181, 214, 0.12);
+  font-size: 12px;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rir-help-trigger:hover {
+  color: #ffffff;
+  background: rgba(143, 181, 214, 0.28);
+}
+
+.rir-help-trigger:focus-visible {
+  outline: 2px solid #8fb5d6;
+  outline-offset: 2px;
+}
+
+.exercise-effort-guidance {
+  margin: 12px 0 0;
+  color: #a9bccd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rir-help-popover {
+  position: absolute;
+  z-index: 120;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 16px 18px;
+  border: 1px solid rgba(142, 181, 214, 0.35);
+  border-radius: 16px;
+  color: #dce8f2;
+  background: #0f1b2b;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.rir-help-popover[hidden] {
+  display: none;
+}
+
+.rir-help-popover .rir-help-title {
+  margin: 0 0 8px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.rir-help-popover p {
+  margin: 0 0 8px;
+}
+
+.rir-help-close {
+  min-height: 34px;
+  margin-top: 4px;
+  padding: 7px 14px;
+  border: 1px solid rgba(142, 181, 214, 0.4);
+  border-radius: 10px;
+  color: #dce8f2;
+  background: rgba(143, 181, 214, 0.14);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rir-help-close:focus-visible {
+  outline: 2px solid #8fb5d6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rir-help-popover {
+    transition: none;
+  }
+}

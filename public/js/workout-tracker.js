@@ -23,6 +23,10 @@ const rawUi = he ? {
   sets: "סטים",
   reps: "חזרות",
   rest: "מנוחה",
+  prescriptionTargetReps: "חזרות יעד",
+  effortRir: (value) => `מאמץ ${value} RIR`,
+  rirGuidance:
+    "בחרו משקל שהופך את החזרות האחרונות למאתגרות. סיימו את הסט כשנותרו לכם בערך מספר החזרות הנקיות המוצג.",
   target: "יעד",
   weight: "משקל (ק\"ג)",
   actualReps: "חזרות",
@@ -97,6 +101,10 @@ const rawUi = he ? {
   sets: "sets",
   reps: "reps",
   rest: "rest",
+  prescriptionTargetReps: "target reps",
+  effortRir: (value) => `effort ${value} RIR`,
+  rirGuidance:
+    "Choose a load that makes the final reps challenging. Finish with roughly the shown number of clean reps still in reserve.",
   target: "Target",
   weight: "Weight (kg)",
   actualReps: "Reps",
@@ -609,10 +617,11 @@ function renderExercise(exercise, index) {
           <h3>${esc(name)}</h3>
           <div class="prescription">
             <span>${count} ${ui.sets}</span>
-            <span>${esc(exercise.reps || "-")} ${ui.reps}</span>
+            <span>${esc(exercise.reps || "-")} ${ui.prescriptionTargetReps}</span>
             <span>${esc(exercise.restSeconds || 0)}s ${ui.rest}</span>
-            ${exercise.rir !== undefined ? `<span>RIR ${esc(exercise.rir)}</span>` : ""}
+            ${exercise.rir !== undefined ? `<span>${esc(ui.effortRir(exercise.rir))}</span>` : ""}
           </div>
+          ${exercise.rir !== undefined ? `<p class="exercise-effort-guidance">${esc(ui.rirGuidance)}</p>` : ""}
           ${exercise.notes ? `<p class="exercise-note">${esc(exercise.notes)}</p>` : ""}
         </div>
         <span class="exercise-number">${index + 1}</span>

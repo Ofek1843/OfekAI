@@ -15,7 +15,7 @@ export const SOCIAL_STRINGS = {
     workout: "Workout program", nutrition: "Nutrition plan", personal_record: "Personal record", completed_workout: "Completed workout", weight_progress: "Weight progress", progress_graph: "Progress graph",
     preview: "Preview", open: "Open", copyWorkout: "Copy to My Plans", copyNutrition: "Copy to My Nutrition Plans", copied: "Copied", openCopy: "Open My Copy", viewPlans: "View in My Plans", revoke: "Revoke",
     unavailable: "This shared item is no longer available.", copiedSuccess: "Your independent copy is ready.", sharedSuccess: "Shared privately.", usernameSaved: "Your social profile is ready.", sendFailed: "Message was not sent.", actionFailed: "That action could not be completed.", liveChatPermission: "Live chat permissions are not enabled; messages are still available through refresh.", liveChatIndex: "Live chat indexes are not ready; messages are still available through refresh.", liveChatUnavailable: "Live chat updates are unavailable; refresh to check for new messages.",
-    days: "days", sessions: "sessions", sets: "sets", calories: "kcal", meals: "meals", createdBy: "Created by", shared: "Shared", exactValuesWarning: "Exact body-weight values will be visible to this friend.",
+    days: "days", sessions: "sessions", sets: "sets", targetReps: "target reps", rest: "rest", effortRir: (value) => `effort ${value} RIR`, calories: "kcal", meals: "meals", createdBy: "Created by", shared: "Shared", exactValuesWarning: "Exact body-weight values will be visible to this friend.",
     copyAsIs: "Copy As-Is", copiedFrom: "Copied from", graphSummary: "Accessible graph summary", noData: "There is not enough data to share this graph yet."
   },
   he: {
@@ -34,7 +34,7 @@ export const SOCIAL_STRINGS = {
     workout: "תוכנית אימון", nutrition: "תוכנית תזונה", personal_record: "שיא אישי", completed_workout: "אימון שהושלם", weight_progress: "התקדמות משקל", progress_graph: "גרף התקדמות",
     preview: "תצוגה מקדימה", open: "פתיחה", copyWorkout: "העתקה לתוכניות שלי", copyNutrition: "העתקה לתוכניות התזונה שלי", copied: "הועתק", openCopy: "פתיחת העותק שלי", viewPlans: "צפייה בתוכניות שלי", revoke: "ביטול שיתוף",
     unavailable: "הפריט המשותף אינו זמין יותר.", copiedSuccess: "העותק העצמאי שלך מוכן.", sharedSuccess: "שותף באופן פרטי.", usernameSaved: "הפרופיל החברתי שלך מוכן.", sendFailed: "ההודעה לא נשלחה.", actionFailed: "לא ניתן היה להשלים את הפעולה.", liveChatPermission: "הרשאות הצ׳אט החי עדיין אינן פעילות; ההודעות זמינות באמצעות רענון.", liveChatIndex: "האינדקסים של הצ׳אט החי עדיין אינם מוכנים; ההודעות זמינות באמצעות רענון.", liveChatUnavailable: "עדכוני הצ׳אט החי אינם זמינים; רעננו כדי לבדוק הודעות חדשות.",
-    days: "ימים", sessions: "אימונים", sets: "סטים", calories: "קלוריות", meals: "ארוחות", createdBy: "נוצר על ידי", shared: "שותף", exactValuesWarning: "ערכי משקל מדויקים יהיו גלויים לחבר הזה.",
+    days: "ימים", sessions: "אימונים", sets: "סטים", targetReps: "חזרות יעד", rest: "מנוחה", effortRir: (value) => `מאמץ ${value} RIR`, calories: "קלוריות", meals: "ארוחות", createdBy: "נוצר על ידי", shared: "שותף", exactValuesWarning: "ערכי משקל מדויקים יהיו גלויים לחבר הזה.",
     copyAsIs: "העתקה כפי שהיא", copiedFrom: "הועתק מ־", graphSummary: "סיכום גרף נגיש", noData: "אין מספיק נתונים לשיתוף הגרף עדיין."
   }
 };
