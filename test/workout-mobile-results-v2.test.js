@@ -110,14 +110,20 @@ test("mobile controls remain touch-sized and the feedback control clears safe ar
   assert.match(FEEDBACK, /"\.rir-help-trigger"/);
   assert.match(FEEDBACK, /\["bottom-end", "bottom-start", "top-end", "top-start"\]/);
   assert.match(FEEDBACK, /rectanglesOverlap\(triggerRect, targetRect\)/);
+  assert.match(FEEDBACK, /rectanglesOverlap\(triggerRect, targetRect, 0\)/);
+  assert.match(FEEDBACK, /placeInVerticalGap\(6\)/);
+  assert.match(FEEDBACK, /--site-feedback-mobile-top/);
+  assert.match(FEEDBACK, /window\.setTimeout\(\(\) => \{/);
+  assert.match(FEEDBACK, /\}, 120\)/, "a trailing pass must run after fast mobile scrolling settles");
 });
 
-test("desktop card hierarchy remains the established two-column design", () => {
+test("desktop cards stay two-column while the narrow tablet edge cannot clip", () => {
   const baseCard = rule(CSS.slice(0, mobileStart), ".exercise-card");
   assert.match(baseCard, /grid-template-columns:\s*minmax\(330px,\s*0\.9fr\)\s*minmax\(300px,\s*1fr\)/);
   assert.match(rule(CSS.slice(0, mobileStart), ".program-card"), /padding:\s*34px/);
   assert.match(MOBILE, /@media \(max-width: 480px\)/);
-  assert.doesNotMatch(CSS, /@media\s*\(min-width:\s*768px\)[\s\S]*?\.exercise-card\s*\{[^}]*grid-template-columns:\s*1fr/);
+  assert.match(CSS, /@media \(min-width: 761px\) and \(max-width: 820px\)[\s\S]*?\.exercise-card\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.doesNotMatch(CSS, /@media\s*\(min-width:\s*821px\)[\s\S]*?\.exercise-card\s*\{[^}]*grid-template-columns:\s*1fr/);
 });
 
 test("Hebrew uses logical layout, readable RIR and the shared RTL direction", () => {

@@ -142,6 +142,14 @@ function injectFeedbackStyles() {
         top: 58px;
         bottom: auto;
       }
+      .site-feedback-widget[data-mobile-position^="mid-"] {
+        top: var(--site-feedback-mobile-top, 50vh);
+        bottom: auto;
+      }
+      .site-feedback-widget[data-mobile-position^="mid-"] .site-feedback-panel {
+        top: 58px;
+        bottom: auto;
+      }
     }
   `;
   document.head.append(style);
@@ -188,6 +196,7 @@ function initSiteFeedback() {
   ].join(",");
   const mobilePositions = ["bottom-end", "bottom-start", "top-end", "top-start"];
   let positionFrame = 0;
+  let positionTimer = 0;
 
   function rectanglesOverlap(first, second, clearance = 6) {
     return !(
@@ -200,6 +209,7 @@ function initSiteFeedback() {
 
   function placeMobileFeedbackTrigger() {
     positionFrame = 0;
+    widget.style.removeProperty("--site-feedback-mobile-top");
     if (!window.matchMedia("(max-width: 620px)").matches) {
       delete widget.dataset.mobilePosition;
       return;
@@ -217,11 +227,49 @@ function initSiteFeedback() {
       const triggerRect = trigger.getBoundingClientRect();
       if (!targets.some((targetRect) => rectanglesOverlap(triggerRect, targetRect))) return;
     }
+
+    function placeInVerticalGap(clearance) {
+      const triggerHeight = trigger.getBoundingClientRect().height || 46;
+      const firstTop = 12;
+      const lastTop = Math.max(firstTop, window.innerHeight - triggerHeight - 12);
+      for (const position of ["mid-end", "mid-start"]) {
+        widget.dataset.mobilePosition = position;
+        for (let top = firstTop; top <= lastTop; top += 8) {
+          widget.style.setProperty("--site-feedback-mobile-top", `${top}px`);
+          const triggerRect = trigger.getBoundingClientRect();
+          if (!targets.some((targetRect) => rectanglesOverlap(triggerRect, targetRect, clearance))) {
+            return true;
+          }
+        }
+      }
+      widget.style.removeProperty("--site-feedback-mobile-top");
+      return false;
+    }
+
+    if (placeInVerticalGap(6)) return;
+
+    // A dense card can occupy enough of the viewport that no corner keeps the
+    // preferred breathing room. In that case, prefer a corner that merely
+    // touches the clearance zone over leaving the trigger in the final corner
+    // where it may cover an actual control.
+    for (const position of mobilePositions) {
+      widget.dataset.mobilePosition = position;
+      const triggerRect = trigger.getBoundingClientRect();
+      if (!targets.some((targetRect) => rectanglesOverlap(triggerRect, targetRect, 0))) return;
+    }
+    placeInVerticalGap(0);
   }
 
   function scheduleMobileFeedbackPosition() {
-    if (positionFrame) return;
-    positionFrame = window.requestAnimationFrame(placeMobileFeedbackTrigger);
+    if (!positionFrame) {
+      positionFrame = window.requestAnimationFrame(placeMobileFeedbackTrigger);
+    }
+    window.clearTimeout(positionTimer);
+    positionTimer = window.setTimeout(() => {
+      if (!positionFrame) {
+        positionFrame = window.requestAnimationFrame(placeMobileFeedbackTrigger);
+      }
+    }, 120);
   }
 
   window.addEventListener("scroll", scheduleMobileFeedbackPosition, { passive: true });
