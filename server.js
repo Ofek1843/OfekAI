@@ -17,6 +17,10 @@ const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
 const { createSocialRouter } = require("./lib/social-router");
+const { createPushRouter } = require("./lib/push-router");
+const { FirestorePushStore } = require("./lib/push-store");
+const { PushNotificationService } = require("./lib/push-service");
+const { createDisabledPushTransport, createFirebasePushTransport } = require("./lib/push-transport");
 const payPlusBilling = require("./lib/payplus-billing");
 const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
@@ -101,7 +105,8 @@ const rateLimiters = {
   socialSearch: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_SEARCHES_PER_UID_PER_MINUTE || 20), keyPrefix: "social-search" }),
   socialRelationships: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_RELATIONSHIPS_PER_UID_PER_MINUTE || 12), keyPrefix: "social-relationship" }),
   socialMessages: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_MESSAGES_PER_UID_PER_MINUTE || 30), keyPrefix: "social-message" }),
-  socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" })
+  socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" }),
+  push: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUSH_API_PER_UID_PER_MINUTE || 30), keyPrefix: "push" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
 const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
@@ -584,15 +589,32 @@ async function requireFirebaseUser(req, res) {
   }
 }
 
+const pushTransport = process.env.PUSH_NOTIFICATIONS_ENABLED === "true"
+  ? createFirebasePushTransport()
+  : createDisabledPushTransport();
+const pushNotifications = new PushNotificationService({
+  store: new FirestorePushStore(),
+  transport: pushTransport
+});
+
 app.use("/api/social", createSocialRouter({
   authenticate: requireFirebaseUser,
   authorizeAdmin: isLeaderboardAdmin,
+  notifications: pushNotifications,
   rateLimiters: {
     search: rateLimiters.socialSearch,
     relationships: rateLimiters.socialRelationships,
     messages: rateLimiters.socialMessages,
     artifacts: rateLimiters.socialArtifacts
   }
+}));
+
+app.use("/api/notifications", createPushRouter({
+  authenticate: requireFirebaseUser,
+  service: pushNotifications,
+  vapidPublicKey: process.env.FIREBASE_WEB_PUSH_VAPID_PUBLIC_KEY || "",
+  testEnabled: process.env.PUSH_TEST_NOTIFICATIONS_ENABLED === "true" || Boolean(process.env.FIRESTORE_EMULATOR_HOST),
+  rateLimit: rateLimiters.push
 }));
 
 app.get("/api/imagekit/upload-auth", async (req, res) => {
