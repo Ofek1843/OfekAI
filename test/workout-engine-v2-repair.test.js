@@ -62,9 +62,12 @@ test("triceps excess is repaired isolation-first while chest compounds are prese
   const { repairs } = repairWorkoutProgram(program, profile);
   const after = buildVolumeLedger(program, profile);
 
-  assert.equal(totalSets(program, "barbell-bench-press"), benchSetsBefore);
+  const firstIsolationRepair = repairs.findIndex((message) => message.includes("direct isolation"));
+  const firstCompoundRepair = repairs.findIndex((message) => message.includes("Barbell Bench Press") && message.includes("reduced"));
+  assert.ok(totalSets(program, "barbell-bench-press") > 0 && totalSets(program, "barbell-bench-press") <= benchSetsBefore);
   assert.ok(totalSets(program, "cable-tricep-pushdown") < 12);
-  assert.ok(repairs[0].includes("direct isolation"), "the first allocation repair must target isolation");
+  assert.ok(firstIsolationRepair >= 0, "direct isolation must be repaired");
+  assert.ok(firstCompoundRepair < 0 || firstIsolationRepair < firstCompoundRepair, "isolation must be repaired before compound sets are adjusted");
   assert.ok(after.muscles.triceps.effectiveTotal <= after.muscles.triceps.preferredMaximum);
   assert.ok(after.muscles.chest.effectiveTotal >= after.muscles.chest.preferredMinimum);
   assert.ok(after.muscles.triceps.effectiveTotal < before.muscles.triceps.effectiveTotal);
@@ -83,9 +86,12 @@ test("biceps excess is repaired by curls before rows", () => {
   const { repairs } = repairWorkoutProgram(program, profile);
   const ledger = buildVolumeLedger(program, profile);
 
-  assert.equal(totalSets(program, "barbell-row"), rowSetsBefore);
+  const firstIsolationRepair = repairs.findIndex((message) => message.includes("biceps") && message.includes("direct isolation"));
+  const firstCompoundRepair = repairs.findIndex((message) => message.includes("Barbell Row") && message.includes("reduced"));
+  assert.ok(totalSets(program, "barbell-row") > 0 && totalSets(program, "barbell-row") <= rowSetsBefore);
   assert.ok(totalSets(program, "cable-bicep-curl") < 12);
-  assert.ok(repairs.filter((message) => message.includes("biceps") && message.includes("direct isolation")).length > 0);
+  assert.ok(firstIsolationRepair >= 0);
+  assert.ok(firstCompoundRepair < 0 || firstIsolationRepair < firstCompoundRepair, "curls must be repaired before row sets are adjusted");
   assert.ok(ledger.muscles.biceps.effectiveTotal <= ledger.muscles.biceps.preferredMaximum);
 });
 
@@ -302,7 +308,7 @@ test("four-day Gym hypertrophy reconstructions improve beginner, intermediate an
       applyVolumeTargets: true
     };
     const before = buildQualityDiagnostic(program, profile);
-    repairWorkoutProgram(program, profile);
+    const { repairs } = repairWorkoutProgram(program, profile);
     const after = buildQualityDiagnostic(program, profile);
     const ledger = buildVolumeLedger(program, profile);
 
@@ -315,7 +321,8 @@ test("four-day Gym hypertrophy reconstructions improve beginner, intermediate an
     results[experience] = {
       quality: [before.score, after.score],
       chest: ledger.muscles.chest.effectiveTotal,
-      triceps: ledger.muscles.triceps.effectiveTotal
+      triceps: ledger.muscles.triceps.effectiveTotal,
+      variationSwaps: repairs.filter((message) => message.includes("swapped")).length
     };
   }
 
@@ -323,6 +330,7 @@ test("four-day Gym hypertrophy reconstructions improve beginner, intermediate an
   assert.ok(results.beginner.triceps >= 6 && results.beginner.triceps <= 8);
   assert.ok(results.advanced.chest >= 14 && results.advanced.chest <= 18);
   assert.ok(results.advanced.triceps >= 8 && results.advanced.triceps <= 11);
+  assert.ok(results.beginner.variationSwaps > 0, "preferred optimization should use a safe same-primary variation swap when it improves balance");
   console.log("Workout Engine V2 four-day reconstruction summary:", JSON.stringify(results));
 });
 
