@@ -459,6 +459,209 @@ function showWizardError(message) {
   wizardError.classList.remove("hidden");
 }
 
+// --- Muscle Focus ------------------------------------------------------
+//
+// Optional step. The default is "balanced" with no selection, which produces
+// exactly the legacy request shape, so a user who skips this step is
+// unaffected. Nothing here is derived from sex, gender or any other profile
+// field -- personalization comes only from what the user explicitly picks.
+//
+// The IDs below are the engine's own canonical muscle keys (see
+// lib/workout-volume-targets.js MUSCLE_POLICY), so no translation layer is
+// needed between this UI and the solver contract.
+const MUSCLE_FOCUS_MODES = Object.freeze(["balanced", "prioritize", "selected_only"]);
+const MUSCLE_FOCUS_DEFAULT_MODE = "balanced";
+
+const FOCUS_MUSCLES = Object.freeze([
+  { id: "chest", en: "Chest", he: "חזה", view: "front" },
+  { id: "delts", en: "Shoulders / Delts", he: "כתפיים", view: "front" },
+  { id: "biceps", en: "Biceps", he: "יד קדמית", view: "front" },
+  { id: "core", en: "Core / Abs", he: "בטן וליבה", view: "front" },
+  { id: "quads", en: "Quads", he: "ארבע ראשי", view: "front" },
+  { id: "calves", en: "Calves", he: "תאומים", view: "front" },
+  { id: "back", en: "Back", he: "גב", view: "back" },
+  { id: "rear_delts", en: "Rear Delts", he: "כתף אחורית", view: "back" },
+  { id: "traps", en: "Traps", he: "טרפז", view: "back" },
+  { id: "triceps", en: "Triceps", he: "יד אחורית", view: "back" },
+  { id: "glutes", en: "Glutes", he: "ישבן", view: "back" },
+  { id: "hamstrings", en: "Hamstrings", he: "מיתר הברך", view: "back" }
+]);
+
+const muscleFocusState = {
+  mode: MUSCLE_FOCUS_DEFAULT_MODE,
+  selected: new Set(),
+  view: "front"
+};
+
+const muscleLabel = (muscle) => (isHebrew ? muscle.he : muscle.en);
+
+// Original simplified silhouette built from plain rounded rectangles and
+// ellipses. Not a medical chart and not traced from any third-party artwork.
+// Purely a convenience layer: it is aria-hidden and every region has an
+// equivalent text chip, which is the authoritative control.
+function muscleDiagramSvg(view) {
+  const regions = {
+    front: [
+      { id: "delts", shapes: '<ellipse cx="34" cy="52" rx="12" ry="9"/><ellipse cx="86" cy="52" rx="12" ry="9"/>' },
+      { id: "chest", shapes: '<rect x="42" y="46" width="36" height="24" rx="8"/>' },
+      { id: "biceps", shapes: '<rect x="20" y="64" width="13" height="30" rx="6"/><rect x="87" y="64" width="13" height="30" rx="6"/>' },
+      { id: "core", shapes: '<rect x="47" y="74" width="26" height="34" rx="7"/>' },
+      { id: "quads", shapes: '<rect x="42" y="118" width="16" height="44" rx="8"/><rect x="62" y="118" width="16" height="44" rx="8"/>' },
+      { id: "calves", shapes: '<rect x="44" y="168" width="13" height="30" rx="6"/><rect x="63" y="168" width="13" height="30" rx="6"/>' }
+    ],
+    back: [
+      { id: "traps", shapes: '<path d="M44 40 L76 40 L68 60 L52 60 Z"/>' },
+      { id: "rear_delts", shapes: '<ellipse cx="34" cy="54" rx="12" ry="9"/><ellipse cx="86" cy="54" rx="12" ry="9"/>' },
+      { id: "back", shapes: '<rect x="42" y="62" width="36" height="42" rx="8"/>' },
+      { id: "triceps", shapes: '<rect x="20" y="66" width="13" height="30" rx="6"/><rect x="87" y="66" width="13" height="30" rx="6"/>' },
+      { id: "glutes", shapes: '<rect x="42" y="110" width="36" height="22" rx="10"/>' },
+      { id: "hamstrings", shapes: '<rect x="42" y="136" width="16" height="40" rx="8"/><rect x="62" y="136" width="16" height="40" rx="8"/>' }
+    ]
+  }[view] || [];
+
+  const body = `
+    <ellipse class="muscle-body" cx="60" cy="24" rx="14" ry="16"/>
+    <rect class="muscle-body" x="38" y="42" width="44" height="70" rx="14"/>
+    <rect class="muscle-body" x="18" y="50" width="16" height="52" rx="8"/>
+    <rect class="muscle-body" x="86" y="50" width="16" height="52" rx="8"/>
+    <rect class="muscle-body" x="40" y="110" width="18" height="90" rx="9"/>
+    <rect class="muscle-body" x="62" y="110" width="18" height="90" rx="9"/>`;
+
+  const regionSvg = regions
+    .map((region) => `<g class="muscle-region" data-muscle-region="${region.id}">${region.shapes}</g>`)
+    .join("");
+
+  return `<svg viewBox="0 0 120 210" role="presentation" focusable="false">${body}${regionSvg}</svg>`;
+}
+
+function renderMuscleChips() {
+  const grid = document.querySelector("#muscleChipGrid");
+  if (!grid) return;
+  grid.innerHTML = FOCUS_MUSCLES.map((muscle) => `
+    <button
+      type="button"
+      class="muscle-chip"
+      data-muscle="${muscle.id}"
+      aria-pressed="${muscleFocusState.selected.has(muscle.id) ? "true" : "false"}"
+    >${escapeHtml(muscleLabel(muscle))}</button>`).join("");
+}
+
+function syncMuscleFocusUi() {
+  const picker = document.querySelector("#muscleFocusPicker");
+  if (picker) picker.hidden = muscleFocusState.mode === "balanced";
+
+  document.querySelectorAll("#muscleChipGrid .muscle-chip").forEach((chip) => {
+    const on = muscleFocusState.selected.has(chip.dataset.muscle);
+    chip.setAttribute("aria-pressed", on ? "true" : "false");
+    // Selection is never signalled by colour alone -- the chip also carries
+    // a state class that adds a check glyph and a border weight change.
+    chip.classList.toggle("is-selected", on);
+  });
+
+  const diagram = document.querySelector("#muscleDiagram");
+  if (diagram) {
+    diagram.innerHTML = muscleDiagramSvg(muscleFocusState.view);
+    diagram.querySelectorAll("[data-muscle-region]").forEach((region) => {
+      region.classList.toggle("is-selected", muscleFocusState.selected.has(region.dataset.muscleRegion));
+    });
+  }
+
+  document.querySelectorAll("[data-body-view]").forEach((switchButton) => {
+    const active = switchButton.dataset.bodyView === muscleFocusState.view;
+    switchButton.classList.toggle("is-active", active);
+    switchButton.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+
+function toggleMuscle(id) {
+  if (!FOCUS_MUSCLES.some((muscle) => muscle.id === id)) return;
+  if (muscleFocusState.selected.has(id)) muscleFocusState.selected.delete(id);
+  else muscleFocusState.selected.add(id);
+  clearMuscleFocusError();
+  syncMuscleFocusUi();
+}
+
+function clearMuscleFocusError() {
+  document.querySelector("#muscleFocusError")?.classList.add("hidden");
+}
+
+// Canonical payload fragment. Selection is only meaningful when a focus mode
+// is active, so balanced always sends an empty array.
+function muscleFocusPayload() {
+  const mode = MUSCLE_FOCUS_MODES.includes(muscleFocusState.mode)
+    ? muscleFocusState.mode
+    : MUSCLE_FOCUS_DEFAULT_MODE;
+  const selectedMuscles = mode === "balanced"
+    ? []
+    : FOCUS_MUSCLES.filter((muscle) => muscleFocusState.selected.has(muscle.id)).map((muscle) => muscle.id);
+  return { muscleFocusMode: mode, selectedMuscles };
+}
+
+// Restores state from a saved plan or older document. Anything missing or
+// unrecognised falls back to balanced rather than throwing.
+function applyMuscleFocus(source) {
+  const mode = MUSCLE_FOCUS_MODES.includes(source?.muscleFocusMode)
+    ? source.muscleFocusMode
+    : MUSCLE_FOCUS_DEFAULT_MODE;
+  const selected = Array.isArray(source?.selectedMuscles) ? source.selectedMuscles : [];
+  muscleFocusState.mode = mode;
+  muscleFocusState.selected = new Set(
+    selected.filter((id) => FOCUS_MUSCLES.some((muscle) => muscle.id === id))
+  );
+  const radio = document.querySelector(`input[name="muscleFocusMode"][value="${mode}"]`);
+  if (radio) radio.checked = true;
+  syncMuscleFocusUi();
+  return muscleFocusPayload();
+}
+
+function setupMuscleFocus() {
+  if (!document.querySelector("#muscleFocusPicker")) return;
+  renderMuscleChips();
+
+  document.querySelectorAll('input[name="muscleFocusMode"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      if (!radio.checked) return;
+      muscleFocusState.mode = radio.value;
+      clearMuscleFocusError();
+      syncMuscleFocusUi();
+    });
+  });
+
+  document.querySelector("#muscleChipGrid")?.addEventListener("click", (event) => {
+    const chip = event.target.closest(".muscle-chip");
+    if (chip) toggleMuscle(chip.dataset.muscle);
+  });
+
+  document.querySelector("#muscleDiagram")?.addEventListener("click", (event) => {
+    const region = event.target.closest("[data-muscle-region]");
+    if (region) toggleMuscle(region.dataset.muscleRegion);
+  });
+
+  document.querySelectorAll("[data-body-view]").forEach((switchButton) => {
+    switchButton.addEventListener("click", () => {
+      muscleFocusState.view = switchButton.dataset.bodyView === "back" ? "back" : "front";
+      syncMuscleFocusUi();
+    });
+  });
+
+  syncMuscleFocusUi();
+}
+
+function validateMuscleFocus() {
+  const { muscleFocusMode, selectedMuscles } = muscleFocusPayload();
+  if (muscleFocusMode === "balanced") return "";
+  if (selectedMuscles.length > 0) return "";
+  // Never silently downgrade the user's choice back to balanced -- say what
+  // is missing and let them fix it.
+  return muscleFocusMode === "prioritize"
+    ? (isHebrew
+        ? "בחרו לפחות שריר אחד לתעדוף, או חזרו למצב מאוזן."
+        : "Select at least one muscle to prioritize, or switch back to Balanced.")
+    : (isHebrew
+        ? "בחרו לפחות שריר אחד לתוכנית ממוקדת, או חזרו למצב מאוזן."
+        : "Select at least one muscle for a selected-muscle plan, or switch back to Balanced.");
+}
+
 function validateWizardStep(index) {
   const key = wizardSteps[index]?.dataset.wizardStep;
   if (key === "goal" && !document.querySelector("#goal")?.value) return isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
@@ -473,6 +676,7 @@ function validateWizardStep(index) {
     if (!Number.isFinite(duration) || duration < 20 || duration > 180) return isHebrew ? "הזן משך אימון בין 20 ל־180 דקות." : "Enter a session duration between 20 and 180 minutes.";
     if (selectedAvailableDays().length !== days) return isHebrew ? `בחר בדיוק ${days} ימים זמינים.` : `Choose exactly ${days} available day${days === 1 ? "" : "s"}.`;
   }
+  if (key === "muscleFocus") return validateMuscleFocus();
   return "";
 }
 
@@ -523,6 +727,7 @@ document.querySelectorAll('input[name="availableDays"]').forEach(input => input.
 
 applyBuilderLanguage();
 setupVisualSelections();
+setupMuscleFocus();
 updateAvailableDayLimit();
 renderWizardStep();
 
@@ -588,7 +793,11 @@ form.addEventListener("submit", async (event) => {
     limitations:
       formData.get("limitations")?.trim() ||
       (isHebrew ? "ללא מגבלות" : "None"),
-    language: currentLanguage
+    language: currentLanguage,
+    // Canonical contract shared with the solver. Defaults to
+    // { muscleFocusMode: "balanced", selectedMuscles: [] }, which is
+    // behaviourally identical to the previous request that omitted them.
+    ...muscleFocusPayload()
   };
 
   try {
@@ -628,8 +837,18 @@ if (data.program) {
   const sessionCount = Array.isArray(data.program.sessions)
     ? data.program.sessions.length
     : Number(data.program.daysPerWeek) || 0;
+  // Carry the focus choice on the plan object itself. saveWorkoutPlan spreads
+  // the whole plan into the saved document and Social snapshots are built
+  // from the same object, so the preference survives save, reopen, copy and
+  // sharing without a schema migration. The server's own value wins if it
+  // echoes one back; otherwise the request's choice is recorded.
+  const requestedFocus = muscleFocusPayload();
   window.currentWorkoutProgram = {
     ...data.program,
+    muscleFocusMode: data.program.muscleFocusMode || requestedFocus.muscleFocusMode,
+    selectedMuscles: Array.isArray(data.program.selectedMuscles)
+      ? data.program.selectedMuscles
+      : requestedFocus.selectedMuscles,
     weeklyScheduleDays:
       Array.isArray(data.program.weeklyScheduleDays) &&
       data.program.weeklyScheduleDays.length === sessionCount
@@ -959,6 +1178,37 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
   `;
 }
 
+// Shown only when a focus mode is active. Balanced plans render nothing, so
+// the existing result layout is untouched for everyone who skipped the step.
+// The wording never claims other muscles receive no stimulus.
+function renderMuscleFocusSummary(source) {
+  const mode = source?.muscleFocusMode;
+  if (!mode || mode === "balanced" || !MUSCLE_FOCUS_MODES.includes(mode)) return "";
+
+  const ids = Array.isArray(source.selectedMuscles) ? source.selectedMuscles : [];
+  const names = FOCUS_MUSCLES.filter((muscle) => ids.includes(muscle.id)).map(muscleLabel);
+  if (!names.length) return "";
+
+  const heading = mode === "prioritize"
+    ? (isHebrew ? "עדיפות מיקוד:" : "Focus priority:")
+    : (isHebrew ? "תוכנית ממוקדת שרירים:" : "Selected-muscle plan:");
+
+  const note = mode === "prioritize"
+    ? (isHebrew
+        ? "השרירים האלה קיבלו עדיפות בעת חלוקת התוכנית."
+        : "These muscles were prioritized when the plan was allocated.")
+    : (isHebrew
+        ? "התרגילים מרוכזים סביב השרירים שבחרתם. תרגילים מורכבים עדיין עשויים לאמן שרירים אחרים באופן עקיף."
+        : "Exercises are centered on your selected muscles. Compound movements may still train other muscles indirectly.");
+
+  return `
+      <div class="muscle-focus-summary" data-focus-mode="${escapeHtml(mode)}">
+        <p class="muscle-focus-summary-heading">${escapeHtml(heading)}</p>
+        <p class="muscle-focus-summary-muscles">${names.map(escapeHtml).join(" · ")}</p>
+        <p class="muscle-focus-summary-note">${escapeHtml(note)}</p>
+      </div>`;
+}
+
 function renderProgram(program, weeklyVolume) {
   const sessions = Array.isArray(program.sessions)
     ? program.sessions
@@ -1144,6 +1394,8 @@ function renderProgram(program, weeklyVolume) {
   </button>
 </div>
       </header>
+
+      ${renderMuscleFocusSummary(window.currentWorkoutProgram || program)}
 
       <div class="program-summary">
         <div class="summary-item">

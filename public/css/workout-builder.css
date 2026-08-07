@@ -1321,3 +1321,229 @@ textarea:focus {
     transition: none;
   }
 }
+
+/* ── Muscle Focus (optional builder step) ─────────────────────────────── */
+
+.focus-mode-fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.focus-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.focus-mode-card {
+  display: block;
+  position: relative;
+  padding: 16px 18px;
+  border: 1px solid rgba(142, 157, 153, 0.18);
+  border-radius: 16px;
+  background: rgba(30, 41, 59, 0.55);
+  cursor: pointer;
+}
+
+/* The visually hidden radio must occupy no space. Without an explicit size
+   it inherits the global `input { width: 100% }` and, being absolutely
+   positioned, spills past the card and causes horizontal page overflow at
+   narrow widths. It stays in the DOM (not display:none) so it remains
+   focusable and reachable by assistive technology. */
+.focus-mode-card input {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 1px;
+  min-width: 0;
+  height: 1px;
+  min-height: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.focus-mode-body {
+  display: grid;
+  gap: 6px;
+}
+
+.focus-mode-body strong {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.focus-mode-body span {
+  color: #a9bccd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Selection is not signalled by colour alone: the card gains a border weight
+   change and a check glyph as well as a tint. */
+.focus-mode-card:has(input:checked) {
+  border-color: #6be1ee;
+  border-width: 2px;
+  padding: 15px 17px;
+  background: rgba(107, 225, 238, 0.12);
+}
+
+.focus-mode-card:has(input:checked) .focus-mode-body strong::after {
+  content: " ✓";
+  color: #6be1ee;
+}
+
+.focus-mode-card:has(input:focus-visible) {
+  outline: 2px solid #6be1ee;
+  outline-offset: 2px;
+}
+
+.muscle-focus-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  gap: 18px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.muscle-focus-picker[hidden] {
+  display: none;
+}
+
+.muscle-view-switch {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.muscle-view-button {
+  min-height: 44px;
+  flex: 1 1 auto;
+  padding: 10px 14px;
+  border: 1px solid rgba(142, 157, 153, 0.22);
+  border-radius: 12px;
+  color: #cfe0ee;
+  background: rgba(30, 41, 59, 0.6);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.muscle-view-button.is-active {
+  border-color: #6be1ee;
+  color: #03151e;
+  background: #6be1ee;
+}
+
+.muscle-view-button:focus-visible,
+.muscle-chip:focus-visible {
+  outline: 2px solid #6be1ee;
+  outline-offset: 2px;
+}
+
+.muscle-diagram svg {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.muscle-diagram .muscle-body {
+  fill: rgba(148, 163, 184, 0.16);
+}
+
+.muscle-diagram .muscle-region {
+  fill: rgba(148, 163, 184, 0.42);
+  cursor: pointer;
+}
+
+.muscle-diagram .muscle-region:hover {
+  fill: rgba(107, 225, 238, 0.55);
+}
+
+.muscle-diagram .muscle-region.is-selected {
+  fill: #6be1ee;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+}
+
+.muscle-chip-hint {
+  margin: 0 0 10px;
+  color: #a9bccd;
+  font-size: 13px;
+}
+
+.muscle-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.muscle-chip {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid rgba(142, 157, 153, 0.25);
+  border-radius: 999px;
+  color: #cfe0ee;
+  background: rgba(30, 41, 59, 0.6);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Not colour-only: selected chips also gain a check glyph and a heavier
+   border, so the state survives greyscale and colour-vision differences. */
+.muscle-chip.is-selected {
+  border-color: #6be1ee;
+  border-width: 2px;
+  color: #03151e;
+  background: #6be1ee;
+}
+
+.muscle-chip.is-selected::after {
+  content: " ✓";
+}
+
+.muscle-focus-summary {
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  border: 1px solid rgba(107, 225, 238, 0.3);
+  border-radius: 16px;
+  background: rgba(107, 225, 238, 0.08);
+}
+
+.muscle-focus-summary-heading {
+  margin: 0;
+  color: #8fe8f4;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.muscle-focus-summary-muscles {
+  margin: 6px 0 0;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.muscle-focus-summary-note {
+  margin: 6px 0 0;
+  color: #a9bccd;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .muscle-focus-picker {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .muscle-diagram svg {
+    max-width: 170px;
+  }
+}

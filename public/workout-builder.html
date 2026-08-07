@@ -179,6 +179,73 @@
           <div class="wizard-review" id="wizardReview"></div>
         </section>
 
+        <!--
+          Muscle Focus is optional. Skipping it leaves muscleFocusMode
+          "balanced" with an empty selectedMuscles array, which is exactly the
+          legacy request shape. Selection is never inferred from sex or any
+          other profile field -- only from what the user explicitly picks here.
+        -->
+        <section class="wizard-step" data-wizard-step="muscleFocus" data-step-title-en="Muscle Focus" data-step-title-he="מיקוד שרירים">
+          <div class="wizard-step-heading">
+            <span>07</span>
+            <div>
+              <h2 data-en="Muscle Focus" data-he="מיקוד שרירים">Muscle Focus</h2>
+              <p data-en="Optional — personalize which muscles receive the most attention." data-he="אופציונלי — התאימו אילו שרירים יקבלו את עיקר הדגש בתוכנית.">Optional — personalize which muscles receive the most attention.</p>
+            </div>
+          </div>
+
+          <fieldset class="focus-mode-fieldset">
+            <legend class="visually-hidden" data-en="Muscle focus mode" data-he="מצב מיקוד שרירים">Muscle focus mode</legend>
+            <div class="focus-mode-grid">
+              <label class="focus-mode-card">
+                <input type="radio" name="muscleFocusMode" value="balanced" checked>
+                <span class="focus-mode-body">
+                  <strong data-en="Balanced" data-he="מאוזן">Balanced</strong>
+                  <span data-en="Train all major muscle groups with balanced programming." data-he="אימון מאוזן של קבוצות השרירים המרכזיות.">Train all major muscle groups with balanced programming.</span>
+                </span>
+              </label>
+              <label class="focus-mode-card">
+                <input type="radio" name="muscleFocusMode" value="prioritize">
+                <span class="focus-mode-body">
+                  <strong data-en="Prioritize selected muscles" data-he="תעדוף השרירים שנבחרו">Prioritize selected muscles</strong>
+                  <span data-en="Give your selected muscles first priority while still training the rest of the body." data-he="השרירים שבחרתם יקבלו עדיפות, תוך המשך אימון שאר הגוף.">Give your selected muscles first priority while still training the rest of the body.</span>
+                </span>
+              </label>
+              <label class="focus-mode-card">
+                <input type="radio" name="muscleFocusMode" value="selected_only">
+                <span class="focus-mode-body">
+                  <strong data-en="Selected muscles only" data-he="רק השרירים שנבחרו">Selected muscles only</strong>
+                  <span data-en="Build the plan around the muscles you choose. Other muscles may still work indirectly during compound movements." data-he="בנו את התוכנית סביב השרירים שבחרתם. שרירים אחרים עדיין עשויים לעבוד באופן עקיף בתרגילים מורכבים.">Build the plan around the muscles you choose. Other muscles may still work indirectly during compound movements.</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="muscle-focus-picker" id="muscleFocusPicker" hidden>
+            <div class="muscle-diagram-panel">
+              <div class="muscle-view-switch" role="group" aria-label="Body view">
+                <button type="button" class="muscle-view-button is-active" data-body-view="front" aria-pressed="true" data-en="Front" data-he="חזית">Front</button>
+                <button type="button" class="muscle-view-button" data-body-view="back" aria-pressed="false" data-en="Back" data-he="גב">Back</button>
+              </div>
+              <!--
+                Original simplified silhouette drawn from plain geometric
+                shapes. Deliberately not a medical anatomy chart, and not
+                derived from any third-party illustration. It is decorative:
+                aria-hidden, because the authoritative controls are the text
+                chips below, which work without the graphic.
+              -->
+              <div class="muscle-diagram" id="muscleDiagram" aria-hidden="true"></div>
+            </div>
+
+            <div class="muscle-chip-panel">
+              <p class="muscle-chip-hint" data-en="Select the muscles you want to focus on." data-he="בחרו את השרירים שעליהם תרצו להתמקד.">Select the muscles you want to focus on.</p>
+              <div class="muscle-chip-grid" id="muscleChipGrid" role="group" aria-label="Muscle groups"></div>
+            </div>
+          </div>
+
+          <p id="muscleFocusError" class="wizard-error hidden" role="alert"></p>
+        </section>
+
         <p id="wizardError" class="wizard-error hidden" role="alert"></p>
 
         <div class="wizard-actions">
