@@ -1,5 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 const {
   createWeeklyScheduleDays,
   isReminderDue,
@@ -8,6 +10,14 @@ const {
   workoutAlreadyCompleted,
   zonedDateParts
 } = require("../lib/workout-reminders");
+
+const PUSH_STORE_SOURCE = fs.readFileSync(path.join(__dirname, "../lib/push-store.js"), "utf8");
+
+test("eligible reminder users are paginated so accounts beyond the first 500 are not starved", () => {
+  assert.match(PUSH_STORE_SOURCE, /orderBy\(FieldPath\.documentId\(\)\)/);
+  assert.match(PUSH_STORE_SOURCE, /query = query\.startAfter\(cursor\)/);
+  assert.match(PUSH_STORE_SOURCE, /while \(true\)/);
+});
 
 function reminderFixture({
   now = new Date("2026-08-07T15:05:00Z"),
