@@ -91,6 +91,8 @@ test("Production AI response shape (no exerciseId) is repaired and returns 200, 
 
   assert.equal(res.status, 200, `Expected 200 after repair. Body: ${JSON.stringify(data)}`);
   assert.equal(data.success, true);
+  assert.equal(data.program.muscleFocusMode, "balanced");
+  assert.deepEqual(data.program.selectedMuscles, []);
   for (const session of data.program.sessions) {
     for (const exercise of session.exercises) {
       assert.equal(typeof exercise.exerciseId, "string");

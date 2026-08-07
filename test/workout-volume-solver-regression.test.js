@@ -195,8 +195,29 @@ function assertFullySuccessful(result, label) {
 test("exact reported fixture: 20 deterministic variations all succeed (20/20 required)", () => {
   let successCount = 0;
   let firstResult = null;
+  let firstBefore = null;
   for (let seed = 1; seed <= 20; seed++) {
     const program = buildVariant(seed * 7919); // distinct, deterministic seeds
+    if (seed === 1) {
+      const beforeProgram = JSON.parse(JSON.stringify(program));
+      for (const exercise of beforeProgram.sessions.flatMap((session) => session.exercises)) {
+        exercise.exerciseId = resolveExerciseId(exercise).id;
+      }
+      const beforeVolume = calculateWeeklyVolume(beforeProgram, EXERCISE_SETCREDITS);
+      const beforeProfile = {
+        experience: REPORTED_PROFILE.experience,
+        priority: derivePriorityFromGoal(REPORTED_PROFILE.goal),
+        daysPerWeek: REPORTED_PROFILE.daysPerWeek,
+        equipment: deriveAllowedEquipment({
+          trainingStyle: REPORTED_PROFILE.trainingStyle,
+          selectedEquipment: REPORTED_PROFILE.selectedEquipment
+        }).allowed
+      };
+      firstBefore = {
+        quality: calculateProgramQualityScore(beforeVolume.perMuscle, beforeProfile).score,
+        perMuscle: beforeVolume.perMuscle
+      };
+    }
     const result = runProfile(program);
     if (seed === 1) firstResult = result;
     try {
@@ -222,7 +243,8 @@ test("exact reported fixture: 20 deterministic variations all succeed (20/20 req
     };
   }
   console.log("Exact reported fixture (variation 1) final per-muscle volumes vs policy:", JSON.stringify(report, null, 2));
-  console.log("Exact reported fixture (variation 1) quality score:", firstResult.quality.score);
+  console.log("Exact reported fixture (variation 1) before/after quality:", JSON.stringify({ before: firstBefore.quality, after: firstResult.quality.score }));
+  assert.ok(firstResult.quality.score >= firstBefore.quality, "advanced reconstructed fixture quality must not regress after repair");
 });
 
 // --- Item 2/7: equipment feasibility is real, never falsely blamed --------

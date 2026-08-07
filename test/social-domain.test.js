@@ -80,6 +80,25 @@ test("workout copy creates a recipient-owned shape and recalculates volume", () 
   assert.equal(copy.plan.weeklyVolume.perMuscle.chest.total, 3);
 });
 
+test("workout social snapshots preserve the backend muscle-focus contract with a legacy balanced default", () => {
+  const focused = sanitizeWorkoutSnapshot({
+    plan: {
+      muscleFocusMode: "selected_only",
+      selectedMuscles: ["glutes", "core"],
+      sessions: [{ name: "A", exercises: [{ name: "Barbell Hip Thrust", sets: 3, reps: "8-12" }] }]
+    }
+  }, "Creator");
+  const focusedCopy = buildWorkoutCopy(focused, "Copied", "artifact-focus");
+  assert.equal(focused.muscleFocusMode, "selected_only");
+  assert.deepEqual(focused.selectedMuscles, ["glutes", "core"]);
+  assert.equal(focusedCopy.plan.muscleFocusMode, "selected_only");
+  assert.deepEqual(focusedCopy.plan.selectedMuscles, ["glutes", "core"]);
+
+  const legacy = sanitizeWorkoutSnapshot({ plan: { sessions: [{ name: "A", exercises: [{ name: "Push-up", sets: 3 }] }] } });
+  assert.equal(legacy.muscleFocusMode, "balanced");
+  assert.deepEqual(legacy.selectedMuscles, []);
+});
+
 test("nutrition snapshots exclude private dietary and body data and recompute visible totals", () => {
   const snapshot = sanitizeNutritionSnapshot({
     name: "Day plan",

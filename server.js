@@ -25,6 +25,13 @@ const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
+const { normalizeMuscleFocusContract, primaryMuscleForExerciseId } = require("./lib/workout-focus");
+const {
+  buildVolumeLedger,
+  buildQualityDiagnostic,
+  buildProgrammingConstraintSummary,
+  formatLedgerForAiRepair
+} = require("./lib/workout-volume-ledger");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
 const { buildLocalWorkoutProgram } = require("./lib/local-demo-generators");
 const { calculateNutritionTargets } = require("./lib/nutrition-targets");
@@ -36,8 +43,7 @@ const {
   volumeStatus,
   detailedVolumeStatus,
   classifyMuscleRequirement,
-  requiredMusclesOutOfRange,
-  calculateProgramQualityScore
+  requiredMusclesOutOfRange
 } = require("./lib/workout-volume-targets");
 const {
   buildMealSlots,
@@ -995,6 +1001,9 @@ async function createChatCompletion({
   retryIncomplete = true
 }) {
   if (mockExternalServices) {
+    if (taskName === "workout-builder" && process.env.MOCK_OPENAI_WORKOUT_RESPONSE_JSON) {
+      return String(process.env.MOCK_OPENAI_WORKOUT_RESPONSE_JSON);
+    }
     // Test-only, env-gated simulation of a real OpenAI upstream failure
     // (e.g. 403 model_not_found), so tests can exercise the upstream ->
     // 502 mapping deterministically and offline. Mirrors exactly what the
@@ -2206,12 +2215,38 @@ function normalizeNutritionPlan(plan,{targetCalories,targetProtein,targetCarbs,t
   return plan;
 }
 
+function hardVolumeLedgerIssues(ledger) {
+  const issues = [];
+  if ((ledger?.mappingCoveragePercent || 0) < 100 || (ledger?.unknownExercises || 0) > 0) {
+    issues.push(`Set-credit mapping is incomplete (${ledger?.mappingCoveragePercent || 0}% coverage, ${ledger?.unknownExercises || 0} unknown exercises).`);
+  }
+  for (const entry of Object.values(ledger?.muscles || {})) {
+    if (entry.requirement !== "required") continue;
+    if (entry.deficitToHardMinimum > 0) {
+      issues.push(`${entry.muscle} effective volume ${entry.effectiveTotal} is below hard minimum ${entry.hardMinimum}.`);
+    }
+    if (entry.amountAboveHardMaximum > 0) {
+      issues.push(`${entry.muscle} effective volume ${entry.effectiveTotal} exceeds hard maximum ${entry.hardMaximum}.`);
+    }
+  }
+  return issues;
+}
+
 // The single AI correction retry used when deterministic repair still
 // leaves the program invalid: hands the model back its own output plus the
 // exact validator errors and asks for a corrected JSON. Returns null (never
 // throws past its caller) if the model's correction is itself unusable, so
 // the caller keeps the pre-retry program and lets validation report it.
-async function repairWorkoutProgramWithAi({ program, issues, parsedDays, equipment, trainingStyle, outputLanguage }) {
+async function repairWorkoutProgramWithAi({
+  program,
+  issues,
+  parsedDays,
+  equipment,
+  trainingStyle,
+  outputLanguage,
+  volumeProfile,
+  volumeLedger
+}) {
   if (!issues.length) return null;
 
   const repairPrompt = [
@@ -2223,6 +2258,11 @@ async function repairWorkoutProgramWithAi({ program, issues, parsedDays, equipme
     "Keep the same JSON schema and do not add any markdown.",
     "If a session has too few exercises, add suitable exercises rather than removing the session.",
     "If an exercise uses unsupported equipment, replace it with a valid option from the user's selected equipment.",
+    "The deterministic ledger below is authoritative. Do not invent set-credit arithmetic.",
+    "Preserve valuable compound exercises. When effective volume is excessive, reduce or remove redundant direct isolation before changing compounds.",
+    "When effective volume is deficient, use existing compound contributions first, then add only the smallest direct-isolation dose needed.",
+    "Keep every required muscle inside its hard range and aim near the preferred-range midpoint without exceeding the preferred maximum.",
+    "For selected_only, every exercise primary muscle must be selected; secondary set credits to unselected muscles are allowed.",
     "Do not change the language rules."
   ].join("\n");
 
@@ -2242,6 +2282,8 @@ async function repairWorkoutProgramWithAi({ program, issues, parsedDays, equipme
 Training style: ${String(trainingStyle)}
 Days per week: ${parsedDays}
 Language: ${outputLanguage}
+Programming constraints: ${JSON.stringify(buildProgrammingConstraintSummary(volumeProfile))}
+Authoritative effective-volume ledger: ${JSON.stringify(formatLedgerForAiRepair(volumeLedger))}
 
 Original JSON:
 ${JSON.stringify(program)}
@@ -2412,7 +2454,9 @@ app.post("/api/workout-builder", async (req, res) => {
       availableDays = [],
       priority,
       limitations = "None",
-      language = "en"
+      language = "en",
+      muscleFocusMode,
+      selectedMuscles
     } = req.body;
 
     if (
@@ -2430,6 +2474,7 @@ app.post("/api/workout-builder", async (req, res) => {
     const parsedDays = Number(daysPerWeek);
     const parsedDuration = Number(sessionDuration);
     const parsedAge = age ? Number(age) : null;
+    const muscleFocus = normalizeMuscleFocusContract({ muscleFocusMode, selectedMuscles });
 
     if (
       !Number.isInteger(parsedDays) ||
@@ -2441,6 +2486,12 @@ app.post("/api/workout-builder", async (req, res) => {
     ) {
       return res.status(400).json({
         error: "Invalid workout preferences"
+      });
+    }
+    if (!muscleFocus.ok) {
+      return res.status(400).json({
+        error: "Invalid muscle focus preferences",
+        details: muscleFocus.errors
       });
     }
 
@@ -2483,6 +2534,15 @@ const outputLanguage =
       trainingStyle,
       selectedEquipment: equipment
     }).allowed;
+    const volumeProfile = {
+      experience,
+      priority: canonicalPriority,
+      daysPerWeek: parsedDays,
+      sessionDuration: parsedDuration,
+      equipment: equipmentForGeneration,
+      muscleFocusMode: muscleFocus.muscleFocusMode,
+      selectedMuscles: muscleFocus.selectedMuscles
+    };
 
     if (localDemoMode) {
       console.info("[local-demo] workout request normalized", {
@@ -2538,6 +2598,7 @@ The JSON must exactly follow this structure:
       "name": "string",
       "exercises": [
 {
+  "exerciseId": "lowercase-hyphenated canonical id",
   "name": "string",
   "demoName": "canonical English exercise name used only for media lookup",
   "muscleGroup": "string",
@@ -2566,8 +2627,14 @@ Programming rules:
 - Use evidence-based hypertrophy and strength principles.
 - Avoid excessive volume.
 - Use realistic sets, repetitions, rest periods and RIR.
-- Ensure balanced weekly muscle-group coverage unless the user requests specialization.
-- For hypertrophy, audit weekly direct working sets before returning: generally provide about 6-12 sets per major muscle group for beginners/intermediates and 8-16 for advanced users, adjusted for specialization and recovery. Do not accidentally leave chest, quads, hamstrings or glutes at only 3 weekly sets in an advanced hypertrophy plan.
+- Exact deterministic programming constraints for this request: ${JSON.stringify(buildProgrammingConstraintSummary(volumeProfile))}
+- These ranges are effective-volume ranges: direct primary work contributes fully while approved secondary compound contributions contribute fractionally. Do not count every compound set as a full direct set for every involved muscle.
+- Build around high-value compound movements first. Add direct isolation only for the effective-volume deficit that remains after approved compound credits.
+- Do not add isolation automatically when compound contributions already satisfy the preferred range. If volume is excessive, remove or reduce redundant direct isolation before changing valuable compounds.
+- Aim near each preferred-range targetPoint while staying inside every hard range and never exceeding preferredMaximum merely to chase arithmetic precision.
+- The server's authoritative set-credit ledger recalculates all arithmetic after generation. Your own volume arithmetic is advisory and must not override it.
+- Muscle focus mode is ${muscleFocus.muscleFocusMode}; selected muscles are ${muscleFocus.selectedMuscles.join(", ") || "none"}.
+- In balanced mode, provide balanced required-muscle coverage. In prioritize mode, allocate selected muscles first while every other required muscle remains inside its hard range. In selected_only mode, every exercise's primary muscle must be selected; secondary credits to unselected muscles are allowed.
 - A requested skill such as one-arm pull-up is supplemental practice. Include it without duplicating high-fatigue work or displacing balanced hypertrophy work.
 - Include a concise progression rule in exercise notes when useful: add repetitions inside the range first, then add load or difficulty while keeping the target RIR.
 - For unilateral exercises, clearly state whether reps are per side.
@@ -2658,6 +2725,8 @@ Session duration: ${parsedDuration} minutes
 Training style: ${String(trainingStyle)}
 Available equipment: ${equipmentForGeneration.join(", ")}
 Priority: ${String(canonicalPriority)}
+Muscle focus mode: ${muscleFocus.muscleFocusMode}
+Selected muscles: ${muscleFocus.selectedMuscles.join(", ") || "none"}
 Injuries, limitations or special requests: ${String(limitations)}
           `.trim()
         }
@@ -2698,6 +2767,8 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     program.daysPerWeek = parsedDays;
+    program.muscleFocusMode = muscleFocus.muscleFocusMode;
+    program.selectedMuscles = muscleFocus.selectedMuscles;
 
     // Generate weeklyScheduleDays from available days (spread evenly across the week)
     const step = 7 / parsedDays;
@@ -2733,6 +2804,8 @@ Injuries, limitations or special requests: ${String(limitations)}
       experience,
       priority: canonicalPriority,
       daysPerWeek: parsedDays,
+      muscleFocusMode: muscleFocus.muscleFocusMode,
+      selectedMuscles: muscleFocus.selectedMuscles,
       applyVolumeTargets: !localDemoMode
     }).repairs;
     if (repairsAll.length > 0) {
@@ -2756,6 +2829,8 @@ Injuries, limitations or special requests: ${String(limitations)}
       availableDayIndexes,
       goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
     });
+    let preRetryVolumeLedger = buildVolumeLedger(program, volumeProfile);
+    let volumeRepairIssues = hardVolumeLedgerIssues(preRetryVolumeLedger);
 
     if (!validation.ok && !localDemoMode) {
       console.warn(`Workout validation failed for user ${user.uid} (after deterministic repair):`, validation.errors);
@@ -2776,19 +2851,23 @@ Injuries, limitations or special requests: ${String(limitations)}
     // overshoot caused by content it can't safely trim further. If the
     // program is still invalid, give the model one corrective pass with the
     // exact validator errors before giving up — this is the only retry.
-    if (!validation.ok && !localDemoMode) {
+    if ((!validation.ok || volumeRepairIssues.length > 0) && !localDemoMode) {
       try {
         const correctedProgram = await repairWorkoutProgramWithAi({
           program,
-          issues: validation.errors,
+          issues: [...validation.errors, ...volumeRepairIssues],
           parsedDays,
           equipment: equipmentForGeneration,
           trainingStyle,
-          outputLanguage
+          outputLanguage,
+          volumeProfile,
+          volumeLedger: preRetryVolumeLedger
         });
         if (correctedProgram) {
           program = correctedProgram;
           program.daysPerWeek = parsedDays;
+          program.muscleFocusMode = muscleFocus.muscleFocusMode;
+          program.selectedMuscles = muscleFocus.selectedMuscles;
           program.weeklyScheduleDays = program.weeklyScheduleDays || [];
 
           repairsAll = repairsAll.concat(
@@ -2798,6 +2877,8 @@ Injuries, limitations or special requests: ${String(limitations)}
               experience,
               priority: canonicalPriority,
               daysPerWeek: parsedDays,
+              muscleFocusMode: muscleFocus.muscleFocusMode,
+              selectedMuscles: muscleFocus.selectedMuscles,
               applyVolumeTargets: true
             }).repairs
           );
@@ -2809,6 +2890,8 @@ Injuries, limitations or special requests: ${String(limitations)}
             availableDayIndexes,
             goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
           });
+          preRetryVolumeLedger = buildVolumeLedger(program, volumeProfile);
+          volumeRepairIssues = hardVolumeLedgerIssues(preRetryVolumeLedger);
 
           if (!validation.ok) {
             console.warn(`Workout validation still failed for user ${user.uid} (after AI correction retry):`, validation.errors);
@@ -2840,6 +2923,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     // pre-repair snapshot.
     const { perMuscle, totalHardSets, mappedExercises, unknownExercises, mappingCoveragePercent, warnings: volumeWarnings } =
       calculateWeeklyVolume(program, EXERCISE_SETCREDITS);
+    const privateQualityDiagnostic = buildQualityDiagnostic(program, volumeProfile);
 
     // Add estimated duration to each session
     const sessionDurations = program.sessions.map((session) => ({
@@ -2871,7 +2955,6 @@ Injuries, limitations or special requests: ${String(limitations)}
     // broken after repair" into a controlled failure instead of a
     // "successful" response with a misleading below/above badge. Never
     // widen the ranges here to force a pass — see lib/workout-volume-targets.js.
-    const volumeProfile = { experience, priority: canonicalPriority, daysPerWeek: parsedDays, equipment: equipmentForGeneration };
     const mappingComplete = mappingCoveragePercent === 100 && unknownExercises === 0;
     const outOfRangeRequired = requiredMusclesOutOfRange(perMuscle, volumeProfile);
     const volumePassed = mappingComplete && outOfRangeRequired.length === 0;
@@ -2903,7 +2986,8 @@ Injuries, limitations or special requests: ${String(limitations)}
         mappingCoveragePercent,
         unknownExercises,
         equipmentCoverage: diagnosis.equipmentCoverage,
-        details: diagnosis.details
+        details: diagnosis.details,
+        qualityBreakdown: privateQualityDiagnostic.perMuscle
       });
       return res.status(422).json({
         success: false,
@@ -2931,7 +3015,7 @@ Injuries, limitations or special requests: ${String(limitations)}
         // lib/workout-volume-targets.js's calculateProgramQualityScore.
         // 0-100: 100 means every required muscle landed inside its
         // preferred zone, not merely inside the valid min/max range.
-        qualityScore: calculateProgramQualityScore(perMuscle, volumeProfile).score
+        qualityScore: privateQualityDiagnostic.score
       },
       sessionDurations,
       validationSummary: {
@@ -2995,7 +3079,9 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
       experience,
       priority,
       limitations,
-      language = "en"
+      language = "en",
+      muscleFocusMode,
+      selectedMuscles
     } = req.body;
 
     if (!program || !Array.isArray(program.sessions)) {
@@ -3027,6 +3113,13 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
       selectedEquipment: equipment
     }).allowed;
     const canonicalPriority = priority || derivePriorityFromGoal(goal);
+    const muscleFocus = normalizeMuscleFocusContract({
+      muscleFocusMode: muscleFocusMode ?? program.muscleFocusMode,
+      selectedMuscles: selectedMuscles ?? program.selectedMuscles
+    });
+    if (!muscleFocus.ok) {
+      return res.status(400).json({ error: "Invalid muscle focus preferences", details: muscleFocus.errors });
+    }
 
     const rerollPrompt = `
 Replace only this exercise with another suitable exercise.
@@ -3040,11 +3133,14 @@ User constraints:
 - Goal: ${goal || "general"}
 - Experience: ${experience || "any"}
 - Priority: ${canonicalPriority}
+- Muscle focus mode: ${muscleFocus.muscleFocusMode}
+- Selected muscles: ${muscleFocus.selectedMuscles.join(", ") || "none"}
 - Injuries/limitations: ${limitations || "none"}
 
 Rules:
 - Keep the same muscle group.
 - Keep the same training goal.
+- In selected_only mode, the replacement primary muscle must be one of the selected muscles; fractional secondary credits may involve other muscles.
 - Keep similar difficulty.
 - Use ONLY the selected equipment (if specified).
 - Set exerciseId to a lowercase-hyphenated identifier for the exercise (e.g. "barbell-bench-press").
@@ -3105,11 +3201,14 @@ Required JSON format:
     // Same deterministic repair pass used by /api/workout-builder — the
     // reroll prompt already asks the AI for exerciseId, but this is a
     // defensive backstop, not the primary fix for it.
+    const rerollRepairContainer = { sessions: [{ exercises: [newExercise] }] };
     const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
-      { sessions: [{ exercises: [newExercise] }] },
+      rerollRepairContainer,
       {
         sessionDuration: program.sessionDuration || 60,
         equipment: selectedEquipment,
+        muscleFocusMode: muscleFocus.muscleFocusMode,
+        selectedMuscles: muscleFocus.selectedMuscles,
         // Repairing the replacement in isolation hides the rest of the
         // session from the substitution passes, which could then swap in an
         // exercise the session already contains and fail the duplicate-id
@@ -3124,6 +3223,20 @@ Required JSON format:
         // program, in /api/workout-builder below.
       }
     );
+    newExercise = rerollRepairContainer.sessions[0]?.exercises?.[0];
+    if (!newExercise) {
+      return res.status(422).json({
+        success: false,
+        error: "No valid replacement exercise satisfies the muscle focus contract."
+      });
+    }
+    if (muscleFocus.muscleFocusMode === "selected_only"
+      && !muscleFocus.selectedMuscles.includes(primaryMuscleForExerciseId(newExercise.exerciseId))) {
+      return res.status(422).json({
+        success: false,
+        error: "Replacement exercise does not satisfy the selected-only muscle focus contract."
+      });
+    }
     if (rerollRepairs.length > 0) {
       console.info("Reroll repair applied:", rerollRepairs);
     }
@@ -3156,6 +3269,8 @@ Required JSON format:
 
     // Validate full program with replacement
     session.exercises[exerciseIndex] = newExercise;
+    program.muscleFocusMode = muscleFocus.muscleFocusMode;
+    program.selectedMuscles = muscleFocus.selectedMuscles;
     const programValidation = validateWorkoutProgram(program, {
       daysPerWeek: program.daysPerWeek || program.sessions.length,
       sessionDuration: program.sessionDuration || 60,
@@ -3187,7 +3302,14 @@ Required JSON format:
       ...estimateSessionDuration(s)
     }));
 
-    const rerollVolumeProfile = { experience, priority: canonicalPriority, daysPerWeek: program.daysPerWeek || program.sessions.length, equipment: selectedEquipment };
+    const rerollVolumeProfile = {
+      experience,
+      priority: canonicalPriority,
+      daysPerWeek: program.daysPerWeek || program.sessions.length,
+      equipment: selectedEquipment,
+      muscleFocusMode: muscleFocus.muscleFocusMode,
+      selectedMuscles: muscleFocus.selectedMuscles
+    };
     const rerollMappingComplete = mappingCoveragePercent === 100 && unknownExercises === 0;
     // A single-exercise reroll is informational here, not a hard gate: the
     // user is swapping one exercise, not regenerating the whole program, so
