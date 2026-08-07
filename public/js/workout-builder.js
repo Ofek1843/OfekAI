@@ -71,8 +71,9 @@ const ui = isHebrew
       targetReps: "חזרות יעד",
       effort: "מאמץ",
       rirUnit: (value) => `${value} RIR`,
+      rirGuidanceTitle: "עצימות האימון",
       rirGuidance:
-        "בחרו משקל שהופך את החזרות האחרונות למאתגרות. סיימו את הסט כשנותרו לכם בערך מספר החזרות הנקיות המוצג.",
+        "השתמשו ביעד ה-RIR כדי לבחור את המשקל. סיימו כל סט עבודה כאשר להערכתכם נותר בערך מספר החזרות הנקיות שמוצג.",
       rirHelpLabel: "מה זה RIR?",
       rirHelpTitle: "RIR — חזרות שנותרו במלאי",
       rirHelpClose: "סגירה",
@@ -149,8 +150,9 @@ const ui = isHebrew
       targetReps: "Target reps",
       effort: "Effort",
       rirUnit: (value) => `${value} RIR`,
+      rirGuidanceTitle: "Training effort",
       rirGuidance:
-        "Choose a load that makes the final reps challenging. Finish with roughly the shown number of clean reps still in reserve.",
+        "Use the prescribed RIR to choose your load. Finish each working set with approximately the shown number of clean repetitions still possible.",
       rirHelpLabel: "What does RIR mean?",
       rirHelpTitle: "RIR — Reps In Reserve",
       rirHelpClose: "Close",
@@ -1209,6 +1211,26 @@ function renderMuscleFocusSummary(source) {
       </div>`;
 }
 
+function renderTrainingEffortGuidance() {
+  return `
+    <aside class="training-effort-panel" aria-labelledby="trainingEffortTitle">
+      <span class="training-effort-mark" aria-hidden="true">RIR</span>
+      <div class="training-effort-copy">
+        <h3 id="trainingEffortTitle">${escapeHtml(ui.rirGuidanceTitle)}</h3>
+        <p>${escapeHtml(ui.rirGuidance)}</p>
+      </div>
+      <button
+        type="button"
+        class="rir-help-trigger training-effort-help"
+        data-rir-help
+        aria-label="${escapeHtml(ui.rirHelpLabel)}"
+        aria-expanded="false"
+        aria-haspopup="dialog"
+      >i</button>
+    </aside>
+  `;
+}
+
 function renderProgram(program, weeklyVolume) {
   const sessions = Array.isArray(program.sessions)
     ? program.sessions
@@ -1288,8 +1310,6 @@ function renderProgram(program, weeklyVolume) {
                     }</span>
                   </div>
                 </div>
-
-                <p class="exercise-effort-guidance">${escapeHtml(ui.rirGuidance)}</p>
 
                 ${
                   exercise.notes
@@ -1419,6 +1439,8 @@ function renderProgram(program, weeklyVolume) {
 </strong>
         </div>
       </div>
+
+      ${renderTrainingEffortGuidance()}
 
       <div class="program-days">
         ${sessionsHtml}
