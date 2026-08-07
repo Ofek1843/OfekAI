@@ -201,8 +201,12 @@ test("workout-builder.js: weekly volume UI strings are defined for both English 
   for (const key of [
     "weeklyVolumeTitle", "weeklyVolumeBelow", "weeklyVolumeValidBelowPreferred",
     "weeklyVolumeInPreferredZone", "weeklyVolumeValidAbovePreferred", "weeklyVolumeAbove",
-    "weeklyVolumeRecommendedRange", "weeklyVolumePreferredRange", "weeklyVolumeMinimum",
-    "weeklyVolumeMaximum", "weeklyVolumeDetails"
+    "weeklyVolumeRecommendedRange",
+    // The range line is described as two plain ranges instead of
+    // "Minimum effective: N · Preferred target: A-B · Maximum programmed: M".
+    // Same numbers, different framing -- see test/workout-guidance-ux.test.js.
+    "weeklyVolumeProgrammingRange", "weeklyVolumeTargetRange",
+    "weeklyVolumeDetails"
   ]) {
     const matches = source.match(new RegExp(`${key}:`, "g")) || [];
     assert.ok(matches.length >= 2, `expected "${key}" defined in both language tables, found ${matches.length}`);
