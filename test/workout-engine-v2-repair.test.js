@@ -110,6 +110,27 @@ test("compound contribution can close chest deficit while direct triceps excess 
   assert.ok(after.muscles.triceps.effectiveTotal <= after.muscles.triceps.preferredMaximum);
 });
 
+test("compound contribution can close back deficit while direct biceps excess is removed", () => {
+  const program = {
+    sessions: [1, 2].map((day) => ({
+      day,
+      name: `Day ${day}`,
+      exercises: [exercise("barbell-row", 3), exercise("cable-bicep-curl", 6)]
+    }))
+  };
+  const profile = selectedOnlyProfile(["back", "biceps"]);
+  const before = buildVolumeLedger(program, profile);
+  repairWorkoutProgram(program, profile);
+  const after = buildVolumeLedger(program, profile);
+
+  assert.ok(before.muscles.back.effectiveTotal < before.muscles.back.preferredMinimum);
+  assert.ok(before.muscles.biceps.effectiveTotal > before.muscles.biceps.hardMaximum);
+  assert.ok(after.muscles.back.effectiveTotal >= after.muscles.back.preferredMinimum);
+  assert.ok(after.muscles.back.effectiveTotal <= after.muscles.back.preferredMaximum);
+  assert.ok(after.muscles.biceps.effectiveTotal >= after.muscles.biceps.preferredMinimum);
+  assert.ok(after.muscles.biceps.effectiveTotal <= after.muscles.biceps.preferredMaximum);
+});
+
 test("selected_only glutes/core removes unselected primary work but permits secondary credits", () => {
   const program = {
     sessions: [
@@ -253,6 +274,56 @@ test("reconstructed beginner allocation improves quality and terminates with fin
       assert.ok(Number.isFinite(entry[key]), `${entry.muscle}.${key} must be finite`);
     }
   }
+});
+
+test("four-day Gym hypertrophy reconstructions improve beginner, intermediate and advanced allocation", () => {
+  const template = [
+    ["barbell-bench-press", 3], ["barbell-row", 3], ["barbell-squat", 3], ["romanian-deadlift", 2],
+    ["barbell-shoulder-press", 2], ["standing-calf-raise-machine", 2], ["plank", 2], ["cable-tricep-pushdown", 2]
+  ];
+  const results = {};
+
+  for (const experience of ["beginner", "intermediate", "advanced"]) {
+    const program = {
+      sessions: [1, 2, 3, 4].map((day) => ({
+        day,
+        name: `Day ${day}`,
+        exercises: template.map(([id, sets]) => exercise(id, sets))
+      }))
+    };
+    const profile = {
+      experience,
+      priority: "hypertrophy",
+      daysPerWeek: 4,
+      sessionDuration: 150,
+      equipment: ["barbell", "machine", "bodyweight", "cable"],
+      muscleFocusMode: "balanced",
+      selectedMuscles: [],
+      applyVolumeTargets: true
+    };
+    const before = buildQualityDiagnostic(program, profile);
+    repairWorkoutProgram(program, profile);
+    const after = buildQualityDiagnostic(program, profile);
+    const ledger = buildVolumeLedger(program, profile);
+
+    assert.ok(after.score > before.score, `${experience} quality must improve`);
+    for (const entry of Object.values(ledger.muscles).filter((item) => item.requirement === "required")) {
+      assert.ok(entry.effectiveTotal >= entry.hardMinimum, `${experience}/${entry.muscle} below hard minimum`);
+      assert.ok(entry.effectiveTotal <= entry.hardMaximum, `${experience}/${entry.muscle} above hard maximum`);
+    }
+    assert.equal(ledger.muscles.triceps.directSets, 0, `${experience} avoidable direct triceps isolation should be removed`);
+    results[experience] = {
+      quality: [before.score, after.score],
+      chest: ledger.muscles.chest.effectiveTotal,
+      triceps: ledger.muscles.triceps.effectiveTotal
+    };
+  }
+
+  assert.ok(results.beginner.chest >= 10 && results.beginner.chest <= 13);
+  assert.ok(results.beginner.triceps >= 6 && results.beginner.triceps <= 8);
+  assert.ok(results.advanced.chest >= 14 && results.advanced.chest <= 18);
+  assert.ok(results.advanced.triceps >= 8 && results.advanced.triceps <= 11);
+  console.log("Workout Engine V2 four-day reconstruction summary:", JSON.stringify(results));
 });
 
 test("prompt contracts make ledger arithmetic authoritative and keep the public quality API stable", () => {
