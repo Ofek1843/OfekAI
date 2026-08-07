@@ -72,4 +72,3 @@ test("muscle-focus contract is backward compatible and rejects invalid selection
   assert.deepEqual(valid.selectedMuscles, ["glutes", "core"]);
   assert.ok(valid.selectedMuscles.every((muscle) => CANONICAL_MUSCLES.includes(muscle)));
 });
-
