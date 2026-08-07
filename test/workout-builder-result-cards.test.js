@@ -58,8 +58,14 @@ test("exercise cards use the canonical exerciseId-first image resolver with a br
 
 test("each exercise card exposes sets, reps, rest and RIR plus an optional note", () => {
   assert.match(workoutBuilderJs, /\$\{ui\.sets\}/);
-  assert.match(workoutBuilderJs, /\$\{ui\.reps\}/);
+  // The rep tile is labelled "Target reps" (ui.targetReps), not the bare
+  // "Reps" (ui.reps), so the range cannot be read as a stop-at-this-number
+  // instruction. Same tile, same value -- see test/workout-guidance-ux.test.js.
+  assert.match(workoutBuilderJs, /\$\{ui\.targetReps\}/);
   assert.match(workoutBuilderJs, /\$\{ui\.rest\}/);
+  // RIR now renders as an "Effort" tile carrying its unit.
+  assert.match(workoutBuilderJs, /exercise-stat--effort/);
+  assert.match(workoutBuilderJs, /ui\.rirUnit\(String\(exercise\.rir\)\)/);
   assert.match(workoutBuilderJs, /class="exercise-stat-value"/);
   assert.match(workoutBuilderJs, /class="exercise-note"/);
 });
