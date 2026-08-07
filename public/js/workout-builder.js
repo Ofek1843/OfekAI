@@ -88,23 +88,21 @@ const ui = isHebrew
         "טווח מומלץ שבועי לפי הפרופיל שלך — לא יעד רפואי מדויק ואוניברסלי.",
       weeklyVolumeSets: (count) => `${count} סטים שבועיים`,
       weeklyVolumeRecommendedRange: (min, max) => `טווח מומלץ: ${min}–${max}`,
-      weeklyVolumePreferredRange: (min, max) => `טווח מועדף: ${min}–${max}`,
-      weeklyVolumeMinimum: (min) => `מינימום אפקטיבי: ${min}`,
-      weeklyVolumeMaximum: (max) => `מקסימום מתוכנת: ${max}`,
-      weeklyVolumeBelow: "מתחת למינימום",
-      weeklyVolumeValidBelowPreferred: "תקין — מתחת ליעד המועדף",
-      weeklyVolumeInPreferredZone: "בטווח המועדף",
-      weeklyVolumeValidAbovePreferred: "תקין — מעל היעד המועדף",
-      weeklyVolumeAbove: "מעל המקסימום",
-      weeklyVolumeSecondary: "משני / אופציונלי",
+      weeklyVolumeProgrammingRange: (min, max) => `טווח התכנון: ${min}–${max}`,
+      weeklyVolumeTargetRange: (min, max) => `טווח היעד: ${min}–${max}`,
+      weeklyVolumeBelow: "מתחת לטווח התכנון",
+      weeklyVolumeValidBelowPreferred: "מתחת לטווח היעד",
+      weeklyVolumeInPreferredZone: "בתוך טווח היעד",
+      weeklyVolumeValidAbovePreferred: "מעל טווח היעד",
+      weeklyVolumeAbove: "מעל טווח התכנון",
+      weeklyVolumeSecondary: "נפח תומך",
       weeklyVolumeNotTargeted: "לא ממוקד בתוכנית זו",
       weeklyVolumeIncomplete: "החישוב לא הושלם",
       weeklyVolumeSecondaryNote: "קבוצת שריר משנית — מוצגת למידע בלבד ואינה קובעת אם התוכנית תקינה.",
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} ישירים + ${fractional} עקיפים`,
       weeklyVolumeUnmapped: "כמה תרגילים לא נכללו בחישוב (אין מיפוי שריר ידוע).",
-      weeklyVolumeStartingWeek: "נפח תחילת התוכנית (לא כולל התקדמות)",
-      weeklyVolumeQualityScore: (score) => `ציון איכות התוכנית: ${score}/100`
+      weeklyVolumeStartingWeek: "נפח תחילת התוכנית (לא כולל התקדמות)"
     }
   : {
       pageTitle: "Workout Builder",
@@ -153,23 +151,21 @@ const ui = isHebrew
         "Recommended weekly range for your profile — not a universal or medically exact optimum.",
       weeklyVolumeSets: (count) => `${count} weekly sets`,
       weeklyVolumeRecommendedRange: (min, max) => `Recommended range: ${min}–${max}`,
-      weeklyVolumePreferredRange: (min, max) => `Preferred target: ${min}–${max}`,
-      weeklyVolumeMinimum: (min) => `Minimum effective: ${min}`,
-      weeklyVolumeMaximum: (max) => `Maximum programmed: ${max}`,
-      weeklyVolumeBelow: "Below minimum",
-      weeklyVolumeValidBelowPreferred: "Valid — below preferred target",
-      weeklyVolumeInPreferredZone: "In preferred zone",
-      weeklyVolumeValidAbovePreferred: "Valid — above preferred target",
-      weeklyVolumeAbove: "Above maximum",
-      weeklyVolumeSecondary: "Secondary / optional",
+      weeklyVolumeProgrammingRange: (min, max) => `Programming range: ${min}–${max}`,
+      weeklyVolumeTargetRange: (min, max) => `Target range: ${min}–${max}`,
+      weeklyVolumeBelow: "Below programming range",
+      weeklyVolumeValidBelowPreferred: "Below target range",
+      weeklyVolumeInPreferredZone: "Within target range",
+      weeklyVolumeValidAbovePreferred: "Above target range",
+      weeklyVolumeAbove: "Above programming range",
+      weeklyVolumeSecondary: "Supporting volume",
       weeklyVolumeNotTargeted: "Not targeted in this plan",
       weeklyVolumeIncomplete: "Calculation incomplete",
       weeklyVolumeSecondaryNote: "A secondary muscle group — shown for visibility only, never counted against whether this plan is valid.",
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} direct + ${fractional} indirect`,
       weeklyVolumeUnmapped: "A few exercises were not included in this calculation (no known muscle mapping).",
-      weeklyVolumeStartingWeek: "Starting-week volume (progression not shown)",
-      weeklyVolumeQualityScore: (score) => `Program quality score: ${score}/100`
+      weeklyVolumeStartingWeek: "Starting-week volume (progression not shown)"
     };
     function setText(selector, text) {
   const element = document.querySelector(selector);
@@ -869,8 +865,13 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
       const preferredStartPercent = hasPolicy ? Math.round((entry.preferredMin / barMax) * 100) : (range ? Math.round((range.min / barMax) * 100) : 0);
       const preferredEndPercent = hasPolicy ? Math.round((entry.preferredMax / barMax) * 100) : (range ? Math.round((range.max / barMax) * 100) : 100);
 
+      // Presented as two plain ranges instead of "Minimum effective: N".
+      // "Minimum effective" reads as a biological threshold -- below it, no
+      // growth -- which is not what the number means: it is the bottom of the
+      // range this planner programs within. The numbers themselves are
+      // unchanged, only how they are described.
       const rangeText = hasPolicy
-        ? `${ui.weeklyVolumeMinimum(entry.minimumEffective)} · ${ui.weeklyVolumePreferredRange(entry.preferredMin, entry.preferredMax)} · ${ui.weeklyVolumeMaximum(entry.hardMaximum)}`
+        ? `${ui.weeklyVolumeProgrammingRange(entry.minimumEffective, entry.hardMaximum)} · ${ui.weeklyVolumeTargetRange(entry.preferredMin, entry.preferredMax)}`
         : (range ? ui.weeklyVolumeRecommendedRange(range.min, range.max) : "");
 
       return `
@@ -899,13 +900,17 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
     ? `<p class="muscle-volume-unmapped-notice">${escapeHtml(ui.weeklyVolumeUnmapped)}</p>`
     : "";
 
-  // qualityScore is a non-gating observability/quality signal, not a
-  // pass/fail check -- a plan without it (older cached response shape)
-  // simply omits the line rather than showing a misleading 0.
+  // qualityScore stays a non-gating internal observability signal and is
+  // still read from the response, still calculated server-side and still
+  // asserted by the engine tests -- it is simply no longer RENDERED.
+  // "Program quality score: 93/100" reads as a precise measurement of how
+  // good someone's training will be, which the number cannot support: it is
+  // an average of per-muscle distance from a programming band. A saved plan
+  // that carries the field keeps loading exactly as before; the field is
+  // read here and deliberately not shown.
   const qualityScore = Number.isFinite(weeklyVolume?.qualityScore) ? weeklyVolume.qualityScore : null;
-  const qualityScoreLine = qualityScore !== null
-    ? `<p class="muscle-volume-quality-score">${escapeHtml(ui.weeklyVolumeQualityScore(qualityScore))}</p>`
-    : "";
+  const qualityScoreLine = "";
+  void qualityScore;
   const startingWeekNote = `<p class="muscle-volume-starting-week-note">${escapeHtml(ui.weeklyVolumeStartingWeek)}</p>`;
 
   return `
