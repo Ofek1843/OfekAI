@@ -341,6 +341,9 @@ test("prompt contracts make ledger arithmetic authoritative and keep the public 
   assert.match(source, /server's authoritative set-credit ledger recalculates all arithmetic/);
   assert.match(source, /Authoritative effective-volume ledger/);
   assert.match(source, /reduce or remove redundant direct isolation before changing compounds/);
+  assert.match(source, /Treat experience level as programming context, not a reason to add arbitrary complexity/);
+  assert.match(source, /Hypertrophy work is not restricted to 8-12 reps/);
+  assert.match(source, /Momentary muscular failure is not required on every set/);
   assert.match(source, /qualityScore: privateQualityDiagnostic\.score/);
 });
 

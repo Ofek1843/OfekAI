@@ -2627,6 +2627,8 @@ Programming rules:
 - Use evidence-based hypertrophy and strength principles.
 - Avoid excessive volume.
 - Use realistic sets, repetitions, rest periods and RIR.
+- Treat experience level as programming context, not a reason to add arbitrary complexity. For beginners, prefer understandable, stable movements, manageable complexity and recoverable volume. For advanced athletes, use the existing advanced target ranges and add exercise variety or specialization only when the stated constraints justify it; do not automatically make the plan longer or more complex.
+- Hypertrophy work is not restricted to 8-12 reps. Choose a practical load for each prescribed rep range, and make RIR meaningful: the athlete should finish each working set at the prescribed proximity to failure. Momentary muscular failure is not required on every set.
 - Exact deterministic programming constraints for this request: ${JSON.stringify(buildProgrammingConstraintSummary(volumeProfile))}
 - These ranges are effective-volume ranges: direct primary work contributes fully while approved secondary compound contributions contribute fractionally. Do not count every compound set as a full direct set for every involved muscle.
 - Build around high-value compound movements first. Add direct isolation only for the effective-volume deficit that remains after approved compound credits.
