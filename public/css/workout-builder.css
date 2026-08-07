@@ -1316,6 +1316,208 @@ textarea:focus {
   outline-offset: 2px;
 }
 
+/* Mobile generated-plan presentation
+   ----------------------------------
+   The result used to inherit padding from .program-result, .program-card,
+   .workout-day, .exercise-cards and .muscle-exercise-group. At phone widths
+   those five gutters reduced a 390px viewport to an exercise card barely
+   wider than 180px. Keep the desktop hierarchy, but flatten the decorative
+   wrappers on phones so the exercise itself is the primary surface. */
+@media (max-width: 480px) {
+  .builder-page {
+    width: auto;
+    margin-inline-start: max(12px, env(safe-area-inset-left));
+    margin-inline-end: max(12px, env(safe-area-inset-right));
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  }
+
+  #program-result,
+  .program-result {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+
+  .program-card {
+    padding: 0;
+    border-radius: 22px;
+  }
+
+  .program-header,
+  .program-summary {
+    margin-inline: 15px;
+  }
+
+  .program-header {
+    padding-top: 18px;
+  }
+
+  .program-summary {
+    margin-bottom: 26px;
+  }
+
+  .program-days {
+    gap: 24px;
+  }
+
+  .workout-day {
+    width: 100%;
+    margin-top: 0;
+    padding: 0;
+    overflow: visible;
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    background: transparent;
+  }
+
+  .workout-day-header {
+    align-items: center;
+    padding: 15px 2px 12px;
+    background: transparent;
+  }
+
+  .workout-day-header h3 {
+    font-size: 20px;
+  }
+
+  .exercise-cards {
+    width: 100%;
+    padding: 0;
+    gap: 22px;
+  }
+
+  .muscle-exercise-group {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    gap: 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .muscle-exercise-group-header {
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0 2px 2px;
+  }
+
+  .muscle-exercise-group-header span {
+    min-width: 0;
+    font-size: clamp(18px, 5.8vw, 22px);
+  }
+
+  .muscle-exercise-group-header strong {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .muscle-exercise-group-grid {
+    gap: 16px;
+  }
+
+  .exercise-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+    border-radius: 22px;
+  }
+
+  .exercise-card-media {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 16 / 11;
+    border-radius: 21px 21px 0 0;
+  }
+
+  .exercise-card-image {
+    object-fit: contain;
+  }
+
+  .exercise-demo-button {
+    min-height: 44px;
+    padding: 9px 14px;
+  }
+
+  .reroll-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .exercise-card-body {
+    min-width: 0;
+    padding: 17px 16px 18px;
+  }
+
+  .exercise-card-name {
+    margin-bottom: 11px;
+    font-size: clamp(26px, 8vw, 30px);
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .exercise-card-badges {
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 13px;
+  }
+
+  .muscle-badge,
+  .equipment-badge {
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  .exercise-card-stats {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 15px;
+  }
+
+  .exercise-stat {
+    min-height: clamp(88px, 25vw, 98px);
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+
+  .exercise-card-stats .exercise-stat-label {
+    overflow-wrap: normal;
+    line-height: 1.25;
+  }
+
+  .exercise-stat-value,
+  .exercise-stat--effort .exercise-stat-value {
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: nowrap;
+  }
+
+  .exercise-stat-value {
+    font-size: clamp(20px, 6.4vw, 25px);
+  }
+
+  .exercise-stat--effort .exercise-stat-value {
+    font-size: clamp(17px, 5.2vw, 21px);
+  }
+
+  .exercise-stat--effort .exercise-stat-label {
+    flex-wrap: nowrap;
+  }
+
+  .weekly-volume-summary {
+    margin-inline: 14px;
+    padding: 18px 16px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .rir-help-popover {
     transition: none;

@@ -103,7 +103,10 @@ function injectFeedbackStyles() {
       font-weight: 800;
     }
     @media (max-width: 620px) {
-      .site-feedback-widget { right: 10px; bottom: 86px; }
+      .site-feedback-widget {
+        right: max(10px, env(safe-area-inset-right));
+        bottom: calc(12px + env(safe-area-inset-bottom));
+      }
       .site-feedback-trigger {
         width: 46px;
         min-width: 46px;
@@ -121,7 +124,7 @@ function injectFeedbackStyles() {
       .site-feedback-panel {
         right: 0;
         bottom: 58px;
-        width: min(320px, calc(100vw - 20px));
+        width: min(320px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
       }
     }
   `;
