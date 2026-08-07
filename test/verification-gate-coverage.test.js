@@ -134,7 +134,9 @@ test("a signed-out user is redirected (default /auth.html, or a caller-supplied 
   assert.ok(notSignedInBlock);
   assert.doesNotMatch(notSignedInBlock[0], /onAuthenticated/, "the not-signed-in branch must never call onAuthenticated");
   assert.match(notSignedInBlock[0], /onSignedOut/);
-  assert.match(notSignedInBlock[0], /window\.location\.replace\("\/auth\.html"\)/);
+  assert.match(notSignedInBlock[0], /nextPath === "\/dashboard\.html"/);
+  assert.match(notSignedInBlock[0], /`\/auth\.html\?next=\$\{encodeURIComponent\(nextPath\)\}`/);
+  assert.match(notSignedInBlock[0], /window\.location\.replace\(destination\)/);
 });
 
 test("no redirect loop: guardProtectedPage never navigates once a user is signed in, verified or not", () => {

@@ -539,7 +539,7 @@ test("cancelling the linking flow clears the pending credential and signs out", 
 test("next=workout-builder.html and next=nutrition-builder.html are preserved", () => {
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
   assert.equal(resolveNextPath("nutrition-builder.html"), "/nutrition-builder.html");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["workout-builder.html", "nutrition-builder.html"]);
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
 });
 
 test("any other next value falls back to the dashboard — the login page is not an open redirect", () => {
@@ -549,7 +549,7 @@ test("any other next value falls back to the dashboard — the login page is not
   assert.equal(resolveNextPath("//evil.example.com"), DEFAULT_NEXT_PATH, "protocol-relative URLs must not be honored");
   assert.equal(resolveNextPath("https://evil.example.com"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("../../etc/passwd"), DEFAULT_NEXT_PATH);
-  assert.equal(resolveNextPath("/workout-builder.html"), DEFAULT_NEXT_PATH, "the allowlist matches the bare filename only");
+  assert.equal(resolveNextPath("/workout-builder.html"), "/workout-builder.html", "protected-page login recovery accepts the same internal path with a leading slash");
 });
 
 test("the requested destination survives a mobile redirect round trip via session storage", () => {

@@ -319,7 +319,7 @@ test("the service worker never caches /__/auth/* -- OAuth helper responses alway
 
 test("the service worker's cache version was bumped so no stale pre-fix worker keeps caching auth traffic", () => {
   const sw = fs.readFileSync(path.join(ROOT, "public", "sw.js"), "utf8");
-  assert.match(sw, /CACHE_NAME = 'fuelphysique-v5'/);
+  assert.match(sw, /CACHE_NAME = 'fuelphysique-v6'/);
 });
 
 // --- Existing Google popup/redirect flow regression -------------------------
@@ -342,7 +342,7 @@ test("getRedirectResult is still resolved before the auth-state guard is registe
 
 test("the next destination allowlist used after a Google redirect is unchanged", () => {
   const { resolveNextPath, ALLOWED_NEXT_PATHS } = require("../public/js/auth-google-core.mjs");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["workout-builder.html", "nutrition-builder.html"]);
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
   assert.equal(resolveNextPath("https://evil.com"), "/dashboard.html");
 });

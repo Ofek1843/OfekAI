@@ -120,6 +120,9 @@ async function seed() {
       snapshot: { title: "Revoked plan" },
       revokedAt: 1
     });
+    batch.set(doc(db, "pushInstallations/device-hash"), { uid: "alice", fid: "private-fid", status: "active" });
+    batch.set(doc(db, "notificationPreferences/alice"), { uid: "alice", newMessages: true, reminderTime: "18:00", timezone: "Asia/Jerusalem" });
+    batch.set(doc(db, "pushEvents/event-hash"), { recipientUid: "alice", type: "message", status: "completed" });
     await batch.commit();
   });
 }
@@ -239,4 +242,18 @@ test("social server-owned artifact/import mutations stay denied", async () => {
   }));
   await assertFails(setDoc(doc(b, "users/bob/sharedImports/artifact-active"), { copyId: "forged" }));
   await assertFails(setDoc(doc(a, "users/alice/blocks/bob"), { blockedUid: "alice" }));
+});
+
+test("push registrations, preferences and delivery markers are server-only", async () => {
+  await seed();
+  for (const db of [alice(), bob(), unauthenticated()]) {
+    await assertFails(getDoc(doc(db, "pushInstallations/device-hash")));
+    await assertFails(getDocs(collection(db, "pushInstallations")));
+    await assertFails(getDoc(doc(db, "notificationPreferences/alice")));
+    await assertFails(getDoc(doc(db, "pushEvents/event-hash")));
+  }
+  const a = alice();
+  await assertFails(setDoc(doc(a, "pushInstallations/forged"), { uid: "alice", fcmToken: "forged" }));
+  await assertFails(setDoc(doc(a, "notificationPreferences/alice"), { uid: "alice", newMessages: false }));
+  await assertFails(setDoc(doc(a, "pushEvents/forged"), { recipientUid: "bob", type: "message" }));
 });

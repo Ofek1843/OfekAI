@@ -71,6 +71,13 @@ test("social collection coverage denies unauthenticated and client-owned mutatio
   assert.match(RULES, /match \/sharedArtifacts\/\{artifactId\}[\s\S]*?allow list, create, update, delete: if false/);
 });
 
+test("new push collections remain outside every client-readable legacy allowlist", () => {
+  for (const collection of ["pushInstallations", "notificationPreferences", "pushEvents"]) {
+    assert.doesNotMatch(RULES, new RegExp(`['"]${collection}['"]`));
+  }
+  assert.doesNotMatch(RULES, /match \/\{document=\*\*\}[\s\S]*allow read, write: if signedIn/);
+});
+
 test("social reads require participant, ownership, friendship, block and revocation checks", () => {
   assert.match(RULES, /socialProfiles\/\{uid\}[\s\S]*?resource\.data\.discoverable == true/);
   assert.match(RULES, /friendRequests\/\{requestId\}[\s\S]*?fromUid == request\.auth\.uid[\s\S]*?toUid == request\.auth\.uid/);
