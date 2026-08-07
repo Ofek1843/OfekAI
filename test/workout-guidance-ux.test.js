@@ -176,11 +176,13 @@ test("RIR is presented as effort with its unit", () => {
   assert.match(BUILDER_JS, /exercise-stat--effort/);
 });
 
-test("a persistent effort explanation is rendered without interaction", () => {
-  assert.match(BUILDER_JS, /exercise-effort-guidance/);
-  assert.match(BUILDER_JS, /Choose a load that makes the final reps challenging/);
-  assert.match(BUILDER_JS, /Finish with roughly the shown number of clean reps still in reserve/);
-  assert.match(BUILDER_JS, /בחרו משקל שהופך את החזרות האחרונות למאתגרות/);
+test("persistent effort education is consolidated into one plan-level panel", () => {
+  assert.match(BUILDER_JS, /class="training-effort-panel"/);
+  assert.match(BUILDER_JS, /\$\{renderTrainingEffortGuidance\(\)\}/);
+  assert.doesNotMatch(BUILDER_JS, /class="exercise-effort-guidance"/);
+  assert.match(BUILDER_JS, /Use the prescribed RIR to choose your load/);
+  assert.match(BUILDER_JS, /Finish each working set with approximately the shown number of clean repetitions still possible/);
+  assert.match(BUILDER_JS, /השתמשו ביעד ה-RIR כדי לבחור את המשקל/);
 });
 
 // --- 5. RIR help content ------------------------------------------------
