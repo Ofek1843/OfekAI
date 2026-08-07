@@ -581,6 +581,25 @@ async function shareArtifact(event) {
   }
 }
 
+// Optional one-line focus summary on a shared plan. Renders only when the
+// snapshot actually carries a non-balanced focus, so nothing changes for
+// balanced plans or for snapshots produced before these fields existed.
+// Muscle ids only -- no personal information is added to a shared artifact.
+const SHARED_FOCUS_LABELS = Object.freeze({
+  chest: "Chest", back: "Back", delts: "Shoulders / Delts", rear_delts: "Rear Delts",
+  traps: "Traps", biceps: "Biceps", triceps: "Triceps", core: "Core / Abs",
+  glutes: "Glutes", quads: "Quads", hamstrings: "Hamstrings", calves: "Calves"
+});
+
+function sharedFocusSummary(snapshot) {
+  const mode = snapshot?.muscleFocusMode;
+  if (!mode || mode === "balanced") return "";
+  const ids = Array.isArray(snapshot.selectedMuscles) ? snapshot.selectedMuscles : [];
+  const names = ids.map((id) => SHARED_FOCUS_LABELS[id]).filter(Boolean);
+  if (!names.length) return "";
+  return `<p><strong>Focus:</strong> ${names.map(escapeHtml).join(", ")}</p>`;
+}
+
 function workoutPreview(snapshot) {
   const muscles = Object.entries(snapshot.weeklyVolume?.perMuscle || {}).sort((a, b) => b[1] - a[1]).slice(0, 10);
   const max = Math.max(1, ...muscles.map(([, value]) => value));
@@ -591,6 +610,7 @@ function workoutPreview(snapshot) {
     <article><strong>${escapeHtml(snapshot.goal || "—")}</strong><span>Goal</span></article>
   </div>
   ${snapshot.equipment?.length ? `<p><strong>Equipment:</strong> ${snapshot.equipment.map(escapeHtml).join(", ")}</p>` : ""}
+  ${sharedFocusSummary(snapshot)}
   ${muscles.length ? `<section><h3>Weekly volume</h3><div class="volume-bars">${muscles.map(([muscle, value]) => `<div class="volume-bar"><span>${escapeHtml(muscle)}</span><i style="--bar:${Math.round(value / max * 100)}%"></i><b>${escapeHtml(value)}</b></div>`).join("")}</div></section>` : ""}
   <nav class="preview-session-nav" aria-label="Workout sessions">${(snapshot.sessions || []).map((session, index) => `<a href="#shared-session-${index}">${index + 1}. ${escapeHtml(session.name)}</a>`).join("")}</nav>
   <div>${(snapshot.sessions || []).map((session, sessionIndex) => `<section class="preview-session" id="shared-session-${sessionIndex}" tabindex="-1"><h3>${sessionIndex + 1}. ${escapeHtml(session.name)}</h3>${(session.exercises || []).map((exercise) => `<div class="exercise-preview-row"><img src="/images/exercises/${encodeURIComponent(exercise.exerciseId)}.png" alt="" loading="lazy" onerror="this.src='/images/exercises/fuelphysique-demo-fallback.svg'"><div><strong>${escapeHtml(exercise.name)}</strong><span>${escapeHtml(exercise.sets)} ${ui.sets} · ${escapeHtml(exercise.reps)} ${ui.targetReps} · ${escapeHtml(exercise.restSeconds)}s ${ui.rest}${exercise.rir ? ` · ${escapeHtml(ui.effortRir(exercise.rir))}` : ""}</span></div><span>${escapeHtml(exercise.equipment || "")}</span></div>`).join("")}</section>`).join("")}</div>`;
