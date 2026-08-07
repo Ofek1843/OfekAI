@@ -126,6 +126,22 @@ function injectFeedbackStyles() {
         bottom: 58px;
         width: min(320px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
       }
+      .site-feedback-widget[data-mobile-position$="-start"] {
+        right: auto;
+        left: max(10px, env(safe-area-inset-left));
+      }
+      .site-feedback-widget[data-mobile-position$="-start"] .site-feedback-panel {
+        right: auto;
+        left: 0;
+      }
+      .site-feedback-widget[data-mobile-position^="top-"] {
+        top: calc(12px + env(safe-area-inset-top));
+        bottom: auto;
+      }
+      .site-feedback-widget[data-mobile-position^="top-"] .site-feedback-panel {
+        top: 58px;
+        bottom: auto;
+      }
     }
   `;
   document.head.append(style);
@@ -158,6 +174,63 @@ function initSiteFeedback() {
   const panel = widget.querySelector(".site-feedback-panel");
   const textarea = widget.querySelector("textarea");
   const error = widget.querySelector(".site-feedback-error");
+
+  // Generated workout cards now use the full phone width, so a permanently
+  // bottom-right floating button can sit over Demo, Replace, RIR help or a
+  // stat tile while the user scrolls. Keep the control floating, but choose
+  // the first viewport corner that clears every visible critical control.
+  // This is presentation-only and runs only at the compact widget breakpoint.
+  const collisionTargets = [
+    ".exercise-card-stats",
+    ".exercise-demo-button",
+    ".reroll-button",
+    ".rir-help-trigger"
+  ].join(",");
+  const mobilePositions = ["bottom-end", "bottom-start", "top-end", "top-start"];
+  let positionFrame = 0;
+
+  function rectanglesOverlap(first, second, clearance = 6) {
+    return !(
+      first.right + clearance <= second.left ||
+      first.left >= second.right + clearance ||
+      first.bottom + clearance <= second.top ||
+      first.top >= second.bottom + clearance
+    );
+  }
+
+  function placeMobileFeedbackTrigger() {
+    positionFrame = 0;
+    if (!window.matchMedia("(max-width: 620px)").matches) {
+      delete widget.dataset.mobilePosition;
+      return;
+    }
+
+    const targets = Array.from(document.querySelectorAll(collisionTargets))
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight;
+      })
+      .map((element) => element.getBoundingClientRect());
+
+    for (const position of mobilePositions) {
+      widget.dataset.mobilePosition = position;
+      const triggerRect = trigger.getBoundingClientRect();
+      if (!targets.some((targetRect) => rectanglesOverlap(triggerRect, targetRect))) return;
+    }
+  }
+
+  function scheduleMobileFeedbackPosition() {
+    if (positionFrame) return;
+    positionFrame = window.requestAnimationFrame(placeMobileFeedbackTrigger);
+  }
+
+  window.addEventListener("scroll", scheduleMobileFeedbackPosition, { passive: true });
+  window.addEventListener("resize", scheduleMobileFeedbackPosition, { passive: true });
+  new MutationObserver(scheduleMobileFeedbackPosition).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+  scheduleMobileFeedbackPosition();
 
   trigger.addEventListener("click", () => {
     panel.hidden = !panel.hidden;
