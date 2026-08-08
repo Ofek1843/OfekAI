@@ -550,6 +550,8 @@ test("allowlisted safe product destinations are preserved", () => {
   assert.equal(resolveNextPath("nutrition-builder.html"), "/nutrition-builder.html");
   assert.equal(resolveNextPath("dashboard.html"), "/dashboard.html");
   assert.equal(resolveNextPath("/app.html?settings=open&section=account"), "/app.html?settings=open&section=account");
+  assert.equal(resolveNextPath("/social.html"), "/social.html", "the social landing page is a safe post-auth destination");
+  assert.equal(resolveNextPath("/workout-tracker.html"), "/workout-tracker.html", "the tracker landing page is a safe post-auth destination");
   assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
 });
 

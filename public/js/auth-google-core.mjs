@@ -62,6 +62,7 @@ export function resolveNextPath(requestedNext) {
 
   const safeId = value => /^[A-Za-z0-9_-]{1,160}$/.test(value || "");
   if (filename === "social.html") {
+    if (!keys.length) return url.pathname;
     const request = url.searchParams.get("request");
     const conversation = url.searchParams.get("conversation");
     if (request !== null) {
@@ -73,6 +74,7 @@ export function resolveNextPath(requestedNext) {
     const artifact = url.searchParams.get("artifact");
     if (artifact !== null && !safeId(artifact)) return DEFAULT_NEXT_PATH;
   } else {
+    if (!keys.length) return url.pathname;
     if (!safeId(url.searchParams.get("plan")) || !safeId(url.searchParams.get("session"))) return DEFAULT_NEXT_PATH;
     if (keys.some(key => !["plan", "session", "date"].includes(key))) return DEFAULT_NEXT_PATH;
     const date = url.searchParams.get("date");

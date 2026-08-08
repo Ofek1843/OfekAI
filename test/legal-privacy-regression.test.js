@@ -12,6 +12,7 @@ const terms = page("terms.html");
 const subscriptionPolicy = page("subscription-policy.html");
 const authCore = page("js/auth-google-core.mjs");
 const legalPolicy = fs.readFileSync(path.join(ROOT, "lib", "legal-policy.js"), "utf8");
+const server = fs.readFileSync(path.join(ROOT, "server.js"), "utf8");
 
 test("privacy disclosures name the implemented processors and privacy controls", () => {
   for (const marker of ["Firebase", "OpenAI", "ImageKit", "PayPlus", "Firebase Cloud Messaging", "structured account-data export", "account deletion request", "message previews"]) {
@@ -33,4 +34,13 @@ test("public legal pages and terms acceptance retain the required safety markers
   assert.match(subscriptionPolicy, /PayPlus/i);
   assert.match(authCore, /termsVersion/);
   assert.match(legalPolicy, /MINIMUM_ACCOUNT_AGE/);
+});
+
+test("the server-side terms acceptance endpoint has its Firestore timestamp dependency", () => {
+  // Browser acceptance persists terms via the server route so that clients
+  // cannot directly self-attest. Keep this explicit import beside the route:
+  // without it, FieldValue.serverTimestamp() throws only after a real user
+  // checks the consent box.
+  assert.match(server, /const\s*\{\s*FieldValue\s*\}\s*=\s*require\(["']firebase-admin\/firestore["']\)/);
+  assert.match(server, /app\.post\(["']\/api\/legal\/acceptance["'][\s\S]*?FieldValue\.serverTimestamp\(\)/);
 });

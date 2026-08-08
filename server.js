@@ -15,6 +15,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const ImageKit = require("imagekit");
+const { FieldValue } = require("firebase-admin/firestore");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
 const { createSocialRouter } = require("./lib/social-router");
 const { createPushRouter } = require("./lib/push-router");
