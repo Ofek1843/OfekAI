@@ -72,7 +72,7 @@ test("permission UI includes cooldown, denied state, iOS install guidance, label
   assert.match(PUSH_SOURCE, /Add to Home Screen/);
   assert.match(PUSH_SOURCE, /הוספה למסך הבית/);
   assert.match(APP, /id="notificationsTab"/);
-  for (const id of ["pushEnabled", "pushMessages", "pushShares", "pushWorkouts", "pushPreviews", "pushReminderTime", "pushEnableDevice", "pushSavePreferences"]) {
+  for (const id of ["pushEnabled", "pushMessages", "pushShares", "pushFriends", "pushWorkouts", "pushPreviews", "pushReminderTime", "pushEnableDevice", "pushSavePreferences"]) {
     assert.match(APP, new RegExp(`id="${id}"`));
   }
   assert.match(APP, /role="status" aria-live="polite"/);
