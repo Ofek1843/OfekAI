@@ -51,7 +51,13 @@ export function resolveNextPath(requestedNext) {
   const safeId = value => /^[A-Za-z0-9_-]{1,160}$/.test(value || "");
   const keys = [...url.searchParams.keys()];
   if (filename === "social.html") {
-    if (!safeId(url.searchParams.get("conversation"))) return DEFAULT_NEXT_PATH;
+    const request = url.searchParams.get("request");
+    const conversation = url.searchParams.get("conversation");
+    if (request !== null) {
+      if (request !== "friends" || conversation !== null || keys.some(key => key !== "request")) return DEFAULT_NEXT_PATH;
+      return `${url.pathname}?request=friends`;
+    }
+    if (!safeId(conversation)) return DEFAULT_NEXT_PATH;
     if (keys.some(key => !["conversation", "artifact"].includes(key))) return DEFAULT_NEXT_PATH;
     const artifact = url.searchParams.get("artifact");
     if (artifact !== null && !safeId(artifact)) return DEFAULT_NEXT_PATH;

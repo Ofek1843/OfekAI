@@ -880,6 +880,12 @@ async function initialize(currentUser) {
     await Promise.all([loadRelationships(), loadConversations()]);
     startRealtimeSubscriptions();
     const params = new URLSearchParams(location.search);
+    if (params.get("request") === "friends") {
+      setView("friends");
+      requestAnimationFrame(() => {
+        document.querySelector("#receivedRequests")?.scrollIntoView({ block: "center" });
+      });
+    }
     const shareType = params.get("share");
     if (shareType && state.conversations.length) await openShareDialog(shareType, params.get("sourceId") || "");
     const conversationId = params.get("conversation");

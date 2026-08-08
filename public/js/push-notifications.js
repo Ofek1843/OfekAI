@@ -46,7 +46,7 @@ const settingsCopy = he ? {
   notificationsTab: "התראות", notificationsTitle: "התראות",
   notificationsDescription: "בחרו עדכונים שימושיים למכשיר הזה. FuelPhysique לא שולחת התראות שיווקיות.",
   pushEnabledLabel: "אפשר התראות", pushMessagesLabel: "הודעות צ׳אט חדשות",
-  pushSharesLabel: "תוכניות אימון ותזונה ששותפו", pushWorkoutsLabel: "תזכורות בימי אימון",
+  pushSharesLabel: "תוכניות אימון ותזונה ששותפו", pushFriendsLabel: "פעילות חברים", pushWorkoutsLabel: "תזכורות בימי אימון",
   pushPreviewsLabel: "הצגת תוכן ההודעה", pushReminderTimeLabel: "שעת התזכורת",
   pushSettingsHelp: "תזכורות אימון משתמשות בתוכנית הפעילה, בימי האימון ובאזור הזמן של המכשיר. אימונים שהושלמו וימי מנוחה אינם נשלחים.",
   pushEnableDevice: "הפעלה במכשיר הזה", pushSavePreferences: "שמירת העדפות התראות", pushTestDevice: "שליחת בדיקה למכשיר הזה"
@@ -54,7 +54,7 @@ const settingsCopy = he ? {
   notificationsTab: "Notifications", notificationsTitle: "Notifications",
   notificationsDescription: "Choose useful updates for this device. FuelPhysique does not send marketing notifications.",
   pushEnabledLabel: "Allow notifications", pushMessagesLabel: "New chat messages",
-  pushSharesLabel: "Shared workout and nutrition plans", pushWorkoutsLabel: "Workout-day reminders",
+  pushSharesLabel: "Shared workout and nutrition plans", pushFriendsLabel: "Friend activity", pushWorkoutsLabel: "Workout-day reminders",
   pushPreviewsLabel: "Show message previews", pushReminderTimeLabel: "Reminder time",
   pushSettingsHelp: "Workout reminders use your active plan, chosen training days and this device’s timezone. Completed sessions and rest days are skipped.",
   pushEnableDevice: "Enable on this device", pushSavePreferences: "Save notification preferences", pushTestDevice: "Send test to this device"
@@ -268,6 +268,7 @@ function readPreferenceForm() {
     notificationsEnabled: Boolean(read("pushEnabled")?.checked),
     newMessages: Boolean(read("pushMessages")?.checked),
     sharedPlans: Boolean(read("pushShares")?.checked),
+    friendActivity: Boolean(read("pushFriends")?.checked),
     workoutReminders: Boolean(read("pushWorkouts")?.checked),
     showMessagePreviews: Boolean(read("pushPreviews")?.checked),
     reminderTime: read("pushReminderTime")?.value || "18:00",
@@ -277,7 +278,7 @@ function readPreferenceForm() {
 }
 
 function renderPreferences(preferences = {}) {
-  const mapping = { pushEnabled: "notificationsEnabled", pushMessages: "newMessages", pushShares: "sharedPlans", pushWorkouts: "workoutReminders", pushPreviews: "showMessagePreviews" };
+  const mapping = { pushEnabled: "notificationsEnabled", pushMessages: "newMessages", pushShares: "sharedPlans", pushFriends: "friendActivity", pushWorkouts: "workoutReminders", pushPreviews: "showMessagePreviews" };
   Object.entries(mapping).forEach(([id, key]) => {
     const input = document.getElementById(id);
     if (input) input.checked = preferences[key] !== false;
