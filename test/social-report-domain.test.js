@@ -33,3 +33,13 @@ test("message reports retain an immutable reference, never a private message bod
   });
   assert.doesNotMatch(JSON.stringify(snapshot), /private message|attachment|url/);
 });
+
+test("voice-message reports retain no audio asset identifier, URL, or recording metadata", () => {
+  const snapshot = minimalSnapshot({
+    targetType: "message",
+    targetId: "conversation-1:voice-1",
+    value: { senderUid: "sender", type: "voice", voice: { assetId: "private-asset", durationMs: 9000, url: "https://signed" } }
+  });
+  assert.deepEqual(snapshot, { targetType: "message", targetId: "conversation-1:voice-1", senderUid: "sender", type: "voice" });
+  assert.doesNotMatch(JSON.stringify(snapshot), /private-asset|durationMs|https/);
+});

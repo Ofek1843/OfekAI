@@ -5,6 +5,12 @@ create, update, or delete those records directly. The reporting endpoint
 verifies that the reporter can access the target, records a bounded snapshot,
 and rate-limits submissions.
 
+For a voice-message report, the report snapshot stores only the immutable
+conversation/message reference, sender UID, and type `voice`. It does not copy
+the audio, ImageKit file ID, signed URL, duration, MIME type, size, or waveform.
+Authorized reviewers must request the original through the same participant-
+aware operational process and must not place audio in alerts or broad logs.
+
 ## Operational signal
 
 Set `SOCIAL_REPORT_ALERT_WEBHOOK_URL` only for a controlled internal HTTPS
