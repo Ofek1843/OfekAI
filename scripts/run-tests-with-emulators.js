@@ -28,8 +28,8 @@ const FIREBASE_TOOLS = "firebase-tools@13.35.1";
 const PROJECT = "demo-fuelphysique";
 
 const SERVICES = [
-  { name: "Firestore", host: "127.0.0.1", port: 8080 },
-  { name: "Auth", host: "127.0.0.1", port: 9099 }
+  { name: "Firestore", host: "127.0.0.1", port: 8082 },
+  { name: "Auth", host: "127.0.0.1", port: 9100 }
 ];
 
 const READY_TIMEOUT_MS = 120_000;
@@ -81,7 +81,7 @@ async function main() {
   let emulators = null;
 
   if (alreadyRunning) {
-    console.log("Emulators already listening on 8080/9099 -- reusing them.\n");
+    console.log("Isolated test emulators already listening on 8082/9100 -- reusing them.\n");
   } else {
     for (const service of SERVICES) {
       if (await probe(service)) {
@@ -102,7 +102,7 @@ async function main() {
     const onWindows = process.platform === "win32";
     const npxArgs = [
       "--yes", FIREBASE_TOOLS, "emulators:start",
-      "--config", "firebase.local.json",
+      "--config", "firebase.test.json",
       "--project", PROJECT,
       "--only", "auth,firestore"
     ];
@@ -149,8 +149,8 @@ async function main() {
 
   const env = {
     ...process.env,
-    FIREBASE_AUTH_EMULATOR_HOST: process.env.FIREBASE_AUTH_EMULATOR_HOST || "127.0.0.1:9099",
-    FIRESTORE_EMULATOR_HOST: process.env.FIRESTORE_EMULATOR_HOST || "127.0.0.1:8080",
+    FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9100",
+    FIRESTORE_EMULATOR_HOST: "127.0.0.1:8082",
     GCLOUD_PROJECT: process.env.GCLOUD_PROJECT || PROJECT
   };
 

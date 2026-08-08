@@ -40,8 +40,8 @@ const EMULATOR_MARKERS = [
 ];
 
 const REQUIRED_EMULATORS = [
-  { name: "Firestore", host: "127.0.0.1", port: 8080 },
-  { name: "Auth", host: "127.0.0.1", port: 9099 }
+  { name: "Firestore", host: "127.0.0.1", port: Number(String(process.env.FIRESTORE_EMULATOR_HOST || "127.0.0.1:8080").split(":").at(-1)) || 8080 },
+  { name: "Auth", host: "127.0.0.1", port: Number(String(process.env.FIREBASE_AUTH_EMULATOR_HOST || "127.0.0.1:9099").split(":").at(-1)) || 9099 }
 ];
 
 function discover(dir) {
@@ -83,7 +83,8 @@ function probe({ host, port }, timeout = 1500) {
 }
 
 async function main() {
-  const args = new Set(process.argv.slice(2));
+  const rawArgs = process.argv.slice(2);
+  const args = new Set(rawArgs);
   const standardOnly = args.has("--standard");
   const listOnly = args.has("--list");
 
@@ -96,14 +97,24 @@ async function main() {
       `(${standard.length} standard, ${emulator.length} emulator-backed).`
   );
 
-  let selected = standardOnly ? standard : all;
+  const requestedFiles = rawArgs
+    .filter(arg => arg.startsWith("--file="))
+    .map(arg => arg.slice("--file=".length))
+    .map(file => path.resolve(ROOT, file));
+  if (requestedFiles.some(file => !file.startsWith(TEST_DIR + path.sep) || !file.endsWith(".test.js") || !fs.existsSync(file))) {
+    console.error("ERROR: --file must name an existing test/*.test.js file.");
+    return 1;
+  }
+
+  let selected = requestedFiles.length > 0 ? requestedFiles : (standardOnly ? standard : all);
 
   if (listOnly) {
     for (const file of selected) console.log("  " + relative(file));
     return 0;
   }
 
-  if (!standardOnly && emulator.length > 0) {
+  const selectedEmulator = selected.filter(needsEmulator);
+  if (selectedEmulator.length > 0) {
     const missing = [];
     for (const service of REQUIRED_EMULATORS) {
       if (!(await probe(service))) missing.push(service);
@@ -114,7 +125,7 @@ async function main() {
       // never ran is how the drift above went unnoticed for so long.
       console.error(
         "\nERROR: these suites need the Firebase emulators, which are not reachable:\n" +
-          emulator.map(file => "  " + relative(file)).join("\n") +
+          selectedEmulator.map(file => "  " + relative(file)).join("\n") +
           "\n\nNot listening: " +
           missing.map(service => `${service.name} on ${service.host}:${service.port}`).join(", ") +
           "\n\nRun the whole suite with emulators started and cleaned up for you:\n" +
