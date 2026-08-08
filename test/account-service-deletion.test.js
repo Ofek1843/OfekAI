@@ -5,7 +5,7 @@ const { AccountService, uidHash } = require("../lib/account-service");
 function makeFixture({ readyForAuthDelete = false } = {}) {
   const state = new Map();
   const deleted = new Set();
-  const calls = { image: [], storage: [], auth: [], push: 0 };
+  const calls = { image: [], storage: [], auth: [], push: 0, voice: [] };
   const ref = path => {
     if (!state.has(path)) state.set(path, {});
     return {
@@ -55,6 +55,7 @@ function makeFixture({ readyForAuthDelete = false } = {}) {
     auth: { deleteUser: async uid => calls.auth.push(uid) },
     pushService: { removeAllForUser: async () => { calls.push += 1; } },
     imageCleanup: async (uid, fileId) => { calls.image.push([uid, fileId]); return { status: "deleted" }; },
+    voiceCleanup: async (uid, conversations) => { calls.voice.push([uid, conversations.map(item => item.id)]); return { deleted: 1, unavailable: 1, ownershipMismatch: 0 }; },
     calls,
     state,
     deleted,
@@ -70,6 +71,7 @@ test("account deletion verifies nested media, preserves a survivor's history, th
   assert.deepEqual(fixture.calls.image, [["alice", "owned-image-id"]]);
   assert.deepEqual(fixture.calls.storage, ["users/alice/progress/front.jpg"]);
   assert.equal(fixture.calls.push, 1);
+  assert.deepEqual(fixture.calls.voice, [["alice", ["alice_bob"]]]);
   assert.deepEqual(fixture.calls.auth, ["alice"]);
   assert.equal(fixture.state.get("conversations/alice_bob").status, "deleted_participant");
   assert.equal(fixture.state.get("users/bob/conversationSummaries/alice_bob").status, "deleted_participant");
@@ -86,6 +88,18 @@ test("a retry after the durable cleanup checkpoint does not repeat destructive c
   assert.deepEqual(fixture.calls.image, []);
   assert.deepEqual(fixture.calls.storage, []);
   assert.equal(fixture.calls.push, 0);
+  assert.deepEqual(fixture.calls.voice, []);
   assert.deepEqual(fixture.calls.auth, ["alice"]);
   assert.equal(fixture.state.get(fixture.jobPath).status, "completed");
+});
+
+test("voice cleanup failure stops deletion before Firestore identity or Auth removal", async () => {
+  const fixture = makeFixture();
+  fixture.voiceCleanup = async () => { throw Object.assign(new Error("provider unavailable"), { code: "voice_delete_failed" }); };
+  const service = new AccountService(fixture);
+  await assert.rejects(() => service.deleteAccount("alice", { confirmed: true, reauthenticatedAt: 1 }), error => error.code === "voice_delete_failed");
+  assert.deepEqual(fixture.calls.auth, []);
+  assert.equal(fixture.deleted.has("users/alice"), false);
+  assert.equal(fixture.state.get(fixture.jobPath).status, "failed");
+  assert.equal(fixture.state.get(fixture.jobPath).failureCode, "voice_delete_failed");
 });

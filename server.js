@@ -21,6 +21,9 @@ const { createSocialRouter } = require("./lib/social-router");
 const { createPushRouter } = require("./lib/push-router");
 const { createAccountRouter } = require("./lib/account-router");
 const { AccountService } = require("./lib/account-service");
+const { VoiceMediaService } = require("./lib/voice-media-service");
+const { voiceMessageConfig } = require("./lib/voice-message-domain");
+const { cleanupAccountVoiceMessages: cleanupVoiceMessages } = require("./lib/voice-account-lifecycle");
 const { hasAcceptedCurrentTerms, publicLegalPolicy } = require("./lib/legal-policy");
 const { getFuelPhysiqueFirestore } = require("./lib/firebase-admin");
 const { FirestorePushStore } = require("./lib/push-store");
@@ -111,6 +114,7 @@ const rateLimiters = {
   socialSearch: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_SEARCHES_PER_UID_PER_MINUTE || 20), keyPrefix: "social-search" }),
   socialRelationships: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_RELATIONSHIPS_PER_UID_PER_MINUTE || 12), keyPrefix: "social-relationship" }),
   socialMessages: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_MESSAGES_PER_UID_PER_MINUTE || 30), keyPrefix: "social-message" }),
+  socialVoiceMessages: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_VOICE_MESSAGES_PER_UID_PER_MINUTE || 6), keyPrefix: "social-voice-message" }),
   socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" }),
   socialReports: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_REPORTS_PER_UID_PER_MINUTE || 3), keyPrefix: "social-report" }),
   push: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUSH_API_PER_UID_PER_MINUTE || 30), keyPrefix: "push" }),
@@ -128,6 +132,7 @@ const telemetry = createTelemetryAgent({
 // of only surfacing as a 403 on the first user-facing request.
 logOpenAiStartupDiagnostics();
 logPhotoStorageStartupDiagnostics();
+logVoiceMessageStartupDiagnostics();
 
 app.disable("x-powered-by");
 const cspConnectSources = [
@@ -141,6 +146,14 @@ const cspConnectSources = [
   // emulators; they are never present in the production response policy.
   ...(localDemoMode ? ["http://127.0.0.1:9099", "http://127.0.0.1:8080"] : [])
 ].join(" ");
+const configuredImageKitOrigin = (() => {
+  try {
+    const origin = new URL(String(process.env.IMAGEKIT_URL_ENDPOINT || "")).origin;
+    return origin.startsWith("https://") ? origin : "https://ik.imagekit.io";
+  } catch {
+    return "https://ik.imagekit.io";
+  }
+})();
 app.use((req, res, next) => {
   // The application currently has vetted inline bootstrap scripts, so a nonce
   // migration is tracked separately. Keep the rest of the policy explicit to
@@ -155,6 +168,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https://ik.imagekit.io https://lh3.googleusercontent.com https://img.spoonacular.com",
+    `media-src 'self' ${configuredImageKitOrigin}`,
     `connect-src ${cspConnectSources}`,
     "worker-src 'self' blob:",
     "manifest-src 'self'"
@@ -595,6 +609,16 @@ function logPhotoStorageStartupDiagnostics() {
   }
 }
 
+function logVoiceMessageStartupDiagnostics() {
+  const required = ["IMAGEKIT_PUBLIC_KEY", "IMAGEKIT_PRIVATE_KEY", "IMAGEKIT_URL_ENDPOINT"];
+  const missing = required.filter((name) => !process.env[name]?.trim());
+  if (missing.length) {
+    console.error(`[voice-messages] DISABLED — private upload, playback and deletion unavailable. Missing env: ${missing.join(", ")}`);
+  } else {
+    console.log("[voice-messages] configured: private upload, authorized playback and deletion enabled.");
+  }
+}
+
 function imageKitClient() {
   const config = imageKitConfig();
   if (!config) return null;
@@ -603,6 +627,23 @@ function imageKitClient() {
     privateKey: config.privateKey,
     urlEndpoint: config.urlEndpoint
   });
+}
+
+function imageKitVoiceProvider() {
+  const client = imageKitClient();
+  const config = imageKitConfig();
+  if (!client || !config) return null;
+  return {
+    upload: (options) => client.upload(options),
+    getFileDetails: (fileId) => client.getFileDetails(fileId),
+    deleteFile: (fileId) => client.deleteFile(fileId),
+    getSignedUrl(source, expiresInSeconds) {
+      const absolute = String(source || "").startsWith(`${config.urlEndpoint}/`)
+        ? String(source)
+        : `${config.urlEndpoint}${String(source || "").startsWith("/") ? "" : "/"}${String(source || "")}`;
+      return signedImageKitUrl(absolute, config, expiresInSeconds);
+    }
+  };
 }
 
 function aiRequestKey(req, user, scope) {
@@ -680,9 +721,12 @@ const pushNotifications = new PushNotificationService({
   store: new FirestorePushStore(),
   transport: pushTransport
 });
+const voiceConfig = voiceMessageConfig();
+const voiceMedia = new VoiceMediaService({ provider: imageKitVoiceProvider(), config: voiceConfig });
 const accountService = new AccountService({
   pushService: pushNotifications,
-  imageCleanup: deleteAccountOwnedImageKitFile
+  imageCleanup: deleteAccountOwnedImageKitFile,
+  voiceCleanup: cleanupAccountVoiceMessages
 });
 
 app.use("/api/account", createAccountRouter({
@@ -704,10 +748,13 @@ app.use("/api/social", createSocialRouter({
       body: JSON.stringify({ event: "social_report_received", reportId: report.reportId, targetType: report.targetType, reason: report.reason })
     });
   },
+  voiceMedia,
+  voiceConfig,
   rateLimiters: {
     search: rateLimiters.socialSearch,
     relationships: rateLimiters.socialRelationships,
     messages: rateLimiters.socialMessages,
+    voiceMessages: rateLimiters.socialVoiceMessages,
     artifacts: rateLimiters.socialArtifacts,
     reports: rateLimiters.socialReports
   }
@@ -782,6 +829,10 @@ async function deleteAccountOwnedImageKitFile(uid, fileId) {
     throw error;
   }
   return { status: "deleted" };
+}
+
+async function cleanupAccountVoiceMessages(uid, conversations = []) {
+  return cleanupVoiceMessages({ uid, conversations, voiceMedia, serverTimestamp: () => FieldValue.serverTimestamp() });
 }
 
 function signedImageKitUrl(sourceUrl, config, expiresInSeconds = 3600) {

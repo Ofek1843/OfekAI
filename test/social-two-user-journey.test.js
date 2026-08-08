@@ -102,6 +102,7 @@ test("two verified synthetic users complete the social relationship, chat and sh
     batch.set(doc(firestore, `conversations/${pair}`), { participants: [userA, userB], participantKey: pair, status: "active" });
     batch.set(doc(firestore, `conversations/${pair}/messages/message-1`), { type: "text", text: "Hello from Alice", senderUid: userA, clientId: "client-1", schemaVersion: 1, createdAt: 1 });
     batch.set(doc(firestore, `conversations/${pair}/messages/message-2`), { type: "text", text: "Hello from Bob", senderUid: userB, clientId: "client-2", schemaVersion: 1, createdAt: 2 });
+    batch.set(doc(firestore, `conversations/${pair}/messages/message-3`), { type: "voice", senderUid: userA, schemaVersion: 1, createdAt: 3, voice: { assetId: "synthetic-private-asset", durationMs: 4500, mimeType: "audio/webm", sizeBytes: 12000 } });
     batch.set(doc(firestore, "sharedArtifacts/workout-1"), { ownerUid: userA, recipientIds: [userB], conversationId: pair, type: "workout", schemaVersion: 1, snapshot: { title: "Shared strength plan", sessions: [{ name: "Upper", exercises: [{ name: "Bench Press", sets: 3 }] }] }, revokedAt: null });
     batch.set(doc(firestore, "sharedArtifacts/nutrition-1"), { ownerUid: userB, recipientIds: [userA], conversationId: pair, type: "nutrition", schemaVersion: 1, snapshot: { title: "Shared nutrition plan", totals: { calories: 2100, proteinGrams: 160 } }, revokedAt: null });
     batch.set(doc(firestore, `users/${userB}/sharedImports/workout-1`), { artifactId: "workout-1", copyId: "copy-1", sourceType: "shared-copy" });
@@ -112,21 +113,23 @@ test("two verified synthetic users complete the social relationship, chat and sh
     await assertSucceeds(getDoc(doc(context, `friendships/${pair}`)));
     await assertSucceeds(getDoc(doc(context, `conversations/${pair}`)));
     const messages = await getDocs(query(collection(context, `conversations/${pair}/messages`), orderBy("createdAt", "asc"), limit(25)));
-    assert.deepEqual(messages.docs.map((item) => item.data().text), ["Hello from Alice", "Hello from Bob"]);
+    assert.deepEqual(messages.docs.map((item) => item.data().type), ["text", "text", "voice"]);
+    assert.equal(messages.docs[2].data().voice.durationMs, 4500);
   }
 
   assert.deepEqual((await getDoc(doc(bob, "sharedArtifacts/workout-1"))).data().snapshot.title, "Shared strength plan");
   assert.deepEqual((await getDoc(doc(alice, "sharedArtifacts/nutrition-1"))).data().snapshot.totals, { calories: 2100, proteinGrams: 160 });
   assert.equal((await getDoc(doc(bob, `users/${userB}/sharedImports/workout-1`))).data().copyId, "copy-1");
   await assertFails(getDoc(doc(stranger, `conversations/${pair}`)));
+  await assertFails(getDoc(doc(stranger, `conversations/${pair}/messages/message-3`)));
   await assertFails(getDoc(doc(stranger, "sharedArtifacts/workout-1")));
 });
 
 test("social journey exposes the stable profile, request, chat, typing and sharing paths", () => {
-  for (const id of ["identityForm", "userSearchForm", "receivedRequests", "sentRequests", "friendList", "conversationList", "messageForm", "previewDialog"]) {
+  for (const id of ["identityForm", "userSearchForm", "receivedRequests", "sentRequests", "friendList", "conversationList", "messageForm", "voiceRecordButton", "voiceComposer", "previewDialog"]) {
     assert.match(HTML, new RegExp(`id="${id}"`), id);
   }
-  for (const pathFragment of ["/identity", "/users/search", "/friend-requests", "/relationships", "/conversations", "/typing", "/messages", "/artifacts", "/copy"]) {
+  for (const pathFragment of ["/identity", "/users/search", "/friend-requests", "/relationships", "/conversations", "/typing", "/messages", "/voice-messages", "/voice/playback", "/artifacts", "/copy"]) {
     assert.match(ROUTER, new RegExp(pathFragment.replaceAll("/", "\\/")));
   }
   assert.match(SERVER, /app\.use\("\/api\/social", createSocialRouter/);
