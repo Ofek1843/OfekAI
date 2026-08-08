@@ -106,6 +106,24 @@ test("C/D: preview preference controls sanitized lock-screen message content", a
   assert.equal(privateFixture.transport.sent[0].payload.body, "Sent you a new message");
 });
 
+test("voice messages use the message preference and a metadata-free generic push", async () => {
+  const current = fixture({ message: { type: "voice", text: undefined, voice: { assetId: "private-asset", durationMs: 9000, mimeType: "audio/webm", sizeBytes: 5000 } } });
+  await current.service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" });
+  const payload = current.transport.sent[0].payload;
+  assert.equal(payload.type, "voice_message");
+  assert.equal(payload.title, "User A");
+  assert.equal(payload.body, "Sent you a voice message");
+  assert.equal(payload.url, "/social.html?conversation=thread-a-b");
+  assert.doesNotMatch(JSON.stringify(payload), /private-asset|audio\/webm|9000|5000/);
+
+  const hebrew = fixture({ message: { type: "voice" }, preferences: { locale: "he" } });
+  await hebrew.service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" });
+  assert.equal(hebrew.transport.sent[0].payload.body, "הודעה קולית חדשה");
+
+  const disabled = fixture({ message: { type: "voice" }, preferences: { newMessages: false } });
+  assert.equal((await disabled.service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" })).skipped, "messages_disabled");
+});
+
 test("extremely long text is compact and does not expose identifiers", async () => {
   const { service, transport } = fixture({ message: { text: `${"x".repeat(300)} secret-id-should-be-truncated` } });
   await service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" });
