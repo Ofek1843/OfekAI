@@ -324,10 +324,11 @@ test("Google sign-up cannot bypass the terms gate: the gate is shown INSTEAD of 
   assert.match(finalize[0], /openPanel\(termsGatePanel\)[\s\S]*?return;/, "the gate must short-circuit the flow");
 });
 
-test("declining the terms signs the user back out instead of leaving an un-accepted session", () => {
-  const cancel = AUTH_JS.match(/async function cancelTermsAcceptance\([\s\S]*?\n\}/);
+test("declining the terms keeps the signed-in user on the clear acceptance gate", () => {
+  const cancel = AUTH_JS.match(/function cancelTermsAcceptance\([\s\S]*?\n\}/);
   assert.ok(cancel, "expected a cancelTermsAcceptance function");
-  assert.match(cancel[0], /signOut\(auth\)/);
+  assert.doesNotMatch(cancel[0], /signOut\(auth\)/);
+  assert.match(cancel[0], /showPanelMessage/);
 });
 
 test("accepting the terms records acceptance, version and timestamp together", () => {
@@ -358,10 +359,18 @@ test("a returning user's existing acceptance timestamp is never rewritten on sub
   assert.ok(!("termsAcceptedAt" in payload), "the original acceptance timestamp must be preserved");
 });
 
-test("the email/password signup path still writes the same terms fields and shares one version constant", () => {
-  assert.match(AUTH_JS, /termsVersion:\s*TERMS_VERSION/, "email signup must use the shared constant, not a hardcoded date");
+test("email/password signup uses the server-authoritative acceptance endpoint", () => {
+  assert.match(AUTH_JS, /fetch\("\/api\/legal\/acceptance"/);
+  assert.match(AUTH_JS, /body:\s*JSON\.stringify\(\{ accepted: true \}\)/);
   assert.doesNotMatch(AUTH_JS, /termsVersion:\s*"2026-/, "no hardcoded terms version may remain in auth.js");
   assert.match(AUTH_JS, /You must accept the Terms and Health Disclaimer/, "the email signup terms check must be preserved");
+});
+
+test("email/password login checks the current Terms version before scheduling a product redirect", () => {
+  assert.match(AUTH_JS, /const userCredential = await signInWithEmailAndPassword\([\s\S]*?const snapshot = await getDoc\(doc\(db, "users", userCredential\.user\.uid\)\)[\s\S]*?if \(needsTermsAcceptance\(existingProfile, TERMS_VERSION\)\)/);
+  const directLoginCheck = AUTH_JS.indexOf("const userCredential = await signInWithEmailAndPassword(");
+  const redirect = AUTH_JS.indexOf("window.setTimeout(() => {");
+  assert.ok(directLoginCheck !== -1 && redirect !== -1 && directLoginCheck < redirect);
 });
 
 // --- 4. User document ----------------------------------------------------
@@ -536,16 +545,19 @@ test("cancelling the linking flow clears the pending credential and signs out", 
 
 // --- 6. Redirect, persistence, next destination --------------------------
 
-test("next=workout-builder.html and next=nutrition-builder.html are preserved", () => {
+test("allowlisted safe product destinations are preserved", () => {
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
   assert.equal(resolveNextPath("nutrition-builder.html"), "/nutrition-builder.html");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
+  assert.equal(resolveNextPath("dashboard.html"), "/dashboard.html");
+  assert.equal(resolveNextPath("/app.html?settings=open&section=account"), "/app.html?settings=open&section=account");
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
 });
 
 test("any other next value falls back to the dashboard — the login page is not an open redirect", () => {
   assert.equal(resolveNextPath(null), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath(""), DEFAULT_NEXT_PATH);
-  assert.equal(resolveNextPath("dashboard.html"), DEFAULT_NEXT_PATH);
+  assert.equal(resolveNextPath("dashboard.html?admin=1"), DEFAULT_NEXT_PATH);
+  assert.equal(resolveNextPath("/app.html?settings=delete"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("//evil.example.com"), DEFAULT_NEXT_PATH, "protocol-relative URLs must not be honored");
   assert.equal(resolveNextPath("https://evil.example.com"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("../../etc/passwd"), DEFAULT_NEXT_PATH);
@@ -578,7 +590,7 @@ test("remember-me persistence is applied to the Google flow, not just email/pass
 });
 
 test("redirect loops are prevented: the auth-state guard cannot bounce a user out of an open gate", () => {
-  const guard = AUTH_JS.match(/onAuthStateChanged\(auth, \(user\) => \{[\s\S]*?\n  \}\);/);
+  const guard = AUTH_JS.match(/onAuthStateChanged\(auth, async \(user\) => \{[\s\S]*?\n  \}\);/);
   assert.ok(guard, "expected an onAuthStateChanged guard");
   assert.match(
     guard[0],
@@ -589,7 +601,7 @@ test("redirect loops are prevented: the auth-state guard cannot bounce a user ou
   // The guard is registered only AFTER getRedirectResult resolves, otherwise
   // it races the redirect return and redirects before the gate can run.
   const redirectResultIndex = AUTH_JS.indexOf("getRedirectResult(auth)");
-  const guardIndex = AUTH_JS.indexOf("onAuthStateChanged(auth, (user)");
+  const guardIndex = AUTH_JS.indexOf("onAuthStateChanged(auth, async (user)");
   assert.ok(redirectResultIndex !== -1 && guardIndex !== -1);
   assert.ok(
     redirectResultIndex < guardIndex,
@@ -604,7 +616,7 @@ test("logging out and back in works: sign-out is available and a signed-out visi
 
   // Back on auth.html, a signed-out visitor must have the page revealed
   // rather than being left on the hidden 'auth-checking' screen.
-  const guard = AUTH_JS.match(/onAuthStateChanged\(auth, \(user\) => \{[\s\S]*?\n  \}\);/);
+  const guard = AUTH_JS.match(/onAuthStateChanged\(auth, async \(user\) => \{[\s\S]*?\n  \}\);/);
   assert.match(guard[0], /revealPage\(\)/);
   assert.match(AUTH_JS, /function revealPage\(\)[\s\S]*?auth-checking/);
 });

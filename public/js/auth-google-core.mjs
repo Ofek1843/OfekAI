@@ -24,6 +24,8 @@ export const TERMS_VERSION = "2026-08-08";
 // traversal) falls back to the dashboard — an open redirect on a login page
 // is a phishing vector, so this is an allowlist, never a sanitizer.
 export const ALLOWED_NEXT_PATHS = [
+  "dashboard.html",
+  "app.html",
   "workout-builder.html",
   "nutrition-builder.html",
   "social.html",
@@ -43,13 +45,22 @@ export function resolveNextPath(requestedNext) {
   if (url.origin !== "https://fuelphysique.invalid" || url.username || url.password) return DEFAULT_NEXT_PATH;
   const filename = url.pathname.slice(1);
   if (!ALLOWED_NEXT_PATHS.includes(filename) || url.hash) return DEFAULT_NEXT_PATH;
+  const keys = [...url.searchParams.keys()];
 
+  if (["dashboard.html"].includes(filename)) {
+    return url.search ? DEFAULT_NEXT_PATH : `/${filename}`;
+  }
+  if (filename === "app.html") {
+    if (url.searchParams.get("settings") !== "open" || keys.some(key => !["settings", "section"].includes(key))) return DEFAULT_NEXT_PATH;
+    const section = url.searchParams.get("section");
+    if (section !== null && !/^(profile|athlete|preferences|language|notifications|account|appearance)$/.test(section)) return DEFAULT_NEXT_PATH;
+    return `${url.pathname}${url.search}`;
+  }
   if (["workout-builder.html", "nutrition-builder.html"].includes(filename)) {
     return url.search ? DEFAULT_NEXT_PATH : `/${filename}`;
   }
 
   const safeId = value => /^[A-Za-z0-9_-]{1,160}$/.test(value || "");
-  const keys = [...url.searchParams.keys()];
   if (filename === "social.html") {
     const request = url.searchParams.get("request");
     const conversation = url.searchParams.get("conversation");

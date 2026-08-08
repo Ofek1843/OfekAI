@@ -129,6 +129,7 @@ test("firebase-config.js resolves authDomain per-environment and uses the demo p
   assert.match(source, /appId:\s*"1:644398760036:web:aa34bd6a283d686560df71"/);
   assert.match(source, /storageBucket:\s*"ofek-ai-55f1d\.firebasestorage\.app"/);
   assert.match(source, /messagingSenderId:\s*"644398760036"/);
+  assert.match(source, /initializeFirestore\(app, \{ experimentalForceLongPolling: true \}\)/);
 });
 
 test("firebase config is defined in exactly one authoritative source -- no duplicated Firebase initialization elsewhere", () => {
@@ -332,17 +333,20 @@ test("the Google popup and redirect flow logic in auth.js is unchanged by this p
   assert.match(source, /shouldUseRedirect\(/);
 });
 
-test("getRedirectResult is still resolved before the auth-state guard is registered -- no redirect loop introduced", () => {
+test("getRedirectResult is resolved before the asynchronous auth-state guard -- no redirect loop introduced", () => {
   const source = fs.readFileSync(path.join(ROOT, "public", "js", "auth.js"), "utf8");
   const redirectResultIndex = source.indexOf("getRedirectResult(auth)");
-  const guardIndex = source.indexOf("onAuthStateChanged(auth, (user)");
+  const guardIndex = source.indexOf("onAuthStateChanged(auth, async (user)");
   assert.ok(redirectResultIndex !== -1 && guardIndex !== -1);
   assert.ok(redirectResultIndex < guardIndex);
 });
 
-test("the next destination allowlist used after a Google redirect is unchanged", () => {
+test("the next destination allowlist includes only protected return pages required by the Terms gate", () => {
   const { resolveNextPath, ALLOWED_NEXT_PATHS } = require("../public/js/auth-google-core.mjs");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
+  assert.equal(resolveNextPath("app.html?settings=open&section=account"), "/app.html?settings=open&section=account");
+  assert.equal(resolveNextPath("app.html?settings=open&section=admin"), "/dashboard.html");
+  assert.equal(resolveNextPath("dashboard.html?next=evil"), "/dashboard.html");
   assert.equal(resolveNextPath("https://evil.com"), "/dashboard.html");
 });

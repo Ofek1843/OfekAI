@@ -18,3 +18,18 @@ test("report identifiers deduplicate one reporter/target pair and snapshots do n
   const snapshot = minimalSnapshot({ targetType: "artifact", targetId: "artifact-1", value: { ownerUid: "owner", type: "nutrition", title: "Plan", snapshot: { meals: ["private"] } } });
   assert.deepEqual(snapshot, { targetType: "artifact", targetId: "artifact-1", ownerUid: "owner", type: "nutrition", title: "Plan" });
 });
+
+test("message reports retain an immutable reference, never a private message body", () => {
+  const snapshot = minimalSnapshot({
+    targetType: "message",
+    targetId: "conversation-1:message-1",
+    value: { senderUid: "sender", type: "text", text: "private message", attachment: { url: "private" } }
+  });
+  assert.deepEqual(snapshot, {
+    targetType: "message",
+    targetId: "conversation-1:message-1",
+    senderUid: "sender",
+    type: "text"
+  });
+  assert.doesNotMatch(JSON.stringify(snapshot), /private message|attachment|url/);
+});

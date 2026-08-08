@@ -27,10 +27,18 @@ export async function directImageKitUpload({
   onProgress
 }) {
   const auth = await getImageKitUploadAuth();
+  const uploadPrefix = String(auth.uploadPrefix || "").replace(/\/$/, "");
+  const normalizedFolder = String(folder || "");
+  // Upload credentials are issued for the authenticated member's namespace.
+  // Do not let normal product code accidentally submit a cross-user or
+  // provider-root folder even though ImageKit accepts an arbitrary string.
+  if (!uploadPrefix || !normalizedFolder.startsWith(`${uploadPrefix}/`) || normalizedFolder.includes("..")) {
+    throw new Error("This upload destination is not available for your account.");
+  }
   const form = new FormData();
   form.append("file", file, fileName || file.name || "upload.bin");
   form.append("fileName", fileName || file.name || "upload.bin");
-  form.append("folder", folder);
+  form.append("folder", normalizedFolder);
   form.append("useUniqueFileName", "false");
   form.append("isPrivateFile", String(Boolean(isPrivateFile)));
   form.append("publicKey", auth.publicKey);

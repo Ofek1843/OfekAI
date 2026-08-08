@@ -11,3 +11,8 @@ test("server sets baseline browser security headers and a restrictive CSP", () =
   }
   assert.match(source, /Strict-Transport-Security/);
 });
+
+test("the two Firebase emulator origins are available only in explicit local-demo mode", () => {
+  assert.match(source, /localDemoMode \? \["http:\/\/127\.0\.0\.1:9099", "http:\/\/127\.0\.0\.1:8080"\] : \[\]/);
+  assert.match(source, /connect-src \$\{cspConnectSources\}/);
+});

@@ -13,13 +13,15 @@
 // email already went out at signup (see auth.js); this screen only sends
 // again on an explicit, cooldown-limited click.
 
-import { auth } from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
 
 import {
   onAuthStateChanged,
   signOut,
   sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import {
   buildActionCodeSettings,
@@ -28,7 +30,7 @@ import {
   shouldBlockUnverifiedAccess,
   getVerificationStrings
 } from "./email-verification-core.mjs";
-import { getFriendlyAuthError, resolveNextPath } from "./auth-google-core.mjs";
+import { TERMS_VERSION, getFriendlyAuthError, needsTermsAcceptance, resolveNextPath } from "./auth-google-core.mjs";
 import { disassociateCurrentInstallation } from "./push-notifications.js";
 
 export { shouldBlockUnverifiedAccess };
@@ -38,6 +40,8 @@ const verificationStrings = getVerificationStrings(locale);
 const actionCodeSettings = buildActionCodeSettings(window.location.origin);
 
 let verificationGateInterval = null;
+let termsRedirectInProgress = false;
+let termsFetchGuardInstalled = false;
 
 // recheckListenersController lets removeVerificationGate() tear down the
 // visibilitychange/focus auto-recheck listeners added by the last
@@ -53,6 +57,39 @@ export function removeVerificationGate() {
   recheckListenersController?.abort();
   recheckListenersController = null;
   document.getElementById("verificationGate")?.remove();
+}
+
+function currentSafeReturnPath() {
+  return resolveNextPath(`${window.location.pathname}${window.location.search}`);
+}
+
+export function routeToTermsAcceptance() {
+  if (termsRedirectInProgress || window.location.pathname === "/auth.html") return;
+  termsRedirectInProgress = true;
+  window.location.replace(`/auth.html?next=${encodeURIComponent(currentSafeReturnPath())}&terms=required`);
+}
+
+// Authenticated requests are distributed across legacy modules. This narrow
+// observer preserves fetch semantics and only reacts to the server's explicit
+// TERMS_ACCEPTANCE_REQUIRED code, preventing per-feature failure spam.
+export function installTermsRequiredFetchGuard() {
+  if (termsFetchGuardInstalled) return;
+  termsFetchGuardInstalled = true;
+  const originalFetch = window.fetch.bind(window);
+  window.fetch = async (...args) => {
+    const response = await originalFetch(...args);
+    if (response.status === 403 && !termsRedirectInProgress) {
+      response.clone().json().then((body) => {
+        if (body?.code === "TERMS_ACCEPTANCE_REQUIRED") routeToTermsAcceptance();
+      }).catch(() => {});
+    }
+    return response;
+  };
+}
+
+async function requiresCurrentTerms(user) {
+  const snapshot = await getDoc(doc(db, "users", user.uid));
+  return needsTermsAcceptance(snapshot.exists() ? snapshot.data() : null, TERMS_VERSION);
 }
 
 // renderVerificationGate(user, { onVerified }) -- onVerified(user) is called
@@ -350,7 +387,7 @@ export function guardProtectedPage({ onAuthenticated, onSignedOut } = {}) {
     onAuthenticated?.(user);
   }
 
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (!user) {
       removeVerificationGate();
       if (onSignedOut) onSignedOut();
@@ -373,6 +410,18 @@ export function guardProtectedPage({ onAuthenticated, onSignedOut } = {}) {
       return;
     }
 
+    try {
+      if (await requiresCurrentTerms(user)) {
+        routeToTermsAcceptance();
+        return;
+      }
+    } catch (error) {
+      // A transient profile read must not falsely claim consent. The server
+      // remains authoritative and the fetch guard will route a 403 safely.
+      console.error("Could not check current Terms acceptance:", error?.code || "unknown");
+    }
+
+    installTermsRequiredFetchGuard();
     proceed(user);
   });
 }

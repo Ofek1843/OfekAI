@@ -327,7 +327,7 @@ async function finalizeGoogleUser(user, { isNewLink = false } = {}) {
   }
 
   if (needsTermsAcceptance(existingProfile, TERMS_VERSION)) {
-    pendingProfile = { user, existingProfile, isNewLink };
+    pendingProfile = { user, existingProfile, isNewLink, providerId: GoogleAuthProvider.PROVIDER_ID };
     openPanel(termsGatePanel);
     showPanelMessage(termsGateMessage, "", "");
     return;
@@ -513,13 +513,29 @@ async function submitTermsAcceptance() {
   termsGateSubmit.disabled = true;
 
   try {
-    const { user, existingProfile } = pendingProfile;
+    const { user, existingProfile, providerId = "" } = pendingProfile;
 
+    const token = await user.getIdToken(true);
+    const acceptance = await fetch("/api/legal/acceptance", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ accepted: true })
+    });
+    const acceptanceBody = await acceptance.json().catch(() => ({}));
+    if (!acceptance.ok || acceptanceBody.accepted !== true) {
+      const error = new Error(acceptanceBody.error || "Could not record your Terms acceptance.");
+      error.code = acceptanceBody.code;
+      throw error;
+    }
+
+    // The server is authoritative for legal acceptance. This client merge is
+    // limited to ordinary profile metadata and deliberately omits every legal
+    // field, preserving the server timestamp and accepted version.
     await setDoc(doc(db, "users", user.uid), buildUserDocumentMerge({
       authUser: user,
       existingProfile,
-      providerId: GoogleAuthProvider.PROVIDER_ID,
-      acceptedTermsVersion: TERMS_VERSION,
+      providerId,
+      acceptedTermsVersion: null,
       now: serverTimestamp()
     }), { merge: true });
 
@@ -540,20 +556,12 @@ async function submitTermsAcceptance() {
   }
 }
 
-// Declining the terms must not leave a signed-in-but-unaccepted session
-// sitting there: sign the user back out and return them to the form.
-async function cancelTermsAcceptance() {
-  pendingProfile = null;
-  closePanels();
-  googleFlowInProgress = false;
-
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Sign-out after declined terms failed:", error);
-  }
-
-  clearMessage();
+// Declining is not an implicit logout. The signed-in member remains on this
+// clearly explained gate and can review the legal pages or accept later.
+function cancelTermsAcceptance() {
+  showPanelMessage(termsGateMessage, locale === "he"
+    ? "נדרשת הסכמה לתנאים ולהצהרת הבריאות כדי להשתמש ב-FuelPhysique."
+    : "Accept the Terms and Health Disclaimer to continue to FuelPhysique.", "error");
 }
 
 // --- Forgot password -------------------------------------------------------
@@ -711,15 +719,25 @@ authForm.addEventListener(
           }
         );
 
+        const token = await userCredential.user.getIdToken(true);
+        const acceptance = await fetch("/api/legal/acceptance", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ accepted: true })
+        });
+        const acceptanceBody = await acceptance.json().catch(() => ({}));
+        if (!acceptance.ok || acceptanceBody.accepted !== true) {
+          const error = new Error(acceptanceBody.error || "Could not record your Terms acceptance.");
+          error.code = acceptanceBody.code;
+          throw error;
+        }
+
         await setDoc(doc(db, "users", userCredential.user.uid), {
           email: userCredential.user.email || email,
           displayName,
           authProviders: ["password"],
           createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          termsAccepted: true,
-          termsVersion: TERMS_VERSION,
-          termsAcceptedAt: serverTimestamp()
+          updatedAt: serverTimestamp()
         }, { merge: true });
 
         // auth.languageCode was already set at module load, before this call,
@@ -746,11 +764,26 @@ authForm.addEventListener(
           "success"
         );
       } else {
-        await signInWithEmailAndPassword(
+        const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
           password
         );
+
+        // Do not schedule a product redirect until this existing account has
+        // passed the same current-version Terms check as the Google flow.
+        // Otherwise a legacy password user can briefly enter a protected
+        // page and see an unexplained API 403 before the centralized gate.
+        const snapshot = await getDoc(doc(db, "users", userCredential.user.uid));
+        const existingProfile = snapshot.exists() ? snapshot.data() : null;
+        if (needsTermsAcceptance(existingProfile, TERMS_VERSION)) {
+          pendingProfile = { user: userCredential.user, existingProfile, providerId: "" };
+          googleFlowInProgress = true;
+          openPanel(termsGatePanel);
+          showPanelMessage(termsGateMessage, "", "");
+          revealPage();
+          return;
+        }
 
         authenticationCompleted = true;
 
@@ -815,7 +848,7 @@ async function bootstrap() {
     safeSessionRemove(REDIRECT_NEXT_STORAGE_KEY);
   }
 
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     // Never redirect while a Google flow is mid-way (terms gate or account
     // linking open): the user is authenticated but not yet cleared for
     // product access, and redirecting would both bypass the gate and bounce
@@ -826,7 +859,27 @@ async function bootstrap() {
     }
 
     if (user && !authenticationCompleted) {
-      redirectToProduct();
+      // Existing password users land here after the protected-page gate. A
+      // Firebase session is not itself proof that the current Terms version
+      // was accepted, so check the profile before any redirect.
+      try {
+        const snapshot = await getDoc(doc(db, "users", user.uid));
+        const existingProfile = snapshot.exists() ? snapshot.data() : null;
+        if (needsTermsAcceptance(existingProfile, TERMS_VERSION)) {
+          pendingProfile = { user, existingProfile, providerId: "" };
+          googleFlowInProgress = true;
+          openPanel(termsGatePanel);
+          showPanelMessage(termsGateMessage, "", "");
+          revealPage();
+          return;
+        }
+        authenticationCompleted = true;
+        redirectToProduct();
+      } catch (error) {
+        console.error("Could not confirm Terms acceptance:", error);
+        showMessage(getFriendlyError(error?.code), "error");
+        revealPage();
+      }
       return;
     }
 

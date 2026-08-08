@@ -146,6 +146,7 @@ test("legacy owner access is preserved and cross-user access is denied", async (
   await assertFails(setDoc(doc(other, "users/alice/workoutPlans/forged"), { name: "forged" }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { displayName: "Alice updated" }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { activeNutritionPlanId: "nutrition-a" }));
+  await assertFails(updateDoc(doc(owner, "users/alice"), { termsAccepted: true, termsVersion: "2026-08-08" }));
   await assertFails(updateDoc(doc(owner, "users/alice"), { subscription: { planId: "pro", status: "active" } }));
   await assertFails(deleteDoc(doc(owner, "users/alice")));
   await assertFails(getDoc(doc(other, "users/alice")));
@@ -233,6 +234,28 @@ test("social conversation reads require accepted friendship and reciprocal block
   await assertFails(getDoc(doc(b, "conversations/alice_bob")));
 });
 
+test("a deleted participant cannot return, while the survivor can read preserved history only", async () => {
+  await seed();
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore();
+    await deleteDoc(doc(db, "friendships/alice_bob"));
+    await setDoc(doc(db, "conversations/alice_bob"), {
+      participants: ["alice", "bob"],
+      participantKey: "alice_bob",
+      status: "deleted_participant",
+      deletedParticipantUids: ["alice"]
+    });
+  });
+  const a = alice();
+  const b = bob();
+  const c = carol();
+  await assertFails(getDoc(doc(a, "conversations/alice_bob")));
+  await assertSucceeds(getDoc(doc(b, "conversations/alice_bob")));
+  await assertSucceeds(getDocs(query(collection(b, "conversations/alice_bob/messages"), orderBy("createdAt", "desc"), limit(25))));
+  await assertFails(getDoc(doc(c, "conversations/alice_bob")));
+  await assertFails(setDoc(doc(b, "conversations/alice_bob/messages/forged"), { type: "text", text: "new", senderUid: "bob", createdAt: 2 }));
+});
+
 test("social server-owned artifact/import mutations stay denied", async () => {
   const a = alice();
   const b = bob();
@@ -259,4 +282,19 @@ test("push registrations, preferences and delivery markers are server-only", asy
   await assertFails(setDoc(doc(a, "pushInstallations/forged"), { uid: "alice", fcmToken: "forged" }));
   await assertFails(setDoc(doc(a, "notificationPreferences/alice"), { uid: "alice", newMessages: false }));
   await assertFails(setDoc(doc(a, "pushEvents/forged"), { recipientUid: "bob", type: "message" }));
+});
+
+test("reports and account-deletion jobs are invisible and immutable to every client", async () => {
+  await seed();
+  await testEnv.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore();
+    await setDoc(doc(db, "socialReports/report-a"), { reporterUid: "alice", targetType: "message" });
+    await setDoc(doc(db, "accountDeletionJobs/alice"), { uid: "alice", state: "ready_for_auth_delete" });
+  });
+  for (const db of [alice(), bob(), unauthenticated()]) {
+    await assertFails(getDoc(doc(db, "socialReports/report-a")));
+    await assertFails(getDoc(doc(db, "accountDeletionJobs/alice")));
+    await assertFails(setDoc(doc(db, "socialReports/forged"), { reporterUid: "alice", targetType: "message" }));
+    await assertFails(setDoc(doc(db, "accountDeletionJobs/forged"), { uid: "alice", state: "complete" }));
+  }
 });

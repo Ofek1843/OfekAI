@@ -7,7 +7,8 @@ import {
 
 import {
   connectFirestoreEmulator,
-  getFirestore
+  getFirestore,
+  initializeFirestore
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import {
@@ -37,7 +38,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
-const db = getFirestore(app);
+// Some embedded/local browser shells cannot keep Firestore's streaming
+// WebChannel open to a loopback emulator. Long polling is local-only and
+// keeps the real browser acceptance environment deterministic without
+// changing the production Firestore transport.
+const db = localEmulatorMode
+  ? initializeFirestore(app, { experimentalForceLongPolling: true })
+  : getFirestore(app);
 const storage = getStorage(app);
 
 // Loopback pages are never production pages, so all local navigation stays on

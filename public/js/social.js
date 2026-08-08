@@ -120,11 +120,12 @@ function avatar(profile = {}, large = false) {
     ? `<img src="${escapeHtml(profile.photoURL)}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false">`
     : "";
   const body = `${photo}<span${photo ? " hidden" : ""}>${fallback}</span>`;
-  const label = escapeHtml(profile.displayName || profile.username || "Open profile");
+  const label = profile.deleted ? profileName(profile) : escapeHtml(profile.displayName || profile.username || "Open profile");
   return `<${profile.interactive ? "button" : "span"} class="avatar${large ? " avatar-large" : ""}${profile.interactive ? " avatar-button" : ""}"${profile.interactive ? ` type="button" data-profile-uid="${escapeHtml(profile.uid)}" aria-label="Open ${label} profile"` : " aria-hidden=\"true\""}>${body}</${profile.interactive ? "button" : "span"}>`;
 }
 
 function profileName(profile = {}) {
+  if (profile.deleted) return escapeHtml(language === "he" ? "משתמש שנמחק" : "Deleted user");
   return escapeHtml(profile.displayName || profile.username || "FuelPhysique member");
 }
 
@@ -315,6 +316,7 @@ function sendTypingState(typing) {
 }
 
 async function startTypingChannel(conversationId) {
+  if (state.activeConversation?.status !== "active") return;
   state.typingAbort?.abort();
   const controller = new AbortController();
   state.typingAbort = controller;
@@ -380,9 +382,17 @@ async function openConversation(conversationOrId) {
   renderConversations();
   $("#chatEmpty").hidden = true;
   $("#chatPanel").hidden = false;
-  $("#chatFriendName").textContent = conversation.profile?.displayName || conversation.profile?.username || "FuelPhysique member";
+  $("#chatFriendName").textContent = conversation.profile?.deleted
+    ? (language === "he" ? "משתמש שנמחק" : "Deleted user")
+    : (conversation.profile?.displayName || conversation.profile?.username || "FuelPhysique member");
   $("#chatFriendUsername").textContent = conversation.profile?.username ? `@${conversation.profile.username}` : "";
   $("#chatAvatar").innerHTML = avatar({ ...conversation.profile, interactive: true }, true);
+  const readOnly = conversation.status !== "active";
+  $("#messageInput").disabled = readOnly;
+  $("#sendButton").disabled = readOnly;
+  $("#messageInput").placeholder = readOnly
+    ? (language === "he" ? "השיחה זמינה לקריאה בלבד" : "This conversation is read-only")
+    : ui.messagePlaceholder;
   $("#messageSkeletons").hidden = false;
   try {
     const data = await api(`/conversations/${encodeURIComponent(conversation.id)}/messages`);
@@ -393,7 +403,7 @@ async function openConversation(conversationOrId) {
     conversation.unreadCount = 0;
     renderConversations();
     subscribeToActiveConversation();
-    startTypingChannel(conversation.id);
+    if (conversation.status === "active") startTypingChannel(conversation.id);
   } catch (error) {
     toast(error.message, true);
   } finally {
@@ -466,6 +476,10 @@ async function searchUsers(event) {
 async function sendMessage(event, retryText = null) {
   event?.preventDefault?.();
   if (!state.activeConversation) return;
+  if (state.activeConversation.status !== "active") {
+    toast(language === "he" ? "השיחה הזו זמינה לקריאה בלבד." : "This conversation is read-only.", true);
+    return;
+  }
   const input = $("#messageInput");
   const text = (retryText ?? input.value).trim();
   if (!text) return;
@@ -670,6 +684,8 @@ async function previewArtifact(artifactId) {
     $("#previewAttribution").textContent = `${ui.createdBy} @${artifact.snapshot?.creatorUsername || artifact.metadata?.creatorUsername || "FuelPhysique"}`;
     const copyable = ["workout", "nutrition"].includes(artifact.type) && !artifact.unavailable;
     $("#copyArtifactButton").hidden = !copyable;
+    $("#reportArtifactButton").hidden = artifact.ownerUid === state.user.uid;
+    $("#reportArtifactButton").dataset.artifactId = artifact.id;
     $("#copyArtifactButton").textContent = artifact.compatibilityWarnings?.length ? ui.copyAsIs : artifact.type === "nutrition" ? ui.copyNutrition : ui.copyWorkout;
     $("#previewWarnings").hidden = !artifact.compatibilityWarnings?.length;
     $("#previewWarnings").innerHTML = (artifact.compatibilityWarnings || []).map((warning) => `<p>${escapeHtml(warning)}</p>`).join("");
@@ -683,6 +699,7 @@ async function previewArtifact(artifactId) {
   } catch (error) {
     $("#previewContent").innerHTML = `<div class="empty-state"><h3>${escapeHtml(error.message)}</h3></div>`;
     $("#copyArtifactButton").hidden = true;
+    $("#reportArtifactButton").hidden = true;
   }
 }
 
@@ -779,7 +796,7 @@ async function reportSocialContent(targetType, targetId) {
   if (!reason) return;
   try {
     const result = await api("/reports", { method: "POST", body: JSON.stringify({ targetType, targetId, reason: reason.trim() }) });
-    toast(result.duplicate ? (language === "he" ? "דיווח זה כבר נשלח." : "This report was already sent.") : (language === "he" ? "תודה. הדיווח נשלח לבדיקה." : "Thank you. Your report was sent for review."));
+    toast(result.duplicate ? (language === "he" ? "דיווח זה כבר נשלח." : "This report was already sent.") : (language === "he" ? "תודה. הדיווח נשלח." : "Thank you. Your report was sent."));
   } catch (error) {
     toast(error.message, true);
   }
@@ -868,6 +885,7 @@ function bindEvents() {
     }
   });
   $("#reportProfileButton").addEventListener("click", (event) => reportSocialContent("user", event.currentTarget.dataset.uid));
+  $("#reportArtifactButton").addEventListener("click", (event) => reportSocialContent("artifact", event.currentTarget.dataset.artifactId));
   window.addEventListener("popstate", () => {
     stopArtifactSubscription();
     if ($("#previewDialog").open) $("#previewDialog").close();

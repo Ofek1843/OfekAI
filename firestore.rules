@@ -33,8 +33,7 @@ service cloud.firestore {
     function permittedUserRootKeys() {
       return [
         'email', 'displayName', 'photoURL', 'authProviders', 'createdAt', 'updatedAt',
-        'termsAccepted', 'termsVersion', 'termsAcceptedAt', 'privacyVersion',
-        'privacyAcceptedAt', 'activeWorkoutPlanId', 'activeNutritionPlanId'
+        'activeWorkoutPlanId', 'activeNutritionPlanId'
       ];
     }
 
@@ -50,12 +49,17 @@ service cloud.firestore {
       let friendship = get(/databases/$(database)/documents/friendships/$(conversationId));
       let participants = data.participants;
       let otherUid = participants[0] == request.auth.uid ? participants[1] : participants[0];
-      return signedIn()
+      let survivorReadingHistory = signedIn()
+        && data.status == 'deleted_participant'
+        && data.keys().hasAll(['deletedParticipantUids'])
+        && request.auth.uid in participants
+        && !(request.auth.uid in data.deletedParticipantUids);
+      return survivorReadingHistory || (signedIn()
         && conversationDataIsValid(data, conversationId)
         && friendship.data.status == 'accepted'
         && friendship.data.participants == participants
         && !exists(/databases/$(database)/documents/users/$(request.auth.uid)/blocks/$(otherUid))
-        && !exists(/databases/$(database)/documents/users/$(otherUid)/blocks/$(request.auth.uid));
+        && !exists(/databases/$(database)/documents/users/$(otherUid)/blocks/$(request.auth.uid)));
     }
 
     function canReadConversation(conversationId) {

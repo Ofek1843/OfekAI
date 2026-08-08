@@ -129,6 +129,17 @@ logOpenAiStartupDiagnostics();
 logPhotoStorageStartupDiagnostics();
 
 app.disable("x-powered-by");
+const cspConnectSources = [
+  "'self'",
+  "https://*.googleapis.com",
+  "https://*.firebaseio.com",
+  "https://*.imagekit.io",
+  "https://upload.imagekit.io",
+  // Local demo mode is explicit and server-controlled. These precise
+  // loopback origins let the browser SDK reach the Auth and Firestore
+  // emulators; they are never present in the production response policy.
+  ...(localDemoMode ? ["http://127.0.0.1:9099", "http://127.0.0.1:8080"] : [])
+].join(" ");
 app.use((req, res, next) => {
   // The application currently has vetted inline bootstrap scripts, so a nonce
   // migration is tracked separately. Keep the rest of the policy explicit to
@@ -143,7 +154,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https://ik.imagekit.io https://lh3.googleusercontent.com https://img.spoonacular.com",
-    "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.imagekit.io https://upload.imagekit.io",
+    `connect-src ${cspConnectSources}`,
     "worker-src 'self' blob:",
     "manifest-src 'self'"
   ].join("; "));
@@ -246,6 +257,24 @@ app.get("/health", (req, res) => {
 app.get("/api/legal/policy", (_req, res) => {
   res.setHeader("Cache-Control", "no-store");
   res.json(publicLegalPolicy());
+});
+
+app.post("/api/legal/acceptance", async (req, res) => {
+  const user = await requireFirebaseUser(req, res, { skipTermsGate: true });
+  if (!user) return;
+  if (req.body?.accepted !== true) {
+    return res.status(400).json({ error: "Explicit Terms acceptance is required.", code: "terms_acceptance_required" });
+  }
+  await getFuelPhysiqueFirestore().doc(`users/${user.uid}`).set({
+    termsAccepted: true,
+    termsVersion: publicLegalPolicy().termsVersion,
+    termsAcceptedAt: FieldValue.serverTimestamp(),
+    privacyVersion: publicLegalPolicy().privacyVersion,
+    privacyAcceptedAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp()
+  }, { merge: true });
+  res.setHeader("Cache-Control", "no-store");
+  res.json({ accepted: true, ...publicLegalPolicy() });
 });
 
 app.post("/api/analytics/event", (req, res) => {
@@ -652,16 +681,7 @@ const pushNotifications = new PushNotificationService({
 });
 const accountService = new AccountService({
   pushService: pushNotifications,
-  imageCleanup: async (_uid, fileId) => {
-    const client = imageKitClient();
-    if (!client) {
-      const error = new Error("Account media cleanup is temporarily unavailable.");
-      error.status = 503;
-      error.code = "media_cleanup_unavailable";
-      throw error;
-    }
-    await client.deleteFile(fileId);
-  }
+  imageCleanup: deleteAccountOwnedImageKitFile
 });
 
 app.use("/api/account", createAccountRouter({
@@ -674,6 +694,15 @@ app.use("/api/social", createSocialRouter({
   authenticate: requireFirebaseUser,
   authorizeAdmin: isLeaderboardAdmin,
   notifications: pushNotifications,
+  reportAlert: async (report) => {
+    const endpoint = String(process.env.SOCIAL_REPORT_ALERT_WEBHOOK_URL || "").trim();
+    if (!/^https:\/\//i.test(endpoint)) return;
+    await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: "social_report_received", reportId: report.reportId, targetType: report.targetType, reason: report.reason })
+    });
+  },
   rateLimiters: {
     search: rateLimiters.socialSearch,
     relationships: rateLimiters.socialRelationships,
@@ -716,6 +745,42 @@ app.get("/api/imagekit/upload-auth", async (req, res) => {
 
 function imageKitBasicAuth(privateKey) {
   return `Basic ${Buffer.from(`${privateKey}:`).toString("base64")}`;
+}
+
+// Account deletion may receive identifiers from client-writable historic
+// records. Provider metadata, not those records, is the ownership authority.
+// Unverifiable legacy media is deliberately retained for controlled cleanup.
+async function deleteAccountOwnedImageKitFile(uid, fileId) {
+  const config = imageKitConfig();
+  if (!config) {
+    const error = new Error("Account media cleanup is temporarily unavailable.");
+    error.status = 503;
+    error.code = "media_cleanup_unavailable";
+    throw error;
+  }
+  const headers = { Authorization: imageKitBasicAuth(config.privateKey) };
+  const details = await fetch(`https://api.imagekit.io/v1/files/${encodeURIComponent(fileId)}/details`, { headers });
+  if (details.status === 404) return { status: "already_absent" };
+  const metadata = await details.json().catch(() => ({}));
+  if (!details.ok) {
+    const error = new Error("Account media cleanup could not verify an asset.");
+    error.status = 503;
+    error.code = "media_verification_unavailable";
+    throw error;
+  }
+  const expectedRoot = `/fuelphysique/users/${uid}/`;
+  if (!String(metadata.filePath || "").startsWith(expectedRoot)) {
+    return { status: "legacy_unverified" };
+  }
+  const removed = await fetch(`https://api.imagekit.io/v1/files/${encodeURIComponent(fileId)}`, { method: "DELETE", headers });
+  if (removed.status === 404) return { status: "already_absent" };
+  if (!removed.ok) {
+    const error = new Error("Account media cleanup could not delete an owned asset.");
+    error.status = 503;
+    error.code = "media_delete_failed";
+    throw error;
+  }
+  return { status: "deleted" };
 }
 
 function signedImageKitUrl(sourceUrl, config, expiresInSeconds = 3600) {
@@ -1713,14 +1778,16 @@ async function getFoodImage(foodName) {
   if (foodImageCache.has(cacheKey)) {
     return foodImageCache.get(cacheKey);
   }
+  // FuelPhysique-owned artwork is always preferred and remains available
+  // without any third-party feature configuration.
+  const localImage = localFoodImages[cacheKey];
+  if (localImage) {
+    foodImageCache.set(cacheKey, localImage);
+    return localImage;
+  }
   if (process.env.THIRD_PARTY_SPOONACULAR_ENABLED !== "true" || !process.env.SPOONACULAR_API_KEY) {
     return "";
   }
-const localImage = localFoodImages[cacheKey];
-
-if (localImage) {
-  return localImage;
-}
   const url =
     "https://api.spoonacular.com/food/ingredients/search" +
     `?query=${encodeURIComponent(foodName)}` +
@@ -2556,7 +2623,7 @@ app.post("/api/workout-builder", async (req, res) => {
       selectedMuscles
     } = req.body;
 
-    const safety = assessSafety({ text: limitations, language });
+    const safety = assessSafety({ text: limitations, language, route: "workout" });
     if (!safety.allowed) return res.status(422).json({ error: safety.message, code: safety.code });
 
     if (
@@ -3728,7 +3795,7 @@ app.post("/api/nutrition-builder", async (req, res) => {
       language = "en"
     } = req.body;
 
-    const safety = assessSafety({ text: [allergies, additionalNotes, favoriteFoods, foodsToAvoid].join(" "), language });
+    const safety = assessSafety({ text: [allergies, additionalNotes, favoriteFoods, foodsToAvoid].join(" "), language, route: "nutrition" });
     if (!safety.allowed) return res.status(422).json({ error: safety.message, code: safety.code });
 
     if (

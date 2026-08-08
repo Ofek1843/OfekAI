@@ -60,6 +60,9 @@ test("artifact previews and copy actions are keyboard-accessible controls", () =
   assert.match(JS, /nutritionPreview/);
   assert.match(JS, /graphPreview/);
   assert.match(JS, /window\.addEventListener\("popstate"/);
+  assert.match(HTML, /id="reportArtifactButton"/);
+  assert.match(JS, /reportSocialContent\("artifact", event\.currentTarget\.dataset\.artifactId\)/);
+  assert.doesNotMatch(JS, /sent for review/i);
 });
 
 test("English and Hebrew social tables have matching keys", async () => {

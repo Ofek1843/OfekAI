@@ -76,7 +76,19 @@ const elements = {
     theme: document.getElementById("settingsTheme"),
     exportAccount: document.getElementById("exportAccountBtn"),
     deleteAccount: document.getElementById("deleteAccountBtn"),
-    accountActionStatus: document.getElementById("accountActionStatus")
+    accountTitle: document.getElementById("accountTitle"),
+    accountDescription: document.getElementById("accountDescription"),
+    deleteAccountTitle: document.getElementById("deleteAccountTitle"),
+    deleteAccountHint: document.getElementById("deleteAccountHint"),
+    accountActionStatus: document.getElementById("accountActionStatus"),
+    deleteDialog: document.getElementById("deleteAccountDialog"),
+    deleteForm: document.getElementById("deleteAccountForm"),
+    deleteConfirm: document.getElementById("deleteAccountConfirm"),
+    deletePassword: document.getElementById("deleteAccountPassword"),
+    deletePasswordLabel: document.getElementById("deleteAccountPasswordLabel"),
+    deleteDialogStatus: document.getElementById("deleteAccountDialogStatus"),
+    deleteDialogCancel: document.getElementById("deleteAccountCancel"),
+    deleteDialogConfirm: document.getElementById("deleteAccountConfirmButton")
 };
 
 const tabs = [
@@ -200,6 +212,44 @@ function setAccountStatus(message, type = "info") {
     elements.accountActionStatus.dataset.type = type;
 }
 
+function accountCopy() {
+    return settingsLanguage() === "he" ? {
+        title: "חשבון ופרטיות",
+        description: "אפשר להוריד את הנתונים שנשמרו עבור החשבון או למחוק את החשבון לצמיתות. המחיקה מסירה נתונים פרטיים, פרופיל חברתי, שיתופים, התקנות התראות וגישה לחשבון. לא ניתן לבטל אותה.",
+        export: "הורדת הנתונים שלי",
+        deleteTitle: "מחיקת חשבון",
+        deleteHint: "להגנתך תתבקשו להזדהות מחדש ולהקליד DELETE לפני שהחשבון יימחק לצמיתות.",
+        delete: "מחיקת החשבון לצמיתות",
+        preparing: "מכינים את הייצוא…",
+        downloaded: "ייצוא נתוני החשבון הורד.",
+        exportFailed: "לא ניתן להכין את ייצוא הנתונים.",
+        signInRequired: "יש להתחבר כדי למחוק את החשבון.",
+        deletionFailed: "לא ניתן למחוק את החשבון."
+    } : {
+        title: "Account & Privacy",
+        description: "Download the data held for your account, or permanently delete it. Deletion removes your private records, social profile, shares, notification installations and account access. It cannot be undone.",
+        export: "Download my data",
+        deleteTitle: "Delete account",
+        deleteHint: "For your protection, you will reauthenticate and type DELETE before the account is permanently removed.",
+        delete: "Delete my account permanently",
+        preparing: "Preparing your export…",
+        downloaded: "Your account export has downloaded.",
+        exportFailed: "Could not prepare your export.",
+        signInRequired: "You must be signed in to delete your account.",
+        deletionFailed: "Could not delete your account."
+    };
+}
+
+function localizeAccountSettings() {
+    const copy = accountCopy();
+    if (elements.accountTitle) elements.accountTitle.textContent = copy.title;
+    if (elements.accountDescription) elements.accountDescription.textContent = copy.description;
+    if (elements.exportAccount) elements.exportAccount.textContent = copy.export;
+    if (elements.deleteAccountTitle) elements.deleteAccountTitle.textContent = copy.deleteTitle;
+    if (elements.deleteAccountHint) elements.deleteAccountHint.textContent = copy.deleteHint;
+    if (elements.deleteAccount) elements.deleteAccount.textContent = copy.delete;
+}
+
 async function accountApi(path, options = {}) {
     const user = auth.currentUser || activeUser;
     if (!user) throw new Error("Authentication is required.");
@@ -221,8 +271,9 @@ async function accountApi(path, options = {}) {
 }
 
 async function exportAccount() {
+    const copy = accountCopy();
     try {
-        setAccountStatus("Preparing your export…");
+        setAccountStatus(copy.preparing);
         const response = await accountApi("/export");
         const blob = await response.blob();
         const href = URL.createObjectURL(blob);
@@ -231,17 +282,17 @@ async function exportAccount() {
         link.download = "fuelphysique-account-export.json";
         link.click();
         URL.revokeObjectURL(href);
-        setAccountStatus("Your account export has downloaded.", "success");
+        setAccountStatus(copy.downloaded, "success");
     } catch (error) {
-        setAccountStatus(error.message || "Could not prepare your export.", "error");
+        setAccountStatus(error.message || copy.exportFailed, "error");
     }
 }
 
 async function reauthenticateForDeletion(user) {
     const providers = user.providerData?.map((provider) => provider.providerId) || [];
     if (providers.includes("password")) {
-        const password = window.prompt("Enter your password to continue with account deletion.");
-        if (!password) throw new Error("Account deletion was cancelled.");
+        const password = elements.deletePassword?.value || "";
+        if (!password) throw new Error(settingsLanguage() === "he" ? "יש להזין את הסיסמה הנוכחית כדי להמשיך." : "Enter your current password to continue.");
         await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email || "", password));
         return;
     }
@@ -252,24 +303,57 @@ async function reauthenticateForDeletion(user) {
     throw new Error("Reauthentication is not available for this sign-in method. Contact support for help deleting your account.");
 }
 
+function deletionCopy() {
+    return settingsLanguage() === "he" ? {
+        title: "למחוק את החשבון לצמיתות?", description: "לא ניתן לבטל פעולה זו. הרשומות הפרטיות, הפרופיל החברתי, השיתופים, התקנות ההתראות והגישה לחשבון יוסרו.", confirmation: "הקלד/י DELETE לאישור", password: "סיסמה נוכחית", cancel: "ביטול", submit: "מחיקת החשבון", deleting: "מוחקים את החשבון ואת הנתונים הפרטיים…", reauth: "מאמתים מחדש…", wrongConfirmation: "יש להקליד DELETE כדי להמשיך."
+    } : {
+        title: "Permanently delete account?", description: "This cannot be undone. Your private records, social profile, shares, notification installations and account access will be removed.", confirmation: "Type DELETE to confirm", password: "Current password", cancel: "Cancel", submit: "Delete account", deleting: "Deleting your account and private data…", reauth: "Reauthenticating…", wrongConfirmation: "Type DELETE to continue."
+    };
+}
+
+function openDeleteAccountDialog() {
+    const user = auth.currentUser || activeUser;
+    if (!user) return setAccountStatus(accountCopy().signInRequired, "error");
+    const copy = deletionCopy();
+    const providers = user.providerData?.map((provider) => provider.providerId) || [];
+    elements.deleteDialog.querySelector("#deleteAccountDialogTitle").textContent = copy.title;
+    elements.deleteDialog.querySelector("#deleteAccountDialogDescription").textContent = copy.description;
+    elements.deleteDialog.querySelector("#deleteAccountConfirmLabel span").textContent = copy.confirmation;
+    elements.deleteDialog.querySelector("#deleteAccountPasswordLabel span").textContent = copy.password;
+    elements.deleteDialogCancel.textContent = copy.cancel;
+    elements.deleteDialogConfirm.textContent = copy.submit;
+    elements.deletePasswordLabel.hidden = !providers.includes("password");
+    elements.deleteConfirm.value = "";
+    elements.deletePassword.value = "";
+    elements.deleteDialogStatus.textContent = "";
+    elements.deleteDialog.showModal();
+    elements.deleteConfirm.focus();
+}
+
 async function deleteAccount() {
     const user = auth.currentUser || activeUser;
-    if (!user) return setAccountStatus("You must be signed in to delete your account.", "error");
-    const confirmation = window.prompt("This permanently deletes your account. Type DELETE to continue.");
-    if (confirmation !== "DELETE") return setAccountStatus("Account deletion was cancelled.");
+    const copy = deletionCopy();
+    if (!user) return;
+    if (elements.deleteConfirm.value.trim() !== "DELETE") {
+        elements.deleteDialogStatus.textContent = copy.wrongConfirmation;
+        elements.deleteConfirm.focus();
+        return;
+    }
     try {
+        elements.deleteDialogConfirm.disabled = true;
         elements.deleteAccount.disabled = true;
-        setAccountStatus("Reauthenticating…");
+        elements.deleteDialogStatus.textContent = copy.reauth;
         await reauthenticateForDeletion(user);
-        setAccountStatus("Deleting your account and private data…");
+        elements.deleteDialogStatus.textContent = copy.deleting;
         await accountApi("/", { method: "DELETE", body: JSON.stringify({ confirmation: "DELETE" }) });
         localStorage.removeItem(THEME_STORAGE_KEY);
         localStorage.removeItem("ofek-ai-language");
         await signOut(auth);
         window.location.replace("/auth.html?deleted=1");
     } catch (error) {
-        setAccountStatus(error.message || "Could not delete your account.", "error");
+        elements.deleteDialogStatus.textContent = error.message || "Could not delete your account.";
         elements.deleteAccount.disabled = false;
+        elements.deleteDialogConfirm.disabled = false;
     }
 }
 
@@ -814,6 +898,8 @@ function populateSettings(
         settings.theme || "system"
     );
 
+    localizeAccountSettings();
+
     updateDisplayedName(
         settings.displayName ||
             user?.displayName ||
@@ -1074,7 +1160,9 @@ function bindEvents() {
     );
 
     elements.exportAccount?.addEventListener("click", exportAccount);
-    elements.deleteAccount?.addEventListener("click", deleteAccount);
+    elements.deleteAccount?.addEventListener("click", openDeleteAccountDialog);
+    elements.deleteDialogCancel?.addEventListener("click", () => elements.deleteDialog.close());
+    elements.deleteForm?.addEventListener("submit", (event) => { event.preventDefault(); deleteAccount(); });
 
     elements.overlay?.addEventListener(
         "click",
@@ -1134,6 +1222,8 @@ function bindEvents() {
             );
         }
     );
+
+    elements.language?.addEventListener("change", localizeAccountSettings);
 
     elements.socialPhoto?.addEventListener("change", () => {
         const file = elements.socialPhoto.files?.[0];
