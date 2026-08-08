@@ -42,6 +42,7 @@ const elements = {
     socialPhotoFallback: document.getElementById("settingsSocialPhotoFallback"),
     socialDisplayName: document.getElementById("settingsSocialDisplayName"),
     socialUsername: document.getElementById("settingsSocialUsername"),
+    socialUsernameError: document.getElementById("settingsSocialUsernameError"),
     socialBio: document.getElementById("settingsSocialBio"),
     age: document.getElementById("settingsAge"),
     weight: document.getElementById("settingsWeight"),
@@ -90,6 +91,45 @@ function normalizeText(value) {
         : "";
 }
 
+function settingsLanguage() {
+    return elements.language?.value || loadedSettings.language || localStorage.getItem("ofek-ai-language") || "en";
+}
+
+function clearUsernameError() {
+    const input = elements.socialUsername;
+    const error = elements.socialUsernameError;
+    input?.removeAttribute("aria-invalid");
+    input?.removeAttribute("aria-describedby");
+    if (error) {
+        error.textContent = "";
+        error.hidden = true;
+    }
+}
+
+function usernameErrorCopy(error = {}) {
+    const hebrew = settingsLanguage() === "he";
+    if (error.code === "username_taken") {
+        return hebrew ? "שם המשתמש כבר תפוס.\nבחרו שם משתמש אחר." : "Username is already taken.\nChoose another username.";
+    }
+    if (error.code === "invalid_username") {
+        return hebrew ? "שם המשתמש חייב להכיל 3–20 אותיות, מספרים, קווים תחתונים או נקודות." : "Use 3–20 letters, numbers, underscores or periods for your username.";
+    }
+    if (error.code === "username_required") {
+        return hebrew ? "בחרו שם משתמש לפני שמירת הפרופיל." : "Choose a username before saving your profile.";
+    }
+    return hebrew ? "לא ניתן לאמת את שם המשתמש כרגע." : "This username could not be verified. Try another one.";
+}
+
+function setUsernameError(error) {
+    const input = elements.socialUsername;
+    const message = usernameErrorCopy(error);
+    if (!input || !elements.socialUsernameError) return;
+    input.setAttribute("aria-invalid", "true");
+    input.setAttribute("aria-describedby", elements.socialUsernameError.id);
+    elements.socialUsernameError.textContent = message;
+    elements.socialUsernameError.hidden = false;
+}
+
 function numberOrNull(value) {
     if (
         value === "" ||
@@ -136,7 +176,13 @@ async function socialApi(path, options = {}) {
         }
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error || "Could not save your Social profile.");
+    if (!response.ok) {
+        const error = new Error(data.error || "Could not save your Social profile.");
+        error.code = data.code || "social_profile_save_failed";
+        error.status = response.status;
+        error.details = data.details;
+        throw error;
+    }
     return data;
 }
 
@@ -192,6 +238,7 @@ async function saveSocialProfile(user) {
     const body = { username, displayName, bio: elements.socialBio?.value || "", photoURL };
     const data = await socialApi(loadedSocialProfile ? "/profile" : "/identity/username", { method: "PUT", body: JSON.stringify(body) });
     loadedSocialProfile = data.profile || loadedSocialProfile;
+    clearUsernameError();
     renderSocialPhoto(loadedSocialProfile || {}, user);
     return loadedSocialProfile;
 }
@@ -903,10 +950,16 @@ async function saveSettings() {
             error
         );
 
-        setStatus(
-            "Saving failed. Please try again.",
-            "error"
-        );
+        if (["username_taken", "invalid_username", "username_required", "username_state_conflict"].includes(error.code)) {
+            setUsernameError(error);
+            setStatus("", "info");
+            elements.socialUsername?.focus();
+        } else {
+            setStatus(
+                "Saving failed. Please try again.",
+                "error"
+            );
+        }
     } finally {
         setSavingState(false);
     }
@@ -1007,6 +1060,8 @@ function bindEvents() {
         }
         if (elements.socialPhotoFallback) elements.socialPhotoFallback.hidden = true;
     });
+
+    elements.socialUsername?.addEventListener("input", clearUsernameError);
 }
 
 applyStoredThemeImmediately();

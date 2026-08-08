@@ -107,3 +107,17 @@
   background:#59ad78;
   color:var(--fp-text-inverse);
 }
+
+.settings-field-error {
+  margin: -2px 0 0;
+  color: var(--fp-danger);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.settings-field input[aria-invalid="true"] {
+  border-color: var(--fp-danger);
+  box-shadow: 0 0 0 3px var(--fp-danger-soft);
+}
