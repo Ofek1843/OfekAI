@@ -170,6 +170,9 @@ button, input, select, textarea { font: inherit; }
   font-size: 14px; color: #9d8fc7; margin-bottom: 18px;
 }
 
+.legal-language-copy[hidden] { display: none; }
+.legal-language-copy[dir="rtl"] { text-align: right; }
+
 /* ── Mobile ── */
 @media (max-width: 600px) {
   .legal-nav-links { gap: 14px; }
