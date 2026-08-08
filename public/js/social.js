@@ -277,7 +277,7 @@ function renderMessages({ preserveScroll = false } = {}) {
     const content = message.type === "artifact" ? artifactCard(message) : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
     return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}">
       ${content}
-      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent && !message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : ""}</span>
+      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent && !message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : !message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">Report</button>` : ""}</span>
       ${failed ? `<span class="message-failed">${ui.sendFailed}<button type="button" data-action="retry-message" data-message-id="${escapeHtml(message.id)}">${ui.retry}</button></span>` : ""}
     </li>`;
   }).join("");
@@ -720,6 +720,9 @@ async function messageListAction(button) {
       renderMessages();
     } catch (error) { toast(error.message, true); }
   }
+  if (action === "report-message") {
+    return reportSocialContent("message", `${state.activeConversation.id}:${button.dataset.messageId}`);
+  }
   if (action === "retry-message") {
     const failed = state.failedMessages.get(button.dataset.messageId);
     state.messages = state.messages.filter((message) => message.id !== button.dataset.messageId);
@@ -764,6 +767,22 @@ function renderProfilePreview(profile) {
   action.disabled = pending;
   action.dataset.profileAction = friend ? "message" : "request";
   action.dataset.uid = profile.uid;
+  const report = $("#reportProfileButton");
+  report.hidden = profile.uid === state.user.uid;
+  report.dataset.uid = profile.uid;
+}
+
+async function reportSocialContent(targetType, targetId) {
+  const reason = window.prompt(language === "he"
+    ? "סיבת הדיווח: harassment, hate, sexual_content, self_harm, spam, impersonation, other"
+    : "Report reason: harassment, hate, sexual_content, self_harm, spam, impersonation, other");
+  if (!reason) return;
+  try {
+    const result = await api("/reports", { method: "POST", body: JSON.stringify({ targetType, targetId, reason: reason.trim() }) });
+    toast(result.duplicate ? (language === "he" ? "דיווח זה כבר נשלח." : "This report was already sent.") : (language === "he" ? "תודה. הדיווח נשלח לבדיקה." : "Thank you. Your report was sent for review."));
+  } catch (error) {
+    toast(error.message, true);
+  }
 }
 
 async function openProfilePreview(uid) {
@@ -848,6 +867,7 @@ function bindEvents() {
       catch (error) { toast(error.message, true); button.disabled = false; }
     }
   });
+  $("#reportProfileButton").addEventListener("click", (event) => reportSocialContent("user", event.currentTarget.dataset.uid));
   window.addEventListener("popstate", () => {
     stopArtifactSubscription();
     if ($("#previewDialog").open) $("#previewDialog").close();

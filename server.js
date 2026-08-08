@@ -18,6 +18,10 @@ const ImageKit = require("imagekit");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
 const { createSocialRouter } = require("./lib/social-router");
 const { createPushRouter } = require("./lib/push-router");
+const { createAccountRouter } = require("./lib/account-router");
+const { AccountService } = require("./lib/account-service");
+const { hasAcceptedCurrentTerms, publicLegalPolicy } = require("./lib/legal-policy");
+const { getFuelPhysiqueFirestore } = require("./lib/firebase-admin");
 const { FirestorePushStore } = require("./lib/push-store");
 const { PushNotificationService } = require("./lib/push-service");
 const { createDisabledPushTransport, createFirebasePushTransport } = require("./lib/push-transport");
@@ -78,6 +82,7 @@ const { BRAND_NAME, COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnal
 const { getPublicStats } = require("./lib/public-stats");
 const { getUsdToIlsRate } = require("./lib/fx-rate");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
+const { assessSafety } = require("./lib/health-safety");
 const {
   clientIp,
   createDeduper,
@@ -106,7 +111,9 @@ const rateLimiters = {
   socialRelationships: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_RELATIONSHIPS_PER_UID_PER_MINUTE || 12), keyPrefix: "social-relationship" }),
   socialMessages: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_MESSAGES_PER_UID_PER_MINUTE || 30), keyPrefix: "social-message" }),
   socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" }),
-  push: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUSH_API_PER_UID_PER_MINUTE || 30), keyPrefix: "push" })
+  socialReports: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_REPORTS_PER_UID_PER_MINUTE || 3), keyPrefix: "social-report" }),
+  push: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUSH_API_PER_UID_PER_MINUTE || 30), keyPrefix: "push" }),
+  account: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ACCOUNT_API_PER_UID_PER_MINUTE || 4), keyPrefix: "account" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
 const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
@@ -122,6 +129,32 @@ logOpenAiStartupDiagnostics();
 logPhotoStorageStartupDiagnostics();
 
 app.disable("x-powered-by");
+app.use((req, res, next) => {
+  // The application currently has vetted inline bootstrap scripts, so a nonce
+  // migration is tracked separately. Keep the rest of the policy explicit to
+  // prevent framing, plugin execution, and unexpected network origins.
+  res.setHeader("Content-Security-Policy", [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "script-src 'self' 'unsafe-inline' https://www.gstatic.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: blob: https://ik.imagekit.io https://lh3.googleusercontent.com https://img.spoonacular.com",
+    "connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.imagekit.io https://upload.imagekit.io",
+    "worker-src 'self' blob:",
+    "manifest-src 'self'"
+  ].join("; "));
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(self), geolocation=(), payment=()");
+  if (!localDemoMode && !/^(localhost|127\.0\.0\.1)$/i.test(req.hostname || "")) {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  next();
+});
 app.use((req, res, next) => {
   req.requestId = requestId();
   res.setHeader("X-Request-Id", req.requestId);
@@ -210,6 +243,11 @@ app.get("/health", (req, res) => {
   res.json({ ok: true, buildId: BUILD_ID, uptime: Math.round(process.uptime()), now: new Date().toISOString() });
 });
 
+app.get("/api/legal/policy", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json(publicLegalPolicy());
+});
+
 app.post("/api/analytics/event", (req, res) => {
   try {
     rateLimiters.analytics(req, clientIp(req));
@@ -221,13 +259,11 @@ app.post("/api/analytics/event", (req, res) => {
     }
     telemetry.recordAnalytics(sanitized.event, {
       path: sanitized.path,
-      userAgent: req.headers["user-agent"] || "",
-      ip: clientIp(req),
       type: sanitized.properties?.type || ""
     });
 
     console.log(
-      `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"} ip=${clientIp(req)}`
+      `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"}`
     );
 
     return res.status(204).end();
@@ -252,9 +288,9 @@ app.post("/api/site-feedback", (req, res) => {
 
     const severity = /crash|down|broken|cannot log in|can't log in|failed|urgent|critical/i.test(message) ? "high" : "medium";
     telemetry.maybeAlert(
-      `feedback:${severity}:${clientIp(req)}`,
+      `feedback:${severity}`,
       `${severity === "high" ? "Critical" : "New"} user feedback`,
-      `${message.slice(0, 300)}`
+      `A ${severity}-severity feedback report was received. Review it only in the approved support system.`
     );
 
     res.status(201).json({ ok: true });
@@ -362,6 +398,12 @@ FUELPHYSIQUE PRODUCT KNOWLEDGE:
 `.trim();
 
 app.get("/api/exercise-demo", async (req, res) => {
+  // ExerciseDB/AscendAPI media is prototype-only until its production licence
+  // and attribution terms are approved. Never make the external request by
+  // default merely because a keyless endpoint happens to be reachable.
+  if (process.env.THIRD_PARTY_EXERCISE_MEDIA_ENABLED !== "true") {
+    return res.status(404).json({ error: "Verified third-party exercise demonstrations are not enabled." });
+  }
   const name = String(req.query.name || "").trim().slice(0, 100);
   if (name.length < 2) return res.status(400).json({ error: "Exercise name is required." });
   const normalizeExerciseName = value => String(value || "")
@@ -551,6 +593,7 @@ function rejectIfDuplicateAi(req, res, user, scope) {
 }
 
 async function requireFirebaseUser(req, res) {
+  const options = arguments[2] || {};
   const token = req.headers.authorization?.match(/^Bearer\s+(.+)$/i)?.[1];
   if (!token) {
     res.status(401).json({ error: "Authentication is required." });
@@ -563,7 +606,7 @@ async function requireFirebaseUser(req, res) {
   // and offline. A bearer token is still required — only the network call
   // to Firebase Identity Toolkit is skipped. Never true outside test/CI.
   if (mockExternalServices) {
-    return { uid: `mock-${token.slice(0, 24)}`, email: "mock-user@example.test" };
+    return { uid: `mock-${token.slice(0, 24)}`, email: "mock-user@example.test", authTime: Math.floor(Date.now() / 1000) };
   }
 
   try {
@@ -581,7 +624,18 @@ async function requireFirebaseUser(req, res) {
     const uid = data?.users?.[0]?.localId;
     const email = data?.users?.[0]?.email || "";
     if (!response.ok || !uid) throw new Error("Invalid Firebase token");
-    return { uid, email };
+    let authTime = 0;
+    try {
+      authTime = Number(JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString("utf8")).auth_time || 0);
+    } catch { /* The token was verified remotely; a missing auth_time is handled as reauthentication required. */ }
+    if (!options.skipTermsGate) {
+      const profile = await getFuelPhysiqueFirestore().doc(`users/${uid}`).get();
+      if (!hasAcceptedCurrentTerms(profile.exists ? profile.data() : {})) {
+        res.status(403).json({ error: "Please accept the current Terms and Privacy Notice to continue.", code: "TERMS_ACCEPTANCE_REQUIRED" });
+        return null;
+      }
+    }
+    return { uid, email, authTime };
   } catch (error) {
     console.error("Firebase token verification failed:", error.message);
     res.status(401).json({ error: "Your session is invalid or expired." });
@@ -596,6 +650,25 @@ const pushNotifications = new PushNotificationService({
   store: new FirestorePushStore(),
   transport: pushTransport
 });
+const accountService = new AccountService({
+  pushService: pushNotifications,
+  imageCleanup: async (_uid, fileId) => {
+    const client = imageKitClient();
+    if (!client) {
+      const error = new Error("Account media cleanup is temporarily unavailable.");
+      error.status = 503;
+      error.code = "media_cleanup_unavailable";
+      throw error;
+    }
+    await client.deleteFile(fileId);
+  }
+});
+
+app.use("/api/account", createAccountRouter({
+  authenticate: requireFirebaseUser,
+  service: accountService,
+  rateLimit: rateLimiters.account
+}));
 
 app.use("/api/social", createSocialRouter({
   authenticate: requireFirebaseUser,
@@ -605,7 +678,8 @@ app.use("/api/social", createSocialRouter({
     search: rateLimiters.socialSearch,
     relationships: rateLimiters.socialRelationships,
     messages: rateLimiters.socialMessages,
-    artifacts: rateLimiters.socialArtifacts
+    artifacts: rateLimiters.socialArtifacts,
+    reports: rateLimiters.socialReports
   }
 }));
 
@@ -1383,6 +1457,7 @@ function extractJsonObject(text) {
 }
 
 async function generateMealImage(platingDescription) {
+  if (process.env.THIRD_PARTY_IMAGE_GENERATION_ENABLED !== "true") return null;
   if (!platingDescription) return null;
   try {
     const response = await fetch(
@@ -1638,7 +1713,7 @@ async function getFoodImage(foodName) {
   if (foodImageCache.has(cacheKey)) {
     return foodImageCache.get(cacheKey);
   }
-  if (!process.env.SPOONACULAR_API_KEY) {
+  if (process.env.THIRD_PARTY_SPOONACULAR_ENABLED !== "true" || !process.env.SPOONACULAR_API_KEY) {
     return "";
   }
 const localImage = localFoodImages[cacheKey];
@@ -2480,6 +2555,9 @@ app.post("/api/workout-builder", async (req, res) => {
       muscleFocusMode,
       selectedMuscles
     } = req.body;
+
+    const safety = assessSafety({ text: limitations, language });
+    if (!safety.allowed) return res.status(422).json({ error: safety.message, code: safety.code });
 
     if (
       !goal ||
@@ -3627,7 +3705,6 @@ app.get("/api/nutrition/manual/meals/:mealId", async (req, res) => {
 });
 
 app.post("/api/nutrition-builder", async (req, res) => {
-  console.log("Nutrition Builder endpoint reached");
   try {
     const user = await requireFirebaseUser(req, res);
     if (!user) return;
@@ -3650,6 +3727,9 @@ app.post("/api/nutrition-builder", async (req, res) => {
       additionalNotes = "No additional notes",
       language = "en"
     } = req.body;
+
+    const safety = assessSafety({ text: [allergies, additionalNotes, favoriteFoods, foodsToAvoid].join(" "), language });
+    if (!safety.allowed) return res.status(422).json({ error: safety.message, code: safety.code });
 
     if (
       !goal ||

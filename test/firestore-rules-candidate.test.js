@@ -107,11 +107,13 @@ test("the candidate indexes contain exactly the two required friend-request comp
   assert.match(INDEXES.review.composites[1].requirement, /strictly required/);
 });
 
-test("the deployable Firestore files exactly preserve the audited candidate", () => {
-  assert.equal(
-    withoutComments(FINAL_RULES).replace(/\s+/g, " ").trim(),
-    withoutComments(RULES).replace(/\s+/g, " ").trim()
-  );
+test("the deployable Firestore files retain the reviewed social scope and lock server-owned root fields", () => {
+  assert.match(FINAL_RULES, /function permittedUserRootKeys\(\)/);
+  assert.match(FINAL_RULES, /request\.resource\.data\.keys\(\)\.hasOnly\(permittedUserRootKeys\(\)\)/);
+  assert.match(FINAL_RULES, /affectedKeys\(\)\.hasOnly\(permittedUserRootKeys\(\)\)/);
+  assert.match(FINAL_RULES, /match \/users\/\{userId\}[\s\S]*?allow delete: if false/);
+  assert.match(FINAL_RULES, /match \/socialProfiles\/\{uid\}[\s\S]*?allow list, create, update, delete: if false/);
+  assert.doesNotMatch(FINAL_RULES, /allow read, update, delete: if isSelf\(userId\)/);
   assert.deepEqual(FINAL_INDEXES, {
     indexes: INDEXES.indexes,
     fieldOverrides: []

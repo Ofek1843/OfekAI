@@ -9,7 +9,12 @@ import {
 
 import {
     onAuthStateChanged,
-    updateProfile
+    updateProfile,
+    EmailAuthProvider,
+    GoogleAuthProvider,
+    reauthenticateWithCredential,
+    reauthenticateWithPopup,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
@@ -68,7 +73,10 @@ const elements = {
     ),
 
     language: document.getElementById("settingsLanguage"),
-    theme: document.getElementById("settingsTheme")
+    theme: document.getElementById("settingsTheme"),
+    exportAccount: document.getElementById("exportAccountBtn"),
+    deleteAccount: document.getElementById("deleteAccountBtn"),
+    accountActionStatus: document.getElementById("accountActionStatus")
 };
 
 const tabs = [
@@ -184,6 +192,85 @@ async function socialApi(path, options = {}) {
         throw error;
     }
     return data;
+}
+
+function setAccountStatus(message, type = "info") {
+    if (!elements.accountActionStatus) return;
+    elements.accountActionStatus.textContent = message;
+    elements.accountActionStatus.dataset.type = type;
+}
+
+async function accountApi(path, options = {}) {
+    const user = auth.currentUser || activeUser;
+    if (!user) throw new Error("Authentication is required.");
+    const response = await fetch(`/api/account${path}`, {
+        ...options,
+        headers: {
+            Authorization: `Bearer ${await user.getIdToken(true)}`,
+            ...(options.body ? { "Content-Type": "application/json" } : {}),
+            ...(options.headers || {})
+        }
+    });
+    if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        const error = new Error(body.error || "Could not complete the account request.");
+        error.code = body.code || "account_request_failed";
+        throw error;
+    }
+    return response;
+}
+
+async function exportAccount() {
+    try {
+        setAccountStatus("Preparing your export…");
+        const response = await accountApi("/export");
+        const blob = await response.blob();
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = href;
+        link.download = "fuelphysique-account-export.json";
+        link.click();
+        URL.revokeObjectURL(href);
+        setAccountStatus("Your account export has downloaded.", "success");
+    } catch (error) {
+        setAccountStatus(error.message || "Could not prepare your export.", "error");
+    }
+}
+
+async function reauthenticateForDeletion(user) {
+    const providers = user.providerData?.map((provider) => provider.providerId) || [];
+    if (providers.includes("password")) {
+        const password = window.prompt("Enter your password to continue with account deletion.");
+        if (!password) throw new Error("Account deletion was cancelled.");
+        await reauthenticateWithCredential(user, EmailAuthProvider.credential(user.email || "", password));
+        return;
+    }
+    if (providers.includes("google.com")) {
+        await reauthenticateWithPopup(user, new GoogleAuthProvider());
+        return;
+    }
+    throw new Error("Reauthentication is not available for this sign-in method. Contact support for help deleting your account.");
+}
+
+async function deleteAccount() {
+    const user = auth.currentUser || activeUser;
+    if (!user) return setAccountStatus("You must be signed in to delete your account.", "error");
+    const confirmation = window.prompt("This permanently deletes your account. Type DELETE to continue.");
+    if (confirmation !== "DELETE") return setAccountStatus("Account deletion was cancelled.");
+    try {
+        elements.deleteAccount.disabled = true;
+        setAccountStatus("Reauthenticating…");
+        await reauthenticateForDeletion(user);
+        setAccountStatus("Deleting your account and private data…");
+        await accountApi("/", { method: "DELETE", body: JSON.stringify({ confirmation: "DELETE" }) });
+        localStorage.removeItem(THEME_STORAGE_KEY);
+        localStorage.removeItem("ofek-ai-language");
+        await signOut(auth);
+        window.location.replace("/auth.html?deleted=1");
+    } catch (error) {
+        setAccountStatus(error.message || "Could not delete your account.", "error");
+        elements.deleteAccount.disabled = false;
+    }
 }
 
 function renderSocialPhoto(profile = {}, user = activeUser) {
@@ -985,6 +1072,9 @@ function bindEvents() {
         "click",
         saveSettings
     );
+
+    elements.exportAccount?.addEventListener("click", exportAccount);
+    elements.deleteAccount?.addEventListener("click", deleteAccount);
 
     elements.overlay?.addEventListener(
         "click",

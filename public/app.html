@@ -1102,6 +1102,8 @@ html[data-theme="light"] .coach-back-link {
 
 <button id="notificationsTab" class="settings-tab" type="button" data-page="notificationsSettings">Notifications</button>
 
+<button id="accountTab" class="settings-tab" type="button" data-page="accountSettings">Account &amp; Privacy</button>
+
 <button id="appearanceTab" class="settings-tab" type="button" data-page="appearanceSettings">Appearance</button>
         </nav>
       </aside>
@@ -1501,6 +1503,20 @@ html[data-theme="light"] .coach-back-link {
     <button id="pushEnableDevice" class="push-settings-secondary" type="button" disabled>Enable on this device</button>
     <button id="pushSavePreferences" class="push-settings-primary" type="button">Save notification preferences</button>
     <button id="pushTestDevice" class="push-settings-secondary" type="button" hidden>Send test to this device</button>
+  </div>
+</section>
+
+<section id="accountSettings" class="settings-page" aria-labelledby="accountTitle">
+  <h3 id="accountTitle">Account &amp; Privacy</h3>
+  <p class="settings-description">Download the data held for your account, or permanently delete it. Deletion removes your private records, social profile, shares, notification installations and account access. It cannot be undone.</p>
+  <div class="push-settings-actions">
+    <button id="exportAccountBtn" class="push-settings-secondary" type="button">Download my data</button>
+  </div>
+  <div class="settings-danger-zone" role="group" aria-labelledby="deleteAccountTitle">
+    <h4 id="deleteAccountTitle">Delete account</h4>
+    <p>For your protection, you will reauthenticate and type DELETE before the account is permanently removed.</p>
+    <button id="deleteAccountBtn" class="cancel-settings" type="button">Delete my account permanently</button>
+    <p id="accountActionStatus" class="settings-description" role="status" aria-live="polite"></p>
   </div>
 </section>
 

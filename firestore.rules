@@ -30,6 +30,14 @@ service cloud.firestore {
       ];
     }
 
+    function permittedUserRootKeys() {
+      return [
+        'email', 'displayName', 'photoURL', 'authProviders', 'createdAt', 'updatedAt',
+        'termsAccepted', 'termsVersion', 'termsAcceptedAt', 'privacyVersion',
+        'privacyAcceptedAt', 'activeWorkoutPlanId', 'activeNutritionPlanId'
+      ];
+    }
+
     function conversationDataIsValid(data, conversationId) {
       return data.status == 'active'
         && data.participantKey == conversationId
@@ -56,8 +64,16 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow create: if isSelf(userId);
-      allow read, update, delete: if isSelf(userId);
+      // Subscription, role, entitlement and audit fields are server-owned.
+      // A signed-in client may maintain only the small public/account routing
+      // surface required by the app. Account deletion is server-authoritative
+      // so it can clean associated social, media and notification records.
+      allow create: if isSelf(userId)
+        && request.resource.data.keys().hasOnly(permittedUserRootKeys());
+      allow read: if isSelf(userId);
+      allow update: if isSelf(userId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(permittedUserRootKeys());
+      allow delete: if false;
     }
 
     match /users/{userId}/{legacyCollection}/{document=**} {
@@ -84,21 +100,9 @@ service cloud.firestore {
     match /socialProfiles/{uid} {
       allow get: if isSelf(uid)
         || (signedIn() && resource.data.discoverable == true);
-      allow update: if isSelf(uid)
-        && request.resource.data.uid == resource.data.uid
-        && request.resource.data.username == resource.data.username
-        && request.resource.data.usernameLower == resource.data.usernameLower
-        && request.resource.data.publicRole == resource.data.publicRole
-        && request.resource.data.badges == resource.data.badges
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'displayName', 'bio', 'photoURL', 'discoverable', 'allowFriendRequests', 'updatedAt'
-        ])
-        && request.resource.data.displayName is string
-        && request.resource.data.displayName.size() <= 80
-        && request.resource.data.bio is string
-        && request.resource.data.bio.size() <= 160
-        && validPublicProfilePhoto(request.resource.data);
-      allow list, create, delete: if false;
+      // Social profile writes go through the authenticated server route so
+      // username reservations, abuse controls and audit policy stay atomic.
+      allow list, create, update, delete: if false;
     }
 
     match /friendRequests/{requestId} {

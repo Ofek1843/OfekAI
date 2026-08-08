@@ -51,10 +51,9 @@ test("Social profile responses and settings expose only public profile fields", 
   assert.doesNotMatch(SOCIAL, /profile\.email|profile\.weight|profile\.nutrition/);
 });
 
-test("profile rules protect username identity and trusted badges from client edits", () => {
-  assert.match(RULES, /request\.resource\.data\.username == resource\.data\.username/);
-  assert.match(RULES, /request\.resource\.data\.badges == resource\.data\.badges/);
-  assert.match(RULES, /affectedKeys\(\)\.hasOnly\([\s\S]*displayName[\s\S]*bio[\s\S]*photoURL/);
-  assert.match(RULES, /validPublicProfilePhoto/);
-  assert.match(RULES, /allow list, create, delete: if false/);
+test("profile rules reserve every social-profile mutation for the trusted server", () => {
+  assert.match(RULES, /match \/socialProfiles\/\{uid\}[\s\S]*?allow list, create, update, delete: if false/);
+  assert.doesNotMatch(RULES, /allow update: if isSelf\(uid\)/);
+  assert.match(ROUTER, /router\.put\("\/profile"/);
+  assert.match(STORE, /async function updatePublicProfile/);
 });

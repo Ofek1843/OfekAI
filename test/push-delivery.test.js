@@ -4,6 +4,7 @@ const { getApps } = require("firebase-admin/app");
 const { PushNotificationService } = require("../lib/push-service");
 const { FirestorePushStore } = require("../lib/push-store");
 const { hashIdentifier } = require("../lib/push-domain");
+const { DEFAULT_PREFERENCES, normalizePreferences } = require("../lib/push-domain");
 
 class FakePushStore {
   constructor() {
@@ -44,6 +45,12 @@ test("constructing the push store does not initialize Firebase Admin before firs
   const store = new FirestorePushStore();
   assert.equal(getApps().length, before);
   assert.equal(store._db, null);
+});
+
+test("new push preferences keep message previews off while explicit stored opt-in remains on", () => {
+  assert.equal(DEFAULT_PREFERENCES.showMessagePreviews, false);
+  assert.equal(normalizePreferences({}).showMessagePreviews, false);
+  assert.equal(normalizePreferences({}, { showMessagePreviews: true }).showMessagePreviews, true);
 });
 
 test("disabled push does not initialize or read the notification store after Social commits", async () => {

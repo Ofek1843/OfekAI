@@ -145,6 +145,9 @@ test("legacy owner access is preserved and cross-user access is denied", async (
   await assertSucceeds(setDoc(doc(owner, "users/alice/workoutPlans/new-plan"), { name: "new" }));
   await assertFails(setDoc(doc(other, "users/alice/workoutPlans/forged"), { name: "forged" }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { displayName: "Alice updated" }));
+  await assertSucceeds(updateDoc(doc(owner, "users/alice"), { activeNutritionPlanId: "nutrition-a" }));
+  await assertFails(updateDoc(doc(owner, "users/alice"), { subscription: { planId: "pro", status: "active" } }));
+  await assertFails(deleteDoc(doc(owner, "users/alice")));
   await assertFails(getDoc(doc(other, "users/alice")));
 });
 
@@ -184,11 +187,11 @@ test("social reads are authenticated and participant/owner scoped", async () => 
   await assertFails(getDoc(doc(b, "sharedArtifacts/artifact-revoked")));
 });
 
-test("profile updates are self-only and cannot change username, badges or arbitrary fields", async () => {
+test("social profile mutations are server-only", async () => {
   await seed();
   const a = alice();
   const b = bob();
-  await assertSucceeds(updateDoc(doc(a, "socialProfiles/alice"), {
+  await assertFails(updateDoc(doc(a, "socialProfiles/alice"), {
     displayName: "Alice Updated",
     bio: "Strong and steady",
     photoURL: "https://lh3.googleusercontent.com/a/profile"

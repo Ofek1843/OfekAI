@@ -17,7 +17,7 @@
 // Kept identical to the value auth.js has always written for
 // email/password signups so existing accepted users are not re-prompted by
 // the introduction of Google sign-in.
-export const TERMS_VERSION = "2026-07-21";
+export const TERMS_VERSION = "2026-08-08";
 
 // Only these deep-link destinations may be requested via ?next=. Anything
 // else (including absolute URLs, protocol-relative "//evil.com" and path
@@ -154,7 +154,9 @@ export function buildUserDocumentMerge({
   if (acceptedTermsVersion) {
     payload.termsAccepted = true;
     payload.termsVersion = acceptedTermsVersion;
+    payload.privacyVersion = acceptedTermsVersion;
     if (now) payload.termsAcceptedAt = now;
+    if (now) payload.privacyAcceptedAt = now;
   }
 
   return payload;
