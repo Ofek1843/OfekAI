@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v6';
+const CACHE_NAME = 'fuelphysique-v7';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -39,6 +39,7 @@ const urlsToCache = [
   '/css/social.css',
   '/js/social.js',
   '/js/social-core.mjs',
+  '/js/voice-message-client.mjs',
   '/css/push-notifications.css',
   '/js/push-notifications.js',
   '/js/push-client-core.mjs'
@@ -108,6 +109,12 @@ self.addEventListener('fetch', event => {
   }
 
   const requestPath = new URL(event.request.url).pathname;
+
+  // Voice playback URLs are private, short-lived capabilities. Never persist
+  // audio responses or signed ImageKit URLs in Cache Storage.
+  if (event.request.destination === 'audio' || event.request.url.includes('imagekit.io')) {
+    return;
+  }
 
   // Authenticated APIs and SSE must never be persisted in Cache Storage.
   // This includes /api/social/* and the typing stream beneath it.

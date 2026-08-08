@@ -21,6 +21,7 @@ import {
   socialStrings,
   timestampMs
 } from "./social-core.mjs";
+import { VoicePlaybackManager, VoiceRecorderController, formatVoiceDuration } from "./voice-message-client.mjs";
 
 const $ = (selector) => document.querySelector(selector);
 let language = "en";
@@ -44,8 +45,16 @@ const state = {
   activeArtifact: null,
   unsubscribeArtifact: null,
   copiedArtifacts: new Map(),
-  failedMessages: new Map()
+  failedMessages: new Map(),
+  voiceDraft: null,
+  voiceClientId: null,
+  voiceLimits: { enabled: true, maxDurationMs: 120_000, maxBytes: 10 * 1024 * 1024 }
 };
+
+const voiceRecorder = new VoiceRecorderController({ onState: handleVoiceRecorderState });
+const voicePlayback = new VoicePlaybackManager({
+  fetchPlayback: (conversationId, messageId) => api(`/conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/voice/playback`)
+});
 
 document.documentElement.lang = language;
 document.documentElement.dir = language === "he" ? "rtl" : "ltr";
@@ -63,7 +72,9 @@ function applyTranslations() {
     chatFindFriendsButton: "findFriends", messageLabel: "message", loadOlderButton: "loadOlder", shareDialogEyebrow: "shareSafely",
     shareDialogTitle: "shareWithFriend", shareDialogText: "shareText", shareConversationLabel: "conversation",
     shareSourceLabel: "chooseItem", privacyLegend: "weightPrivacy", privacyTotal: "privacyTotal", privacyPercent: "privacyPercent",
-    privacyTrend: "privacyTrend", privacyExact: "privacyExact", confirmShareButton: "shareWithFriend"
+    privacyTrend: "privacyTrend", privacyExact: "privacyExact", confirmShareButton: "shareWithFriend",
+    voiceRecordingLabel: "recording", voiceStopButton: "stopRecording", voiceCancelButton: "cancelRecording",
+    voiceSendButton: "sendVoice", voiceRecordAgainButton: "recordAgain", voiceDeletePreviewButton: "deleteRecording"
   };
   for (const [id, key] of Object.entries(labels)) if ($(`#${id}`)) $(`#${id}`).textContent = ui[key];
   const messagesTab = $("#messagesTab");
@@ -73,6 +84,7 @@ function applyTranslations() {
   }
   $("#userSearchInput").placeholder = ui.searchPlaceholder;
   $("#messageInput").placeholder = ui.messagePlaceholder;
+  $("#voiceRecordButton").setAttribute("aria-label", ui.recordVoice);
 }
 
 async function loadSavedLanguage() {
@@ -112,6 +124,151 @@ async function api(path, options = {}) {
     throw error;
   }
   return data;
+}
+
+function revokeVoiceDraftUrl() {
+  if (state.voiceDraft?.objectUrl) URL.revokeObjectURL(state.voiceDraft.objectUrl);
+}
+
+function updateComposerAvailability({ recording = false } = {}) {
+  const readOnly = !state.activeConversation || state.activeConversation.status !== "active";
+  $("#messageInput").disabled = readOnly || recording;
+  $("#sendButton").disabled = readOnly || recording;
+  $("#shareMenuButton").disabled = readOnly || recording;
+  $("#voiceRecordButton").disabled = readOnly || recording || !voiceRecorder.supported || !state.voiceLimits.enabled;
+}
+
+function clearVoiceDraft({ hide = true, removeFailed = true } = {}) {
+  const clientId = state.voiceDraft?.clientId;
+  revokeVoiceDraftUrl();
+  state.voiceDraft = null;
+  state.voiceClientId = null;
+  const audio = $("#voicePreviewAudio");
+  audio.pause();
+  audio.removeAttribute("src");
+  audio.load();
+  $("#voicePreviewState").hidden = true;
+  $("#voiceRecordingState").hidden = true;
+  $("#voiceUploadStatus").textContent = "";
+  if (hide) $("#voiceComposer").hidden = true;
+  updateComposerAvailability();
+  if (removeFailed && clientId) {
+    for (const [id, failed] of state.failedMessages) {
+      if (failed?.kind === "voice" && failed.clientId === clientId) {
+        state.failedMessages.delete(id);
+        state.messages = state.messages.filter((message) => message.id !== id);
+      }
+    }
+  }
+}
+
+function purgeFailedVoiceDrafts() {
+  for (const [id, failed] of state.failedMessages) {
+    if (failed?.kind === "voice") {
+      state.failedMessages.delete(id);
+      state.messages = state.messages.filter((message) => message.id !== id);
+    }
+  }
+}
+
+function handleVoiceRecorderState(update) {
+  if (update.state === "error") {
+    toast(ui.voiceRecordingFailed, true);
+    return;
+  }
+  if (update.state === "recording" || update.state === "stopping") {
+    updateComposerAvailability({ recording: true });
+    $("#voiceComposer").hidden = false;
+    $("#voiceRecordingState").hidden = false;
+    $("#voicePreviewState").hidden = true;
+    $("#voiceRecordingTimer").textContent = formatVoiceDuration(update.elapsedMs || 0);
+    return;
+  }
+  if (update.state === "preview" && update.blob) {
+    updateComposerAvailability();
+    if (update.durationMs < 250 || update.blob.size === 0) {
+      clearVoiceDraft();
+      toast(ui.voiceTooShort, true);
+      return;
+    }
+    revokeVoiceDraftUrl();
+    const objectUrl = URL.createObjectURL(update.blob);
+    state.voiceDraft = { blob: update.blob, durationMs: update.durationMs, mimeType: update.mimeType, clientId: state.voiceClientId, objectUrl };
+    $("#voiceComposer").hidden = false;
+    $("#voiceRecordingState").hidden = true;
+    $("#voicePreviewState").hidden = false;
+    $("#voicePreviewAudio").src = objectUrl;
+    if (update.reason === "limit") toast(ui.voiceLimit);
+    if (update.reason === "background") toast(ui.voiceInterrupted);
+    return;
+  }
+  if (update.state === "idle") clearVoiceDraft();
+}
+
+async function startVoiceRecording() {
+  if (!state.activeConversation || state.activeConversation.status !== "active") return;
+  clearVoiceDraft();
+  state.voiceClientId = safeClientId();
+  try {
+    await voiceRecorder.start();
+  } catch (error) {
+    clearVoiceDraft();
+    const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+    toast(denied ? ui.microphoneDenied : ui.voiceUnsupported, true);
+  }
+}
+
+async function uploadVoiceMessage(draft = state.voiceDraft, optimisticId = null) {
+  if (!draft?.blob || !state.activeConversation || state.activeConversation.status !== "active") return;
+  if (draft.blob.size > state.voiceLimits.maxBytes) {
+    toast(ui.voiceTooLarge, true);
+    return;
+  }
+  const conversationId = state.activeConversation.id;
+  const clientId = draft.clientId || safeClientId();
+  const pendingId = optimisticId || `sending_${clientId}`;
+  const optimistic = {
+    id: pendingId,
+    senderUid: state.user.uid,
+    type: "voice",
+    voice: { durationMs: draft.durationMs, mimeType: draft.mimeType, sizeBytes: draft.blob.size },
+    createdAt: new Date().toISOString(),
+    status: "sending",
+    clientId
+  };
+  state.messages = mergeMessages(state.messages.filter((message) => message.id !== pendingId), [optimistic]);
+  renderMessages();
+  $("#voiceSendButton").disabled = true;
+  $("#voiceUploadStatus").textContent = ui.voiceUploading;
+  try {
+    const token = await state.user.getIdToken();
+    const response = await fetch(`/api/social/conversations/${encodeURIComponent(conversationId)}/voice-messages`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": draft.mimeType,
+        "X-Voice-Client-Id": clientId,
+        "X-Voice-Duration-Ms": String(Math.round(draft.durationMs))
+      },
+      body: draft.blob
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw Object.assign(new Error(data.error || ui.voiceUploadFailed), { code: data.code, status: response.status });
+    state.messages = state.messages.filter((message) => message.id !== pendingId);
+    if (data.message) state.messages = mergeMessages(state.messages, [data.message]);
+    state.failedMessages.delete(pendingId);
+    if (state.voiceDraft?.clientId === clientId) clearVoiceDraft();
+    renderMessages();
+    await loadConversations();
+  } catch (error) {
+    optimistic.status = "failed";
+    state.failedMessages.set(pendingId, { kind: "voice", ...draft, clientId });
+    state.messages = mergeMessages(state.messages.filter((message) => message.id !== pendingId), [optimistic]);
+    $("#voiceUploadStatus").textContent = error.message || ui.voiceUploadFailed;
+    renderMessages();
+  } finally {
+    $("#voiceSendButton").disabled = false;
+  }
 }
 
 function avatar(profile = {}, large = false) {
@@ -250,6 +407,12 @@ function startRealtimeSubscriptions() {
 
 function setView(view) {
   const messages = view === "messages";
+  if (!messages) {
+    void voiceRecorder.cancel();
+    clearVoiceDraft();
+    purgeFailedVoiceDrafts();
+    voicePlayback.stop();
+  }
   $("#friendsView").hidden = messages;
   $("#messagesView").hidden = !messages;
   $("#friendsTab").classList.toggle("is-active", !messages);
@@ -268,6 +431,33 @@ function artifactCard(message) {
   </article>`;
 }
 
+function voiceMessageBubble(message) {
+  if (message.deletedAt || message.voice?.unavailable) return `<div class="message-bubble voice-unavailable"><em>${escapeHtml(ui.voiceUnavailable)}</em></div>`;
+  const durationMs = Number(message.voice?.durationMs || 0);
+  const durationSeconds = Math.max(1, Math.round(durationMs / 1000));
+  return `<div class="message-bubble voice-message" data-voice-message-id="${escapeHtml(message.id)}">
+    <button class="voice-play-button" type="button" data-action="toggle-voice" data-message-id="${escapeHtml(message.id)}" aria-label="${escapeHtml(ui.playVoice)}"><span aria-hidden="true">▶</span></button>
+    <input class="voice-seek" type="range" min="0" max="${durationSeconds}" step="0.1" value="0" data-voice-seek="${escapeHtml(message.id)}" aria-label="${escapeHtml(ui.voiceMessage)}">
+    <span class="voice-time"><span data-voice-current>0:00</span> / <span data-voice-duration>${formatVoiceDuration(durationMs)}</span></span>
+  </div>`;
+}
+
+function updateVoicePlayer(messageId, update) {
+  const row = [...document.querySelectorAll("[data-voice-message-id]")].find((element) => element.dataset.voiceMessageId === messageId);
+  if (!row) return;
+  const button = row.querySelector(".voice-play-button");
+  const range = row.querySelector(".voice-seek");
+  const current = row.querySelector("[data-voice-current]");
+  const duration = row.querySelector("[data-voice-duration]");
+  button.querySelector("span").textContent = update.playing ? "❚❚" : "▶";
+  button.setAttribute("aria-label", update.playing ? ui.pauseVoice : ui.playVoice);
+  if (Number(update.duration) > 0) range.max = String(update.duration);
+  range.value = String(Math.min(Number(range.max), Number(update.currentTime || 0)));
+  current.textContent = formatVoiceDuration(Number(update.currentTime || 0) * 1000);
+  if (Number(update.duration) > 0) duration.textContent = formatVoiceDuration(update.duration * 1000);
+  if (update.error) toast(ui.voicePlaybackFailed, true);
+}
+
 function renderMessages({ preserveScroll = false } = {}) {
   const scroller = $("#messageScroller");
   const nearBottom = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 140;
@@ -275,11 +465,13 @@ function renderMessages({ preserveScroll = false } = {}) {
   $("#messageList").innerHTML = state.messages.map((message) => {
     const sent = message.senderUid === state.user.uid;
     const failed = message.status === "failed";
-    const content = message.type === "artifact" ? artifactCard(message) : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
+    const content = message.type === "artifact" ? artifactCard(message)
+      : message.type === "voice" ? voiceMessageBubble(message)
+        : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
     return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}">
       ${content}
-      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent && !message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : !message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">Report</button>` : ""}</span>
-      ${failed ? `<span class="message-failed">${ui.sendFailed}<button type="button" data-action="retry-message" data-message-id="${escapeHtml(message.id)}">${ui.retry}</button></span>` : ""}
+      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent ? (!message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : "") : (!message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">Report</button>` : "")}</span>
+      ${failed ? `<span class="message-failed">${message.type === "voice" ? ui.voiceUploadFailed : ui.sendFailed}<button type="button" data-action="retry-message" data-message-id="${escapeHtml(message.id)}">${ui.retry}</button></span>` : ""}
     </li>`;
   }).join("");
   $("#loadOlderButton").hidden = !state.nextCursor;
@@ -370,6 +562,10 @@ function subscribeToActiveConversation() {
 }
 
 async function openConversation(conversationOrId) {
+  await voiceRecorder.cancel();
+  clearVoiceDraft();
+  purgeFailedVoiceDrafts();
+  voicePlayback.stop();
   stopTypingChannel();
   state.unsubscribe?.();
   state.unsubscribe = null;
@@ -390,6 +586,8 @@ async function openConversation(conversationOrId) {
   const readOnly = conversation.status !== "active";
   $("#messageInput").disabled = readOnly;
   $("#sendButton").disabled = readOnly;
+  $("#voiceRecordButton").disabled = readOnly || !voiceRecorder.supported || !state.voiceLimits.enabled;
+  $("#shareMenuButton").disabled = readOnly;
   $("#messageInput").placeholder = readOnly
     ? (language === "he" ? "השיחה זמינה לקריאה בלבד" : "This conversation is read-only")
     : ui.messagePlaceholder;
@@ -724,6 +922,18 @@ async function copyArtifact(artifactId = state.activeArtifact?.id) {
 
 async function messageListAction(button) {
   const action = button.dataset.action;
+  if (action === "toggle-voice") {
+    try {
+      await voicePlayback.play({
+        conversationId: state.activeConversation.id,
+        messageId: button.dataset.messageId,
+        onUpdate: (update) => updateVoicePlayer(button.dataset.messageId, update)
+      });
+    } catch (error) {
+      toast(error.message || ui.voicePlaybackFailed, true);
+    }
+    return;
+  }
   if (action === "preview-artifact") return previewArtifact(button.dataset.artifactId);
   if (action === "copy-artifact") {
     await previewArtifact(button.dataset.artifactId);
@@ -733,7 +943,12 @@ async function messageListAction(button) {
     try {
       await api(`/conversations/${encodeURIComponent(state.activeConversation.id)}/messages/${encodeURIComponent(button.dataset.messageId)}`, { method: "DELETE" });
       const message = state.messages.find((item) => item.id === button.dataset.messageId);
-      if (message) { message.deletedAt = new Date().toISOString(); message.text = ""; }
+      if (message) {
+        message.deletedAt = new Date().toISOString();
+        message.text = "";
+        if (message.type === "voice") message.voice = { ...(message.voice || {}), assetId: undefined, unavailable: true };
+      }
+      voicePlayback.stop();
       renderMessages();
     } catch (error) { toast(error.message, true); }
   }
@@ -745,7 +960,8 @@ async function messageListAction(button) {
     state.messages = state.messages.filter((message) => message.id !== button.dataset.messageId);
     state.failedMessages.delete(button.dataset.messageId);
     renderMessages();
-    if (failed) await sendMessage(null, failed.text);
+    if (failed?.kind === "voice") await uploadVoiceMessage(failed, button.dataset.messageId);
+    else if (failed) await sendMessage(null, failed.text);
   }
 }
 
@@ -829,6 +1045,12 @@ function bindEvents() {
   $("#newConversationButton").addEventListener("click", () => { setView("friends"); $("#userSearchInput").focus(); });
   $("#chatFindFriendsButton").addEventListener("click", () => setView("friends"));
   $("#messageForm").addEventListener("submit", sendMessage);
+  $("#voiceRecordButton").addEventListener("click", startVoiceRecording);
+  $("#voiceStopButton").addEventListener("click", () => voiceRecorder.stop("member"));
+  $("#voiceCancelButton").addEventListener("click", () => voiceRecorder.cancel());
+  $("#voiceSendButton").addEventListener("click", () => uploadVoiceMessage());
+  $("#voiceRecordAgainButton").addEventListener("click", async () => { clearVoiceDraft(); await startVoiceRecording(); });
+  $("#voiceDeletePreviewButton").addEventListener("click", clearVoiceDraft);
   $("#messageInput").addEventListener("input", () => {
     updateComposer();
     sendTypingState(Boolean($("#messageInput").value.trim()));
@@ -840,6 +1062,10 @@ function bindEvents() {
   $("#messageList").addEventListener("click", (event) => {
     const button = event.target.closest("button[data-action]");
     if (button) messageListAction(button);
+  });
+  $("#messageList").addEventListener("input", (event) => {
+    const range = event.target.closest("[data-voice-seek]");
+    if (range) voicePlayback.seek(range.dataset.voiceSeek, range.value);
   });
   $("#shareMenuButton").addEventListener("click", () => {
     const menu = $("#shareMenu");
@@ -862,7 +1088,13 @@ function bindEvents() {
     else $("#previewDialog").close();
   });
   $("#copyArtifactButton").addEventListener("click", () => copyArtifact());
-  $("#mobileConversationBack").addEventListener("click", () => $("#socialApp").classList.add("show-conversations"));
+  $("#mobileConversationBack").addEventListener("click", () => {
+    void voiceRecorder.cancel();
+    clearVoiceDraft();
+    purgeFailedVoiceDrafts();
+    voicePlayback.stop();
+    $("#socialApp").classList.add("show-conversations");
+  });
   $("#chatFriendMenu").addEventListener("click", async () => {
     const targetUid = state.activeConversation?.profile?.uid;
     if (!targetUid || !window.confirm(language === "he" ? "לחסום את המשתמש?" : "Block this user and stop new messages?")) return;
@@ -893,6 +1125,10 @@ function bindEvents() {
 }
 
 function cleanupSocial() {
+  void voiceRecorder.dispose();
+  clearVoiceDraft();
+  purgeFailedVoiceDrafts();
+  voicePlayback.stop();
   stopTypingChannel();
   state.unsubscribe?.();
   state.unsubscribe = null;
@@ -904,6 +1140,19 @@ async function initialize(currentUser) {
   state.user = currentUser;
   try {
     await loadSavedLanguage();
+    try {
+      const publicVoiceConfig = await api("/voice-config");
+      state.voiceLimits = {
+        enabled: publicVoiceConfig.enabled === true,
+        maxDurationMs: Number(publicVoiceConfig.maxDurationMs || 120_000),
+        maxBytes: Number(publicVoiceConfig.maxBytes || 10 * 1024 * 1024)
+      };
+    } catch {
+      // During a rolling deploy an older server may briefly serve the new
+      // static bundle. Keep text Social available and feature-gate voice.
+      state.voiceLimits.enabled = false;
+    }
+    voiceRecorder.maxDurationMs = state.voiceLimits.maxDurationMs;
     const data = await api("/identity");
     state.profile = data.profile;
     if (!state.profile) {
@@ -946,6 +1195,11 @@ async function initialize(currentUser) {
 applyTranslations();
 bindEvents();
 guardProtectedPage({ onAuthenticated: initialize, onSignedOut: cleanupSocial });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden" && voiceRecorder.recorder?.state === "recording") {
+    void voiceRecorder.stop("background");
+  }
+});
 window.addEventListener("beforeunload", () => {
   cleanupSocial();
 });

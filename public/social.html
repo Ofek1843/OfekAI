@@ -128,10 +128,24 @@
               <button type="button" data-share-type="weight_progress">Weight progress</button>
               <button type="button" data-share-type="progress_graph">Progress graph</button>
             </div>
+            <button id="voiceRecordButton" class="composer-tool voice-record-button" type="button" aria-label="Record voice message"><span aria-hidden="true">🎙️</span></button>
             <label class="sr-only" for="messageInput" id="messageLabel">Message</label>
-            <textarea id="messageInput" rows="1" maxlength="2000" placeholder="Write a message" required></textarea>
+            <textarea id="messageInput" rows="1" maxlength="2000" placeholder="Write a message"></textarea>
             <span id="messageCounter" class="message-counter">0/2000</span>
             <button id="sendButton" class="send-button" type="submit" aria-label="Send message"><span aria-hidden="true">➤</span></button>
+            <section id="voiceComposer" class="voice-composer" hidden aria-live="polite">
+              <div id="voiceRecordingState" class="voice-recording-state" hidden>
+                <span class="recording-dot" aria-hidden="true"></span><strong id="voiceRecordingLabel">Recording</strong><time id="voiceRecordingTimer">0:00</time>
+                <button id="voiceStopButton" type="button">Stop</button><button id="voiceCancelButton" type="button">Cancel</button>
+              </div>
+              <div id="voicePreviewState" class="voice-preview-state" hidden>
+                <audio id="voicePreviewAudio" controls preload="metadata"></audio>
+                <button id="voiceSendButton" class="primary-button" type="button">Send voice message</button>
+                <button id="voiceRecordAgainButton" type="button">Record again</button>
+                <button id="voiceDeletePreviewButton" type="button">Delete</button>
+                <p id="voiceUploadStatus" role="status"></p>
+              </div>
+            </section>
           </form>
         </div>
       </section>

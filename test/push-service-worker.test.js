@@ -33,7 +33,7 @@ function eventWithWait(extra = {}) {
 }
 
 test("existing install/activate/fetch architecture remains and cache version advances", () => {
-  assert.match(SOURCE, /CACHE_NAME = 'fuelphysique-v6'/);
+  assert.match(SOURCE, /CACHE_NAME = 'fuelphysique-v7'/);
   assert.match(SOURCE, /addEventListener\('install'/);
   assert.match(SOURCE, /addEventListener\('activate'/);
   assert.match(SOURCE, /addEventListener\('fetch'/);
