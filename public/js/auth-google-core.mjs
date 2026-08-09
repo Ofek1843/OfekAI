@@ -198,6 +198,7 @@ const ERROR_MESSAGES = {
     "auth/invalid-credential": "The email or password is incorrect.",
     "auth/too-many-requests": "Too many attempts. Please wait and try again.",
     "auth/network-request-failed": "Network error. Check your internet connection.",
+    "auth/internal-error": "Google sign-in could not finish. Please try again.",
     "auth/popup-closed-by-user": "Sign-in was cancelled. You can try again whenever you're ready.",
     "auth/cancelled-popup-request": "Sign-in was cancelled. You can try again whenever you're ready.",
     "auth/user-cancelled": "Sign-in was cancelled. You can try again whenever you're ready.",
@@ -216,6 +217,7 @@ const ERROR_MESSAGES = {
     "auth/invalid-credential": "האימייל או הסיסמה שגויים.",
     "auth/too-many-requests": "יותר מדי ניסיונות. יש להמתין ולנסות שוב.",
     "auth/network-request-failed": "שגיאת רשת. יש לבדוק את חיבור האינטרנט.",
+    "auth/internal-error": "לא ניתן היה להשלים את ההתחברות עם Google. יש לנסות שוב.",
     "auth/popup-closed-by-user": "ההתחברות בוטלה. אפשר לנסות שוב בכל רגע.",
     "auth/cancelled-popup-request": "ההתחברות בוטלה. אפשר לנסות שוב בכל רגע.",
     "auth/user-cancelled": "ההתחברות בוטלה. אפשר לנסות שוב בכל רגע.",
@@ -311,3 +313,79 @@ export const GOOGLE_OAUTH_SCOPES = Object.freeze([]);
 // full-page signInWithRedirect round trip (the query string is lost when the
 // provider navigates back).
 export const REDIRECT_NEXT_STORAGE_KEY = "fp-auth-redirect-next";
+
+// Diagnostics are deliberately a bounded, data-free record. auth.js emits
+// them only on loopback hosts, allowing development and tests to distinguish
+// credential failures from post-login initialization without ever logging a
+// Firebase User object, OAuth credential, token, email, or raw exception.
+export const GOOGLE_AUTH_STAGES = Object.freeze([
+  "persistence",
+  "popup",
+  "redirect_start",
+  "redirect_result",
+  "credential_completion",
+  "profile_load",
+  "terms_check",
+  "profile_merge",
+  "return_redirect"
+]);
+
+export function buildGoogleAuthDiagnostic({ stage, errorCode, userPresent } = {}) {
+  return {
+    stage: GOOGLE_AUTH_STAGES.includes(stage) ? stage : "unknown",
+    errorCode: typeof errorCode === "string" && errorCode.length <= 120
+      ? errorCode
+      : "unknown",
+    userPresent: userPresent === true
+  };
+}
+
+export function isPostLoginGoogleStage(stage) {
+  return ["profile_load", "terms_check", "profile_merge", "return_redirect"].includes(stage);
+}
+
+// Executes only the post-credential profile decision. Firebase popup/redirect
+// transport stays in auth.js, while this deterministic boundary lets tests
+// prove that profile I/O cannot retroactively turn a valid credential into an
+// authentication failure.
+export async function completeGoogleProfileBootstrap({
+  loadProfile,
+  mergeProfile,
+  currentTermsVersion = TERMS_VERSION,
+  onStage = () => {}
+} = {}) {
+  let existingProfile = null;
+  let profileLoadError = null;
+
+  onStage("profile_load");
+  try {
+    existingProfile = await loadProfile();
+  } catch (error) {
+    profileLoadError = error;
+  }
+
+  onStage("terms_check");
+  if (needsTermsAcceptance(existingProfile, currentTermsVersion)) {
+    return {
+      status: "terms_required",
+      existingProfile,
+      profileLoadError,
+      profileMergeError: null
+    };
+  }
+
+  let profileMergeError = null;
+  onStage("profile_merge");
+  try {
+    await mergeProfile(existingProfile);
+  } catch (error) {
+    profileMergeError = error;
+  }
+
+  return {
+    status: "complete",
+    existingProfile,
+    profileLoadError,
+    profileMergeError
+  };
+}

@@ -17,6 +17,7 @@ const crypto = require("crypto");
 const ImageKit = require("imagekit");
 const { FieldValue } = require("firebase-admin/firestore");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
+const { getFrameAncestorsDirective } = require("./lib/security-headers");
 const { createSocialRouter } = require("./lib/social-router");
 const { createPushRouter } = require("./lib/push-router");
 const { createAccountRouter } = require("./lib/account-router");
@@ -157,14 +158,18 @@ const configuredImageKitOrigin = (() => {
 app.use((req, res, next) => {
   // The application currently has vetted inline bootstrap scripts, so a nonce
   // migration is tracked separately. Keep the rest of the policy explicit to
-  // prevent framing, plugin execution, and unexpected network origins.
+  // prevent framing, plugin execution, and unexpected network origins. The
+  // Firebase popup/redirect resolver is the sole framing exception: its
+  // /__/auth/iframe helper must be embeddable by this same origin for the
+  // credential to return from Google. It remains unavailable to every other
+  // ancestor and every normal FuelPhysique page remains entirely unframeable.
   res.setHeader("Content-Security-Policy", [
     "default-src 'self'",
     "base-uri 'self'",
     "object-src 'none'",
-    "frame-ancestors 'none'",
+    getFrameAncestorsDirective(req.path, AUTH_PROXY_PATH),
     "form-action 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.gstatic.com",
+    "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: blob: https://ik.imagekit.io https://lh3.googleusercontent.com https://img.spoonacular.com",

@@ -30,7 +30,10 @@ import {
   buildUserDocumentMerge,
   getFriendlyAuthError,
   isUserCancelledAuth,
-  getAuthStrings
+  getAuthStrings,
+  buildGoogleAuthDiagnostic,
+  isPostLoginGoogleStage,
+  completeGoogleProfileBootstrap
 } from "./auth-google-core.mjs";
 
 import {
@@ -127,6 +130,35 @@ let pendingGoogleCredential = null;
 // The authenticated-but-not-yet-cleared user held between showing the terms
 // gate and the user accepting it.
 let pendingProfile = null;
+let googleAuthStage = "redirect_result";
+const localAuthDiagnosticsEnabled = ["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+function setGoogleAuthStage(stage) {
+  googleAuthStage = stage;
+}
+
+function reportGoogleAuthDiagnostic(error, user = auth.currentUser) {
+  const diagnostic = buildGoogleAuthDiagnostic({
+    stage: googleAuthStage,
+    errorCode: error?.code,
+    userPresent: Boolean(user?.uid)
+  });
+
+  if (localAuthDiagnosticsEnabled) {
+    console.debug("Google authentication diagnostic:", diagnostic);
+    return diagnostic;
+  }
+
+  // Production deliberately receives only the stable classification. Never
+  // log the raw Firebase error, credential, token, user object or provider
+  // response in a browser console.
+  console.error(
+    isPostLoginGoogleStage(diagnostic.stage)
+      ? "Google post-login initialization failed."
+      : "Google authentication failed."
+  );
+  return diagnostic;
+}
 
 trackPageView({ page: "auth" });
 
@@ -314,36 +346,48 @@ function redirectToProduct() {
 // can never blank out a value this provider didn't supply.
 async function finalizeGoogleUser(user, { isNewLink = false } = {}) {
   const profileRef = doc(db, "users", user.uid);
-  let existingProfile = null;
+  const completion = await completeGoogleProfileBootstrap({
+    loadProfile: async () => {
+      const snapshot = await getDoc(profileRef);
+      return snapshot.exists() ? snapshot.data() : null;
+    },
+    mergeProfile: (existingProfile) => setDoc(profileRef, buildUserDocumentMerge({
+      authUser: user,
+      existingProfile,
+      providerId: GoogleAuthProvider.PROVIDER_ID,
+      acceptedTermsVersion: null,
+      now: serverTimestamp()
+    }), { merge: true }),
+    currentTermsVersion: TERMS_VERSION,
+    onStage: setGoogleAuthStage
+  });
+  const { existingProfile } = completion;
 
-  try {
-    const snapshot = await getDoc(profileRef);
-    if (snapshot.exists()) existingProfile = snapshot.data();
-  } catch (error) {
-    console.error("Could not read the user profile:", error);
-    // Fall through with existingProfile = null: the terms gate will be shown.
+  if (completion.profileLoadError) {
     // Prompting once more is the safe failure mode; silently granting access
-    // without a recorded acceptance is not.
+    // without a recorded acceptance is not. Local diagnostics preserve the
+    // stage and Firebase code without leaking the raw exception in production.
+    reportGoogleAuthDiagnostic(completion.profileLoadError, user);
   }
 
-  if (needsTermsAcceptance(existingProfile, TERMS_VERSION)) {
+  if (completion.status === "terms_required") {
     pendingProfile = { user, existingProfile, isNewLink, providerId: GoogleAuthProvider.PROVIDER_ID };
     openPanel(termsGatePanel);
     showPanelMessage(termsGateMessage, "", "");
     return;
   }
 
-  await setDoc(profileRef, buildUserDocumentMerge({
-    authUser: user,
-    existingProfile,
-    providerId: GoogleAuthProvider.PROVIDER_ID,
-    acceptedTermsVersion: null,
-    now: serverTimestamp()
-  }), { merge: true });
+  if (completion.profileMergeError) {
+    // Authentication and current Terms acceptance already succeeded. Provider
+    // metadata enrichment is best-effort and must not turn a valid Google
+    // credential into a false authentication failure.
+    reportGoogleAuthDiagnostic(completion.profileMergeError, user);
+  }
 
   authenticationCompleted = true;
   trackEvent("login", { method: "google" });
   showMessage(strings.signingIn, "success");
+  setGoogleAuthStage("return_redirect");
   redirectToProduct();
 }
 
@@ -363,6 +407,7 @@ async function startGoogleSignIn() {
   provider.setCustomParameters({ prompt: "select_account" });
 
   try {
+    setGoogleAuthStage("persistence");
     await setPersistence(
       auth,
       rememberMeInput?.checked
@@ -379,11 +424,14 @@ async function startGoogleSignIn() {
       // Persist the destination before navigating away — the query string
       // does not survive the provider round trip.
       if (requestedNext) safeSessionSet(REDIRECT_NEXT_STORAGE_KEY, requestedNext);
+      setGoogleAuthStage("redirect_start");
       await signInWithRedirect(auth, provider);
       return; // The page navigates; getRedirectResult picks it up on return.
     }
 
+    setGoogleAuthStage("popup");
     const result = await signInWithPopup(auth, provider);
+    setGoogleAuthStage("credential_completion");
     await finalizeGoogleUser(result.user);
   } catch (error) {
     handleGoogleError(error);
@@ -407,7 +455,7 @@ function isPanelOpen() {
 }
 
 function handleGoogleError(error) {
-  console.error("Google authentication error:", error);
+  reportGoogleAuthDiagnostic(error);
 
   if (error?.code === "auth/account-exists-with-different-credential") {
     startAccountLinking(error);
@@ -530,14 +578,21 @@ async function submitTermsAcceptance() {
 
     // The server is authoritative for legal acceptance. This client merge is
     // limited to ordinary profile metadata and deliberately omits every legal
-    // field, preserving the server timestamp and accepted version.
-    await setDoc(doc(db, "users", user.uid), buildUserDocumentMerge({
-      authUser: user,
-      existingProfile,
-      providerId,
-      acceptedTermsVersion: null,
-      now: serverTimestamp()
-    }), { merge: true });
+    // field, preserving the server timestamp and accepted version. Once the
+    // server confirms acceptance, optional provider metadata must not strand
+    // the authenticated user on the gate.
+    setGoogleAuthStage("profile_merge");
+    try {
+      await setDoc(doc(db, "users", user.uid), buildUserDocumentMerge({
+        authUser: user,
+        existingProfile,
+        providerId,
+        acceptedTermsVersion: null,
+        now: serverTimestamp()
+      }), { merge: true });
+    } catch (error) {
+      reportGoogleAuthDiagnostic(error, user);
+    }
 
     authenticationCompleted = true;
     pendingProfile = null;
@@ -826,9 +881,11 @@ async function bootstrap() {
   applyLocalizedLabels();
 
   try {
+    setGoogleAuthStage("redirect_result");
     const result = await getRedirectResult(auth);
     if (result?.user) {
       googleFlowInProgress = true;
+      setGoogleAuthStage("credential_completion");
       await finalizeGoogleUser(result.user);
       // finalizeGoogleUser either redirected or opened the terms gate; in
       // both cases the auth-state guard must not also act.
