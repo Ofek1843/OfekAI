@@ -21,7 +21,7 @@ import {
   socialStrings,
   timestampMs
 } from "./social-core.mjs";
-import { VoicePlaybackManager, VoiceRecorderController, formatVoiceDuration } from "./voice-message-client.mjs";
+import { VOICE_RECORDER_ERRORS, VoicePlaybackManager, VoiceRecorderController, formatVoiceDuration } from "./voice-message-client.mjs";
 
 const $ = (selector) => document.querySelector(selector);
 let language = "en";
@@ -151,6 +151,7 @@ function clearVoiceDraft({ hide = true, removeFailed = true } = {}) {
   $("#voiceRecordingState").hidden = true;
   $("#voiceUploadStatus").textContent = "";
   if (hide) $("#voiceComposer").hidden = true;
+  document.body.classList.remove("voice-composer-active");
   updateComposerAvailability();
   if (removeFailed && clientId) {
     for (const [id, failed] of state.failedMessages) {
@@ -173,18 +174,26 @@ function purgeFailedVoiceDrafts() {
 
 function handleVoiceRecorderState(update) {
   if (update.state === "error") {
-    toast(ui.voiceRecordingFailed, true);
+    clearVoiceDraft();
+    toast(update.errorCode === VOICE_RECORDER_ERRORS.EMPTY ? ui.voiceTooShort : ui.voiceRecordingFailed, true);
     return;
   }
-  if (update.state === "recording" || update.state === "stopping") {
+  if (["requesting_mic", "initializing_recorder", "recording", "stopping"].includes(update.state)) {
+    document.body.classList.add("voice-composer-active");
     updateComposerAvailability({ recording: true });
     $("#voiceComposer").hidden = false;
     $("#voiceRecordingState").hidden = false;
     $("#voicePreviewState").hidden = true;
+    $("#voiceRecordingLabel").textContent = update.state === "requesting_mic" ? ui.requestingMicrophone
+      : update.state === "initializing_recorder" ? ui.initializingRecorder
+        : update.state === "stopping" ? ui.stoppingRecording : ui.recording;
+    $("#voiceRecordingState .recording-dot").hidden = update.state !== "recording";
+    $("#voiceStopButton").disabled = update.state !== "recording";
     $("#voiceRecordingTimer").textContent = formatVoiceDuration(update.elapsedMs || 0);
     return;
   }
   if (update.state === "preview" && update.blob) {
+    document.body.classList.add("voice-composer-active");
     updateComposerAvailability();
     if (update.durationMs < 250 || update.blob.size === 0) {
       clearVoiceDraft();
@@ -213,8 +222,12 @@ async function startVoiceRecording() {
     await voiceRecorder.start();
   } catch (error) {
     clearVoiceDraft();
-    const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
-    toast(denied ? ui.microphoneDenied : ui.voiceUnsupported, true);
+    if (error?.code === VOICE_RECORDER_ERRORS.CANCELLED) return;
+    const message = error?.code === VOICE_RECORDER_ERRORS.PERMISSION_DENIED ? ui.microphoneDenied
+      : error?.code === VOICE_RECORDER_ERRORS.UNSUPPORTED ? ui.voiceUnsupported
+        : error?.code === VOICE_RECORDER_ERRORS.START_FAILED ? ui.recorderStartFailed
+          : ui.voiceRecordingFailed;
+    toast(message, true);
   }
 }
 
