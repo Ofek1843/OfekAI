@@ -30,7 +30,11 @@ const {
   getFriendlyAuthError,
   isUserCancelledAuth,
   getAuthStrings,
-  AUTH_UI_STRINGS
+  AUTH_UI_STRINGS,
+  GOOGLE_AUTH_STAGES,
+  buildGoogleAuthDiagnostic,
+  isPostLoginGoogleStage,
+  completeGoogleProfileBootstrap
 } = require("../public/js/auth-google-core.mjs");
 
 const ROOT = path.join(__dirname, "..");
@@ -114,6 +118,74 @@ test("auth.js chooses popup vs redirect from the shared helper and detects stand
   assert.match(AUTH_JS, /shouldUseRedirect\(\s*\{[\s\S]*?userAgent:\s*window\.navigator\.userAgent/);
   assert.match(AUTH_JS, /display-mode:\s*standalone/);
   assert.match(AUTH_JS, /navigator\.standalone/, "iOS Safari's legacy standalone flag must also be honored");
+});
+
+test("local diagnostics classify the exact stage without retaining sensitive objects", () => {
+  const diagnostic = buildGoogleAuthDiagnostic({
+    stage: "profile_merge",
+    errorCode: "permission-denied",
+    userPresent: true,
+    email: "must-not-appear@example.test",
+    token: "must-not-appear"
+  });
+
+  assert.deepEqual(diagnostic, {
+    stage: "profile_merge",
+    errorCode: "permission-denied",
+    userPresent: true
+  });
+  assert.equal(isPostLoginGoogleStage(diagnostic.stage), true);
+  assert.equal(isPostLoginGoogleStage("popup"), false);
+  assert.equal(GOOGLE_AUTH_STAGES.includes("redirect_result"), true);
+});
+
+test("malformed diagnostics are bounded and cannot leak raw values", () => {
+  assert.deepEqual(buildGoogleAuthDiagnostic({
+    stage: "made-up-stage",
+    errorCode: "x".repeat(121),
+    userPresent: "yes"
+  }), {
+    stage: "unknown",
+    errorCode: "unknown",
+    userPresent: false
+  });
+});
+
+test("a current-Terms Google credential completes even when optional profile enrichment fails", async () => {
+  const profileError = Object.assign(new Error("rules unavailable"), { code: "permission-denied" });
+  const stages = [];
+  const result = await completeGoogleProfileBootstrap({
+    loadProfile: async () => ({ termsAccepted: true, termsVersion: TERMS_VERSION }),
+    mergeProfile: async () => { throw profileError; },
+    onStage: stage => stages.push(stage)
+  });
+
+  assert.equal(result.status, "complete");
+  assert.equal(result.profileMergeError, profileError);
+  assert.deepEqual(stages, ["profile_load", "terms_check", "profile_merge"]);
+});
+
+test("stale, missing and new Google profiles enter Terms acceptance without a profile merge", async () => {
+  for (const profile of [null, {}, { termsAccepted: true, termsVersion: "old" }]) {
+    let mergeCalls = 0;
+    const result = await completeGoogleProfileBootstrap({
+      loadProfile: async () => profile,
+      mergeProfile: async () => { mergeCalls += 1; }
+    });
+    assert.equal(result.status, "terms_required");
+    assert.equal(mergeCalls, 0);
+  }
+});
+
+test("a profile read failure after Google authentication becomes a safe Terms gate, not auth failure", async () => {
+  const profileError = Object.assign(new Error("offline"), { code: "unavailable" });
+  const result = await completeGoogleProfileBootstrap({
+    loadProfile: async () => { throw profileError; },
+    mergeProfile: async () => assert.fail("must not merge without a confirmed profile")
+  });
+
+  assert.equal(result.status, "terms_required");
+  assert.equal(result.profileLoadError, profileError);
 });
 
 // --- 2. UI ---------------------------------------------------------------
@@ -275,6 +347,7 @@ test("every friendly error is human copy in both locales — never a raw Firebas
     "auth/invalid-email", "auth/missing-password", "auth/weak-password",
     "auth/email-already-in-use", "auth/invalid-credential", "auth/too-many-requests",
     "auth/network-request-failed", "auth/popup-closed-by-user", "auth/popup-blocked",
+    "auth/internal-error",
     "auth/account-exists-with-different-credential", "auth/credential-already-in-use",
     "auth/operation-not-allowed", "auth/unauthorized-domain", "auth/some-code-we-never-mapped"
   ];
@@ -286,6 +359,14 @@ test("every friendly error is human copy in both locales — never a raw Firebas
       assert.doesNotMatch(message, /auth\//, `${lang}/${code} must not leak the raw error code`);
     }
   }
+});
+
+test("the Firebase resolver's internal completion failure has specific friendly copy", () => {
+  const english = getFriendlyAuthError("auth/internal-error", "en");
+  assert.match(english, /Google sign-in/i);
+  assert.match(english, /finish/i);
+  assert.doesNotMatch(english, /^Authentication failed/i);
+  assert.match(getFriendlyAuthError("auth/internal-error", "he"), /[א-ת]/);
 });
 
 // --- 3. Terms and health disclaimer --------------------------------------
@@ -313,11 +394,11 @@ test("Google sign-up cannot bypass the terms gate: the gate is shown INSTEAD of 
   assert.match(AUTH_HTML, /id="termsGateAccepted"/);
   assert.match(AUTH_HTML, /href="\/terms\.html"/, "the gate must link to the actual terms");
 
-  // finalizeGoogleUser must return early (open the gate) before it can write
-  // a non-accepting profile or redirect.
+  // finalizeGoogleUser must honor the tested profile-completion decision and
+  // return early (open the gate) before redirecting.
   const finalize = AUTH_JS.match(/async function finalizeGoogleUser\([\s\S]*?\n\}/);
   assert.ok(finalize, "expected a finalizeGoogleUser function");
-  const gateIndex = finalize[0].indexOf("needsTermsAcceptance");
+  const gateIndex = finalize[0].indexOf('completion.status === "terms_required"');
   const redirectIndex = finalize[0].indexOf("redirectToProduct");
   assert.ok(gateIndex !== -1 && redirectIndex !== -1);
   assert.ok(gateIndex < redirectIndex, "the terms check must run before any redirect into the product");
@@ -609,6 +690,32 @@ test("redirect loops are prevented: the auth-state guard cannot bounce a user ou
     redirectResultIndex < guardIndex,
     "the redirect result must be resolved before the auth-state guard is registered"
   );
+});
+
+test("a null redirect result waits for auth state and is never classified as failure", () => {
+  const bootstrap = AUTH_JS.match(/async function bootstrap\(\)[\s\S]*?\n\}/);
+  assert.ok(bootstrap, "expected bootstrap");
+  assert.match(bootstrap[0], /if \(result\?\.user\)/);
+  assert.doesNotMatch(bootstrap[0], /else\s*\{\s*handleGoogleError/);
+  assert.match(bootstrap[0], /onAuthStateChanged\(auth, async \(user\)/);
+});
+
+test("popup and redirect completion cannot race the auth-state callback", () => {
+  const redirectResultIndex = AUTH_JS.indexOf("getRedirectResult(auth)");
+  const guardIndex = AUTH_JS.indexOf("onAuthStateChanged(auth, async (user)");
+  assert.ok(redirectResultIndex < guardIndex, "redirect completion must finish before subscribing");
+  assert.match(AUTH_JS, /if \(googleFlowInProgress \|\| isPanelOpen\(\)\)/);
+  assert.match(AUTH_JS, /if \(user && !authenticationCompleted\)/);
+});
+
+test("successful Terms acceptance cannot be undone by optional profile metadata failure", () => {
+  const submit = AUTH_JS.match(/async function submitTermsAcceptance\(\)[\s\S]*?\n\}/);
+  assert.ok(submit, "expected submitTermsAcceptance");
+  const acceptanceIndex = submit[0].indexOf('fetch("/api/legal/acceptance"');
+  const mergeIndex = submit[0].indexOf("setGoogleAuthStage(\"profile_merge\")");
+  const completionIndex = submit[0].indexOf("authenticationCompleted = true");
+  assert.ok(acceptanceIndex !== -1 && mergeIndex > acceptanceIndex && completionIndex > mergeIndex);
+  assert.match(submit[0], /try\s*\{[\s\S]*?await setDoc[\s\S]*?catch \(error\)[\s\S]*?reportGoogleAuthDiagnostic/);
 });
 
 test("logging out and back in works: sign-out is available and a signed-out visitor sees the form", () => {
