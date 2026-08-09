@@ -13,11 +13,14 @@ test("voice UI is integrated beside the existing composer with preview, retry, a
   const css = read("public/css/social.css");
   for (const marker of ["voiceRecordButton", "voiceRecordingTimer", "voicePreviewAudio", "voiceSendButton", "voiceRecordAgainButton", "voiceDeletePreviewButton"]) assert.match(html, new RegExp(marker));
   for (const marker of ["VoiceRecorderController", "VoicePlaybackManager", "uploadVoiceMessage", "retry-message", "visibilitychange", "voicePlayback.stop", "voiceRecorder.dispose"]) assert.match(js, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  for (const marker of ["הקלטת הודעה קולית", "שליחת הודעה קולית", "ההודעה הקולית אינה זמינה", "Microphone access was not granted"]) assert.match(core, new RegExp(marker));
+  for (const marker of ["הקלטת הודעה קולית", "שליחת הודעה קולית", "ההודעה הקולית אינה זמינה", "Microphone access is blocked", "Couldn't start voice recording"]) assert.match(core, new RegExp(marker));
   assert.match(css, /@media \(max-width: 680px\)[\s\S]*voice-message/);
   assert.match(css, /\.voice-record-button\s*\{\s*width:\s*44px;\s*height:\s*44px;/);
   assert.match(css, /grid-template-columns:\s*minmax\(0, 1fr\)/);
   assert.match(css, /\.site-feedback-widget\s*\{\s*bottom:\s*88px !important;/);
+  assert.match(css, /body\.voice-composer-active \.site-feedback-widget\s*\{\s*display:\s*none !important;/);
+  assert.match(js, /document\.body\.classList\.add\("voice-composer-active"\)/);
+  assert.match(js, /document\.body\.classList\.remove\("voice-composer-active"\)/);
   assert.match(css, /grid-column: 1 \/ -1/);
 });
 
@@ -34,7 +37,7 @@ test("private playback is network-only, CSP permits only the configured media or
   assert.match(sw, /event\.request\.destination === 'audio'/);
   assert.match(sw, /imagekit\.io/);
   assert.match(sw, /voice-message-client\.mjs/);
-  assert.match(sw, /fuelphysique-v7/);
+  assert.match(sw, /fuelphysique-v8/);
   assert.match(server, /media-src 'self'/);
   assert.match(server, /configuredImageKitOrigin/);
   assert.match(router, /Cache-Control", "private, no-store/);

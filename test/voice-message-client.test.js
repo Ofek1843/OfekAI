@@ -31,7 +31,7 @@ test("microphone permission denial is surfaced without constructing a recorder",
     mediaDevices: { async getUserMedia() { throw denied; } },
     MediaRecorderClass: FakeRecorder
   });
-  await assert.rejects(() => controller.start(), error => error === denied);
+  await assert.rejects(() => controller.start(), error => error.code === "mic_permission_denied");
   assert.equal(recorderConstructions, 0);
   assert.equal(controller.stream, null);
 });
@@ -64,7 +64,7 @@ test("recording permission is requested only by start, stop releases every track
     static isTypeSupported(type) { return type === "audio/webm;codecs=opus"; }
     constructor() { this.state = "inactive"; this.mimeType = "audio/webm;codecs=opus"; this.listeners = new Map(); }
     addEventListener(name, fn) { this.listeners.set(name, fn); }
-    start() { this.state = "recording"; }
+    start() { this.state = "recording"; this.listeners.get("start")?.(); }
     stop() {
       this.state = "inactive";
       this.listeners.get("dataavailable")?.({ data: new Blob([Buffer.from("voice")], { type: this.mimeType }) });
@@ -94,7 +94,7 @@ test("microphone track interruption stops recording safely and recorder errors d
       static isTypeSupported(type) { return type === "audio/mp4"; }
       constructor() { this.state = "inactive"; this.mimeType = "audio/mp4"; this.listeners = new Map(); setup.instance = this; }
       addEventListener(name, fn) { this.listeners.set(name, fn); }
-      start() { this.state = "recording"; }
+      start() { this.state = "recording"; this.listeners.get("start")?.(); }
       stop() { this.state = "inactive"; this.listeners.get("stop")?.(); }
     }
     const states = [];
@@ -123,7 +123,7 @@ test("recording stops automatically at the configured duration limit using a det
     static isTypeSupported(type) { return type === "audio/webm"; }
     constructor() { this.state = "inactive"; this.mimeType = "audio/webm"; this.listeners = new Map(); }
     addEventListener(name, fn) { this.listeners.set(name, fn); }
-    start() { this.state = "recording"; }
+    start() { this.state = "recording"; this.listeners.get("start")?.(); }
     stop() { this.state = "inactive"; this.listeners.get("stop")?.(); }
   }
   const controller = new VoiceRecorderController({
