@@ -37,7 +37,7 @@ test("private playback is network-only, CSP permits only the configured media or
   assert.match(sw, /event\.request\.destination === 'audio'/);
   assert.match(sw, /imagekit\.io/);
   assert.match(sw, /voice-message-client\.mjs/);
-  assert.match(sw, /fuelphysique-v9/);
+  assert.match(sw, /fuelphysique-v10-editorial/);
   assert.match(server, /media-src 'self'/);
   assert.match(server, /configuredImageKitOrigin/);
   assert.match(router, /Cache-Control", "private, no-store/);
