@@ -16,6 +16,9 @@ test("server sets baseline browser security headers and a restrictive CSP", () =
   assert.equal(getFrameAncestorsDirective("/auth.html"), "frame-ancestors 'none'");
   assert.match(source, /script-src 'self' 'unsafe-inline' https:\/\/www\.gstatic\.com https:\/\/apis\.google\.com/);
   assert.doesNotMatch(source, /script-src[^\n]*https:\/\/\*\.google\.com/);
+  assert.match(source, /const cspConnectSources = \[\s*"'self'",\s*"https:\/\/apis\.google\.com",\s*"https:\/\/\*\.googleapis\.com"/);
+  assert.doesNotMatch(source, /const cspConnectSources = \[[\s\S]*?https:\/\/\*\.google\.com[\s\S]*?\];/);
+  assert.doesNotMatch(source, /const cspConnectSources = \[[\s\S]*?["'](?:\*|https:)["'][\s\S]*?\];/);
   assert.match(source, /Strict-Transport-Security/);
 });
 
