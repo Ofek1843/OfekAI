@@ -138,6 +138,7 @@ logVoiceMessageStartupDiagnostics();
 app.disable("x-powered-by");
 const cspConnectSources = [
   "'self'",
+  "https://apis.google.com",
   "https://*.googleapis.com",
   "https://*.firebaseio.com",
   "https://*.imagekit.io",

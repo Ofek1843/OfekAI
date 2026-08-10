@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v8';
+const CACHE_NAME = 'fuelphysique-v9';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -15,6 +15,11 @@ const CACHE_NAME = 'fuelphysique-v8';
 // persisted to disk. Always go to the network for this path; never read
 // from or write to any cache.
 const AUTH_PROXY_PREFIX = '/__/auth/';
+const AUTH_INFRASTRUCTURE_ORIGINS = new Set([
+  'https://apis.google.com',
+  'https://accounts.google.com',
+  'https://ofek-ai-55f1d.firebaseapp.com'
+]);
 const NETWORK_ONLY_PREFIXES = ['/api/'];
 const urlsToCache = [
   '/',
@@ -108,7 +113,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  const requestPath = new URL(event.request.url).pathname;
+  const requestUrl = new URL(event.request.url);
+  const requestPath = requestUrl.pathname;
 
   // Voice playback URLs are private, short-lived capabilities. Never persist
   // audio responses or signed ImageKit URLs in Cache Storage.
@@ -119,6 +125,16 @@ self.addEventListener('fetch', event => {
   // Authenticated APIs and SSE must never be persisted in Cache Storage.
   // This includes /api/social/* and the typing stream beneath it.
   if (NETWORK_ONLY_PREFIXES.some(prefix => requestPath.startsWith(prefix))) {
+    return;
+  }
+
+  // Google/Firebase authentication resources must remain under the browser's
+  // default network handling. Intercepting them turns external script loads
+  // into Service Worker fetches (and therefore connect-src requests), while
+  // caching or app-shell fallback could persist or substitute sensitive OAuth
+  // helper responses. The project Firebase domain is included for local/dev
+  // authDomain fallback; production helper traffic uses /__/auth/* below.
+  if (AUTH_INFRASTRUCTURE_ORIGINS.has(requestUrl.origin)) {
     return;
   }
 
