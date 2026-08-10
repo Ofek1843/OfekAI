@@ -813,7 +813,7 @@ esc(entry.session?.name || entry.session?.title || `Session ${entry.sessionIndex
 esc(entry.session?.exercises?.length || 0)}
  ${
 he ? "תרגילים" : "exercises"}
-</span>                </button>`              : `<div class="schedule-rest"><span>☕</span>${
+</span>                </button>`              : `<div class="schedule-rest">${
 he ? "יום מנוחה" : "Rest day"}
 </div>`          }        </div>      </section>    `;
   }
@@ -982,7 +982,7 @@ async function load(user) {
   const weight = weightSnap.docs[0]?.data()?.weight;
   $("#weeklyWorkouts").textContent = weekly;
   $("#weekGoal").textContent = ui.goal(weekly, target);
-  $("#currentStreak").textContent = `${streak} 🔥`;
+  $("#currentStreak").textContent = String(streak);
   $("#streakHint").textContent = ui.streakHint(streak);
   $("#completedSets").textContent = sets;
   $("#setsHint").textContent = ui.setsHint;
