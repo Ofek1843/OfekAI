@@ -85,6 +85,23 @@ function applyTranslations() {
   $("#userSearchInput").placeholder = ui.searchPlaceholder;
   $("#messageInput").placeholder = ui.messagePlaceholder;
   $("#voiceRecordButton").setAttribute("aria-label", ui.recordVoice);
+  const copy = language === "he" ? {
+    messages: "הודעות", friends: "חברים", requests: "בקשות", find: "מציאת אנשים",
+    privateSpace: "מרחב פרטי", circleTitle: "מעגל האימונים שלך", circleText: "רק חברים מאושרים יכולים לשלוח הודעות או לשתף איתך תוכניות.",
+    focusTitle: "כל משימה במקום שלה", focusText: "הסרגל מאפשר לעבור בין משימות בלי להעמיס את כל כלי החברה במסך אחד.",
+    musicEyebrow: "קישור מוזיקה בטוח", musicTitle: "שיתוף מוזיקה לאימון", musicText: "הדביקו קישור HTTPS ציבורי. FuelPhysique לא מורידה, מטמיעה או מעבירה את היעד.",
+    musicUrl: "כתובת מוזיקה", musicShortTitle: "כותרת קצרה (לא חובה)", musicHint: "Spotify, Apple Music, YouTube, YouTube Music, SoundCloud וקישורי HTTPS ציבוריים בטוחים נתמכים.", musicSend: "שיתוף קישור מוזיקה"
+  } : {
+    messages: "Messages", friends: "Friends", requests: "Requests", find: "Find people",
+    privateSpace: "PRIVATE SPACE", circleTitle: "Your training circle", circleText: "Only accepted friends can message or share plans with you.",
+    focusTitle: "Designed for focus", focusText: "Use the left rail to switch tasks without stacking every Social tool in one screen.",
+    musicEyebrow: "SAFE MUSIC LINK", musicTitle: "Share workout music", musicText: "Paste a public HTTPS link. FuelPhysique never downloads, embeds or proxies the destination.",
+    musicUrl: "Music URL", musicShortTitle: "Short title (optional)", musicHint: "Spotify, Apple Music, YouTube, YouTube Music, SoundCloud and safe public HTTPS links are supported.", musicSend: "Share music link"
+  };
+  for (const [id, value] of Object.entries({ modeMessagesLabel: copy.messages, modeFriendsLabel: copy.friends, modeRequestsLabel: copy.requests, modeFindLabel: copy.find, contextEyebrow: copy.privateSpace, contextTitle: copy.circleTitle, contextText: copy.circleText, contextSafetyTitle: copy.focusTitle, contextSafetyText: copy.focusText, musicLinkEyebrow: copy.musicEyebrow, musicLinkTitle: copy.musicTitle, musicLinkText: copy.musicText, musicUrlLabel: copy.musicUrl, musicTitleLabel: copy.musicShortTitle, musicLinkHint: copy.musicHint, sendMusicLinkButton: copy.musicSend })) {
+    const element = $(`#${id}`);
+    if (element) element.textContent = value;
+  }
 }
 
 async function loadSavedLanguage() {
@@ -95,6 +112,7 @@ async function loadSavedLanguage() {
   ui = socialStrings(language);
   document.documentElement.lang = language;
   document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+  window.dispatchEvent(new CustomEvent("fuelphysique:languagechange", { detail: { language } }));
   applyTranslations();
 }
 
@@ -327,6 +345,7 @@ function renderRelationships() {
   $("#friendCount").textContent = friends.length;
   $("#receivedCount").textContent = received.length;
   $("#sentCount").textContent = sent.length;
+  $("#modeRequestCount").textContent = received.length + sent.length;
   $("#friendsEmpty").hidden = friends.length > 0;
   $("#friendList").innerHTML = friends.map((item) => personCard(item.profile, [
     { action: "message", label: ui.messageAction },
@@ -364,6 +383,8 @@ function renderConversations() {
   const unread = unreadTotal();
   $("#unreadBadge").hidden = unread === 0;
   $("#unreadBadge").textContent = String(Math.min(99, unread));
+  $("#modeUnreadBadge").hidden = unread === 0;
+  $("#modeUnreadBadge").textContent = String(Math.min(99, unread));
 }
 
 async function loadRelationships() {
@@ -419,7 +440,9 @@ function startRealtimeSubscriptions() {
 }
 
 function setView(view) {
-  const messages = view === "messages";
+  const allowed = new Set(["messages", "friends", "requests", "find"]);
+  const mode = allowed.has(view) ? view : "messages";
+  const messages = mode === "messages";
   if (!messages) {
     void voiceRecorder.cancel();
     clearVoiceDraft();
@@ -428,9 +451,22 @@ function setView(view) {
   }
   $("#friendsView").hidden = messages;
   $("#messagesView").hidden = !messages;
+  $("#socialApp").dataset.socialMode = mode;
+  document.querySelectorAll("[data-social-mode-panel]").forEach((panel) => {
+    panel.hidden = messages || panel.dataset.socialModePanel !== mode;
+  });
+  document.querySelectorAll(".social-mode-button").forEach((button) => button.classList.toggle("is-active", button.dataset.view === mode));
   $("#friendsTab").classList.toggle("is-active", !messages);
   $("#messagesTab").classList.toggle("is-active", messages);
   $("#socialApp").classList.toggle("show-conversations", messages && !state.activeConversation);
+  if (!messages) {
+    const copy = language === "he"
+      ? { friends: ["החברים שלך", "חברים מאושרים ופעולות פרטיות במקום אחד."], requests: ["בקשות חברות", "קבלו, דחו או בטלו בקשות ממתינות."], find: ["מציאת אנשים", "חפשו שם משתמש ושלחו בקשה פרטית."] }
+      : { friends: ["Your friends", "Accepted friends and private actions in one focused view."], requests: ["Friend requests", "Review received and sent requests without leaving the workspace."], find: ["Find people", "Search a username and send a private friend request."] };
+    $("#friendsTitle").textContent = copy[mode][0];
+    $("#friendsIntro").textContent = copy[mode][1];
+    if (mode === "find") requestAnimationFrame(() => $("#userSearchInput")?.focus());
+  }
 }
 
 function artifactCard(message) {
@@ -453,6 +489,20 @@ function voiceMessageBubble(message) {
     <input class="voice-seek" type="range" min="0" max="${durationSeconds}" step="0.1" value="0" data-voice-seek="${escapeHtml(message.id)}" aria-label="${escapeHtml(ui.voiceMessage)}">
     <span class="voice-time"><span data-voice-current>0:00</span> / <span data-voice-duration>${formatVoiceDuration(durationMs)}</span></span>
   </div>`;
+}
+
+function musicLinkBubble(message) {
+  if (message.deletedAt || message.music?.unavailable) return `<div class="message-bubble music-link-card is-unavailable"><em>${escapeHtml(ui.deleted)}</em></div>`;
+  let href = "";
+  try {
+    const parsed = new URL(message.music?.url || "");
+    if (parsed.protocol === "https:") href = parsed.href;
+  } catch {}
+  if (!href) return `<div class="message-bubble music-link-card is-unavailable"><em>${escapeHtml(ui.unavailable)}</em></div>`;
+  const providers = { spotify: "Spotify", apple_music: "Apple Music", youtube: "YouTube", youtube_music: "YouTube Music", soundcloud: "SoundCloud", link: "Music link" };
+  const provider = providers[message.music?.provider] || providers.link;
+  const title = message.music?.title || (language === "he" ? "מוזיקה לאימון" : "Workout music");
+  return `<a class="message-bubble music-link-card" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><img src="/icons/tabler/music.svg" alt=""><span><small>${escapeHtml(provider)}</small><strong>${escapeHtml(title)}</strong><em>${language === "he" ? "פתיחה מאובטחת בכרטיסייה חדשה" : "Open safely in a new tab"}</em></span></a>`;
 }
 
 function updateVoicePlayer(messageId, update) {
@@ -480,6 +530,7 @@ function renderMessages({ preserveScroll = false } = {}) {
     const failed = message.status === "failed";
     const content = message.type === "artifact" ? artifactCard(message)
       : message.type === "voice" ? voiceMessageBubble(message)
+        : message.type === "music_link" ? musicLinkBubble(message)
         : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
     return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}">
       ${content}
@@ -597,6 +648,7 @@ async function openConversation(conversationOrId) {
     : (conversation.profile?.displayName || conversation.profile?.username || "FuelPhysique member");
   $("#chatFriendUsername").textContent = conversation.profile?.username ? `@${conversation.profile.username}` : "";
   $("#chatAvatar").innerHTML = avatar({ ...conversation.profile, interactive: true }, true);
+  $("#contextProfile").innerHTML = `${avatar(conversation.profile, true)}<h2>${escapeHtml(profileName(conversation.profile))}</h2><p>${conversation.profile?.username ? `@${escapeHtml(conversation.profile.username)}` : ""}</p>`;
   const readOnly = conversation.status !== "active";
   $("#messageInput").disabled = readOnly;
   $("#sendButton").disabled = readOnly;
@@ -719,6 +771,48 @@ async function sendMessage(event, retryText = null) {
   } finally {
     if (state.activeConversation) startTypingChannel(state.activeConversation.id);
     window.setTimeout(() => $("#sendButton").classList.remove("is-sending"), 450);
+  }
+}
+
+function openMusicLinkDialog() {
+  if (!state.activeConversation || state.activeConversation.status !== "active") return;
+  $("#shareMenu").hidden = true;
+  $("#shareMenuButton").setAttribute("aria-expanded", "false");
+  $("#musicLinkError").textContent = "";
+  $("#musicUrlInput").value = "";
+  $("#musicTitleInput").value = "";
+  $("#musicLinkDialog").showModal();
+  $("#musicUrlInput").focus();
+}
+
+async function sendMusicLink(event) {
+  event.preventDefault();
+  if (!state.activeConversation) return;
+  const url = $("#musicUrlInput").value.trim();
+  const title = $("#musicTitleInput").value.trim();
+  const error = $("#musicLinkError");
+  error.textContent = "";
+  let parsed;
+  try { parsed = new URL(url); } catch { error.textContent = language === "he" ? "יש להזין קישור HTTPS תקין." : "Enter a valid HTTPS link."; return; }
+  if (parsed.protocol !== "https:" || parsed.username || parsed.password) {
+    error.textContent = language === "he" ? "מותר לשתף רק קישור HTTPS ציבורי ללא פרטי התחברות." : "Only public HTTPS links without embedded credentials are allowed.";
+    return;
+  }
+  const button = $("#sendMusicLinkButton");
+  button.disabled = true;
+  try {
+    const data = await api(`/conversations/${encodeURIComponent(state.activeConversation.id)}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ type: "music_link", url, title, clientId: safeClientId() })
+    });
+    if (data.message) state.messages = mergeMessages(state.messages, [data.message]);
+    renderMessages();
+    $("#musicLinkDialog").close();
+    await loadConversations();
+  } catch (requestError) {
+    error.textContent = requestError.message;
+  } finally {
+    button.disabled = false;
   }
 }
 
@@ -1056,8 +1150,8 @@ function bindEvents() {
     const card = event.target.closest("[data-conversation-id]");
     if (card) openConversation(card.dataset.conversationId);
   });
-  $("#newConversationButton").addEventListener("click", () => { setView("friends"); $("#userSearchInput").focus(); });
-  $("#chatFindFriendsButton").addEventListener("click", () => setView("friends"));
+  $("#newConversationButton").addEventListener("click", () => setView("find"));
+  $("#chatFindFriendsButton").addEventListener("click", () => setView("find"));
   $("#messageForm").addEventListener("submit", sendMessage);
   $("#voiceRecordButton").addEventListener("click", startVoiceRecording);
   $("#voiceStopButton").addEventListener("click", () => voiceRecorder.stop("member"));
@@ -1087,12 +1181,17 @@ function bindEvents() {
     $("#shareMenuButton").setAttribute("aria-expanded", String(!menu.hidden));
   });
   $("#shareMenu").addEventListener("click", (event) => {
+    if (event.target.closest("[data-music-link]")) {
+      openMusicLinkDialog();
+      return;
+    }
     const button = event.target.closest("[data-share-type]");
     if (!button) return;
     $("#shareMenu").hidden = true;
     $("#shareMenuButton").setAttribute("aria-expanded", "false");
     openShareDialog(button.dataset.shareType);
   });
+  $("#musicLinkForm").addEventListener("submit", sendMusicLink);
   $("#shareForm").addEventListener("submit", shareArtifact);
   $("#shareSourceSelect").addEventListener("change", updateShareSummary);
   document.querySelectorAll('input[name="privacyMode"]').forEach((input) => input.addEventListener("change", updateShareSummary));
@@ -1179,10 +1278,11 @@ async function initialize(currentUser) {
     $("#socialApp").hidden = false;
     renderIdentityCard();
     await Promise.all([loadRelationships(), loadConversations()]);
+    setView("messages");
     startRealtimeSubscriptions();
     const params = new URLSearchParams(location.search);
     if (params.get("request") === "friends") {
-      setView("friends");
+      setView("requests");
       requestAnimationFrame(() => {
         document.querySelector("#receivedRequests")?.scrollIntoView({ block: "center" });
       });

@@ -5,7 +5,7 @@ const { AccountService, uidHash } = require("../lib/account-service");
 function makeFixture({ readyForAuthDelete = false } = {}) {
   const state = new Map();
   const deleted = new Set();
-  const calls = { image: [], storage: [], auth: [], push: 0, voice: [] };
+  const calls = { image: [], storage: [], auth: [], push: 0, voice: [], musicWrites: [] };
   const ref = path => {
     if (!state.has(path)) state.set(path, {});
     return {
@@ -25,6 +25,20 @@ function makeFixture({ readyForAuthDelete = false } = {}) {
         return {
           docs: [{ data: () => ({ photos: { front: { fileId: "owned-image-id", path: "users/alice/progress/front.jpg" } } }) }],
           size: 1
+        };
+      }
+      if (path === "conversations/alice_bob/messages") {
+        const musicRef = ref(`${path}/music-from-alice`);
+        musicRef.set = async (value, options = {}) => {
+          calls.musicWrites.push(value);
+          state.set(musicRef.path, options.merge ? { ...state.get(musicRef.path), ...value } : value);
+        };
+        return {
+          docs: [
+            { id: "music-from-alice", data: () => ({ type: "music_link", senderUid: "alice", music: { provider: "spotify", title: "Private training mix", url: "https://open.spotify.com/playlist/private" } }), ref: musicRef },
+            { id: "music-from-bob", data: () => ({ type: "music_link", senderUid: "bob", music: { provider: "youtube", title: "Bob's mix", url: "https://youtube.com/watch?v=owned-by-bob" } }), ref: ref(`${path}/music-from-bob`) }
+          ],
+          size: 2
         };
       }
       return { docs: [], size: 0 };
@@ -72,6 +86,11 @@ test("account deletion verifies nested media, preserves a survivor's history, th
   assert.deepEqual(fixture.calls.storage, ["users/alice/progress/front.jpg"]);
   assert.equal(fixture.calls.push, 1);
   assert.deepEqual(fixture.calls.voice, [["alice", ["alice_bob"]]]);
+  assert.equal(fixture.calls.musicWrites.length, 1);
+  assert.equal(fixture.calls.musicWrites[0].music.provider, "spotify");
+  assert.equal(fixture.calls.musicWrites[0].music.title, "");
+  assert.equal(fixture.calls.musicWrites[0].music.unavailable, true);
+  assert.equal("url" in fixture.calls.musicWrites[0].music, false);
   assert.deepEqual(fixture.calls.auth, ["alice"]);
   assert.equal(fixture.state.get("conversations/alice_bob").status, "deleted_participant");
   assert.equal(fixture.state.get("users/bob/conversationSummaries/alice_bob").status, "deleted_participant");
@@ -89,6 +108,7 @@ test("a retry after the durable cleanup checkpoint does not repeat destructive c
   assert.deepEqual(fixture.calls.storage, []);
   assert.equal(fixture.calls.push, 0);
   assert.deepEqual(fixture.calls.voice, []);
+  assert.deepEqual(fixture.calls.musicWrites, []);
   assert.deepEqual(fixture.calls.auth, ["alice"]);
   assert.equal(fixture.state.get(fixture.jobPath).status, "completed");
 });

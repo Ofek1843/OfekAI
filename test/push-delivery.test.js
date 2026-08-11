@@ -124,6 +124,15 @@ test("voice messages use the message preference and a metadata-free generic push
   assert.equal((await disabled.service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" })).skipped, "messages_disabled");
 });
 
+test("music links use a generic message push with no destination or title leakage", async () => {
+  const current = fixture({ message: { type: "music_link", text: undefined, music: { provider: "spotify", title: "Private gym mix", url: "https://open.spotify.com/track/private" } } });
+  await current.service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" });
+  assert.equal(current.transport.sent.length, 1);
+  const payload = current.transport.sent[0].payload;
+  assert.equal(payload.url, "/social.html?conversation=thread-a-b");
+  assert.doesNotMatch(JSON.stringify(payload), /spotify|Private gym mix|open\.spotify\.com|track\/private/);
+});
+
 test("extremely long text is compact and does not expose identifiers", async () => {
   const { service, transport } = fixture({ message: { text: `${"x".repeat(300)} secret-id-should-be-truncated` } });
   await service.notifySocialMessage({ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-1" });

@@ -59,3 +59,28 @@ test("duplicate Social commits do not dispatch another push event", async () => 
     social.sendMessage = originalSend;
   }
 });
+
+test("music messages use the same authoritative route and dispatch identifiers only", async () => {
+  const originalMusic = social.sendMusicMessage;
+  const calls = [];
+  const inputs = [];
+  social.sendMusicMessage = async (uid, conversationId, input) => {
+    inputs.push({ uid, conversationId, input });
+    return { duplicate: false, message: { id: "message-music", type: "music_link" } };
+  };
+  try {
+    await withRouter(async base => {
+      const response = await fetch(`${base}/api/social/conversations/thread-a-b/messages`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "music_link", url: "https://open.spotify.com/track/example", title: "Training", senderUid: "forged" })
+      });
+      assert.equal(response.status, 201);
+      await new Promise(resolve => setImmediate(resolve));
+    }, { async notifySocialMessage(value) { calls.push(value); } });
+    assert.equal(inputs[0].uid, "user-a");
+    assert.deepEqual(calls, [{ senderUid: "user-a", conversationId: "thread-a-b", messageId: "message-music" }]);
+    assert.doesNotMatch(JSON.stringify(calls), /spotify|Training|forged/);
+  } finally {
+    social.sendMusicMessage = originalMusic;
+  }
+});

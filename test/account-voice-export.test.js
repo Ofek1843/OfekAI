@@ -9,6 +9,8 @@ test("account export includes bounded voice metadata for participant conversatio
   const messages = [
     document("sent-voice", { type: "voice", senderUid: "alice", createdAt: new Date("2026-08-08T10:00:00Z"), voice: { assetId: "secret-a", durationMs: 2000, mimeType: "audio/webm", sizeBytes: 5000 } }),
     document("received-voice", { type: "voice", senderUid: "bob", createdAt: new Date("2026-08-08T10:01:00Z"), voice: { assetId: "secret-b", durationMs: 3000, mimeType: "audio/mp4", sizeBytes: 6000, unavailable: true } }),
+    document("sent-music", { type: "music_link", senderUid: "alice", createdAt: new Date("2026-08-08T10:02:00Z"), music: { provider: "spotify", title: "Training mix", url: "https://open.spotify.com/playlist/owned" } }),
+    document("received-music", { type: "music_link", senderUid: "bob", createdAt: new Date("2026-08-08T10:03:00Z"), music: { provider: "youtube", title: "Bob's private link", url: "https://youtu.be/private" } }),
     document("text", { type: "text", senderUid: "bob", text: "not part of the voice export" })
   ];
   const conversation = {
@@ -39,4 +41,9 @@ test("account export includes bounded voice metadata for participant conversatio
   assert.doesNotMatch(JSON.stringify(result.voiceMessages), /secret-a|secret-b|signed|not part of the voice export/);
   assert.equal(result.voiceMedia.rawAudioIncluded, false);
   assert.match(result.voiceMedia.access, /authenticated conversation playback/);
+  assert.deepEqual(result.musicLinks, [{
+    id: "sent-music", conversationId: "alice_bob", provider: "spotify", title: "Training mix",
+    url: "https://open.spotify.com/playlist/owned", available: true, createdAt: "2026-08-08T10:02:00.000Z"
+  }]);
+  assert.doesNotMatch(JSON.stringify(result.musicLinks), /Bob's private link|youtu\.be\/private/);
 });

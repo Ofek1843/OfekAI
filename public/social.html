@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#071321">
+  <meta name="theme-color" content="#10131A">
   <title>Friends & Messages | FuelPhysique</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/css/social.css">
   <link rel="stylesheet" href="/css/push-notifications.css">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260810-ultramarine-motion">
+  <link rel="stylesheet" href="/css/product-polish-v3.css?v=20260811-spectrum-v3">
   <script defer src="/js/redesign-shell.js?v=20260810-ultramarine-motion"></script>
 </head>
 <body>
@@ -46,18 +47,28 @@
       </div>
     </section>
 
-    <section id="socialApp" class="social-app" hidden>
-      <aside class="conversation-rail" aria-label="Conversations">
+    <section id="socialApp" class="social-app" data-social-mode="messages" hidden>
+      <aside class="social-sidebar" aria-label="Social navigation">
+        <nav class="social-mode-nav" aria-label="Social workspace">
+          <button class="social-mode-button is-active" type="button" data-view="messages"><img src="/icons/tabler/inbox.svg" alt=""><span id="modeMessagesLabel">Messages</span><span id="modeUnreadBadge" class="unread-badge" hidden>0</span></button>
+          <button class="social-mode-button" type="button" data-view="friends"><img src="/icons/tabler/user-check.svg" alt=""><span id="modeFriendsLabel">Friends</span></button>
+          <button class="social-mode-button" type="button" data-view="requests"><img src="/icons/tabler/bell.svg" alt=""><span id="modeRequestsLabel">Requests</span><span id="modeRequestCount" class="count-pill">0</span></button>
+          <button class="social-mode-button" type="button" data-view="find"><img src="/icons/tabler/user-plus.svg" alt=""><span id="modeFindLabel">Find people</span></button>
+        </nav>
+        <aside class="conversation-rail" aria-label="Conversations">
         <div class="rail-heading">
           <div><span class="eyebrow" id="inboxEyebrow">PRIVATE</span><h2 id="inboxTitle">Messages</h2></div>
-          <button id="newConversationButton" class="icon-button" type="button" aria-label="Start conversation">＋</button>
+          <button id="newConversationButton" class="icon-button" type="button" aria-label="Start conversation"><img src="/icons/tabler/plus.svg" alt=""></button>
         </div>
         <div id="conversationSkeletons" class="skeleton-list" aria-hidden="true">
           <span></span><span></span><span></span>
         </div>
         <div id="conversationList" class="conversation-list"></div>
         <div id="conversationEmpty" class="rail-empty" hidden><span aria-hidden="true">✦</span><p id="conversationEmptyText">Accepted friends will appear here.</p></div>
+        </aside>
       </aside>
+
+      <section class="social-workspace">
 
       <section id="friendsView" class="friends-view" aria-labelledby="friendsTitle">
         <header class="view-hero">
@@ -65,6 +76,7 @@
           <div id="myIdentityCard" class="my-identity-card"></div>
         </header>
 
+        <div class="social-mode-panel" data-social-mode-panel="find" hidden>
         <form id="userSearchForm" class="user-search" role="search">
           <label class="sr-only" for="userSearchInput" id="searchLabel">Search by username</label>
           <span aria-hidden="true">⌕</span>
@@ -76,8 +88,9 @@
           <h2 id="searchResultsTitle">Search results</h2>
           <div id="searchResults" class="people-grid"></div>
         </section>
+        </div>
 
-        <section class="requests-grid">
+        <section class="requests-grid social-mode-panel" data-social-mode-panel="requests" hidden>
           <article class="social-section request-panel">
             <div class="section-heading"><h2 id="receivedTitle">Received requests</h2><span id="receivedCount" class="count-pill">0</span></div>
             <div id="receivedRequests" class="people-list"></div>
@@ -88,13 +101,13 @@
           </article>
         </section>
 
-        <section class="social-section">
+        <section class="social-section social-mode-panel" data-social-mode-panel="friends">
           <div class="section-heading"><h2 id="friendListTitle">Your friends</h2><span id="friendCount" class="count-pill">0</span></div>
           <div id="friendList" class="people-grid"></div>
           <div id="friendsEmpty" class="empty-state" hidden><div class="empty-orbit" aria-hidden="true"><span></span></div><h3 id="friendsEmptyTitle">Your circle starts here</h3><p id="friendsEmptyText">Search for a username to send your first request.</p></div>
         </section>
 
-        <details id="blockedSection" class="social-section blocked-section">
+        <details id="blockedSection" class="social-section blocked-section social-mode-panel" data-social-mode-panel="friends">
           <summary id="blockedTitle">Blocked users</summary>
           <div id="blockedList" class="people-list"></div>
         </details>
@@ -109,10 +122,10 @@
         </div>
         <div id="chatPanel" class="chat-panel" hidden>
           <header class="chat-header">
-            <button id="mobileConversationBack" class="icon-button mobile-only" type="button" aria-label="Back to conversations">←</button>
+            <button id="mobileConversationBack" class="icon-button mobile-only" type="button" aria-label="Back to conversations">Back</button>
             <div id="chatAvatar" class="avatar avatar-large"></div>
             <div class="chat-person"><h1 id="chatFriendName"></h1><p id="chatFriendUsername"></p></div>
-            <button id="chatFriendMenu" class="icon-button" type="button" aria-label="Friend options" aria-haspopup="menu">•••</button>
+            <button id="chatFriendMenu" class="icon-button" type="button" aria-label="Friend options" aria-haspopup="menu">More</button>
           </header>
           <div class="message-scroller" id="messageScroller">
             <button id="loadOlderButton" class="load-older" type="button" hidden>Load older messages</button>
@@ -121,20 +134,23 @@
           </div>
           <p id="typingIndicator" class="typing-indicator" hidden role="status" aria-live="polite"></p>
           <form id="messageForm" class="composer">
-            <button id="shareMenuButton" class="composer-tool" type="button" aria-label="Share with friend" aria-expanded="false">＋</button>
+            <button id="shareMenuButton" class="composer-tool" type="button" aria-label="Share with friend" aria-expanded="false"><img src="/icons/tabler/plus.svg" alt=""></button>
             <div id="shareMenu" class="share-menu" hidden>
               <button type="button" data-share-type="workout">Workout program</button>
               <button type="button" data-share-type="nutrition">Nutrition plan</button>
-              <button type="button" data-share-type="personal_record">Personal record</button>
-              <button type="button" data-share-type="completed_workout">Completed workout</button>
-              <button type="button" data-share-type="weight_progress">Weight progress</button>
-              <button type="button" data-share-type="progress_graph">Progress graph</button>
+              <button type="button" data-music-link><img src="/icons/tabler/music.svg" alt="">Workout music</button>
+              <details class="share-more"><summary>More progress shares</summary>
+                <button type="button" data-share-type="personal_record">Personal record</button>
+                <button type="button" data-share-type="completed_workout">Completed workout</button>
+                <button type="button" data-share-type="weight_progress">Weight progress</button>
+                <button type="button" data-share-type="progress_graph">Progress graph</button>
+              </details>
             </div>
-            <button id="voiceRecordButton" class="composer-tool voice-record-button" type="button" aria-label="Record voice message"><span aria-hidden="true">🎙️</span></button>
+            <button id="voiceRecordButton" class="composer-tool voice-record-button" type="button" aria-label="Record voice message"><img src="/icons/tabler/microphone.svg" alt=""></button>
             <label class="sr-only" for="messageInput" id="messageLabel">Message</label>
             <textarea id="messageInput" rows="1" maxlength="2000" placeholder="Write a message"></textarea>
             <span id="messageCounter" class="message-counter">0/2000</span>
-            <button id="sendButton" class="send-button" type="submit" aria-label="Send message"><span aria-hidden="true">➤</span></button>
+            <button id="sendButton" class="send-button" type="submit" aria-label="Send message"><img src="/icons/tabler/send-2.svg" alt=""></button>
             <section id="voiceComposer" class="voice-composer" hidden aria-live="polite">
               <div id="voiceRecordingState" class="voice-recording-state" hidden>
                 <span class="recording-dot" aria-hidden="true"></span><strong id="voiceRecordingLabel">Recording</strong><time id="voiceRecordingTimer">0:00</time>
@@ -151,8 +167,29 @@
           </form>
         </div>
       </section>
+      </section>
+
+      <aside class="social-context-panel" aria-label="Conversation details">
+        <span class="eyebrow" id="contextEyebrow">PRIVATE SPACE</span>
+        <div id="contextProfile" class="social-context-profile"><img src="/icons/tabler/users.svg" alt=""><h2 id="contextTitle">Your training circle</h2><p id="contextText">Only accepted friends can message or share plans with you.</p></div>
+        <div class="context-safety-note"><strong id="contextSafetyTitle">Designed for focus</strong><p id="contextSafetyText">Use the left rail to switch tasks without stacking every Social tool in one screen.</p></div>
+      </aside>
     </section>
   </main>
+
+  <dialog id="musicLinkDialog" class="social-dialog music-link-dialog" aria-labelledby="musicLinkTitle">
+    <form method="dialog" class="dialog-close-row"><button class="icon-button" aria-label="Close">Close</button></form>
+    <div class="dialog-copy"><span class="eyebrow" id="musicLinkEyebrow">SAFE MUSIC LINK</span><h2 id="musicLinkTitle">Share workout music</h2><p id="musicLinkText">Paste a public HTTPS link. FuelPhysique never downloads, embeds or proxies the destination.</p></div>
+    <form id="musicLinkForm" class="share-form">
+      <label for="musicUrlInput" id="musicUrlLabel">Music URL</label>
+      <input id="musicUrlInput" type="url" inputmode="url" maxlength="2048" placeholder="https://open.spotify.com/..." required>
+      <label for="musicTitleInput" id="musicTitleLabel">Short title (optional)</label>
+      <input id="musicTitleInput" type="text" maxlength="80" placeholder="Leg day mix">
+      <p id="musicLinkHint">Spotify, Apple Music, YouTube, YouTube Music, SoundCloud and safe public HTTPS links are supported.</p>
+      <p id="musicLinkError" class="form-error" role="alert"></p>
+      <button id="sendMusicLinkButton" class="primary-button" type="submit">Share music link</button>
+    </form>
+  </dialog>
 
   <dialog id="shareDialog" class="social-dialog share-dialog" aria-labelledby="shareDialogTitle">
     <form method="dialog" class="dialog-close-row"><button class="icon-button" aria-label="Close">✕</button></form>
