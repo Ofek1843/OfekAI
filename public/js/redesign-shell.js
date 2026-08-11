@@ -30,6 +30,21 @@
     "subscription-policy.html",
     "terms.html",
   ]);
+  const lightCompositionRoutes = new Set([
+    "index.html",
+    "auth.html",
+    "auth-action.html",
+    "billing-result.html",
+    "contact.html",
+    "faq.html",
+    "nutrition-builder.html",
+    "manual-nutrition-builder.html",
+    "my-nutrition-plans.html",
+    "pricing.html",
+    "social.html",
+    "app.html",
+    ...legalRoutes,
+  ]);
 
   const routeGroup = (name) => {
     if (name === "dashboard.html" || name === "app.html") return "dashboard";
@@ -154,10 +169,174 @@
     });
   };
 
+  const setupPerformanceMotion = () => {
+    const reducedQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const reduced = reducedQuery.matches;
+    document.documentElement.classList.toggle("fp-reduced-motion", reduced);
+
+    const mark = (element, kind = "content", delay = 0) => {
+      if (!element || element.classList.contains("fp-motion-target")) return;
+      element.classList.add("fp-motion-target");
+      element.dataset.fpMotion = kind;
+      element.style.setProperty("--fp-motion-delay", `${Math.min(delay, 320)}ms`);
+    };
+
+    const markSequence = (selector, kind, step = 55, offset = 0) => {
+      document.querySelectorAll(selector).forEach((element, index) => mark(element, kind, offset + index * step));
+    };
+
+    if (route === "index.html") {
+      markSequence(".premium-card--programs", "train");
+      markSequence(".premium-card--nutrition", "fuel");
+      markSequence(".premium-card--progress, .results-grid", "track");
+      markSequence(".premium-card--learning, .transformation-invite", "connect");
+      markSequence(".platform-step", "content", 55);
+    } else if (route === "dashboard.html") {
+      markSequence(".next-workout-card, .schedule-card", "train", 60);
+      markSequence(".nutrition-card", "fuel", 60, 60);
+      markSequence(".stats-grid .card, .chart-card", "track", 45, 100);
+      markSequence(".recent-card, .missed-card, .tools-accordion", "connect", 45, 150);
+    } else if (/workout|exercise|running|log-workout/.test(route)) {
+      markSequence(".builder-card, .wizard-step:not([hidden]), .panel, .focus-panel, .workout-card", "train", 55);
+      markSequence(".chart, .muscle-volume-grid", "track", 55, 80);
+    } else if (/nutrition/.test(route)) {
+      markSequence(".builder-card, .target-section, .nutrition-summary", "fuel", 55);
+      markSequence(".meal-card, .meal-section", "content", 45, 80);
+    } else if (/progress|transformation/.test(route)) {
+      markSequence(".stats-grid > *, .metric-card", "content", 45);
+      markSequence(".chart-card, .chart, .progress-card", "track", 55, 60);
+    } else if (/social|leaderboard/.test(route)) {
+      markSequence(".conversation-rail", "connect");
+      markSequence(".view-hero, .requests-grid, .social-section", "content", 45, 55);
+    } else if (route === "auth.html" || route === "auth-action.html") {
+      markSequence(".brand", "train");
+      markSequence(".auth-panel, .auth-card, .action-container", "content", 45, 80);
+    }
+
+    const targets = [...document.querySelectorAll(".fp-motion-target")];
+    if (reduced || !("IntersectionObserver" in window)) {
+      targets.forEach((element) => element.classList.add("fp-motion-in"));
+      return;
+    }
+
+    document.documentElement.classList.add("fp-motion-enabled");
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("fp-motion-in");
+        const chart = entry.target.matches(".chart, .activity-chart")
+          ? entry.target
+          : entry.target.querySelector(".chart, .activity-chart");
+        chart?.classList.add("fp-chart-reveal");
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.14, rootMargin: "0px 0px -4% 0px" });
+    targets.forEach((element) => observer.observe(element));
+
+    // A slow observer or restored background tab must never leave content
+    // hidden. This is a visibility safety net, not a second animation.
+    window.setTimeout(() => targets.forEach((element) => element.classList.add("fp-motion-in")), 1600);
+
+    const metricSelector = [
+      ".stats-grid strong",
+      ".landing-stat strong",
+      ".macro-grid strong",
+      "[data-count-value]",
+      ".metric-value",
+      ".stat-value",
+    ].join(",");
+    const metricValues = new WeakMap();
+    const animatingMetrics = new WeakSet();
+    const animateMetric = (element) => {
+      if (!element || reduced || element.children.length || animatingMetrics.has(element)) return;
+      const finalText = element.textContent.trim();
+      const match = finalText.match(/^([^0-9-]*)(-?\d+)([^0-9]*)$/);
+      if (!match) return;
+      const finalValue = Number(match[2]);
+      if (!Number.isSafeInteger(finalValue)) return;
+      const previous = metricValues.get(element);
+      if (previous === finalValue) return;
+      metricValues.set(element, finalValue);
+      animatingMetrics.add(element);
+      element.setAttribute("aria-label", finalText);
+      const startValue = Number.isSafeInteger(previous) ? previous : 0;
+      const started = performance.now();
+      const duration = 460;
+      const formatter = new Intl.NumberFormat(document.documentElement.lang || "en", { maximumFractionDigits: 0 });
+      const tick = (now) => {
+        const progress = Math.min(1, (now - started) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(startValue + (finalValue - startValue) * eased);
+        element.textContent = `${match[1]}${formatter.format(current)}${match[3]}`;
+        if (progress < 1) requestAnimationFrame(tick);
+        else {
+          element.textContent = finalText;
+          animatingMetrics.delete(element);
+          element.classList.add("fp-metric-updated");
+          window.setTimeout(() => element.classList.remove("fp-metric-updated"), 320);
+        }
+      };
+      requestAnimationFrame(tick);
+    };
+
+    const metricObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) animateMetric(entry.target);
+      });
+    }, { threshold: 0.6 });
+    document.querySelectorAll(metricSelector).forEach((element) => metricObserver.observe(element));
+
+    const enterDynamic = (element) => {
+      if (!(element instanceof Element)) return;
+      const candidates = element.matches(".exercise-row, .workout-card, .meal-card, .message-row, .history-card, .plan-card")
+        ? [element]
+        : [...element.querySelectorAll(".exercise-row, .workout-card, .meal-card, .message-row, .history-card, .plan-card")];
+      candidates.forEach((candidate, index) => {
+        candidate.classList.remove("fp-dynamic-entry");
+        candidate.style.setProperty("--fp-motion-delay", `${Math.min(index * 45, 270)}ms`);
+        requestAnimationFrame(() => candidate.classList.add("fp-dynamic-entry"));
+      });
+    };
+
+    const mutationObserver = new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type === "childList") {
+          record.addedNodes.forEach(enterDynamic);
+          const metric = record.target instanceof Element ? record.target.closest(metricSelector) : null;
+          if (metric) animateMetric(metric);
+        }
+      }
+    });
+    const motionRoot = document.querySelector("main") || document.body;
+    mutationObserver.observe(motionRoot, { childList: true, subtree: true, characterData: true });
+
+    document.addEventListener("change", (event) => {
+      const selected = event.target.closest(".visual-choice-card, .focus-mode-card, .muscle-chip, .set-row");
+      if (selected) {
+        selected.classList.remove("fp-motion-selected");
+        requestAnimationFrame(() => selected.classList.add("fp-motion-selected"));
+      }
+      if (event.target.matches(".set-complete") && event.target.checked) {
+        const row = event.target.closest(".set-row");
+        row?.classList.add("fp-set-complete");
+        window.setTimeout(() => row?.classList.remove("fp-set-complete"), 420);
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      const muscle = event.target.closest(".muscle-chip, [data-muscle-region]");
+      if (!muscle) return;
+      muscle.classList.remove("fp-muscle-active");
+      requestAnimationFrame(() => muscle.classList.add("fp-muscle-active"));
+      window.setTimeout(() => muscle.classList.remove("fp-muscle-active"), 520);
+    });
+  };
+
   const boot = () => {
     const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
     const copy = translations[language];
     document.body.classList.add("fp-redesign", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
+    document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
     if (!protectedRoutes.has(route)) document.body.classList.add("fp-public-route");
     addSkipLink(copy);
@@ -166,6 +345,7 @@
     window.setTimeout(exposeIconActions, 500);
     window.setTimeout(exposeIconActions, 1500);
     prepareTables();
+    setupPerformanceMotion();
     requestAnimationFrame(() => document.documentElement.classList.add("fp-redesign-ready"));
   };
 
