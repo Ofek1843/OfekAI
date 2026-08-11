@@ -1235,6 +1235,10 @@ function renderProgram(program, weeklyVolume) {
   const sessions = Array.isArray(program.sessions)
     ? program.sessions
     : [];
+  const requestedDay = Number(new URLSearchParams(window.location.search).get("day"));
+  const initialDayIndex = Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= sessions.length
+    ? requestedDay - 1
+    : 0;
 
   const sessionsHtml = sessions
     .map((session, sessionIndex) => {
@@ -1266,10 +1270,11 @@ function renderProgram(program, weeklyVolume) {
                   type="button"
                   class="reroll-button"
                   title="${isHebrew ? "החלף תרגיל" : "Replace exercise"}"
+                  aria-label="${isHebrew ? "החלף תרגיל" : "Replace exercise"}"
                   data-session="${sessionIndex}"
                   data-exercise="${exerciseIndex}"
-                >🔄</button>
-                <button type="button" class="exercise-demo-button" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">▶ ${isHebrew ? "הדגמה" : "Demo"}</button>
+                >${isHebrew ? "החלפה" : "Replace"}</button>
+                <button type="button" class="exercise-demo-button" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">${isHebrew ? "הדגמה" : "Demo"}</button>
               </div>
 
               <div class="exercise-card-body">
@@ -1344,6 +1349,8 @@ function renderProgram(program, weeklyVolume) {
       return `
         <section
           class="workout-day workout-day-${(sessionIndex % 4) + 1}"
+          data-program-day="${sessionIndex}"
+          ${sessionIndex === initialDayIndex ? "" : "hidden"}
         >
           <div class="workout-day-header">
             <div>
@@ -1368,6 +1375,21 @@ function renderProgram(program, weeklyVolume) {
       `;
     })
     .join("");
+
+  const dayNavigation = sessions.map((session, sessionIndex) => {
+    const dayNumber = session.day || sessionIndex + 1;
+    const sessionName = translateWorkoutValue(session.name);
+    return `
+      <button class="plan-day-button${sessionIndex === initialDayIndex ? " is-active" : ""}" type="button" data-program-day-target="${sessionIndex}" aria-current="${sessionIndex === initialDayIndex ? "step" : "false"}">
+        <span>${ui.day} ${escapeHtml(String(dayNumber))}</span>
+        <strong>${escapeHtml(sessionName)}</strong>
+      </button>
+    `;
+  }).join("");
+
+  const dayOptions = sessions.map((session, sessionIndex) => `
+    <option value="${sessionIndex}" ${sessionIndex === initialDayIndex ? "selected" : ""}>${ui.day} ${escapeHtml(String(session.day || sessionIndex + 1))} — ${escapeHtml(translateWorkoutValue(session.name))}</option>
+  `).join("");
 
   resultElement.innerHTML = `
     <section class="program-card">
@@ -1403,14 +1425,14 @@ function renderProgram(program, weeklyVolume) {
         </div>
 
 <div class="program-actions">
-  <button type="button" class="share-program-button" id="share-workout-button">↗ ${isHebrew ? "שיתוף" : "Share"}</button>
+  <button type="button" class="share-program-button" id="share-workout-button">${isHebrew ? "שיתוף" : "Share"}</button>
 
   <button
     type="button"
     class="save-program-button"
     id="save-workout-button"
   >
-    💾 ${isHebrew ? "שמירת תוכנית" : "Save Workout"}
+    ${isHebrew ? "שמירת תוכנית" : "Save Workout"}
   </button>
 </div>
       </header>
@@ -1442,15 +1464,51 @@ function renderProgram(program, weeklyVolume) {
 
       ${renderTrainingEffortGuidance()}
 
-      <div class="program-days">
-        ${sessionsHtml}
-      </div>
-
-      <div id="weekly-volume-container">
-        ${renderWeeklyVolumeSummary(weeklyVolume)}
+      <div class="program-experience-grid">
+        <aside class="plan-day-rail" aria-label="${isHebrew ? "ימי האימון" : "Workout days"}">
+          <div class="plan-day-rail-heading">
+            <span>${isHebrew ? "מפת התוכנית" : "PROGRAM MAP"}</span>
+            <strong>${sessions.length} ${ui.daysPerWeek}</strong>
+          </div>
+          <div class="plan-day-buttons">${dayNavigation}</div>
+          <label class="plan-day-select-label" for="planDaySelect">${isHebrew ? "בחירת יום" : "Choose a day"}</label>
+          <select class="plan-day-select" id="planDaySelect">${dayOptions}</select>
+          <details class="plan-volume-disclosure" id="weekly-volume-container">
+            <summary>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</summary>
+            ${renderWeeklyVolumeSummary(weeklyVolume)}
+          </details>
+        </aside>
+        <div class="program-days" aria-live="polite">
+          ${sessionsHtml}
+        </div>
       </div>
     </section>
   `;
+
+  const activateDay = (dayIndex, { updateUrl = true, focus = false } = {}) => {
+    const safeIndex = Math.max(0, Math.min(sessions.length - 1, Number(dayIndex) || 0));
+    resultElement.querySelectorAll("[data-program-day]").forEach((day) => {
+      day.hidden = Number(day.dataset.programDay) !== safeIndex;
+    });
+    resultElement.querySelectorAll("[data-program-day-target]").forEach((button) => {
+      const active = Number(button.dataset.programDayTarget) === safeIndex;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-current", active ? "step" : "false");
+    });
+    const select = resultElement.querySelector("#planDaySelect");
+    if (select) select.value = String(safeIndex);
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("day", String(safeIndex + 1));
+      history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+    if (focus) resultElement.querySelector(`[data-program-day="${safeIndex}"] h3`)?.focus?.({ preventScroll: true });
+  };
+
+  resultElement.querySelectorAll("[data-program-day-target]").forEach((button) => {
+    button.addEventListener("click", () => activateDay(button.dataset.programDayTarget));
+  });
+  resultElement.querySelector("#planDaySelect")?.addEventListener("change", (event) => activateDay(event.currentTarget.value));
 
   const saveWorkoutButton = resultElement.querySelector(
     "#save-workout-button"
@@ -1489,8 +1547,8 @@ function renderProgram(program, weeklyVolume) {
 
       saveWorkoutButton.disabled = false;
       saveWorkoutButton.textContent = isHebrew
-        ? "💾 שמירת תוכנית"
-        : "💾 Save Workout";
+        ? "שמירת תוכנית"
+        : "Save Workout";
       setStatus(
         isHebrew
           ? "לא ניתן היה לשמור את התוכנית. ודא שאתה מחובר."
@@ -1614,7 +1672,10 @@ try {
   window.currentWeeklyVolume = data.weeklyVolume || null;
   const volumeContainer = resultElement.querySelector("#weekly-volume-container");
   if (volumeContainer) {
-    volumeContainer.innerHTML = renderWeeklyVolumeSummary(data.weeklyVolume);
+    volumeContainer.innerHTML = `
+      <summary>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</summary>
+      ${renderWeeklyVolumeSummary(data.weeklyVolume)}
+    `;
   }
 }
 } finally {

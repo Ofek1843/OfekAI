@@ -159,7 +159,7 @@ test("workout-builder.js: renders the Weekly Muscle Volume section for both init
   assert.match(source, /function renderProgram\(program, weeklyVolume\)/);
   assert.match(source, /renderProgram\(data\.program, data\.weeklyVolume\)/, "the initial generation response must pass weeklyVolume through to rendering");
   assert.match(source, /id="weekly-volume-container"/);
-  assert.match(source, /volumeContainer\.innerHTML = renderWeeklyVolumeSummary\(data\.weeklyVolume\)/, "reroll must re-render the summary from the reroll response's OWN weeklyVolume, not reuse the pre-reroll one");
+  assert.match(source, /volumeContainer\.innerHTML = `[\s\S]*?<summary>[\s\S]*?renderWeeklyVolumeSummary\(data\.weeklyVolume\)/, "reroll must preserve the disclosure heading and re-render the summary from the reroll response's OWN weeklyVolume");
   assert.match(source, /window\.currentWeeklyVolume = data\.weeklyVolume/);
 });
 
@@ -239,12 +239,13 @@ test("workout-builder.css: distinct visual states exist for below/preferred-zone
   assert.notEqual(successRule.trim(), validOffTargetRule.trim(), "a bare-minimum value must be visually distinct from a preferred-zone value");
 });
 
-test("Weekly Muscle Volume section is positioned after all workout sessions, not interleaved with them", () => {
+test("Weekly Muscle Volume is kept in the program rail and never interleaved with exercise cards", () => {
   const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-builder.js"), "utf8");
-  const programDaysIndex = source.indexOf('<div class="program-days">');
-  const volumeContainerIndex = source.indexOf('<div id="weekly-volume-container">');
-  assert.ok(programDaysIndex !== -1 && volumeContainerIndex !== -1);
-  assert.ok(volumeContainerIndex > programDaysIndex, "the weekly volume section must render after the sessions grid");
+  const railIndex = source.indexOf('<aside class="plan-day-rail"');
+  const volumeContainerIndex = source.indexOf('<details class="plan-volume-disclosure" id="weekly-volume-container">');
+  const programDaysIndex = source.indexOf('<div class="program-days" aria-live="polite">');
+  assert.ok(railIndex !== -1 && volumeContainerIndex !== -1 && programDaysIndex !== -1);
+  assert.ok(volumeContainerIndex > railIndex && volumeContainerIndex < programDaysIndex, "Weekly Sets must live inside the day rail before the active exercise canvas");
 });
 
 // --- Secondary / not-targeted / incomplete statuses (release-blocking fix) ---
