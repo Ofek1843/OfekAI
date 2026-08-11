@@ -115,6 +115,12 @@ test("Social mobile header keeps Dashboard visible and safe-area aware", () => {
   assert.match(CSS, /max-width:\s*42vw/);
 });
 
+test("Social mobile Messages exposes the conversation rail until a thread is selected", () => {
+  assert.match(JS, /classList\.toggle\("show-conversations",\s*messages\s*&&\s*!state\.activeConversation\)/);
+  assert.match(JS, /state\.activeConversation\s*=\s*conversation;[\s\S]*?classList\.remove\("show-conversations"\)/);
+  assert.match(CSS, /\.social-app\.show-conversations\s+\.conversation-rail\s*\{[^}]*display:\s*block/s);
+});
+
 test("social navigation and plan share discovery are present", () => {
   assert.match(DASHBOARD, /href="\/social\.html"/);
   assert.match(DASHBOARD, /socialUnreadBadge/);

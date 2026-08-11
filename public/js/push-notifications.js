@@ -11,6 +11,7 @@ import {
 } from "./push-client-core.mjs";
 
 const INSTALLATION_KEY = "fuelphysique-push-installation-id";
+const localEmulatorMode = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 const strings = he ? {
   promptTitle: "להישאר מעודכנים",
@@ -107,6 +108,7 @@ async function notificationApi(path, options = {}) {
 }
 
 async function capability() {
+  if (localEmulatorMode) return "unsupported";
   const native = pushCapability({
     serviceWorker: "serviceWorker" in navigator,
     pushManager: "PushManager" in window,
@@ -179,6 +181,7 @@ async function registerGrantedInstallation() {
 }
 
 export async function enableNotificationsFromGesture() {
+  if (localEmulatorMode) throw Object.assign(new Error(strings.unavailable), { code: "push_not_configured" });
   if (!("Notification" in window)) throw Object.assign(new Error(strings.unsupported), { code: "push_unsupported" });
   // The native prompt call intentionally occurs before any await. Browsers
   // require this direct connection to the user's click/tap gesture.
@@ -197,7 +200,7 @@ export async function disassociateCurrentInstallation() {
     console.warn("Notification installation disassociation failed:", error.code || "request_failed");
   }
   try {
-    if (await isSupported()) {
+    if (!localEmulatorMode && await isSupported()) {
       messaging ||= getMessaging(app);
       await unregister(messaging);
     }

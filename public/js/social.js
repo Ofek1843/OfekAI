@@ -430,7 +430,7 @@ function setView(view) {
   $("#messagesView").hidden = !messages;
   $("#friendsTab").classList.toggle("is-active", !messages);
   $("#messagesTab").classList.toggle("is-active", messages);
-  $("#socialApp").classList.remove("show-conversations");
+  $("#socialApp").classList.toggle("show-conversations", messages && !state.activeConversation);
 }
 
 function artifactCard(message) {
@@ -586,6 +586,7 @@ async function openConversation(conversationOrId) {
   let conversation = typeof conversationOrId === "string" ? state.conversations.find((item) => item.id === conversationOrId) : conversationOrId;
   if (!conversation) return;
   state.activeConversation = conversation;
+  $("#socialApp").classList.remove("show-conversations");
   state.messages = [];
   state.nextCursor = null;
   renderConversations();

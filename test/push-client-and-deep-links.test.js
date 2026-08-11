@@ -91,6 +91,12 @@ test("logout and account-switch lifecycle disassociates and unregisters the curr
   }
 });
 
+test("local emulator review never initializes production Firebase Messaging", () => {
+  assert.match(PUSH_SOURCE, /localEmulatorMode\s*=\s*\["localhost",\s*"127\.0\.0\.1"\]\.includes\(window\.location\.hostname\)/);
+  assert.match(PUSH_SOURCE, /if \(localEmulatorMode\) return "unsupported"/);
+  assert.match(PUSH_SOURCE, /if \(!localEmulatorMode && await isSupported\(\)\)/);
+});
+
 test("safe auth return paths accept exact notification destinations", () => {
   assert.equal(resolveNextPath("/social.html?conversation=thread_1"), "/social.html?conversation=thread_1");
   assert.equal(resolveNextPath("/social.html?conversation=thread_1&artifact=artifact-2"), "/social.html?conversation=thread_1&artifact=artifact-2");
