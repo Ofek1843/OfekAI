@@ -58,11 +58,19 @@ test("manifest.json is valid and satisfies install-criteria fields", () => {
 
   const hasMaskable = manifest.icons.some(icon => (icon.purpose || "").includes("maskable"));
   assert.ok(hasMaskable, "manifest should declare at least one maskable icon for adaptive Android icon shapes");
+  assert.ok(manifest.icons.every(icon => /^\/images\/brand\/fuelphysique-icon-(?:192|512)\.png$/.test(icon.src)));
+  assert.ok(manifest.icons.every(icon => icon.type === "image/png"));
+  assert.equal(manifest.screenshots, undefined, "manifest must not advertise mock screenshots");
+
+  for (const icon of manifest.icons) {
+    assert.ok(fs.existsSync(path.join(PUBLIC, icon.src)), `missing manifest icon: ${icon.src}`);
+  }
 });
 
-test("manifest theme/background colors match the Blue Abyss palette", () => {
+test("manifest theme/background colors match the Ultramarine Editorial palette", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC, "manifest.json"), "utf8"));
-  assert.equal(manifest.theme_color.toLowerCase(), "#2f9bff", "theme_color must be Blue Abyss electric blue");
+  assert.equal(manifest.theme_color.toLowerCase(), "#304ffe", "theme_color must use approved Ultramarine");
+  assert.equal(manifest.background_color.toLowerCase(), "#0b0b0d", "background_color must use approved ink");
 });
 
 test("sw.js exists and is syntactically valid", () => {
@@ -76,7 +84,7 @@ test("sw.js exists and is syntactically valid", () => {
 
 test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
-  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v10-editorial['"]/);
+  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v11-ultramarine-motion['"]/);
   assert.match(source, /['"]\/manifest\.json['"]/);
   assert.match(source, /NETWORK_ONLY_PREFIXES\s*=\s*\[['"]\/api\/['"]\]/);
   assert.match(source, /requestPath\.startsWith\(prefix\)/);
@@ -93,7 +101,7 @@ for (const page of PAGES_WITH_INSTALL_PROMOTION) {
     assert.match(html, /<link rel="manifest" href="\/manifest\.json">/, `${page} must link the manifest`);
     assert.match(html, /navigator\.serviceWorker\.register\(['"]\/sw\.js['"]\)/, `${page} must register the service worker`);
     assert.match(html, /src="\/js\/pwa-install\.js"/, `${page} must load pwa-install.js`);
-    assert.match(html, /theme-color" content="#2f9bff"/, `${page} theme-color meta must match Blue Abyss`);
+    assert.match(html, /theme-color" content="#0B0B0D"/, `${page} theme-color meta must match the ink application shell`);
     assert.match(html, /<meta name="application-name" content="FuelPhysique">/);
     assert.match(html, /<meta name="apple-mobile-web-app-title" content="FuelPhysique">/);
     assert.doesNotMatch(html, /<title>[^<]*(?:AI Fitness|AI Coach|AI Workout|Ofek AI)/i);

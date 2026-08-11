@@ -28,16 +28,15 @@ test("the complete redesign is applied once to every public HTML route", () => {
   assert.deepEqual(failures, []);
 });
 
-test("the selected editorial direction uses one narrow non-blue brand accent", () => {
-  assert.match(CSS, /--fp-brand-primary:\s*#ff5a3c/);
-  assert.match(CSS, /--fp-brand-secondary:\s*#ff5a3c/);
+test("the selected editorial direction uses the narrow Ultramarine brand system", () => {
+  assert.match(CSS, /--fp-ultramarine:\s*#304ffe/);
+  assert.match(CSS, /--fp-brand-primary:\s*var\(--fp-ultramarine\)/);
+  assert.match(CSS, /--fp-brand-secondary:\s*var\(--fp-ultramarine\)/);
   assert.doesNotMatch(CSS, /linear-gradient|radial-gradient|conic-gradient/);
-  const primaryColours = [...CSS.matchAll(/--fp-brand-primary:\s*#([0-9a-f]{6})/gi)].map((match) => match[1]);
-  assert.ok(primaryColours.length >= 2, "dark and light themes should both define the accent");
-  for (const hex of primaryColours) {
-    const [red, green, blue] = [0, 2, 4].map((start) => Number.parseInt(hex.slice(start, start + 2), 16));
-    assert.ok(red > green && red > blue, `#${hex} must remain a warm, non-blue accent`);
-  }
+  assert.doesNotMatch(CSS, /#ff5a3c|#d3351c|rgba\(255,\s*90,\s*60|rgba\(216,\s*58,\s*32/i);
+  assert.match(CSS, /--fp-danger:\s*#e05a67/);
+  assert.match(CSS, /--fp-success:\s*#62b37c/);
+  assert.match(CSS, /--fp-warning:\s*#d8a542/);
 });
 
 test("the product shell exposes exactly five primary destinations", () => {
@@ -78,9 +77,10 @@ test("focus, reduced motion, disabled controls, and minimum control size are exp
 });
 
 test("the service worker versions and pre-caches the shared redesign assets", () => {
-  assert.match(SW, /fuelphysique-v10-editorial/);
-  assert.ok(SW.includes("/css/redesign-v1.css?v=20260810"));
-  assert.ok(SW.includes("/js/redesign-shell.js?v=20260810"));
+  assert.match(SW, /fuelphysique-v11-ultramarine-motion/);
+  assert.ok(SW.includes("/css/redesign-v1.css?v=20260810-ultramarine-motion"));
+  assert.ok(SW.includes("/js/redesign-shell.js?v=20260810-ultramarine-motion"));
+  assert.ok(SW.includes("/images/brand/ultramarine-athlete-hero.webp"));
 });
 
 test("the before audit, implementation system, and same-input visual QA are documented", () => {

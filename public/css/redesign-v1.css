@@ -1,41 +1,53 @@
 /* FuelPhysique Editorial Performance — shared visual and responsive layer. */
 
 :root {
-  --fp-bg-deep: #090a09;
-  --fp-bg-page: #11110f;
-  --fp-bg-section: #141412;
-  --fp-surface: #181816;
-  --fp-surface-raised: #22211e;
-  --fp-surface-soft: #2a2824;
-  --fp-surface-input: #10100e;
-  --fp-nav-surface: #0b0c0b;
-  --fp-border: #3a3832;
-  --fp-border-strong: #625e55;
-  --fp-text-primary: #f4efe5;
-  --fp-text-secondary: #d0c9bd;
-  --fp-text-muted: #aaa397;
-  --fp-text-inverse: #15130f;
-  --fp-brand-primary: #ff5a3c;
-  --fp-brand-primary-hover: #ff735c;
-  --fp-brand-primary-active: #e63d21;
-  --fp-brand-secondary: #ff5a3c;
-  --fp-brand-secondary-hover: #ff735c;
-  --fp-brand-primary-soft: rgba(255, 90, 60, 0.14);
-  --fp-brand-primary-softer: rgba(255, 90, 60, 0.07);
-  --fp-brand-secondary-soft: rgba(255, 90, 60, 0.14);
-  --fp-highlight: #ff5a3c;
-  --fp-highlight-soft: rgba(255, 90, 60, 0.14);
-  --fp-success: #8bbf79;
-  --fp-warning: #d5a94e;
-  --fp-danger: #e45c68;
-  --fp-info: #c8bda9;
-  --fp-success-soft: rgba(139, 191, 121, 0.14);
-  --fp-warning-soft: rgba(213, 169, 78, 0.14);
-  --fp-danger-soft: rgba(228, 92, 104, 0.14);
-  --fp-info-soft: rgba(200, 189, 169, 0.14);
-  --fp-focus-ring: rgba(255, 90, 60, 0.42);
+  --fp-ink: #0b0b0d;
+  --fp-graphite: #14161a;
+  --fp-graphite-soft: #1c1f25;
+  --fp-paper: #faf9f6;
+  --fp-paper-soft: #f1f2f4;
+  --fp-ultramarine: #304ffe;
+  --fp-ultramarine-strong: #1d39e8;
+  --fp-ultramarine-soft: #e7ebff;
+  --fp-steel: #a8b1c1;
+  --fp-steel-dark: #667085;
+  --fp-border-light: #d9dde5;
+  --fp-border-dark: #292d35;
+  --fp-bg-deep: var(--fp-ink);
+  --fp-bg-page: var(--fp-graphite);
+  --fp-bg-section: var(--fp-graphite-soft);
+  --fp-surface: var(--fp-graphite-soft);
+  --fp-surface-raised: #22262d;
+  --fp-surface-soft: var(--fp-border-dark);
+  --fp-surface-input: var(--fp-ink);
+  --fp-nav-surface: var(--fp-ink);
+  --fp-border: var(--fp-border-dark);
+  --fp-border-strong: #414754;
+  --fp-text-primary: var(--fp-paper);
+  --fp-text-secondary: var(--fp-border-light);
+  --fp-text-muted: var(--fp-steel);
+  --fp-text-inverse: var(--fp-paper);
+  --fp-brand-primary: var(--fp-ultramarine);
+  --fp-brand-primary-hover: #4661ff;
+  --fp-brand-primary-active: var(--fp-ultramarine-strong);
+  --fp-brand-secondary: var(--fp-ultramarine);
+  --fp-brand-secondary-hover: #4661ff;
+  --fp-brand-primary-soft: rgba(48, 79, 254, 0.18);
+  --fp-brand-primary-softer: rgba(48, 79, 254, 0.09);
+  --fp-brand-secondary-soft: rgba(48, 79, 254, 0.18);
+  --fp-highlight: var(--fp-ultramarine);
+  --fp-highlight-soft: rgba(48, 79, 254, 0.18);
+  --fp-success: #62b37c;
+  --fp-warning: #d8a542;
+  --fp-danger: #e05a67;
+  --fp-info: var(--fp-steel);
+  --fp-success-soft: rgba(98, 179, 124, 0.16);
+  --fp-warning-soft: rgba(216, 165, 66, 0.16);
+  --fp-danger-soft: rgba(224, 90, 103, 0.16);
+  --fp-info-soft: rgba(168, 177, 193, 0.16);
+  --fp-focus-ring: #8292ff;
   --fp-hover-surface: rgba(255, 255, 255, 0.045);
-  --fp-active-surface: rgba(255, 90, 60, 0.1);
+  --fp-active-surface: rgba(48, 79, 254, 0.14);
   --fp-shadow-soft: 0 16px 48px rgba(0, 0, 0, 0.28);
   --fp-shadow-raised: 0 24px 64px rgba(0, 0, 0, 0.42);
   --fp-cat-workout: var(--fp-brand-primary);
@@ -46,16 +58,16 @@
   --fp-cat-nutrition-soft: var(--fp-brand-primary-soft);
   --fp-cat-progress-soft: var(--fp-brand-primary-soft);
   --fp-cat-coach-soft: var(--fp-brand-primary-soft);
-  --fp-chart-1: #ff5a3c;
-  --fp-chart-2: #f4efe5;
-  --fp-chart-3: #8bbf79;
-  --fp-chart-4: #d5a94e;
-  --fp-chart-5: #e45c68;
-  --fp-chart-grid: #34312c;
-  --fp-chart-axis: #918a7f;
-  --fp-chart-label: #d0c9bd;
-  --fp-chart-tooltip-bg: #22211e;
-  --fp-chart-tooltip-text: #f4efe5;
+  --fp-chart-1: var(--fp-ultramarine);
+  --fp-chart-2: var(--fp-paper);
+  --fp-chart-3: var(--fp-success);
+  --fp-chart-4: var(--fp-warning);
+  --fp-chart-5: var(--fp-danger);
+  --fp-chart-grid: var(--fp-border-dark);
+  --fp-chart-axis: var(--fp-steel-dark);
+  --fp-chart-label: var(--fp-border-light);
+  --fp-chart-tooltip-bg: #22262d;
+  --fp-chart-tooltip-text: var(--fp-paper);
   --fp-radius-xs: 2px;
   --fp-radius-sm: 4px;
   --fp-radius-md: 6px;
@@ -63,35 +75,44 @@
   --fp-content: min(1180px, calc(100vw - 48px));
   --fp-display: "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
   --fp-ui: Inter, "Segoe UI", Arial, sans-serif;
+  --motion-instant: 80ms;
+  --motion-fast: 160ms;
+  --motion-standard: 280ms;
+  --motion-slow: 560ms;
+  --motion-moment: 900ms;
+  --ease-effort: cubic-bezier(0.2, 0.78, 0.2, 1);
+  --ease-velocity: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-recovery: cubic-bezier(0.22, 0.7, 0.28, 1);
+  --ease-settle: cubic-bezier(0.34, 1.25, 0.5, 1);
   color-scheme: dark;
 }
 
 html[data-theme="light"] {
-  --fp-bg-deep: #e6dfd3;
-  --fp-bg-page: #f2eee6;
-  --fp-bg-section: #ece6dc;
-  --fp-surface: #fffaf1;
+  --fp-bg-deep: var(--fp-paper-soft);
+  --fp-bg-page: var(--fp-paper);
+  --fp-bg-section: var(--fp-paper-soft);
+  --fp-surface: #ffffff;
   --fp-surface-raised: #ffffff;
-  --fp-surface-soft: #e2dacc;
+  --fp-surface-soft: var(--fp-paper-soft);
   --fp-surface-input: #ffffff;
-  --fp-nav-surface: #f7f1e8;
-  --fp-border: #c8c0b3;
-  --fp-border-strong: #91887b;
-  --fp-text-primary: #191815;
-  --fp-text-secondary: #3f3b35;
-  --fp-text-muted: #625d55;
-  --fp-text-inverse: #fffaf1;
-  --fp-brand-primary: #d3351c;
-  --fp-brand-primary-hover: #b92d18;
-  --fp-brand-primary-active: #9f2514;
-  --fp-brand-primary-soft: rgba(216, 58, 32, 0.1);
-  --fp-brand-primary-softer: rgba(216, 58, 32, 0.055);
-  --fp-focus-ring: rgba(216, 58, 32, 0.34);
-  --fp-chart-grid: #d4ccbf;
-  --fp-chart-axis: #6a645b;
-  --fp-chart-label: #3f3b35;
+  --fp-nav-surface: var(--fp-paper);
+  --fp-border: var(--fp-border-light);
+  --fp-border-strong: var(--fp-steel);
+  --fp-text-primary: var(--fp-ink);
+  --fp-text-secondary: #343843;
+  --fp-text-muted: var(--fp-steel-dark);
+  --fp-text-inverse: var(--fp-paper);
+  --fp-brand-primary: var(--fp-ultramarine-strong);
+  --fp-brand-primary-hover: #142ecf;
+  --fp-brand-primary-active: #1025ad;
+  --fp-brand-primary-soft: rgba(48, 79, 254, 0.12);
+  --fp-brand-primary-softer: rgba(48, 79, 254, 0.06);
+  --fp-focus-ring: #304ffe;
+  --fp-chart-grid: var(--fp-border-light);
+  --fp-chart-axis: var(--fp-steel-dark);
+  --fp-chart-label: #343843;
   --fp-chart-tooltip-bg: #ffffff;
-  --fp-chart-tooltip-text: #191815;
+  --fp-chart-tooltip-text: var(--fp-ink);
   color-scheme: light;
 }
 
@@ -115,6 +136,41 @@ body.fp-redesign {
   font-size: 16px;
   line-height: 1.55;
   text-rendering: optimizeLegibility;
+}
+
+/* Deliberate page rhythm: utility/editorial journeys stay paper-led, while
+   training execution and data-heavy pages retain the neutral dark system. */
+body.fp-composition-light {
+  --fp-bg-deep: var(--fp-paper-soft);
+  --fp-bg-page: var(--fp-paper);
+  --fp-bg-section: var(--fp-paper-soft);
+  --fp-surface: #ffffff;
+  --fp-surface-raised: #ffffff;
+  --fp-surface-soft: var(--fp-paper-soft);
+  --fp-surface-input: #ffffff;
+  --fp-nav-surface: var(--fp-paper);
+  --fp-border: var(--fp-border-light);
+  --fp-border-strong: var(--fp-steel);
+  --fp-text-primary: var(--fp-ink);
+  --fp-text-secondary: #343843;
+  --fp-text-muted: var(--fp-steel-dark);
+  --fp-text-inverse: var(--fp-paper);
+  --fp-brand-primary: var(--fp-ultramarine-strong);
+  --fp-brand-primary-hover: #142ecf;
+  --fp-brand-primary-active: #1025ad;
+  --fp-brand-primary-soft: rgba(48, 79, 254, 0.12);
+  --fp-brand-primary-softer: rgba(48, 79, 254, 0.06);
+  --fp-focus-ring: var(--fp-ultramarine);
+  --fp-chart-grid: var(--fp-border-light);
+  --fp-chart-axis: var(--fp-steel-dark);
+  --fp-chart-label: #343843;
+  --fp-chart-tooltip-bg: #ffffff;
+  --fp-chart-tooltip-text: var(--fp-ink);
+  color-scheme: light;
+}
+
+body.fp-composition-dark {
+  color-scheme: dark;
 }
 
 body.fp-redesign::before,
@@ -209,7 +265,8 @@ body.fp-redesign::after,
   font-weight: 800;
   letter-spacing: 0;
   box-shadow: none !important;
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+  transition: background-color var(--motion-fast) var(--ease-effort), border-color var(--motion-fast) var(--ease-effort), color var(--motion-fast) var(--ease-effort), transform var(--motion-fast) var(--ease-settle);
+  background-image: none !important;
 }
 
 .fp-redesign :where(.primary-action, .primary-button, .hero-btn.primary, .wizard-button--next, .wizard-button--generate, .submit-button, button[type="submit"]):not(.secondary-button):not(.text-action) {
@@ -377,6 +434,17 @@ body.fp-redesign::after,
   box-shadow: none !important;
 }
 
+.fp-route-index .logo {
+  background-image: none !important;
+  color: var(--fp-paper) !important;
+  -webkit-text-fill-color: currentColor;
+}
+
+.fp-route-index .comparison-handle {
+  background-image: none !important;
+  background-color: var(--fp-paper) !important;
+}
+
 .fp-route-index .logo,
 .fp-route-index .navbar .logo {
   color: var(--fp-text-primary) !important;
@@ -473,21 +541,34 @@ body.fp-redesign::after,
   display: grid !important;
   align-content: end;
   gap: 0 !important;
-  padding: 0 !important;
-  border-block: 1px solid var(--fp-border);
-  background: transparent !important;
+  min-height: 720px;
+  padding: clamp(280px, 34vw, 420px) 0 0 !important;
+  border: 1px solid var(--fp-border-dark) !important;
+  background-color: var(--fp-ink) !important;
+  background-image: image-set(
+    url("/images/brand/ultramarine-athlete-hero.webp") type("image/webp"),
+    url("/images/brand/ultramarine-athlete-hero.png") type("image/png")
+  ) !important;
+  background-position: center top !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% auto !important;
   grid-column: 2;
   grid-row: 1 / span 3;
 }
 
 .fp-route-index .system-card {
   min-height: 140px;
-  padding: 24px 0 !important;
+  padding: 24px !important;
   border: 0 !important;
-  border-block-end: 1px solid var(--fp-border) !important;
+  border-block-end: 1px solid var(--fp-border-dark) !important;
   border-radius: 0 !important;
-  background: transparent !important;
+  background: var(--fp-graphite) !important;
+  color: var(--fp-border-light) !important;
   box-shadow: none !important;
+}
+
+.fp-route-index .system-card :where(strong, p, span) {
+  color: inherit !important;
 }
 
 .fp-route-index .system-card:last-child {
@@ -556,6 +637,32 @@ body.fp-redesign::after,
   margin: 0 auto !important;
   padding: clamp(64px, 9vw, 120px) 0 !important;
   border-block-start: 1px solid var(--fp-border);
+}
+
+.fp-route-index .results-section {
+  --fp-border: var(--fp-border-dark);
+  --fp-text-primary: var(--fp-paper);
+  --fp-text-secondary: var(--fp-border-light);
+  --fp-text-muted: var(--fp-steel);
+  --fp-surface: var(--fp-graphite-soft);
+  color: var(--fp-text-primary);
+  background: var(--fp-ink) !important;
+  box-shadow: 0 0 0 100vmax var(--fp-ink);
+  clip-path: inset(0 -100vmax);
+}
+
+.fp-route-index .final-cta {
+  --fp-brand-primary: var(--fp-paper);
+  --fp-brand-primary-hover: #ffffff;
+  --fp-text-primary: var(--fp-paper);
+  --fp-text-secondary: var(--fp-ultramarine-soft);
+  --fp-text-muted: var(--fp-ultramarine-soft);
+  --fp-text-inverse: var(--fp-ink);
+  --fp-border: rgba(250, 249, 246, 0.4);
+  color: var(--fp-paper);
+  background: var(--fp-ultramarine-strong) !important;
+  box-shadow: 0 0 0 100vmax var(--fp-ultramarine-strong);
+  clip-path: inset(0 -100vmax);
 }
 
 .fp-route-index .section-heading {
@@ -761,6 +868,57 @@ body.fp-redesign::after,
 .fp-route-dashboard .dashboard-action::after {
   display: none !important;
   content: none !important;
+}
+
+.fp-route-dashboard :where(.stats-grid > article, .schedule-day) {
+  background-image: none !important;
+  background-color: var(--fp-surface-raised) !important;
+}
+
+.fp-route-dashboard .schedule-day.is-today {
+  border-color: var(--fp-ultramarine) !important;
+}
+
+.fp-route-progress .chart-area {
+  fill: rgba(48, 79, 254, 0.14) !important;
+}
+
+.fp-route-progress :where(.chart-line, .chart-dot) {
+  stroke: var(--fp-ultramarine) !important;
+}
+
+.fp-route-workout-tracker :where(.brand-badge, .focus-badge, .quick-mode-button, .quick-action, .time-fit-summary) {
+  border-color: var(--fp-border-strong) !important;
+  background-image: none !important;
+  background-color: var(--fp-surface-raised) !important;
+  color: var(--fp-text-secondary) !important;
+  box-shadow: none !important;
+}
+
+.fp-route-workout-tracker :where(.brand-badge, .focus-badge) {
+  border-color: var(--fp-ultramarine) !important;
+  color: var(--fp-paper) !important;
+}
+
+.fp-route-workout-tracker :where(.focus-panel, .focus-exercise-media, .quick-actions, .rest-strip) {
+  background-image: none !important;
+  background-color: var(--fp-surface-raised) !important;
+  box-shadow: none !important;
+}
+
+.fp-route-workout-tracker .focus-panel::before {
+  display: none !important;
+  background-image: none !important;
+}
+
+.fp-route-workout-tracker .target-reps-card {
+  background-image: none !important;
+  background-color: var(--fp-warning-soft) !important;
+}
+
+.fp-route-workout-tracker .next-set-preview {
+  background-image: none !important;
+  background-color: var(--fp-success-soft) !important;
 }
 
 .fp-redesign .site-feedback-trigger {
@@ -990,6 +1148,34 @@ body.fp-redesign::after,
   background: rgba(9, 10, 9, 0.42) !important;
 }
 
+/* Preserve the real first-party photography while removing the legacy color
+   washes. These explicit URLs keep every builder asset intact without a
+   gradient or third-party fallback. */
+.fp-route-workout-builder .visual-choice-card--goal-muscle .visual-choice-image { background-image: url("/images/workout-builder/goals/build-muscle.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--goal-fat .visual-choice-image { background-image: url("/images/workout-builder/goals/lost-fat.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--goal-strength .visual-choice-image { background-image: url("/images/workout-builder/goals/increase-strength.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--goal-skills .visual-choice-image { background-image: url("/images/workout-builder/goals/calisthenics-skills.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--goal-performance .visual-choice-image { background-image: url("/images/workout-builder/goals/maintain-performance.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--beginner .visual-choice-image { background-image: url("/images/workout-builder/experience/beginner.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--intermediate .visual-choice-image { background-image: url("/images/workout-builder/experience/intermediate.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--advanced .visual-choice-image { background-image: url("/images/workout-builder/experience/advanced.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--gym .visual-choice-image { background-image: url("/images/workout-builder/styles/gym.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--calisthenics .visual-choice-image { background-image: url("/images/workout-builder/styles/calishtenics.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--hybrid .visual-choice-image { background-image: url("/images/workout-builder/styles/hybrid.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--bodyweight .visual-choice-image { background-image: url("/images/workout-builder/equipment/bodyweight.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--pullup .visual-choice-image { background-image: url("/images/workout-builder/equipment/pull-up-bar.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--rings .visual-choice-image { background-image: url("/images/workout-builder/equipment/rings.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--dumbbells .visual-choice-image { background-image: url("/images/workout-builder/equipment/dumbbells.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--barbell .visual-choice-image { background-image: url("/images/workout-builder/equipment/barbell.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--machines .visual-choice-image { background-image: url("/images/workout-builder/equipment/machines.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--hypertrophy .visual-choice-image { background-image: url("/images/workout-builder/priorities/hypertrophy.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--priority-strength .visual-choice-image { background-image: url("/images/workout-builder/priorities/strength.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--priority-skills .visual-choice-image { background-image: url("/images/workout-builder/priorities/skills.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--fitness .visual-choice-image { background-image: url("/images/workout-builder/priorities/general-fitness.webp") !important; }
+.fp-route-nutrition-builder .visual-choice-card--nutr-muscle .visual-choice-image { background-image: url("/images/nutrition-builder/goals/build-muscle.webp") !important; }
+.fp-route-nutrition-builder .visual-choice-card--nutr-fat .visual-choice-image { background-image: url("/images/nutrition-builder/goals/lose-fat.webp") !important; }
+.fp-route-nutrition-builder .visual-choice-card--nutr-maintain .visual-choice-image { background-image: url("/images/nutrition-builder/goals/maintain-weight.webp") !important; }
+
 .fp-redesign .wizard-fields-grid {
   gap: 20px !important;
 }
@@ -1105,7 +1291,35 @@ body.fp-redesign::after,
 
 .fp-route-social .conversation-rail {
   border-inline-end: 1px solid var(--fp-border) !important;
-  background: var(--fp-bg-deep) !important;
+  --fp-text-primary: var(--fp-paper);
+  --fp-text-secondary: var(--fp-border-light);
+  --fp-text-muted: var(--fp-steel);
+  background: var(--fp-ink) !important;
+}
+
+.fp-route-social :where(.skeleton-list span, .message-skeletons span) {
+  background-image: none !important;
+  background-color: var(--fp-border-dark) !important;
+  animation: none !important;
+}
+
+.fp-route-social .avatar {
+  background-image: none !important;
+  background-color: var(--fp-ultramarine) !important;
+  box-shadow: none !important;
+}
+
+.fp-route-social :where(.artifact-card, .artifact-visual) {
+  background-image: none !important;
+  background-color: var(--fp-surface-raised) !important;
+  box-shadow: none !important;
+}
+
+.fp-route-social :where(.primary-button, .send-button, .voice-preview-state .primary-button),
+.fp-route-social .volume-bar i::after {
+  background-image: none !important;
+  background-color: var(--fp-ultramarine) !important;
+  box-shadow: none !important;
 }
 
 .fp-route-social .rail-empty > span,
@@ -1190,6 +1404,11 @@ body.fp-redesign::after,
   box-shadow: none !important;
 }
 
+.fp-route-app .settings-overlay {
+  background-image: none !important;
+  background-color: rgba(11, 11, 13, 0.76) !important;
+}
+
 .fp-route-app :where(.settings-nav, .settings-sidebar) {
   background: var(--fp-bg-deep) !important;
 }
@@ -1235,6 +1454,18 @@ body.fp-redesign::after,
 .fp-legal-route h1 {
   margin-block: 16px 18px !important;
   text-transform: uppercase;
+}
+
+.fp-legal-route :where(.legal-nav-brand, .site-footer-brand) {
+  background-image: none !important;
+  color: var(--fp-ink) !important;
+  -webkit-text-fill-color: currentColor;
+}
+
+.fp-legal-route :where(.legal-badge, .legal-highlight) {
+  border-color: var(--fp-border-light) !important;
+  background: var(--fp-ultramarine-soft) !important;
+  color: var(--fp-ultramarine-strong) !important;
 }
 
 .fp-redesign footer {
@@ -1285,6 +1516,8 @@ html[dir="rtl"] .fp-route-social .conversation-rail {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-column: 1;
     grid-row: auto;
+    min-height: auto;
+    padding-block-start: min(58vw, 420px) !important;
   }
 
   .fp-route-index .hero-cta-row,
@@ -1405,11 +1638,12 @@ html[dir="rtl"] .fp-route-social .conversation-rail {
 
   .fp-route-index .hero-panel {
     grid-template-columns: 1fr;
+    padding-block-start: min(66vw, 330px) !important;
   }
 
   .fp-route-index .system-card {
     min-height: 0;
-    padding: 20px 0 !important;
+    padding: 20px !important;
     border-inline-end: 0 !important;
     border-block-end: 1px solid var(--fp-border) !important;
   }
@@ -1661,6 +1895,288 @@ html[dir="rtl"] .fp-route-social .conversation-rail {
   }
 }
 
+/* Performance motion -----------------------------------------------------
+   Motion is opt-in after the shell has registered observers. No JavaScript
+   means all content remains visible and usable. */
+.fp-motion-enabled .fp-motion-target {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity var(--motion-slow) var(--ease-effort),
+    transform var(--motion-slow) var(--ease-velocity),
+    clip-path var(--motion-slow) var(--ease-velocity);
+  transition-delay: var(--fp-motion-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.fp-motion-enabled .fp-motion-target[data-fp-motion="train"] {
+  transform: translate3d(-20px, 0, 0);
+}
+
+.fp-motion-enabled .fp-motion-target[data-fp-motion="fuel"] {
+  transform: scaleX(0.94);
+  transform-origin: left center;
+}
+
+.fp-motion-enabled .fp-motion-target[data-fp-motion="track"] {
+  clip-path: inset(0 100% 0 0);
+  transform: none;
+}
+
+.fp-motion-enabled .fp-motion-target[data-fp-motion="connect"] {
+  transform: translate3d(20px, 0, 0);
+}
+
+.fp-motion-enabled .fp-motion-target.fp-motion-in {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 0);
+  will-change: auto;
+}
+
+html[dir="rtl"] .fp-motion-enabled .fp-motion-target[data-fp-motion="train"] {
+  transform: translate3d(20px, 0, 0);
+}
+
+html[dir="rtl"] .fp-motion-enabled .fp-motion-target[data-fp-motion="connect"] {
+  transform: translate3d(-20px, 0, 0);
+}
+
+.fp-global-link::after,
+.fp-route-index .nav-link::after {
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--motion-standard) var(--ease-velocity);
+}
+
+.fp-global-link[aria-current="page"]::after,
+.fp-route-index .nav-link:hover::after,
+.fp-route-index .nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.fp-redesign :where(button, a[role="button"], .primary-action, .secondary-action, .hero-btn):not(:disabled):active {
+  transform: translateY(1px) scale(0.985);
+  transition-duration: var(--motion-instant);
+}
+
+.fp-route-index .logo,
+.fp-global-brand {
+  position: relative;
+}
+
+.fp-motion-enabled.fp-redesign-ready .fp-route-index .logo,
+.fp-motion-enabled.fp-redesign-ready .fp-global-brand {
+  animation: fp-wordmark-establish var(--motion-standard) var(--ease-velocity) both;
+}
+
+.fp-motion-enabled .fp-route-index .hero-panel {
+  animation: fp-performance-assemble var(--motion-moment) var(--ease-velocity) 120ms both;
+}
+
+.fp-motion-enabled .fp-route-index .hero-cta-row {
+  animation: fp-action-lock var(--motion-standard) var(--ease-settle) 420ms both;
+}
+
+.fp-motion-enabled .visual-choice-card:has(input:checked),
+.fp-motion-enabled .visual-choice-card.is-selected,
+.fp-motion-enabled .fp-motion-selected {
+  animation: fp-selection-lock var(--motion-standard) var(--ease-settle) both;
+}
+
+.fp-motion-enabled .fp-dynamic-entry {
+  animation: fp-content-lock var(--motion-standard) var(--ease-velocity) both;
+}
+
+.fp-motion-enabled .message-row.fp-dynamic-entry.is-sent {
+  animation-name: fp-message-sent;
+}
+
+.fp-motion-enabled .message-row.fp-dynamic-entry:not(.is-sent) {
+  animation-name: fp-message-received;
+}
+
+.fp-motion-enabled :where(.set-row.complete-pulse, .set-row.fp-set-complete) {
+  animation: fp-set-resolve 360ms var(--ease-settle) both !important;
+}
+
+.fp-redesign .set-row.active-set {
+  outline: 2px solid var(--fp-ultramarine) !important;
+  outline-offset: -2px;
+  background: var(--fp-brand-primary-softer) !important;
+  transition: background-color var(--motion-standard) var(--ease-recovery), outline-color var(--motion-standard) var(--ease-recovery);
+}
+
+.fp-redesign .set-row.completed {
+  background: var(--fp-success-soft) !important;
+}
+
+.fp-redesign .set-complete {
+  accent-color: var(--fp-ultramarine) !important;
+  transition: transform var(--motion-fast) var(--ease-settle);
+}
+
+.fp-redesign .set-complete:checked {
+  transform: scale(1.08);
+}
+
+.fp-redesign .rest-progress {
+  overflow: hidden;
+  background: var(--fp-border-dark) !important;
+}
+
+.fp-redesign .rest-progress::before {
+  background: var(--fp-ultramarine) !important;
+  transition: width 1s linear;
+}
+
+.fp-redesign :where(.rest-timer, #focusRestTimer) {
+  animation: none !important;
+  color: var(--fp-paper) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.fp-redesign .finish-button.rest-button-active::after {
+  display: none !important;
+  animation: none !important;
+}
+
+.fp-motion-enabled :where(.success:not(.hidden), #successPanel:not(.hidden), .workout-complete:not(.hidden)) {
+  animation: fp-completion-moment var(--motion-moment) var(--ease-velocity) both;
+}
+
+.fp-motion-enabled :where(.chart, .activity-chart, canvas, svg[data-chart]).fp-chart-reveal {
+  animation: fp-chart-reveal var(--motion-slow) var(--ease-velocity) both;
+}
+
+.fp-redesign :where(.macro-progress, .macro-bar, .nutrition-progress, [data-macro-bar]) {
+  transform-origin: left center;
+  transition: transform var(--motion-standard) var(--ease-velocity);
+}
+
+html[dir="rtl"] .fp-redesign :where(.macro-progress, .macro-bar, .nutrition-progress, [data-macro-bar]) {
+  transform-origin: right center;
+}
+
+.fp-motion-enabled .fp-metric-updated {
+  animation: fp-metric-lock var(--motion-standard) var(--ease-settle) both;
+}
+
+.fp-motion-enabled .fp-muscle-active {
+  animation: fp-muscle-activation 480ms var(--ease-recovery) both;
+}
+
+.fp-redesign .recording-dot {
+  background: var(--fp-danger) !important;
+}
+
+.fp-motion-enabled .voice-recording-state:not([hidden]) .recording-dot {
+  animation: fp-recording-truth 1200ms var(--ease-recovery) infinite;
+}
+
+.fp-motion-enabled :where(dialog[open], .modal.is-open, .settings-modal.is-open) {
+  animation: fp-sheet-enter var(--motion-standard) var(--ease-velocity) both;
+}
+
+.fp-route-social .message-bubble,
+.fp-route-social .is-sent .message-bubble {
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+.fp-route-social .is-sent .message-bubble {
+  border-color: var(--fp-ultramarine) !important;
+  background: var(--fp-ultramarine-strong) !important;
+  color: var(--fp-paper) !important;
+}
+
+.fp-route-social .message-bubble:not(.voice-message) {
+  background: var(--fp-paper-soft) !important;
+  color: var(--fp-ink) !important;
+}
+
+.fp-route-pricing :where(.value-props, .price-card, .price-card.pro, .pricing-card),
+.fp-route-app :where(.nav-section, .conversation-history, .settings-btn, .workout-btn),
+.fp-redesign :where(.finish-button, .add-exercise) {
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+@keyframes fp-wordmark-establish {
+  from { opacity: 0; transform: translate3d(-10px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fp-performance-assemble {
+  from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); transform: none; }
+}
+
+@keyframes fp-action-lock {
+  from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fp-selection-lock {
+  0% { transform: scale(0.985); }
+  58% { transform: scale(1.008); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fp-content-lock {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fp-message-sent {
+  from { opacity: 0; transform: translate3d(12px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fp-message-received {
+  from { opacity: 0; transform: translate3d(-12px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fp-set-resolve {
+  0% { transform: scale(0.992); }
+  45% { transform: scale(1.006); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fp-completion-moment {
+  0% { opacity: 0; transform: translate3d(0, 16px, 0) scale(0.985); border-color: var(--fp-border); }
+  55% { opacity: 1; transform: translate3d(0, -2px, 0) scale(1.005); border-color: var(--fp-ultramarine); }
+  100% { opacity: 1; transform: none; border-color: var(--fp-border); }
+}
+
+@keyframes fp-chart-reveal {
+  from { opacity: 0.55; clip-path: inset(0 100% 0 0); }
+  to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes fp-metric-lock {
+  0% { transform: translate3d(0, 3px, 0); opacity: 0.72; }
+  55% { transform: translate3d(0, -2px, 0); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+
+@keyframes fp-muscle-activation {
+  0% { opacity: 0.62; transform: scale(0.99); }
+  55% { opacity: 1; transform: scale(1.015); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fp-recording-truth {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.82); }
+}
+
+@keyframes fp-sheet-enter {
+  from { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -1673,5 +2189,17 @@ html[dir="rtl"] .fp-route-social .conversation-rail {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .fp-motion-target,
+  .fp-dynamic-entry,
+  .fp-chart-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+
+  .voice-recording-state:not([hidden]) .recording-dot {
+    opacity: 1 !important;
   }
 }

@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v10-editorial';
+const CACHE_NAME = 'fuelphysique-v11-ultramarine-motion';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -37,14 +37,18 @@ const urlsToCache = [
   '/terms.html',
   '/privacy.html',
   '/css/dashboard.css',
-  '/css/redesign-v1.css?v=20260810',
+  '/css/redesign-v1.css?v=20260810-ultramarine-motion',
   '/css/workout-builder.css',
   '/css/nutrition-builder.css',
   '/css/legal.css',
   '/css/pricing.css',
   '/css/social.css',
   '/js/social.js',
-  '/js/redesign-shell.js?v=20260810',
+  '/js/redesign-shell.js?v=20260810-ultramarine-motion',
+  '/images/brand/ultramarine-athlete-hero.png',
+  '/images/brand/ultramarine-athlete-hero.webp',
+  '/images/brand/fuelphysique-icon-192.png',
+  '/images/brand/fuelphysique-icon-512.png',
   '/js/social-core.mjs',
   '/js/voice-message-client.mjs',
   '/css/push-notifications.css',

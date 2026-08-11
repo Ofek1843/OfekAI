@@ -6,7 +6,7 @@ Status: implementation source of truth for `design/complete-product-redesign-v1`
 
 1. **The next action is the hero.** Pages lead with the user’s task, not decorative cards.
 2. **Editorial rhythm over dashboard chrome.** Use columns, rules, spacing, and type hierarchy before containers.
-3. **One accent.** Signal coral communicates primary action and active state. Status colors remain semantic and subordinate.
+3. **One brand accent.** Ultramarine communicates primary action and active state. Status colors remain semantic and subordinate.
 4. **Flat, durable surfaces.** No glassmorphism, glow, gradient-dependent hierarchy, or rounded-card sea.
 5. **Data must scan.** Numeric content uses tabular figures, concise labels, and predictable alignment.
 6. **Mobile is a recomposition.** Five primary destinations move into a fixed safe-area-aware bottom navigation; secondary tools remain in-page.
@@ -15,17 +15,18 @@ Status: implementation source of truth for `design/complete-product-redesign-v1`
 
 | Token | Dark | Light | Use |
 | --- | --- | --- | --- |
-| Page | `#11110f` | `#f2eee6` | Primary canvas |
-| Deep | `#090a09` | `#e6dfd3` | Navigation / recessed region |
-| Surface | `#181816` | `#fffaf1` | Raised content only |
-| Surface strong | `#22211e` | `#ffffff` | Modal and focused panels |
-| Border | `#3a3832` | `#c8c0b3` | 1 px structure |
-| Text | `#f4efe5` | `#191815` | Primary copy |
-| Muted | `#aaa397` | `#625d55` | Secondary copy |
-| Accent | `#ff5a3c` | `#d3351c` | Primary action / selected state |
-| Success | `#8bbf79` | `#477f3a` | Confirmed state |
-| Warning | `#d5a94e` | `#8c650d` | Warning state |
-| Danger | `#e45c68` | `#b52939` | Destructive/error state |
+| Ink | `#0B0B0D` | `#0B0B0D` | Dark interruption / primary type |
+| Graphite | `#14161A` | `#14161A` | Performance canvas |
+| Graphite soft | `#1C1F25` | `#1C1F25` | Dark raised surface |
+| Paper | `#FAF9F6` | `#FAF9F6` | Editorial canvas / dark-mode type |
+| Paper soft | `#F1F2F4` | `#F1F2F4` | Recessed light surface |
+| Border | `#292D35` | `#D9DDE5` | 1 px structure |
+| Muted | `#A8B1C1` | `#667085` | Secondary copy and steel data |
+| Ultramarine | `#304FFE` | `#1D39E8` | Primary action / selected state |
+| Ultramarine soft | `rgba(48,79,254,.18)` | `#E7EBFF` | Reserved state surface, not card tint |
+| Success | `#62B37C` | `#477F5C` | Confirmed state |
+| Warning | `#D8A542` | `#8C650D` | Warning state |
+| Danger | `#E05A67` | `#B52939` | Destructive/error state |
 
 Color is never the only state indicator.
 
@@ -62,7 +63,7 @@ At widths below 760 px:
 
 ### Buttons
 
-- Primary: accent fill, dark ink text, square/4 px radius.
+- Primary: Ultramarine fill, paper text, square/4 px radius.
 - Secondary: transparent, 1 px border, light text.
 - Tertiary: text/action arrow, no container unless focus/hover.
 - Destructive: danger border or fill plus explicit verb.
@@ -74,7 +75,7 @@ Labels are always visible. Inputs use one consistent height, border, focus ring,
 
 ### Data and charts
 
-Values are tabular. Chart series use the accent first, then semantic success/warning/danger where meaning requires it. Grid lines are low-contrast but visible. Tooltips use the strong surface and never obscure axis labels.
+Values are tabular. Chart series use Ultramarine first, then paper/steel and semantic success/warning/danger where meaning requires it. Grid lines are low-contrast but visible. Tooltips use the strong surface and never obscure axis labels.
 
 ### Cards and lists
 
@@ -90,7 +91,15 @@ Status uses icon/label + color. Loading uses stable skeleton geometry. Empty sta
 
 ## Media
 
-Use only existing FuelPhysique-owned or locally stored product media in the repository. Exercise demonstrations, meal images, and profile media retain their existing application paths. No third-party or generated replacement photography is introduced by the redesign.
+Use FuelPhysique-owned or locally stored product media. Exercise demonstrations, meal images, and profile media retain their existing application paths. The landing figure is a project-bound first-party generated illustration stored in `public/images/brand`; no third-party media is introduced.
+
+## Page composition
+
+- Marketing: paper-led editorial sections, interrupted by Ink and one final Ultramarine statement.
+- Dashboard: Graphite shell with paper and neutral data surfaces; Ultramarine is reserved for the live action or selected state.
+- Workout execution and Progress: dark, high-contrast performance environments.
+- Nutrition, Social, Settings, and Legal: calm paper-led environments with Ink typography.
+- No cyan, blue/purple gradients, blue glow, glass surfaces, or blue-tinted card sea.
 
 ## Accessibility and RTL
 
