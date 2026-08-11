@@ -1,17 +1,27 @@
 /* FuelPhysique Editorial Performance — shared visual and responsive layer. */
 
 :root {
-  --fp-ink: #0b0b0d;
-  --fp-graphite: #14161a;
-  --fp-graphite-soft: #1c1f25;
-  --fp-paper: #faf9f6;
-  --fp-paper-soft: #f1f2f4;
+  --fp-ink: #10131a;
+  --fp-midnight: #10182b;
+  --fp-midnight-soft: #172238;
+  --fp-graphite: var(--fp-midnight);
+  --fp-graphite-soft: var(--fp-midnight-soft);
+  --fp-glacier: #eef3fb;
+  --fp-glacier-surface: #f7f9fe;
+  --fp-cool-blue: #e8eefa;
+  --fp-paper: var(--fp-glacier-surface);
+  --fp-paper-soft: var(--fp-glacier);
   --fp-ultramarine: #304ffe;
-  --fp-ultramarine-strong: #1d39e8;
+  --fp-ultramarine-strong: #243be8;
   --fp-ultramarine-soft: #e7ebff;
-  --fp-steel: #a8b1c1;
-  --fp-steel-dark: #667085;
-  --fp-border-light: #d9dde5;
+  --fp-coach: #18a979;
+  --fp-nutrition: #e99a28;
+  --fp-progress: #7957e8;
+  --fp-social: #d54d79;
+  --fp-steel: #73809a;
+  --fp-steel-light: #a8b1c1;
+  --fp-steel-dark: var(--fp-steel);
+  --fp-border-light: #d3dae8;
   --fp-border-dark: #292d35;
   --fp-bg-deep: var(--fp-ink);
   --fp-bg-page: var(--fp-graphite);
@@ -25,7 +35,7 @@
   --fp-border-strong: #414754;
   --fp-text-primary: var(--fp-paper);
   --fp-text-secondary: var(--fp-border-light);
-  --fp-text-muted: var(--fp-steel);
+  --fp-text-muted: var(--fp-steel-light);
   --fp-text-inverse: var(--fp-paper);
   --fp-brand-primary: var(--fp-ultramarine);
   --fp-brand-primary-hover: #4661ff;
@@ -50,14 +60,16 @@
   --fp-active-surface: rgba(48, 79, 254, 0.14);
   --fp-shadow-soft: 0 16px 48px rgba(0, 0, 0, 0.28);
   --fp-shadow-raised: 0 24px 64px rgba(0, 0, 0, 0.42);
-  --fp-cat-workout: var(--fp-brand-primary);
-  --fp-cat-nutrition: var(--fp-brand-primary);
-  --fp-cat-progress: var(--fp-brand-primary);
-  --fp-cat-coach: var(--fp-brand-primary);
+  --fp-cat-workout: var(--fp-ultramarine);
+  --fp-cat-nutrition: var(--fp-nutrition);
+  --fp-cat-progress: var(--fp-progress);
+  --fp-cat-coach: var(--fp-coach);
+  --fp-cat-social: var(--fp-social);
   --fp-cat-workout-soft: var(--fp-brand-primary-soft);
-  --fp-cat-nutrition-soft: var(--fp-brand-primary-soft);
-  --fp-cat-progress-soft: var(--fp-brand-primary-soft);
-  --fp-cat-coach-soft: var(--fp-brand-primary-soft);
+  --fp-cat-nutrition-soft: rgba(233, 154, 40, 0.14);
+  --fp-cat-progress-soft: rgba(121, 87, 232, 0.14);
+  --fp-cat-coach-soft: rgba(24, 169, 121, 0.14);
+  --fp-cat-social-soft: rgba(213, 77, 121, 0.14);
   --fp-chart-1: var(--fp-ultramarine);
   --fp-chart-2: var(--fp-paper);
   --fp-chart-3: var(--fp-success);
@@ -88,14 +100,14 @@
 }
 
 html[data-theme="light"] {
-  --fp-bg-deep: var(--fp-paper-soft);
-  --fp-bg-page: var(--fp-paper);
-  --fp-bg-section: var(--fp-paper-soft);
-  --fp-surface: #ffffff;
+  --fp-bg-deep: var(--fp-cool-blue);
+  --fp-bg-page: var(--fp-glacier);
+  --fp-bg-section: var(--fp-cool-blue);
+  --fp-surface: var(--fp-glacier-surface);
   --fp-surface-raised: #ffffff;
-  --fp-surface-soft: var(--fp-paper-soft);
+  --fp-surface-soft: var(--fp-cool-blue);
   --fp-surface-input: #ffffff;
-  --fp-nav-surface: var(--fp-paper);
+  --fp-nav-surface: var(--fp-glacier-surface);
   --fp-border: var(--fp-border-light);
   --fp-border-strong: var(--fp-steel);
   --fp-text-primary: var(--fp-ink);
@@ -643,7 +655,7 @@ body.fp-redesign::after,
   --fp-border: var(--fp-border-dark);
   --fp-text-primary: var(--fp-paper);
   --fp-text-secondary: var(--fp-border-light);
-  --fp-text-muted: var(--fp-steel);
+  --fp-text-muted: var(--fp-steel-light);
   --fp-surface: var(--fp-graphite-soft);
   color: var(--fp-text-primary);
   background: var(--fp-ink) !important;
@@ -1293,7 +1305,7 @@ body.fp-redesign::after,
   border-inline-end: 1px solid var(--fp-border) !important;
   --fp-text-primary: var(--fp-paper);
   --fp-text-secondary: var(--fp-border-light);
-  --fp-text-muted: var(--fp-steel);
+  --fp-text-muted: var(--fp-steel-light);
   background: var(--fp-ink) !important;
 }
 

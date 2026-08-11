@@ -14,10 +14,11 @@ const PROGRESS = read("public/js/progress.js");
 
 test("Ultramarine Editorial uses the approved exact palette without legacy brand color", () => {
   for (const [name, value] of Object.entries({
-    ink: "#0b0b0d", graphite: "#14161a", graphiteSoft: "#1c1f25",
-    paper: "#faf9f6", paperSoft: "#f1f2f4", ultramarine: "#304ffe",
-    ultramarineStrong: "#1d39e8", ultramarineSoft: "#e7ebff",
-    steel: "#a8b1c1", steelDark: "#667085", borderLight: "#d9dde5", borderDark: "#292d35"
+    ink: "#10131a", midnight: "#10182b", midnightSoft: "#172238",
+    glacier: "#eef3fb", glacierSurface: "#f7f9fe", coolBlue: "#e8eefa", ultramarine: "#304ffe",
+    ultramarineStrong: "#243be8", ultramarineSoft: "#e7ebff",
+    coach: "#18a979", nutrition: "#e99a28", progress: "#7957e8", social: "#d54d79",
+    steel: "#73809a", borderLight: "#d3dae8", borderDark: "#292d35"
   })) assert.ok(CSS.toLowerCase().includes(value), `${name} ${value}`);
   assert.doesNotMatch(CSS, /linear-gradient|radial-gradient|conic-gradient/i);
   assert.doesNotMatch(CSS, /#2f9bff|#35cfdf|#ff5a3c|rgba\(53,\s*207,\s*223|rgba\(47,\s*155,\s*255/i);
@@ -83,6 +84,6 @@ test("all public pages and the service worker use the Ultramarine cache generati
     assert.match(html, /redesign-v1\.css\?v=20260810-ultramarine-motion/);
     assert.match(html, /redesign-shell\.js\?v=20260810-ultramarine-motion/);
   }
-  assert.match(SW, /fuelphysique-v11-ultramarine-motion/);
+  assert.match(SW, /fuelphysique-v12-product-polish-v3/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);
 });

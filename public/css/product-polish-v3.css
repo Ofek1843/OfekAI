@@ -1,0 +1,469 @@
+/* FuelPhysique Product Polish V3 — Ultramarine Spectrum Performance. */
+
+:root {
+  --fp-content: min(1520px, calc(100vw - 48px));
+}
+
+.fp-redesign .spectrum-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  filter: none;
+}
+
+/* Dashboard: a high-density control surface with disciplined domain colour. */
+.fp-redesign.fp-route-dashboard {
+  background-color: var(--fp-bg-page) !important;
+}
+
+.fp-route-dashboard .dashboard-main {
+  width: var(--fp-content) !important;
+  max-width: none !important;
+}
+
+.fp-route-dashboard .hero-row {
+  position: relative;
+  min-height: 230px;
+  padding: clamp(28px, 4vw, 64px);
+  overflow: hidden;
+  border: 1px solid var(--fp-border) !important;
+  background: var(--fp-midnight) !important;
+  color: var(--fp-glacier-surface);
+}
+
+.fp-route-dashboard .hero-copy,
+.fp-route-dashboard .hero-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.fp-route-dashboard .hero-copy h1 {
+  max-width: 12ch;
+  margin-block: 10px 12px;
+  color: #fff !important;
+  font-size: clamp(3rem, 6vw, 5.75rem) !important;
+  line-height: .88 !important;
+}
+
+.fp-route-dashboard .hero-copy p,
+.fp-route-dashboard .hero-row .eyebrow {
+  color: #cbd4ea !important;
+}
+
+.fp-route-dashboard .dashboard-primary-actions {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px !important;
+  margin-block: 14px !important;
+}
+
+.fp-route-dashboard .dashboard-action {
+  --action-color: var(--fp-ultramarine);
+  --action-soft: var(--fp-brand-primary-soft);
+  min-width: 0;
+  min-height: 148px;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr;
+  gap: 16px 12px;
+  align-items: start;
+  padding: 20px !important;
+  border: 1px solid var(--fp-border) !important;
+  border-block-start: 4px solid var(--action-color) !important;
+  background: var(--fp-surface) !important;
+  color: var(--fp-text-primary) !important;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(16, 24, 43, .06) !important;
+  transform: none !important;
+}
+
+.fp-route-dashboard .dashboard-action:hover {
+  border-color: var(--action-color) !important;
+  background: var(--action-soft) !important;
+}
+
+.fp-route-dashboard .dashboard-action--coach { --action-color: var(--fp-coach); --action-soft: var(--fp-cat-coach-soft); }
+.fp-route-dashboard .dashboard-action--workout { --action-color: var(--fp-ultramarine); --action-soft: var(--fp-cat-workout-soft); }
+.fp-route-dashboard .dashboard-action--nutrition { --action-color: var(--fp-nutrition); --action-soft: var(--fp-cat-nutrition-soft); }
+.fp-route-dashboard .dashboard-action--progress { --action-color: var(--fp-progress); --action-soft: var(--fp-cat-progress-soft); }
+.fp-route-dashboard .dashboard-action--social { --action-color: var(--fp-social); --action-soft: var(--fp-cat-social-soft); }
+
+.fp-route-dashboard .dashboard-action-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--action-soft);
+}
+
+.fp-route-dashboard .dashboard-action-icon { background: var(--action-color); }
+.fp-route-dashboard .dashboard-action-icon img { filter: brightness(0) invert(1); }
+.fp-route-dashboard .dashboard-action-copy { align-self: stretch; }
+.fp-route-dashboard .dashboard-action-kicker {
+  display: block;
+  color: var(--fp-text-muted);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.fp-route-dashboard .dashboard-action-label {
+  display: block;
+  margin-block-start: 8px;
+  font-family: var(--fp-display);
+  font-size: clamp(1.1rem, 1.4vw, 1.45rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+.fp-route-dashboard .dashboard-action-arrow { width: 22px; height: 22px; opacity: .72; }
+html[dir="rtl"] .fp-route-dashboard .dashboard-action-arrow { transform: rotate(180deg); }
+
+.fp-route-dashboard .desktop-search,
+.fp-route-dashboard .stats-grid,
+.fp-route-dashboard .card {
+  box-shadow: 0 8px 24px rgba(16, 24, 43, .055) !important;
+}
+
+.fp-route-dashboard .stats-grid article:nth-child(1) { border-block-start: 3px solid var(--fp-ultramarine) !important; }
+.fp-route-dashboard .stats-grid article:nth-child(2) { border-block-start: 3px solid var(--fp-coach) !important; }
+.fp-route-dashboard .stats-grid article:nth-child(3) { border-block-start: 3px solid var(--fp-progress) !important; }
+.fp-route-dashboard .stats-grid article:nth-child(4) { border-block-start: 3px solid var(--fp-nutrition) !important; }
+
+/* Landing: clear section rhythm with flat, deliberate surfaces. */
+.fp-redesign.fp-route-index { background: var(--fp-glacier) !important; }
+.fp-route-index .hero {
+  background-color: var(--fp-glacier) !important;
+  background-image: none !important;
+}
+.fp-route-index .feature-section { background: var(--fp-glacier-surface) !important; }
+.fp-route-index .feature-card-grid .premium-card { border-block-start: 4px solid var(--fp-ultramarine) !important; }
+.fp-route-index .feature-card-grid .premium-card--nutrition { border-block-start-color: var(--fp-nutrition) !important; }
+.fp-route-index .feature-card-grid .premium-card--progress { border-block-start-color: var(--fp-progress) !important; }
+.fp-route-index .feature-card-grid .premium-card--learning { border-block-start-color: var(--fp-coach) !important; }
+.fp-route-index .how-section { background: var(--fp-cool-blue) !important; }
+.fp-route-index .final-cta {
+  width: min(1520px, calc(100% - 48px)) !important;
+  margin-inline: auto !important;
+  background: var(--fp-midnight) !important;
+  color: #fff !important;
+}
+.fp-route-index .final-cta h2 { color: #fff !important; }
+.fp-route-index .landing-footer { background: var(--fp-midnight) !important; }
+.fp-route-index .builder-choice-arrow { width: 20px; height: 20px; }
+.fp-route-index .builder-choice-arrow--back { transform: rotate(180deg); }
+html[dir="rtl"] .fp-route-index .builder-choice-arrow { transform: rotate(180deg); }
+html[dir="rtl"] .fp-route-index .builder-choice-arrow--back { transform: none; }
+
+/* Workout result: one focused training day with a sticky logical-start rail. */
+.fp-route-workout-builder .program-experience-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 276px) minmax(0, 1fr);
+  gap: clamp(22px, 3vw, 44px);
+  align-items: start;
+  margin-block-start: 30px;
+}
+
+.fp-route-workout-builder .plan-day-rail {
+  position: sticky;
+  inset-block-start: 92px;
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--fp-border);
+  border-block-start: 4px solid var(--fp-ultramarine);
+  background: var(--fp-surface);
+  box-shadow: 0 12px 32px rgba(16,24,43,.08);
+}
+
+.fp-route-workout-builder .plan-day-rail-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 4px 12px;
+  border-block-end: 1px solid var(--fp-border);
+}
+.fp-route-workout-builder .plan-day-rail-heading span { color: var(--fp-ultramarine); font-size: .68rem; font-weight: 900; letter-spacing: .12em; }
+.fp-route-workout-builder .plan-day-rail-heading strong { color: var(--fp-text-muted); font-size: .78rem; }
+.fp-route-workout-builder .plan-day-buttons { display: grid; gap: 6px; }
+.fp-route-workout-builder .plan-day-button {
+  width: 100%;
+  min-height: 62px;
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--fp-radius-sm);
+  background: transparent;
+  color: var(--fp-text-primary);
+  text-align: start;
+  cursor: pointer;
+}
+.fp-route-workout-builder .plan-day-button span { color: var(--fp-text-muted); font-size: .7rem; font-weight: 800; text-transform: uppercase; }
+.fp-route-workout-builder .plan-day-button strong { font-size: .92rem; line-height: 1.2; }
+.fp-route-workout-builder .plan-day-button:hover { background: var(--fp-hover-surface); border-color: var(--fp-border); }
+.fp-route-workout-builder .plan-day-button.is-active {
+  border-color: var(--fp-ultramarine);
+  background: var(--fp-brand-primary-soft);
+  color: var(--fp-text-primary);
+}
+.fp-route-workout-builder .plan-day-select-label,
+.fp-route-workout-builder .plan-day-select { display: none; }
+.fp-route-workout-builder .plan-volume-disclosure { border-block-start: 1px solid var(--fp-border); padding-block-start: 10px; }
+.fp-route-workout-builder .plan-volume-disclosure > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--fp-text-primary);
+  font-weight: 850;
+  cursor: pointer;
+}
+.fp-route-workout-builder .plan-volume-disclosure .weekly-volume-summary {
+  margin: 8px 0 0 !important;
+  padding: 12px !important;
+  border-radius: var(--fp-radius-md) !important;
+}
+.fp-route-workout-builder .plan-volume-disclosure .muscle-volume-grid { grid-template-columns: 1fr !important; }
+.fp-route-workout-builder .program-days { min-width: 0; }
+.fp-route-workout-builder .workout-day[hidden] { display: none !important; }
+
+html[dir="rtl"] .fp-route-workout-builder .program-experience-grid {
+  grid-template-columns: minmax(220px, 276px) minmax(0, 1fr);
+}
+html[dir="rtl"] .fp-route-workout-builder .plan-day-rail { grid-column: 1; }
+html[dir="rtl"] .fp-route-workout-builder .program-days { grid-column: 2; grid-row: 1; }
+
+/* Social: mode rail, focused workspace, and optional context — never a stack. */
+.fp-route-social .social-topbar { display: none !important; }
+.fp-route-social .social-shell { width: min(1560px, calc(100vw - 32px)) !important; padding-block-start: 20px !important; }
+.fp-route-social .social-app {
+  display: grid !important;
+  grid-template-columns: minmax(250px, 300px) minmax(0, 1fr) minmax(220px, 270px) !important;
+  min-height: min(780px, calc(100vh - 120px));
+  border: 1px solid var(--fp-border) !important;
+  background: var(--fp-surface) !important;
+  overflow: clip;
+}
+.fp-route-social .social-sidebar {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--fp-midnight);
+  color: var(--fp-glacier-surface);
+  border-inline-end: 1px solid rgba(255,255,255,.09);
+}
+.fp-route-social .social-mode-nav {
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border-block-end: 1px solid rgba(255,255,255,.1);
+}
+.fp-route-social .social-mode-button {
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 22px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--fp-radius-sm);
+  background: transparent;
+  color: #b8c3dc;
+  font: inherit;
+  font-weight: 800;
+  text-align: start;
+  cursor: pointer;
+}
+.fp-route-social .social-mode-button img { width: 20px; height: 20px; filter: brightness(0) invert(1); opacity: .72; }
+.fp-route-social .social-mode-button:hover { background: rgba(255,255,255,.06); color: #fff; }
+.fp-route-social .social-mode-button.is-active {
+  border-color: rgba(213,77,121,.55);
+  background: rgba(213,77,121,.14);
+  color: #fff;
+}
+.fp-route-social .social-mode-button.is-active img { opacity: 1; }
+.fp-route-social .social-mode-button .count-pill { min-width: 24px; padding: 2px 6px; background: var(--fp-social); color: #fff; }
+.fp-route-social :where(.icon-button, .composer-tool, .send-button) img { width: 20px; height: 20px; display: block; }
+.fp-route-social .social-sidebar .icon-button img { filter: brightness(0) invert(1); }
+.fp-route-social .conversation-rail {
+  flex: 1;
+  min-height: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  overflow-y: auto;
+}
+.fp-route-social .conversation-card { width: 100%; min-width: 0; grid-template-columns: auto minmax(0,1fr) auto !important; overflow: hidden; }
+.fp-route-social .conversation-copy { min-width: 0; overflow: hidden; }
+.fp-route-social .conversation-copy > * { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-route-social .conversation-meta { min-width: 0; }
+.fp-route-social .social-app:not([data-social-mode="messages"]) .conversation-rail { display: none !important; }
+.fp-route-social .social-workspace { min-width: 0; overflow: hidden; background: var(--fp-glacier); color: var(--fp-ink); }
+.fp-route-social :where(.friends-view, .messages-view) {
+  min-height: 100%;
+  background: transparent !important;
+  color: var(--fp-ink) !important;
+}
+.fp-route-social .friends-view { padding: clamp(24px, 3vw, 48px) !important; }
+.fp-route-social .messages-view { padding: 0 !important; }
+.fp-route-social .messages-view .chat-panel {
+  min-height: min(780px, calc(100vh - 120px));
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+}
+.fp-route-social .messages-view .chat-header { background: var(--fp-glacier-surface) !important; border-block-end: 1px solid var(--fp-border) !important; }
+.fp-route-social .messages-view .chat-header {
+  display: grid !important;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px !important;
+}
+.fp-route-social .chat-person { min-width: 0; }
+.fp-route-social .chat-person h1 { margin: 0 !important; overflow: hidden; color: var(--fp-ink) !important; font-size: clamp(1.25rem, 2vw, 1.65rem) !important; line-height: 1.1 !important; text-overflow: ellipsis; white-space: nowrap; }
+.fp-route-social .chat-person p { margin: 4px 0 0 !important; color: var(--fp-steel-dark) !important; }
+.fp-route-social .messages-view .message-scroller { min-width: 0; min-height: 0; overflow: auto; background: var(--fp-glacier); }
+.fp-route-social .message-list { width: 100%; min-width: 0; display: flex !important; flex-direction: column; gap: 14px; padding: 24px 20px !important; }
+.fp-route-social .message-row { width: min(78%, 560px) !important; max-width: 100% !important; min-width: 0; align-self: flex-start; }
+.fp-route-social .message-row.is-sent { align-self: flex-end; }
+.fp-route-social .message-bubble { max-width: 100% !important; overflow-wrap: anywhere; }
+.fp-route-social .artifact-card { width: 100% !important; min-width: 0 !important; grid-template-columns: minmax(0,1fr) !important; }
+.fp-route-social .artifact-actions { display: flex !important; flex-wrap: wrap; gap: 8px; }
+.fp-route-social .artifact-actions button { min-height: 40px; border: 1px solid var(--fp-border) !important; background: var(--fp-cool-blue) !important; color: var(--fp-ink) !important; }
+.fp-route-social .artifact-actions .copy-action { border-color: rgba(24,169,121,.4) !important; background: rgba(24,169,121,.12) !important; }
+.fp-route-social .messages-view .composer { position: relative !important; inset: auto !important; background: var(--fp-glacier-surface) !important; }
+.fp-route-social .view-hero { display: grid !important; grid-template-columns: minmax(0,1fr) minmax(220px, auto); gap: 28px; }
+.fp-route-social .social-mode-panel[hidden] { display: none !important; }
+.fp-route-social .social-context-panel {
+  min-width: 0;
+  padding: 28px 22px;
+  border-inline-start: 1px solid var(--fp-border);
+  background: var(--fp-glacier-surface);
+  color: var(--fp-ink);
+  position: relative;
+  z-index: 2;
+}
+.fp-route-social .social-context-profile { margin-block: 22px 30px; }
+.fp-route-social .social-context-profile > img { width: 30px; height: 30px; margin-block-end: 20px; }
+.fp-route-social .social-context-profile .avatar { margin-block-end: 18px; }
+.fp-route-social .social-context-profile h2 { margin: 0 0 6px; font-size: 1.35rem; }
+.fp-route-social .social-context-profile p { margin: 0; color: var(--fp-steel-dark); }
+.fp-route-social .context-safety-note { padding-block-start: 22px; border-block-start: 1px solid var(--fp-border); }
+.fp-route-social .context-safety-note p { color: var(--fp-steel-dark); font-size: .88rem; }
+.fp-route-social .share-menu { min-width: 260px; padding: 8px !important; background: var(--fp-midnight) !important; }
+.fp-route-social .share-menu > button,
+.fp-route-social .share-more button { width: 100%; min-height: 42px; display: flex; align-items: center; gap: 10px; text-align: start; }
+.fp-route-social .share-menu img { width: 18px; height: 18px; filter: brightness(0) invert(1); }
+.fp-route-social :where(#shareMenuButton, #voiceRecordButton, #sendButton) img { width: 20px; height: 20px; display: block; }
+.fp-route-social :where(#shareMenuButton, #voiceRecordButton) img { filter: brightness(0) saturate(100%) opacity(.72); }
+.fp-route-social #sendButton img { filter: brightness(0) invert(1); }
+.fp-route-social .share-more { border-block-start: 1px solid rgba(255,255,255,.12); margin-block-start: 6px; padding-block-start: 6px; }
+.fp-route-social .share-more summary { min-height: 40px; display: flex; align-items: center; color: #b8c3dc; cursor: pointer; }
+.fp-route-social .music-link-card {
+  width: min(440px, 100%);
+  display: flex !important;
+  align-items: center;
+  gap: 14px;
+  padding: 16px !important;
+  border: 1px solid rgba(213,77,121,.35) !important;
+  border-inline-start: 4px solid var(--fp-social) !important;
+  background: var(--fp-glacier-surface) !important;
+  color: var(--fp-ink) !important;
+  text-decoration: none;
+}
+.fp-route-social .music-link-card > img { width: 30px; height: 30px; }
+.fp-route-social .music-link-card span { display: grid; min-width: 0; }
+.fp-route-social .music-link-card small { color: var(--fp-social); font-weight: 850; text-transform: uppercase; letter-spacing: .08em; }
+.fp-route-social .music-link-card strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fp-route-social .music-link-card em { color: var(--fp-steel-dark); font-size: .75rem; font-style: normal; }
+.fp-route-social .music-link-dialog { max-width: 620px !important; }
+
+@media (max-width: 1180px) {
+  .fp-route-social .social-app { grid-template-columns: minmax(240px, 290px) minmax(0,1fr) !important; }
+  .fp-route-social .social-context-panel { display: none; }
+}
+
+@media (max-width: 960px) {
+  :root { --fp-content: min(100% - 28px, 1520px); }
+  .fp-route-dashboard .dashboard-primary-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fp-route-dashboard .dashboard-action--social { grid-column: 1 / -1; }
+  .fp-route-workout-builder .program-experience-grid,
+  html[dir="rtl"] .fp-route-workout-builder .program-experience-grid { grid-template-columns: minmax(0, 1fr); }
+  .fp-route-workout-builder .plan-day-rail,
+  html[dir="rtl"] .fp-route-workout-builder .plan-day-rail {
+    position: static;
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .fp-route-workout-builder .program-days,
+  html[dir="rtl"] .fp-route-workout-builder .program-days { grid-column: 1; grid-row: auto; }
+  .fp-route-workout-builder .plan-day-buttons { display: none; }
+  .fp-route-workout-builder .plan-day-select-label { display: block; }
+  .fp-route-workout-builder .plan-day-select { display: block; width: 100%; }
+}
+
+@media (max-width: 560px) {
+  :root { --fp-content: calc(100% - 20px); }
+  .fp-route-dashboard .dashboard-main,
+  .fp-route-dashboard .dashboard-main > *,
+  .fp-route-dashboard .dashboard-content,
+  .fp-route-dashboard .dashboard-grid,
+  .fp-route-dashboard .stats-grid { min-width: 0 !important; max-width: 100% !important; }
+  .fp-route-dashboard .hero-row { min-height: 250px; padding: 28px 22px !important; }
+  .fp-route-dashboard .hero-copy h1 { font-size: clamp(2.8rem, 16vw, 4.35rem) !important; }
+  .fp-route-dashboard .dashboard-primary-actions { grid-template-columns: 1fr; }
+  .fp-route-dashboard .dashboard-action--social { grid-column: auto; }
+  .fp-route-dashboard .dashboard-action { min-height: 112px; padding: 16px !important; }
+  .fp-route-index .final-cta { width: calc(100% - 20px) !important; }
+}
+
+@media (max-width: 760px) {
+  .fp-route-index .hero-shell { grid-template-columns: minmax(0, 1fr) !important; }
+  .fp-route-index .hero-content { grid-column: 1; grid-row: 1; }
+  .fp-route-index :where(.hero-cta-row, .builder-chooser) { grid-column: 1; grid-row: 2; }
+  .fp-route-index .feature-pills { grid-column: 1; grid-row: 3; }
+  .fp-route-index .hero-panel {
+    grid-column: 1;
+    grid-row: 4;
+    min-height: 0;
+    padding-block-start: min(66vw, 280px) !important;
+  }
+  .fp-route-index .landing-stats { grid-column: 1; grid-row: 5; }
+  .fp-route-social .social-shell { width: 100% !important; padding: 0 !important; }
+  .fp-route-social .social-app { display: block !important; min-height: calc(100vh - 64px); border-inline: 0 !important; }
+  .fp-route-social .social-sidebar { display: block; border: 0; }
+  .fp-route-social .social-mode-nav {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2px;
+    padding: 8px;
+    overflow: visible;
+  }
+  .fp-route-social .social-mode-button {
+    min-width: 0;
+    min-height: 58px;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+    gap: 4px;
+    padding: 7px 3px;
+    font-size: .66rem;
+    line-height: 1.1;
+    text-align: center;
+  }
+  .fp-route-social .social-mode-button img { width: 18px; height: 18px; }
+  .fp-route-social .social-mode-button > span:not(.count-pill):not(.unread-badge) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fp-route-social .social-mode-button :where(.count-pill,.unread-badge) { display: none !important; }
+  .fp-route-social .conversation-rail { min-height: calc(100vh - 128px) !important; }
+  .fp-route-social .social-workspace { min-height: calc(100vh - 128px); }
+  .fp-route-social .social-app.show-conversations .social-workspace { display: none !important; }
+  .fp-route-social .social-app[data-social-mode="messages"]:not(.show-conversations) .conversation-rail { display: none !important; }
+  .fp-route-social .friends-view { padding: 22px 14px !important; }
+  .fp-route-social .view-hero { grid-template-columns: 1fr !important; gap: 16px; }
+  .fp-route-social .my-identity-card { max-width: 100%; }
+  .fp-route-social .messages-view .chat-panel { min-height: calc(100vh - 128px); }
+  .fp-route-social .chat-header { position: sticky; inset-block-start: 0; z-index: 8; grid-template-columns: auto auto minmax(0,1fr) auto !important; gap: 8px !important; padding: 10px !important; }
+  .fp-route-social .chat-header .fp-text-action { min-width: 48px !important; padding-inline: 7px !important; }
+  .fp-route-social .chat-header .avatar-large { width: 44px !important; height: 44px !important; }
+  .fp-route-social .messages-view .composer { padding-block-end: calc(10px + env(safe-area-inset-bottom)) !important; }
+  .fp-route-social .share-menu { max-width: calc(100vw - 28px); }
+}

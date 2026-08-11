@@ -127,14 +127,32 @@
     document.body.classList.add("fp-product-shell-active");
   };
 
+  const updateProductLanguage = (language) => {
+    const safeLanguage = language === "he" ? "he" : "en";
+    const copy = translations[safeLanguage];
+    const skipLink = document.querySelector(".fp-skip-link");
+    if (skipLink) skipLink.textContent = copy.skip;
+    const nav = document.querySelector(".fp-global-nav");
+    if (!nav) return;
+    nav.setAttribute("aria-label", copy.navigation);
+    nav.dir = safeLanguage === "he" ? "rtl" : "ltr";
+    const brand = nav.querySelector(".fp-global-brand");
+    if (brand) brand.textContent = copy.brand;
+    for (const key of ["dashboard", "workouts", "nutrition", "progress", "messages"]) {
+      const link = nav.querySelector(`[data-destination="${key}"]`);
+      if (link) link.textContent = copy[key];
+    }
+  };
+
+  window.addEventListener("fuelphysique:languagechange", (event) => {
+    updateProductLanguage(event.detail?.language);
+  });
+
   const exposeIconActions = () => {
     const labels = {
       "Start conversation": "New",
       "Back to conversations": "Back",
       "Friend options": "More",
-      "Share with friend": "Share",
-      "Record voice message": "Record",
-      "Send message": "Send",
       "Voice input": "Voice",
       "Switch to light mode": "Light mode",
       "Switch to dark mode": "Dark mode",
