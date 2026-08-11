@@ -1,70 +1,54 @@
-# FuelPhysique complete redesign — visual QA
+# FuelPhysique Ultramarine Editorial - visual QA
 
 Status: **PASSED**
 
-## Selected direction
+The approved Phase 1 information architecture remains intact. Phase 2 replaces its former coral identity with the exact black, paper, steel, and Ultramarine system and adds performance-specific motion without changing routing or product behavior.
 
-Direction 1, **Editorial Performance**, was selected from three generated concepts. The reference is retained as local review evidence at `outputs/complete-redesign/directions/direction-1-editorial-performance.png` and is intentionally ignored by Git.
+## Same-input review
 
-Selection score: 9.3/10. It offered the clearest task hierarchy, strongest differentiation from generic dashboard styling, most durable dark/light palette, and the best path to a one-column mobile recomposition.
+The generated direction and authenticated implementation were reviewed together at 1440x900:
 
-## Same-input comparison
+- target: `outputs/complete-redesign/ultramarine-motion/targets/ultramarine-dashboard-target.png`
+- implementation: `outputs/complete-redesign/ultramarine-motion/dashboard-desktop-en-1440x900.jpg`
+- comparison: `outputs/complete-redesign/ultramarine-motion/dashboard-same-input-comparison.jpg`
 
-The selected direction and the authenticated implementation were placed in one side-by-side comparison at:
+The implementation matches the selected palette, editorial type, ruled hierarchy, compact active-navigation indicator, and deliberate brand emphasis. It deliberately preserves the already-approved five-destination shell instead of restoring the exploration target's permanent sidebar.
 
-`outputs/complete-redesign/qa/selected-vs-dashboard-1440.png`
+## Three review passes
 
-The comparison passed for:
+### Pass 1 - color
 
-- graphite, warm-bone, and signal-coral visual language;
-- condensed editorial headings and concise supporting copy;
-- flat, ruled information hierarchy rather than gradient or glass surfaces;
-- one clearly dominant action system;
-- legible weekly-plan and performance-data structures;
-- retention of real FuelPhysique data and existing application journeys.
+- 21 coral-system references were found in the Phase 1 public/docs/test audit and removed from brand use.
+- Semantic danger red, success green, and warning amber remain distinct.
+- Final computed-style route sweeps found zero visible gradients and zero legacy cyan/coral/AI-blue values in the redesigned states.
 
-The implementation intentionally replaces the concept's permanent desktop sidebar with one five-destination product rail. This preserves more working width for builders and becomes the same five-item safe-area bottom navigation on mobile.
+### Pass 2 - motion
 
-## Two implementation passes
+- Micro, interface, content, and moment tiers use centralized durations and easing.
+- Fitness-specific states cover performance assembly, set completion, recovery timing, metrics, charts, muscle activation, messaging, voice recording, and milestone completion.
+- Reduced motion resolves every animated state immediately without hiding content or blocking controls.
 
-### Pass 1 — structure
+### Pass 3 - whole product
 
-- Applied the shared shell to all 33 HTML entry points.
-- Repaired the 390 px auth and dashboard overflow failures found in the before audit.
-- Reorganized landing, auth, dashboard, builders, plan libraries, Social, progress, settings, pricing, and legal surfaces around the selected hierarchy.
-- Preserved route URLs, element IDs, form behavior, Firebase/Auth flows, PWA behavior, voice, push, and private-media handling.
-
-### Pass 2 — refinement
-
-- Tightened hero scale, desktop auth wordmark fit, spacing, borders, form rhythm, and action emphasis.
-- Removed decorative gradients, glows, fake icon emoji, and rounded-card overuse from the redesign layer.
-- Corrected the light-mode coral token to `#d3351c` for WCAG AA text contrast.
-- Kept focus-visible, disabled, reduced-motion, empty, loading, and destructive states explicit.
-
-## Browser acceptance
-
-Authenticated local inspection used synthetic emulator data only.
-
-| Viewport | Language/direction | Result |
+| Viewport | Language | Result |
 | --- | --- | --- |
-| 390×844 | English LTR | PASS — no horizontal overflow; fixed safe-area navigation; auth, dashboard, workout, nutrition, and Social usable |
-| 430×932 | Hebrew RTL | PASS — logical direction and navigation; no horizontal overflow |
-| 768×1024 | Hebrew RTL | PASS — builder layout and controls remain visible |
-| 1440×900 | English LTR and Hebrew RTL | PASS — desktop hierarchy, builders, data surfaces, and legal layout remain usable |
+| 390x844 | English LTR | PASS - Dashboard and Social/chat navigation fit with no horizontal overflow |
+| 430x932 | English LTR | PASS - all selected core routes fit; no legacy gradients or colors |
+| 430x932 | Hebrew RTL | PASS - Dashboard, builders, Tracker, Progress, Social, Settings, and Terms initialize in RTL |
+| 768x1024 | English and Hebrew | PASS - tablet hierarchy, dialogs, and controls remain reachable |
+| 1440x900 | English LTR | PASS - desktop hierarchy and route composition remain stable |
 
-The browser's Windows device-scale capture stitches fixed elements in full-page screenshots, so viewport screenshots and DOM geometry were used together. At each required width, `documentElement.scrollWidth` remained at or below the rendered page width.
+The Windows device-scale screenshot backend can crop fixed viewport captures; screenshots were therefore evaluated together with DOM geometry, computed styles, and fresh-tab diagnostics. The clean final tab produced no console warning or error.
 
-## Accessibility acceptance
+## Assets and install surface
 
-- Five primary destinations are exposed through a labelled navigation landmark.
-- A skip link targets the page's main region.
-- Interactive targets retain a 44 px minimum.
-- `:focus-visible` is explicit.
-- Reduced-motion behavior is explicit.
-- Logical inline/block properties preserve RTL layout.
-- Tables receive a labelled, horizontal-scroll-safe wrapper when necessary.
-- Color is not the only signal for active or destructive state.
+- `public/images/brand/ultramarine-athlete-hero.png`
+- `public/images/brand/ultramarine-athlete-hero.webp`
+- `public/images/brand/fuelphysique-icon-192.png`
+- `public/images/brand/fuelphysique-icon-512.png`
+
+The manifest no longer contains a mock screenshot or inline emoji shortcut artwork.
 
 ## Final visual verdict
 
-**PASSED.** The implemented product is recognizably the selected Editorial Performance direction, supports every existing route through a coherent shared system, and removes the blocking mobile overflow failures recorded in the before audit.
+**PASSED.** FuelPhysique now presents a coherent Ultramarine Editorial identity, purposeful performance motion, responsive English/Hebrew layouts, and a safe local authenticated review path.
