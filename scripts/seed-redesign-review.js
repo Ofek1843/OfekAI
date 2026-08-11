@@ -27,6 +27,12 @@ const USERS = [
   },
 ];
 
+const SOCIAL_CONTACTS = [
+  { uid: "review-athlete-c", displayName: "Lena Brooks", username: "lena.lifts", locale: "en" },
+  { uid: "review-athlete-d", displayName: "Daniel Pace", username: "daniel.pace", locale: "en" },
+  { uid: "review-athlete-e", displayName: "Roni Strength", username: "roni.strength", locale: "en" },
+];
+
 function assertLocalEnvironment() {
   const actual = {
     project: process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT,
@@ -53,7 +59,7 @@ function dateKey(days) {
 
 function workoutPlan(locale) {
   const he = locale === "he";
-  return {
+  const plan = {
     programName: he ? "תוכנית כוח מדויקת" : "Ultramarine Strength Cycle",
     durationWeeks: 8,
     daysPerWeek: 4,
@@ -95,6 +101,8 @@ function workoutPlan(locale) {
       },
     ],
   };
+  plan.sessions = plan.sessions.map((session, index) => ({ ...session, day: index + 1 }));
+  return plan;
 }
 
 function nutritionPlan(locale) {
@@ -115,12 +123,19 @@ function nutritionPlan(locale) {
 }
 
 function socialProfile(user) {
+  const initials = String(user.displayName || user.username)
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => Array.from(part)[0] || "")
+    .join("")
+    .toUpperCase();
   return {
     uid: user.uid,
     username: user.username,
     usernameLower: user.username,
     displayName: user.displayName,
-    initials: user.locale === "he" ? "נר" : "MR",
+    initials: initials || "FP",
     photoURL: "",
     bio: user.locale === "he" ? "מתאמן בעקביות ובכוונה." : "Training with intent. Building measurable momentum.",
     publicRole: "athlete",
@@ -182,7 +197,7 @@ async function seed() {
     batch.set(db.doc(`users/${user.uid}/settings/main`), {
       displayName: user.displayName,
       language: user.locale,
-      theme: index === 0 ? "dark" : "light",
+      theme: "light",
       athleteCore: {
         age: index === 0 ? 29 : 32,
         gender: index === 0 ? "female" : "male",
@@ -259,6 +274,12 @@ async function seed() {
     });
   }
 
+  for (const contact of SOCIAL_CONTACTS) {
+    batch.set(db.doc(`users/${contact.uid}`), { uid: contact.uid, displayName: contact.displayName, language: contact.locale, termsAccepted: true, termsVersion: TERMS_VERSION, createdAt: daysAgo(90), updatedAt: daysAgo(0) });
+    batch.set(db.doc(`socialProfiles/${contact.uid}`), socialProfile(contact));
+    batch.set(db.doc(`usernames/${contact.username}`), { uid: contact.uid, usernameLower: contact.username });
+  }
+
   batch.set(db.doc(`friendships/${conversationId}`), { participants: [userA.uid, userB.uid].sort(), status: "accepted", createdAt: daysAgo(70), updatedAt: daysAgo(0) });
   batch.set(db.doc(`conversations/${conversationId}`), {
     participants: [userA.uid, userB.uid].sort(),
@@ -291,6 +312,24 @@ async function seed() {
     { id: "review-message-4", senderUid: userB.uid, type: "text", text: "Recovery session looks good — see you Thursday.", createdAt: daysAgo(0) },
   ];
   messages.forEach((message) => batch.set(db.doc(`conversations/${conversationId}/messages/${message.id}`), { ...message, clientId: message.id, schemaVersion: 1 }));
+  batch.set(db.doc(`conversations/${conversationId}/messages/review-music-1`), { type: "music_link", music: { provider: "spotify", title: "Heavy day focus", url: "https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP" }, senderUid: userA.uid, clientId: "review-music-1", schemaVersion: 1, createdAt: daysAgo(1, 17) });
+  batch.set(db.doc(`conversations/${conversationId}/messages/review-music-2`), { type: "music_link", music: { provider: "youtube_music", title: "Recovery tempo", url: "https://music.youtube.com/watch?v=dQw4w9WgXcQ" }, senderUid: userB.uid, clientId: "review-music-2", schemaVersion: 1, createdAt: daysAgo(0, 16) });
+
+  const contactC = SOCIAL_CONTACTS[0];
+  const secondConversationId = [userA.uid, contactC.uid].sort().map(encodeURIComponent).join("__");
+  batch.set(db.doc(`friendships/${secondConversationId}`), { participants: [userA.uid, contactC.uid].sort(), status: "accepted", acceptedAt: daysAgo(45), createdAt: daysAgo(48), updatedAt: daysAgo(3) });
+  batch.set(db.doc(`conversations/${secondConversationId}`), { participants: [userA.uid, contactC.uid].sort(), participantKey: secondConversationId, status: "active", schemaVersion: 1, lastMessagePreview: "Your Day 3 volume looks balanced.", lastMessageSenderUid: contactC.uid, lastMessageAt: daysAgo(3), createdAt: daysAgo(40), updatedAt: daysAgo(3) });
+  batch.set(db.doc(`users/${userA.uid}/conversationSummaries/${secondConversationId}`), { conversationId: secondConversationId, otherUid: contactC.uid, status: "active", unreadCount: 0, lastMessagePreview: "Your Day 3 volume looks balanced.", lastMessageSenderUid: contactC.uid, lastMessageAt: daysAgo(3), updatedAt: daysAgo(3) });
+  batch.set(db.doc(`users/${contactC.uid}/conversationSummaries/${secondConversationId}`), { conversationId: secondConversationId, otherUid: userA.uid, status: "active", unreadCount: 0, lastMessagePreview: "Your Day 3 volume looks balanced.", lastMessageSenderUid: contactC.uid, lastMessageAt: daysAgo(3), updatedAt: daysAgo(3) });
+  batch.set(db.doc(`conversations/${secondConversationId}/messages/review-message-c1`), { senderUid: userA.uid, type: "text", text: "I moved Day 3 to Friday — does the volume still look right?", clientId: "review-message-c1", schemaVersion: 1, createdAt: daysAgo(3, 17) });
+  batch.set(db.doc(`conversations/${secondConversationId}/messages/review-message-c2`), { senderUid: contactC.uid, type: "text", text: "Your Day 3 volume looks balanced.", clientId: "review-message-c2", schemaVersion: 1, createdAt: daysAgo(3, 18) });
+
+  const receivedContact = SOCIAL_CONTACTS[1];
+  const sentContact = SOCIAL_CONTACTS[2];
+  const receivedRequestId = [userA.uid, receivedContact.uid].sort().map(encodeURIComponent).join("__");
+  const sentRequestId = [userA.uid, sentContact.uid].sort().map(encodeURIComponent).join("__");
+  batch.set(db.doc(`friendRequests/${receivedRequestId}`), { requestId: receivedRequestId, fromUid: receivedContact.uid, toUid: userA.uid, participants: [receivedContact.uid, userA.uid].sort(), status: "pending", schemaVersion: 1, createdAt: daysAgo(2), updatedAt: daysAgo(2) });
+  batch.set(db.doc(`friendRequests/${sentRequestId}`), { requestId: sentRequestId, fromUid: userA.uid, toUid: sentContact.uid, participants: [userA.uid, sentContact.uid].sort(), status: "pending", schemaVersion: 1, createdAt: daysAgo(4), updatedAt: daysAgo(4) });
 
   batch.set(db.doc("sharedArtifacts/review-workout-share"), {
     ownerUid: userA.uid,
@@ -316,7 +355,7 @@ async function seed() {
   batch.set(db.doc(`conversations/${conversationId}/messages/review-artifact-2`), { type: "artifact", artifactType: "nutrition", artifactId: "review-nutrition-share", senderUid: userB.uid, clientId: "review-artifact-2", schemaVersion: 1, createdAt: daysAgo(2) });
 
   await batch.commit();
-  console.log(JSON.stringify({ projectId: PROJECT_ID, users: USERS.map(({ uid, email, locale }) => ({ uid, email, locale })), conversationId }, null, 2));
+  console.log(JSON.stringify({ projectId: PROJECT_ID, users: USERS.map(({ uid, email, locale }) => ({ uid, email, locale })), conversationIds: [conversationId, secondConversationId], seededMusicMessages: 2, receivedRequests: 1, sentRequests: 1 }, null, 2));
 }
 
 seed().catch((error) => {
