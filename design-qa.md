@@ -2,9 +2,10 @@
 
 ## Source and implementation
 
-- Source visual truth: `outputs/complete-redesign/product-polish-v3/before/phase2-landing-1440x900.png`, `phase2-social-1440x900.png`, `phase2-dashboard-390x844.png`, plus the Phase 3 Ultramarine Spectrum specification.
-- Browser-rendered implementation: `outputs/complete-redesign/product-polish-v3/after/landing-1440x900.png`, `social-chat-music-1440x900.png`, `dashboard-390x844.png`, `workout-day3-1440x900.png`, and `workout-day3-he-rtl-1440x900.png`.
+- Source visual truth: `outputs/complete-redesign/product-polish-v3/before/production-dashboard-1440x900.png`, `phase2-dashboard-1440x900.png`, `phase2-landing-1440x900.png`, `phase2-social-1440x900.png`, `phase2-dashboard-390x844.png`, plus the Phase 3 Ultramarine Spectrum specification.
+- Browser-rendered implementation: `outputs/complete-redesign/product-polish-v3/after/landing-1440x900.png`, `outputs/complete-redesign/product-polish-v3/landing-mid-page-1440.png`, `social-chat-music-1440x900.png`, `dashboard-1440x900.png`, `dashboard-390x844.png`, `workout-day3-1440x900.png`, and `workout-day3-he-rtl-1440x900.png`.
 - Same-input full-view comparisons:
+  - `outputs/complete-redesign/product-polish-v3/dashboard-comparison-production-vs-phase2-vs-phase3.png`
   - `outputs/complete-redesign/product-polish-v3/comparisons/landing-phase2-vs-phase3-1440.png`
   - `outputs/complete-redesign/product-polish-v3/comparisons/social-phase2-vs-phase3-1440.png`
   - `outputs/complete-redesign/product-polish-v3/comparisons/dashboard-phase2-vs-phase3-390.png`
@@ -18,7 +19,7 @@ No actionable P0, P1, or P2 findings remain.
 
 - Typography: the established condensed editorial display and readable body stack are preserved. Heading scale, weights, line height, wrapping, and compact UI labels remain coherent in English and Hebrew.
 - Spacing and layout rhythm: the Dashboard now exposes five distinct domain actions without collapsing into a generic card stack. Social uses a deliberate rail/workspace/context composition on desktop and a true list-to-chat transition on phone. Workout shows one active day and keeps volume context in the sticky rail.
-- Colors and tokens: all requested Spectrum values are exact. Landing sections use flat Glacier, Surface, Cool Blue, and Midnight fields; no new gradient, glow, or wildcard visual treatment was introduced.
+- Colors and tokens: all requested Spectrum values are exact. Landing sections use flat Glacier, Surface, Cool Blue, and Midnight fields; supporting copy on the light Glacier feature section now uses `#52637a` instead of the dark-surface muted token, restoring readable contrast. No new gradient, glow, or wildcard visual treatment was introduced.
 - Image and icon quality: first-party athlete/exercise assets remain intact. New controls use the checked-in Tabler icon set under its MIT license; there are no emoji, CSS drawings, custom inline SVG approximations, or placeholder image substitutes.
 - Copy and content: Dashboard domain labels, Social mode labels, safe music copy, and workout rail labels are explicit and localized. Music destinations are never embedded or copied into push/report snapshots.
 - Accessibility and interaction: persistent controls retain keyboard semantics, focus treatment, minimum tap sizing, reduced-motion handling, logical RTL alignment, and readable selected states.
@@ -43,6 +44,7 @@ No actionable P0, P1, or P2 findings remain.
 3. [P2] Mobile Social initially gave the four mode controls insufficient width. The final four-column mode bar and list-to-chat states fit at 390px without horizontal overflow.
 4. [P2] Visible workout actions still used symbolic shortcut glyphs. Replaced them with plain localized control labels while preserving accessible names.
 5. Re-captured the corrected desktop/mobile and English/Hebrew states, created same-input comparison boards, and re-ran the complete responsive matrix.
+6. [P2] The final mid-page capture exposed dark-theme muted copy (`#d3dae8`) on the light Glacier feature section, making the section introduction and card descriptions unreadable. Added one landing-scoped `#52637a` override, verified the settled browser render, and re-captured `landing-mid-page-1440.png` with readable copy.
 
 ## Primary interactions and runtime checks
 

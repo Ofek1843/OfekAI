@@ -46,6 +46,7 @@ test("dashboard restores five distinct domain actions with library icons", () =>
 
 test("landing rhythm uses flat Glacier, Cool Blue and Midnight surfaces without gradients or glow", () => {
   assert.match(POLISH, /\.fp-route-index \.feature-section \{ background: var\(--fp-glacier-surface\)/);
+  assert.match(POLISH, /\.fp-route-index \.feature-section \.section-heading p,[\s\S]*?\.fp-route-index \.feature-section \.premium-card p \{ color: #52637a !important; \}/);
   assert.match(POLISH, /\.fp-route-index \.how-section \{ background: var\(--fp-cool-blue\)/);
   assert.match(POLISH, /\.fp-route-index \.final-cta[\s\S]*?background: var\(--fp-midnight\)/);
   assert.doesNotMatch(POLISH, /(?:linear|radial|conic)-gradient|\bglow\b/i);

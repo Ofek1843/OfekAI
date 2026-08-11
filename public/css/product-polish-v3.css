@@ -137,6 +137,8 @@ html[dir="rtl"] .fp-route-dashboard .dashboard-action-arrow { transform: rotate(
   background-image: none !important;
 }
 .fp-route-index .feature-section { background: var(--fp-glacier-surface) !important; }
+.fp-route-index .feature-section .section-heading p,
+.fp-route-index .feature-section .premium-card p { color: #52637a !important; }
 .fp-route-index .feature-card-grid .premium-card { border-block-start: 4px solid var(--fp-ultramarine) !important; }
 .fp-route-index .feature-card-grid .premium-card--nutrition { border-block-start-color: var(--fp-nutrition) !important; }
 .fp-route-index .feature-card-grid .premium-card--progress { border-block-start-color: var(--fp-progress) !important; }
