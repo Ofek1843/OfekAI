@@ -20,6 +20,8 @@
 //   node scripts/run-tests-with-emulators.js --standard skip emulator suites
 
 const net = require("node:net");
+const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 
@@ -34,6 +36,34 @@ const SERVICES = [
 
 const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 500;
+
+function resolveCachedFirebaseCli() {
+  try {
+    return require.resolve("firebase-tools/lib/bin/firebase.js", { paths: [ROOT] });
+  } catch {
+    // firebase-tools is intentionally not a production dependency.
+  }
+
+  const npmCache = process.env.npm_config_cache || (
+    process.platform === "win32"
+      ? path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), "AppData", "Local"), "npm-cache")
+      : path.join(os.homedir(), ".npm")
+  );
+  const npxCache = path.join(npmCache, "_npx");
+  if (!fs.existsSync(npxCache)) return null;
+
+  for (const entry of fs.readdirSync(npxCache)) {
+    const packageRoot = path.join(npxCache, entry, "node_modules", "firebase-tools");
+    const packageJson = path.join(packageRoot, "package.json");
+    const cli = path.join(packageRoot, "lib", "bin", "firebase.js");
+    try {
+      if (JSON.parse(fs.readFileSync(packageJson, "utf8")).version === "13.35.1" && fs.existsSync(cli)) return cli;
+    } catch {
+      // Ignore incomplete or unrelated npx cache entries.
+    }
+  }
+  return null;
+}
 
 function probe({ host, port }, timeout = 1000) {
   return new Promise(resolve => {
@@ -99,32 +129,47 @@ async function main() {
     // Going through cmd.exe /c explicitly avoids that without `shell: true`,
     // which would trigger the DEP0190 unescaped-arguments warning. taskkill
     // /T below reaps the whole tree, cmd.exe and the Java children included.
-    const onWindows = process.platform === "win32";
-    const npxArgs = [
-      "--yes", FIREBASE_TOOLS, "emulators:start",
+    const firebaseArgs = [
+      "emulators:start",
       "--config", "firebase.test.json",
       "--project", PROJECT,
       "--only", "auth,firestore"
     ];
-    emulators = spawn(
-      onWindows ? "cmd.exe" : "npx",
-      onWindows ? ["/c", "npx", ...npxArgs] : npxArgs,
-      { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] }
-    );
+    const cachedFirebaseCli = resolveCachedFirebaseCli();
+    if (cachedFirebaseCli) {
+      console.log(`Using cached firebase-tools ${FIREBASE_TOOLS.split("@").pop()}.`);
+      emulators = spawn(process.execPath, [cachedFirebaseCli, ...firebaseArgs], {
+        cwd: ROOT,
+        stdio: ["ignore", "pipe", "pipe"]
+      });
+    } else {
+      const onWindows = process.platform === "win32";
+      const npxArgs = ["--yes", "--prefer-offline", FIREBASE_TOOLS, ...firebaseArgs];
+      emulators = spawn(
+        onWindows ? "cmd.exe" : "npx",
+        onWindows ? ["/c", "npx", ...npxArgs] : npxArgs,
+        { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] }
+      );
+    }
 
     let emulatorFailed = null;
+    let ready = false;
+    emulators.stdout.on("data", chunk => process.stdout.write(chunk));
     emulators.stderr.on("data", chunk => {
       const text = String(chunk);
+      process.stderr.write(chunk);
       if (/port taken|Could not start/i.test(text)) emulatorFailed = text.trim();
     });
+    emulators.on("error", error => {
+      emulatorFailed = `emulators failed to start: ${error.message}`;
+    });
     emulators.on("exit", code => {
-      if (code !== 0 && !emulatorFailed) emulatorFailed = `emulators exited with code ${code}`;
+      if (!ready && !emulatorFailed) emulatorFailed = `emulators exited before readiness with code ${code}`;
     });
 
     // Poll for real readiness rather than sleeping a fixed amount: the JVM
     // start-up time varies enormously between machines.
     const deadline = Date.now() + READY_TIMEOUT_MS;
-    let ready = false;
     while (Date.now() < deadline) {
       if (emulatorFailed) break;
       if (await allUp()) {
