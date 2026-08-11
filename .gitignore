@@ -1,4 +1,5 @@
 node_modules/
+.redesign-review/
 .env
 
 # Editor, OS and backup artifacts. These matter more than usual here:
