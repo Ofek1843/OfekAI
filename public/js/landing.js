@@ -55,6 +55,12 @@ const LANDING_FALLBACKS = {
     landingCardHistoryTitle: "Learn what works",
     landingCardHistoryText:
       "Save plans, log workouts and use your history to make better adjustments.",
+    landingCardConnectTitle: "Train with your people",
+    landingCardConnectText:
+      "Message friends and share workouts, nutrition, progress, voice and music safely.",
+    landingCardCoachTitle: "Turn context into action",
+    landingCardCoachText:
+      "Ask about the plan you are following and leave with a practical next step.",
     landingResultsKicker: "REAL PROGRESS",
     landingResultsTitle: "Join users who are already building measurable progress",
     landingResultsDescription:
@@ -140,6 +146,12 @@ const LANDING_FALLBACKS = {
     landingCardHistoryTitle: "להבין מה עובד",
     landingCardHistoryText:
       "שמור תוכניות, תעד אימונים והשתמש בהיסטוריה כדי לבצע התאמות טובות יותר.",
+    landingCardConnectTitle: "מתאמנים עם האנשים שלכם",
+    landingCardConnectText:
+      "שלחו הודעות ושתפו אימונים, תזונה, התקדמות, קול ומוזיקה בבטחה.",
+    landingCardCoachTitle: "הופכים הקשר לפעולה",
+    landingCardCoachText:
+      "שאלו על התוכנית הפעילה וקבלו צעד הבא ברור ומעשי.",
     landingResultsKicker: "התקדמות אמיתית",
     landingResultsTitle: "הצטרפו למשתמשים שכבר בונים התקדמות מדידה",
     landingResultsDescription:

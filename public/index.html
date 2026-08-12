@@ -77,7 +77,9 @@
     </script>
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260810-ultramarine-motion">
   <link rel="stylesheet" href="/css/product-polish-v3.css?v=20260811-spectrum-v3">
+  <link rel="stylesheet" href="/css/illustrated-v4.css?v=20260812-athletic-spectrum">
   <script defer src="/js/redesign-shell.js?v=20260810-ultramarine-motion"></script>
+  <script defer src="/js/illustrated-v4.js?v=20260812-athletic-spectrum"></script>
 </head>
 <body>
     <div class="ocean-depth-layer" aria-hidden="true"></div>
@@ -124,6 +126,7 @@
                 </div>
 
                 <aside class="hero-panel" aria-label="FuelPhysique platform preview">
+                    <div class="landing-hero-illustration" data-v4-illustration="deadlift" tabindex="0"></div>
                     <div class="system-card system-card-workout">
                         <span data-i18n="landingPreviewWorkoutLabel">Workout plan</span>
                         <strong data-i18n="landingPreviewWorkoutTitle">Workout Program Based on Every Detail of Your Goals</strong>
@@ -186,26 +189,36 @@
                 <h2 id="featureSectionTitle" data-i18n="landingSystemTitle">One system for the full process</h2>
                 <p data-i18n="landingSystemDescription">Every tool connects to the same goal: build a plan, follow it, save your history and make better adjustments over time.</p>
             </div>
-            <div class="feature-card-grid">
-                <article class="premium-card premium-card--programs" tabindex="0">
-                    <span class="premium-icon" aria-hidden="true">🏋️</span>
+            <div class="feature-card-grid athletic-journey-grid">
+                <article class="premium-card premium-card--programs journey-card journey-card--training" tabindex="0" data-capability="training">
+                    <span class="journey-word" aria-hidden="true">TRAIN</span>
                     <h3 data-i18n="landingCardProgramsTitle">Personalized programs</h3>
                     <p data-i18n="landingCardProgramsText">Build goal-based workout plans and replace or update them when your needs change.</p>
+                    <div class="journey-illustration" data-v4-illustration="training"></div>
                 </article>
-                <article class="premium-card premium-card--nutrition" tabindex="0">
-                    <span class="premium-icon" aria-hidden="true">🥗</span>
+                <article class="premium-card premium-card--nutrition journey-card journey-card--nutrition" tabindex="0" data-capability="nutrition">
+                    <span class="journey-word" aria-hidden="true">FUEL</span>
                     <h3 data-i18n="landingCardNutritionTitle">Nutrition with direction</h3>
                     <p data-i18n="landingCardNutritionText">Create a nutrition structure that matches your target, preferences and training.</p>
+                    <div class="journey-illustration" data-v4-illustration="nutrition"></div>
                 </article>
-                <article class="premium-card premium-card--progress" tabindex="0">
-                    <span class="premium-icon" aria-hidden="true">📈</span>
+                <article class="premium-card premium-card--progress journey-card journey-card--progress" tabindex="0" data-capability="progress">
+                    <span class="journey-word" aria-hidden="true">TRACK</span>
                     <h3 data-i18n="landingCardProgressTitle">Track every change</h3>
                     <p data-i18n="landingCardProgressText">Compare progress photos between dates and follow body measurements through clear charts.</p>
+                    <div class="journey-illustration" data-v4-illustration="progress"></div>
                 </article>
-                <article class="premium-card premium-card--learning" tabindex="0">
-                    <span class="premium-icon" aria-hidden="true">🧠</span>
-                    <h3 data-i18n="landingCardHistoryTitle">Learn what works</h3>
-                    <p data-i18n="landingCardHistoryText">Save plans, log workouts and use your history to make better adjustments.</p>
+                <article class="premium-card premium-card--learning journey-card journey-card--social" tabindex="0" data-capability="social">
+                    <span class="journey-word" aria-hidden="true">CONNECT</span>
+                    <h3 data-i18n="landingCardConnectTitle">Train with your people</h3>
+                    <p data-i18n="landingCardConnectText">Message friends and share workouts, nutrition, progress, voice and music safely.</p>
+                    <div class="journey-illustration" data-v4-illustration="social"></div>
+                </article>
+                <article class="premium-card premium-card--coach journey-card journey-card--coach" tabindex="0" data-capability="coach">
+                    <span class="journey-word" aria-hidden="true">COACH</span>
+                    <h3 data-i18n="landingCardCoachTitle">Turn context into action</h3>
+                    <p data-i18n="landingCardCoachText">Ask about the plan you are following and leave with a practical next step.</p>
+                    <div class="journey-illustration" data-v4-illustration="coach"></div>
                 </article>
             </div>
         </section>
