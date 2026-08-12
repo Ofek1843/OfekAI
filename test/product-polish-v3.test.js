@@ -30,7 +30,7 @@ test("Phase 3 pages load the release stylesheet and service worker cache", () =>
     assert.match(read("public", page), /product-polish-v3\.css\?v=20260811-spectrum-v3/);
   }
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v12-product-polish-v3/);
+  assert.match(sw, /fuelphysique-v13-illustrated-v4/);
   assert.match(sw, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
 });
 
@@ -103,5 +103,5 @@ test("the review seed covers multiple conversations, both request directions and
   assert.match(seed, /secondConversationId/);
   assert.match(seed, /receivedRequestId/);
   assert.match(seed, /sentRequestId/);
-  assert.equal((seed.match(/type: "music_link"/g) || []).length, 2);
+  assert.equal((seed.match(/type: "music_link"/g) || []).length, 5);
 });
