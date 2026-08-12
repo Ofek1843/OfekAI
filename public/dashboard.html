@@ -37,7 +37,9 @@
   <link rel="stylesheet" href="/css/push-notifications.css">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260810-ultramarine-motion">
   <link rel="stylesheet" href="/css/product-polish-v3.css?v=20260811-spectrum-v3">
+  <link rel="stylesheet" href="/css/illustrated-v4.css?v=20260812-athletic-spectrum">
   <script defer src="/js/redesign-shell.js?v=20260810-ultramarine-motion"></script>
+  <script defer src="/js/illustrated-v4.js?v=20260812-athletic-spectrum"></script>
 </head>
 <body>
   <div class="ocean-depth-layer" aria-hidden="true"></div>
@@ -98,14 +100,22 @@
         </button>
       </header>
 
-      <header class="hero-row">
+      <header class="hero-row dashboard-compact-header">
         <div class="hero-copy">
           <span class="eyebrow" id="todayLabel">TODAY</span>
           <h1 id="welcomeTitle">Welcome back</h1>
           <p id="welcomeText">Here is your training and nutrition overview.</p>
         </div>
 
-        <div class="hero-actions">
+        <div class="hero-actions dashboard-context-strip">
+          <div class="dashboard-context-item">
+            <span id="dashboardContextDateLabel">DATE</span>
+            <strong id="dashboardContextDate">Today</strong>
+          </div>
+          <div class="dashboard-context-item">
+            <span id="dashboardContextStreakLabel">STREAK</span>
+            <strong><span id="dashboardContextStreak">0</span> <span id="dashboardContextStreakUnit">days</span></strong>
+          </div>
           <button class="theme-toggle hero-theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">
             <span class="theme-toggle-icon" data-theme-toggle-icon aria-hidden="true">🌙</span>
             <span class="theme-toggle-label" data-theme-toggle-label>Dark mode</span>
@@ -113,13 +123,34 @@
         </div>
       </header>
 
-      <nav class="dashboard-primary-actions" aria-label="Quick actions">
-        <a class="dashboard-action dashboard-action--coach" id="chatLink" href="/app.html"><span class="dashboard-action-icon"><img class="spectrum-icon" src="/icons/tabler/message-circle.svg" alt=""></span><span class="dashboard-action-copy"><small class="dashboard-action-kicker">COACH</small><strong class="dashboard-action-label">Ask your coach</strong></span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a>
-        <a class="dashboard-action dashboard-action--workout" id="heroWorkoutBuilderLink" href="/workout-builder.html"><span class="dashboard-action-icon"><img class="spectrum-icon" src="/icons/tabler/barbell.svg" alt=""></span><span class="dashboard-action-copy"><small class="dashboard-action-kicker">WORKOUT</small><strong class="dashboard-action-label">Build workout plan</strong></span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a>
-        <a class="dashboard-action dashboard-action--nutrition" id="heroNutritionBuilderLink" href="/nutrition-builder.html"><span class="dashboard-action-icon"><img class="spectrum-icon" src="/icons/tabler/salad.svg" alt=""></span><span class="dashboard-action-copy"><small class="dashboard-action-kicker">NUTRITION</small><strong class="dashboard-action-label">Build nutrition plan</strong></span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a>
-        <a class="dashboard-action dashboard-action--progress" id="heroProgressLink" href="/progress.html"><span class="dashboard-action-icon"><img class="spectrum-icon" src="/icons/tabler/chart-line.svg" alt=""></span><span class="dashboard-action-copy"><small class="dashboard-action-kicker">PROGRESS</small><strong class="dashboard-action-label">Track progress</strong></span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a>
-        <a class="dashboard-action dashboard-action--social" id="heroSocialLink" href="/social.html" aria-label="Chat with friends"><span class="dashboard-action-icon"><img class="spectrum-icon" src="/icons/tabler/users.svg" alt=""></span><span class="dashboard-action-copy"><small class="dashboard-action-kicker">SOCIAL</small><strong class="dashboard-action-label">Chat with friends</strong></span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a>
-      </nav>
+      <section class="dashboard-primary-actions capability-studio" aria-labelledby="capabilityStudioTitle">
+        <h2 id="capabilityStudioTitle" class="sr-only">FuelPhysique capability studio</h2>
+        <article class="capability-card capability-card--training" data-capability="training" tabindex="0">
+          <div class="capability-copy"><span class="capability-kicker" id="studioTrainingKicker">TRAINING STUDIO</span><h2 id="studioTrainingTitle">Build the session</h2><p id="studioTrainingText">Generate a program, shape it manually, or return to a saved training plan.</p>
+            <div class="capability-actions"><a class="dashboard-action dashboard-action--workout capability-action capability-action--primary" id="heroWorkoutBuilderLink" href="/workout-builder.html"><span class="dashboard-action-label">Generate workout plan</span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a><a class="capability-action" id="studioManualWorkoutLink" href="/manual-workout-builder.html">Build manually</a><a class="capability-action" id="studioSavedWorkoutLink" href="/my-workout-plans.html">Saved plans</a></div>
+          </div><div class="capability-illustration" data-v4-illustration="training"></div>
+        </article>
+        <article class="capability-card capability-card--nutrition" data-capability="nutrition" tabindex="0">
+          <div class="capability-copy"><span class="capability-kicker" id="studioNutritionKicker">FUEL</span><h2 id="studioNutritionTitle">Plan the plate</h2><p id="studioNutritionText">Turn your target, preferences, and training week into a usable nutrition structure.</p>
+            <div class="capability-actions"><a class="dashboard-action dashboard-action--nutrition capability-action capability-action--primary" id="heroNutritionBuilderLink" href="/nutrition-builder.html"><span class="dashboard-action-label">Generate nutrition plan</span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a><a class="capability-action" id="studioManualNutritionLink" href="/manual-nutrition-builder.html">Build manually</a><a class="capability-action" id="studioSavedNutritionLink" href="/my-nutrition-plans.html">Saved plans</a></div>
+          </div><div class="capability-illustration" data-v4-illustration="nutrition"></div>
+        </article>
+        <article class="capability-card capability-card--progress" data-capability="progress" tabindex="0">
+          <div class="capability-copy"><span class="capability-kicker" id="studioProgressKicker">PROGRESS</span><h2 id="studioProgressTitle">Measure the change</h2><p id="studioProgressText">Log body metrics, inspect training trends, and keep personal records visible.</p>
+            <div class="capability-actions"><a class="dashboard-action dashboard-action--progress capability-action capability-action--primary" id="heroProgressLink" href="/progress.html"><span class="dashboard-action-label">View progress</span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a><a class="capability-action" id="studioExerciseProgressLink" href="/exercise-progress.html">Exercise progress</a></div>
+          </div><div class="capability-illustration" data-v4-illustration="progress"></div>
+        </article>
+        <article class="capability-card capability-card--coach" data-capability="coach" tabindex="0">
+          <div class="capability-copy"><span class="capability-kicker" id="studioCoachKicker">COACH</span><h2 id="studioCoachTitle">Get a clear next step</h2><p id="studioCoachText">Ask about the plan you are following and turn context into action.</p>
+            <div class="capability-actions"><a class="dashboard-action dashboard-action--coach capability-action capability-action--primary" id="chatLink" href="/app.html"><span class="dashboard-action-label">Ask your coach</span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a></div>
+          </div><div class="capability-illustration" data-v4-illustration="coach"></div>
+        </article>
+        <article class="capability-card capability-card--social" data-capability="social" tabindex="0">
+          <div class="capability-copy"><span class="capability-kicker" id="studioSocialKicker">SOCIAL</span><h2 id="studioSocialTitle">Train connected</h2><p id="studioSocialText">Message friends and share workouts, nutrition, progress, voice, and music safely.</p>
+            <div class="capability-actions"><a class="dashboard-action dashboard-action--social capability-action capability-action--primary" id="heroSocialLink" href="/social.html" aria-label="Open messages"><span class="dashboard-action-label">Open messages</span><img class="dashboard-action-arrow" src="/icons/tabler/chevron-right.svg" alt=""></a></div>
+          </div><div class="capability-illustration" data-v4-illustration="social"></div>
+        </article>
+      </section>
 
       <div class="dashboard-search desktop-search dashboard-search--wide" data-dashboard-search>
         <input id="desktopSearchInput" type="search" placeholder="Search pages or tools..." autocomplete="off">
@@ -154,7 +185,7 @@
 
         <article class="card schedule-card">
           <header class="schedule-header">
-            <span class="card-icon">📅</span>
+            <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/chart-line.svg" alt=""></span>
             <div>
               <span class="card-kicker" id="scheduleLabel">WEEKLY PLAN</span>
               <h2 id="scheduleTitle">Training days this week</h2>
@@ -168,7 +199,7 @@
         <section class="dashboard-grid">
           <article class="card next-workout-card">
             <header>
-              <span class="card-icon">🏋️</span>
+              <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/barbell.svg" alt=""></span>
               <div>
                 <span class="card-kicker" id="nextLabel">NEXT WORKOUT</span>
                 <h2 id="nextWorkoutName">No active plan</h2>
@@ -181,7 +212,7 @@
 
           <article class="card nutrition-card">
             <header>
-              <span class="card-icon">🥗</span>
+              <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/salad.svg" alt=""></span>
               <div>
                 <span class="card-kicker" id="nutritionLabel">ACTIVE NUTRITION</span>
                 <h2 id="nutritionPlanName">No active plan</h2>
@@ -199,7 +230,7 @@
 
               <article class="card recent-card workout-history-card">
                 <header>
-                  <span class="card-icon">📋</span>
+                  <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/chart-line.svg" alt=""></span>
                   <div>
                     <span class="card-kicker" id="recentLabel">LAST WORKOUT</span>
                     <h2 id="lastWorkoutName">No workouts yet</h2>
@@ -211,7 +242,7 @@
 
           <article class="card missed-card">
             <header>
-              <span class="card-icon">⏱️</span>
+              <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/plus.svg" alt=""></span>
               <div>
                 <span class="card-kicker" id="missedLabel">MISSED TRACKING?</span>
                 <h2 id="missedTitle">Missed a workout? Log it here</h2>
@@ -223,18 +254,18 @@
 
           <details class="card tools-accordion" id="moreToolsAccordion">
             <summary class="tools-accordion-summary">
-              <span class="card-icon">🧰</span>
+              <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/chevron-right.svg" alt=""></span>
               <div>
                 <span class="card-kicker" id="toolsKicker">MORE TOOLS</span>
                 <h2 id="toolsSummary">Open advanced tools</h2>
               </div>
-              <span class="tools-accordion-arrow" aria-hidden="true">⌄</span>
+              <span class="tools-accordion-arrow" aria-hidden="true"><img src="/icons/tabler/chevron-right.svg" alt=""></span>
             </summary>
             <p id="toolsText" class="muted">Workout history, manual planning and nutrition check-ins stay here so the main screen stays simple.</p>
             <div class="tools-accordion-grid">
               <article class="card quick-food-card tools-accordion-card">
                 <header>
-                  <span class="card-icon">🍽️</span>
+                  <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/salad.svg" alt=""></span>
                   <div>
                     <span class="card-kicker" id="quickFoodLabel">QUICK CHECK-IN</span>
                     <h2 id="quickFoodTitle">Did you stray from the plan today?</h2>
@@ -251,7 +282,7 @@
 
               <article class="card manual-card tools-accordion-card">
                 <header>
-                  <span class="card-icon">🧩</span>
+                  <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/plus.svg" alt=""></span>
                   <div>
                     <span class="card-kicker" id="manualLabel">YOUR OWN PROGRAM</span>
                     <h2 id="manualTitle">Build a plan manually</h2>

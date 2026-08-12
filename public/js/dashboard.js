@@ -24,18 +24,11 @@ let activeNutritionPlanForQuickFood = null;
 
 function dashboardGreeting(name, isHebrew) {
   const cleanName = String(name || "").trim();
-  const suffix = cleanName ? (isHebrew ? ` — ${cleanName}` : `, ${cleanName}`) : "";
-  const day = new Date().getDay();
-
-  if (isHebrew) {
-    if (day === 0) return `שבוע טוב${suffix}`;
-    if (day === 5 || day === 6) return `סוף שבוע נהדר${suffix}`;
-    return cleanName ? `היי ${cleanName}` : "היי";
-  }
-
-  if (day === 0 || day === 1) return `Have a great week${suffix}`;
-  if (day === 5 || day === 6) return `Have a great weekend${suffix}`;
-  return cleanName ? `Hi, ${cleanName}` : "Hi";
+  const hour = new Date().getHours();
+  const greeting = isHebrew
+    ? (hour < 12 ? "בוקר טוב" : hour < 18 ? "צהריים טובים" : "ערב טוב")
+    : (hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening");
+  return cleanName ? `${greeting}, ${cleanName}` : greeting;
 }
 
 const rawUi = he ? {
@@ -43,6 +36,63 @@ const rawUi = he ? {
  : {
   today: "TODAY",  welcome: name => dashboardGreeting(name, false),  intro: "Pick your next move without wading through too many buttons at once.",  chat: "Ask your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start Workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "Workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day",  buildWorkout: "Build workout plan",  buildNutrition: "Build nutrition plan",  trackProgress: "Track progress",  heroHistory: "Workout history",  drawerCoach: "Chat with your coach",  drawerPrimary: "Start here",  drawerTraining: "Training tools",  drawerSupport: "Progress & account",  missedLabel: "MISSED TRACKING?",  missedTitle: "Missed a workout? Log it here",  missedText: "Add the workout later so your history and progress charts stay complete.",  missedAction: "Log a past workout",  manualLabel: "YOUR OWN PROGRAM",  manualTitle: "Build a plan manually",  manualText: "Search exercises, set your sets and rest times, and build or duplicate workout days at your pace.",  manualAction: "Create my plan",  manualNav: "Build a plan manually",  toolsKicker: "MORE TOOLS",  toolsSummary: "Open advanced tools",  toolsText: "History, manual planning, and nutrition check-ins live here so the main screen stays simple and easy to use.",  logout: "Log out",  logoutConfirm: "Log out of your account?",  logoutWorking: "Logging out...",  logoutError: "Could not log out. Please try again."}
 ;
+const v4Ui = he ? {
+  capabilityStudioTitle: "מרכז היכולות של FuelPhysique",
+  date: "תאריך",
+  streak: "רצף",
+  days: "ימים",
+  day: "יום",
+  weekOnTrack: "שבוע האימונים שלך מתקדם לפי התוכנית.",
+  weekReady: "הצעד הבא שלך מוכן לבחירה.",
+  studioTrainingKicker: "מרכז אימונים",
+  studioTrainingTitle: "בונים את האימון",
+  studioTrainingText: "צרו תוכנית, בנו אותה ידנית או חזרו לתוכנית אימון שמורה.",
+  studioManualWorkoutLink: "בנייה ידנית",
+  studioSavedWorkoutLink: "תוכניות שמורות",
+  studioNutritionKicker: "תדלוק",
+  studioNutritionTitle: "מתכננים את הצלחת",
+  studioNutritionText: "הפכו את היעד, ההעדפות ושבוע האימונים למסגרת תזונה שימושית.",
+  studioManualNutritionLink: "בנייה ידנית",
+  studioSavedNutritionLink: "תוכניות שמורות",
+  studioProgressKicker: "התקדמות",
+  studioProgressTitle: "מודדים את השינוי",
+  studioProgressText: "תעדו מדדי גוף, מגמות אימון ושיאים אישיים במקום אחד.",
+  studioExerciseProgressLink: "התקדמות בתרגילים",
+  studioCoachKicker: "מאמן",
+  studioCoachTitle: "מקבלים צעד הבא ברור",
+  studioCoachText: "שאלו על התוכנית הפעילה והפכו את ההקשר לפעולה מעשית.",
+  studioSocialKicker: "חברים",
+  studioSocialTitle: "מתאמנים יחד",
+  studioSocialText: "שלחו הודעות ושתפו אימונים, תזונה, התקדמות, קול ומוזיקה בבטחה."
+} : {
+  capabilityStudioTitle: "FuelPhysique capability studio",
+  date: "DATE",
+  streak: "STREAK",
+  days: "days",
+  day: "day",
+  weekOnTrack: "Your training week is on track.",
+  weekReady: "Your next move is ready to choose.",
+  studioTrainingKicker: "TRAINING STUDIO",
+  studioTrainingTitle: "Build the session",
+  studioTrainingText: "Generate a program, shape it manually, or return to a saved training plan.",
+  studioManualWorkoutLink: "Build manually",
+  studioSavedWorkoutLink: "Saved plans",
+  studioNutritionKicker: "FUEL",
+  studioNutritionTitle: "Plan the plate",
+  studioNutritionText: "Turn your target, preferences, and training week into a usable nutrition structure.",
+  studioManualNutritionLink: "Build manually",
+  studioSavedNutritionLink: "Saved plans",
+  studioProgressKicker: "PROGRESS",
+  studioProgressTitle: "Measure the change",
+  studioProgressText: "Log body metrics, inspect training trends, and keep personal records visible.",
+  studioExerciseProgressLink: "Exercise progress",
+  studioCoachKicker: "COACH",
+  studioCoachTitle: "Get a clear next step",
+  studioCoachText: "Ask about the plan you are following and turn context into action.",
+  studioSocialKicker: "SOCIAL",
+  studioSocialTitle: "Train connected",
+  studioSocialText: "Message friends and share workouts, nutrition, progress, voice, and music safely."
+};
 const navLabels = he ? {
   dashboard: "דשבורד",
   programs: "תוכניות אימון",
@@ -362,6 +412,12 @@ function localize() {
   if (drawerSearch) drawerSearch.placeholder = drawerSearchCopy.placeholder;
   const desktopSearch = $("#desktopSearchInput");
   if (desktopSearch) desktopSearch.placeholder = drawerSearchCopy.placeholder;
+  for (const [id, value] of Object.entries(v4Ui)) {
+    const element = $("#" + id);
+    if (element && typeof value === "string") element.textContent = value;
+  }
+  const date = $("#dashboardContextDate");
+  if (date) date.textContent = new Intl.DateTimeFormat(he ? "he-IL" : "en-US", { weekday: "short", month: "short", day: "numeric" }).format(new Date());
 }
 
 const DRAWER_MAX_WIDTH = 1100;
@@ -988,6 +1044,9 @@ async function load(user) {
   $("#weeklyWorkouts").textContent = weekly;
   $("#weekGoal").textContent = ui.goal(weekly, target);
   $("#currentStreak").textContent = String(streak);
+  $("#dashboardContextStreak").textContent = String(streak);
+  $("#dashboardContextStreakUnit").textContent = streak === 1 ? v4Ui.day : v4Ui.days;
+  $("#welcomeText").textContent = target > 0 && weekly >= target ? v4Ui.weekOnTrack : v4Ui.weekReady;
   $("#streakHint").textContent = ui.streakHint(streak);
   $("#completedSets").textContent = sets;
   $("#setsHint").textContent = ui.setsHint;

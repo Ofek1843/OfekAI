@@ -1,6 +1,6 @@
 # FuelPhysique performance motion system
 
-Status: implementation source of truth for the Ultramarine Editorial release.
+Status: implementation source of truth for the Athletic Spectrum / Illustrated V4 release.
 
 ## Principles
 
@@ -22,6 +22,8 @@ Motion communicates a change in training state. It should express effort, veloci
 | Interface | `--motion-standard` | 280 ms | Tabs, selection, sheets, composer, dynamic rows |
 | Content | `--motion-slow` | 560 ms | Metric, chart, section, and result reveal |
 | Moment | `--motion-moment` | 900 ms | Workout completion, plan completion, real milestone |
+
+Illustrated V4 adds an **Illustrative** category for one complete physical or explanatory action. Its 1400-2400 ms durations are centralized in `public/css/illustrated-v4.css`; the figure construction, triggers, viewport pause, touch replay, and reduced-motion behavior are documented in `docs/illustration-motion-system.md`.
 
 All durations sit inside the required bands: micro 50–180 ms, interface 180–350 ms, content 300–700 ms, and moment 600–1400 ms.
 
@@ -46,6 +48,7 @@ All durations sit inside the required bands: micro 50–180 ms, interface 180–
 - Active navigation uses a 3 px Ultramarine rule and weight state, never a blue pill or glow.
 - Dashboard title remains immediate. Primary workout context establishes before supporting metrics; supporting activity follows.
 - Integer metrics interpolate only when visible or when their real value changes. The final value is exposed as the accessible name throughout the transition. Decimal values are not fabricated.
+- Capability illustrations perform one bounded rep or explanatory sequence on first viewport entry, may replay once on hover/focus/touch, and pause offscreen.
 
 ### Workout
 
@@ -73,6 +76,7 @@ All durations sit inside the required bands: micro 50–180 ms, interface 180–
 - Sent and received messages use opposing 12 px directions; RTL mirrors reading direction.
 - Friend, shared-artifact, and conversation surfaces use the interface/content tiers.
 - Recording motion is limited to the real recording indicator. Audio controls remain native and no fake waveform is rendered.
+- The Social capability illustration exchanges only generic message/workout/music shapes; it never mirrors private conversation content.
 
 ### Forms and authentication
 
@@ -98,4 +102,3 @@ All durations sit inside the required bands: micro 50–180 ms, interface 180–
 - transitions/animations resolve in 0.01 ms with one iteration;
 - the recording indicator remains a stable truthful state;
 - navigation, forms, timers, chat, modals, and every core action remain usable.
-

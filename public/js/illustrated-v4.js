@@ -1,0 +1,160 @@
+(() => {
+  "use strict";
+
+  const DURATIONS = Object.freeze({
+    training: 1800,
+    nutrition: 1500,
+    progress: 1700,
+    benchPr: 1700,
+    coach: 1400,
+    social: 1600,
+    deadlift: 2400
+  });
+
+  const svg = (name, content) => `<svg class="v4-illustration v4-illustration--${name}" viewBox="0 0 320 220" role="presentation" aria-hidden="true" focusable="false">${content}</svg>`;
+  const templates = Object.freeze({
+    training: () => svg("training", `
+      <g class="v4-ground"><path d="M38 190H292"/></g>
+      <g class="v4-barbell"><path d="M64 78H254"/><rect x="47" y="62" width="15" height="32" rx="3"/><rect x="256" y="62" width="15" height="32" rx="3"/></g>
+      <g class="v4-athlete v4-athlete--squat">
+        <circle class="v4-head" cx="164" cy="52" r="18"/>
+        <path class="v4-torso" d="M140 73Q164 61 187 75L191 133Q164 143 137 130Z"/>
+        <g class="v4-arm v4-arm--rear"><path d="M145 80L112 86L84 77"/></g>
+        <g class="v4-arm v4-arm--front"><path d="M183 80L216 86L242 77"/></g>
+        <g class="v4-leg v4-leg--rear"><path d="M150 130L119 153L96 188"/></g>
+        <g class="v4-leg v4-leg--front"><path d="M178 132L206 154L229 188"/></g>
+        <path class="v4-muscle-mark" d="M149 88Q164 97 180 87"/>
+      </g>
+      <text class="v4-poster-label" x="38" y="42">CONTROL THE REP</text>`),
+    nutrition: () => svg("nutrition", `
+      <g class="v4-ground"><path d="M34 190H292"/></g>
+      <g class="v4-table"><path d="M154 150H286"/><path d="M178 150V190M264 150V190"/></g>
+      <g class="v4-plate"><ellipse cx="226" cy="141" rx="42" ry="10"/><path d="M198 137Q226 116 254 137"/><circle cx="218" cy="130" r="5"/><circle cx="236" cy="128" r="6"/></g>
+      <g class="v4-athlete v4-athlete--fuel">
+        <circle class="v4-head" cx="106" cy="67" r="18"/>
+        <path class="v4-torso" d="M79 91Q106 78 130 93L142 164H66Z"/>
+        <g class="v4-arm v4-arm--meal"><path d="M124 99L162 114L199 99"/><path class="v4-utensil" d="M199 99L216 82M213 80L221 86"/></g>
+        <g class="v4-arm v4-arm--rest"><path d="M86 102L64 137L74 163"/></g>
+        <path class="v4-muscle-mark" d="M90 110Q106 119 124 109"/>
+      </g>
+      <g class="v4-macro-marks"><path d="M178 54H279"/><path d="M178 67H255"/><path d="M178 80H266"/></g>
+      <text class="v4-poster-label" x="34" y="38">FUEL THE WORK</text>`),
+    progress: () => svg("progress", `
+      <g class="v4-ground"><path d="M32 190H292"/></g>
+      <g class="v4-progress-scale-scene">
+        <g class="v4-scale"><rect x="78" y="157" width="93" height="32" rx="8"/><rect x="109" y="164" width="32" height="12" rx="3"/><path class="v4-scale-needle" d="M125 171L135 167"/></g>
+        <g class="v4-athlete v4-athlete--scale">
+          <circle class="v4-head" cx="124" cy="53" r="18"/>
+          <path class="v4-torso" d="M96 78Q124 64 151 79L145 137H101Z"/>
+          <path class="v4-arm" d="M99 87L75 124M149 88L173 124"/>
+          <path class="v4-leg" d="M111 136L108 161M137 136L141 161"/>
+        </g>
+        <g class="v4-progress-chart"><path class="v4-chart-axis" d="M194 158V78M194 158H286"/><path class="v4-chart-path" d="M202 147L220 132L238 138L258 108L281 88"/><circle cx="281" cy="88" r="5"/></g>
+      </g>
+      <g class="v4-bench-pr-scene">
+        <path class="v4-bench" d="M62 151H225M91 151L78 187M202 151L215 187"/>
+        <g class="v4-athlete v4-athlete--bench"><circle class="v4-head" cx="93" cy="126" r="15"/><path class="v4-torso" d="M109 117L184 125L179 151H105Z"/><path class="v4-leg" d="M178 140L222 160L243 186"/><path class="v4-arm" d="M128 119L143 82M165 122L178 82"/></g>
+        <g class="v4-barbell v4-barbell--bench"><path d="M104 78H220"/><rect x="91" y="65" width="12" height="27" rx="3"/><rect x="221" y="65" width="12" height="27" rx="3"/></g>
+        <g class="v4-pr-state"><rect x="228" y="38" width="52" height="28" rx="5"/><text x="254" y="57">PR</text></g>
+      </g>
+      <text class="v4-poster-label" x="32" y="35">MEASURE. ADJUST.</text>`),
+    coach: () => svg("coach", `
+      <g class="v4-ground"><path d="M32 190H292"/></g>
+      <g class="v4-athlete v4-athlete--coach">
+        <circle class="v4-head" cx="91" cy="72" r="18"/>
+        <path class="v4-torso" d="M62 97Q91 82 118 98L126 178H53Z"/>
+        <path class="v4-arm" d="M114 107L150 121L174 106"/>
+      </g>
+      <g class="v4-coach-board"><rect x="154" y="47" width="130" height="124" rx="8"/><path d="M179 81H254M179 110H254M179 139H254"/><g class="v4-check v4-check--one"><path d="M164 77L170 84L180 70"/></g><g class="v4-check v4-check--two"><path d="M164 106L170 113L180 99"/></g><g class="v4-check v4-check--three"><path d="M164 135L170 142L180 128"/></g></g>
+      <text class="v4-poster-label" x="32" y="38">NEXT STEP: CLEAR</text>`),
+    social: () => svg("social", `
+      <g class="v4-ground"><path d="M28 190H294"/></g>
+      <g class="v4-person v4-person--left"><circle cx="68" cy="93" r="18"/><path d="M37 167Q39 119 68 116Q98 120 101 167Z"/></g>
+      <g class="v4-person v4-person--right"><circle cx="252" cy="93" r="18"/><path d="M219 167Q222 119 252 116Q281 120 284 167Z"/></g>
+      <g class="v4-social-card v4-social-card--message"><rect x="112" y="48" width="95" height="34" rx="6"/><path d="M126 64H190"/></g>
+      <g class="v4-social-card v4-social-card--workout"><rect x="105" y="93" width="110" height="34" rx="6"/><path d="M122 110H198M137 104V116M184 104V116"/></g>
+      <g class="v4-social-card v4-social-card--music"><rect x="118" y="138" width="87" height="34" rx="6"/><path d="M139 160V148L153 144V157"/><circle cx="136" cy="161" r="4"/><circle cx="150" cy="158" r="4"/></g>
+      <path class="v4-social-path" d="M91 90C121 24 199 24 230 90"/>
+      <text class="v4-poster-label" x="28" y="35">SHARE THE MOMENT</text>`),
+    deadlift: () => svg("deadlift", `
+      <g class="v4-ground"><path d="M20 193H302"/></g>
+      <g class="v4-barbell v4-barbell--deadlift"><path d="M52 174H274"/><rect x="30" y="153" width="20" height="42" rx="4"/><rect x="276" y="153" width="20" height="42" rx="4"/></g>
+      <g class="v4-athlete v4-athlete--deadlift">
+        <circle class="v4-head" cx="163" cy="67" r="18"/>
+        <path class="v4-torso" d="M139 88Q162 77 181 91L191 133L156 151L126 116Z"/>
+        <g class="v4-arm"><path d="M139 98L120 130L112 173M178 98L201 131L211 173"/></g>
+        <g class="v4-leg"><path d="M157 145L129 164L120 191M172 143L200 164L211 191"/></g>
+        <path class="v4-muscle-mark" d="M144 103Q160 110 176 101"/>
+      </g>
+      <g class="v4-hero-readout"><text x="24" y="34">ATHLETIC SPECTRUM</text><text x="24" y="51">ONE CONTROLLED REP</text></g>`)
+  });
+
+  function mountIllustrations() {
+    const hosts = [...document.querySelectorAll("[data-v4-illustration]")];
+    for (const host of hosts) {
+      const name = host.dataset.v4Illustration;
+      const template = templates[name];
+      if (!template || host.querySelector(".v4-illustration")) continue;
+      host.innerHTML = template();
+      host.dataset.v4Duration = String(DURATIONS[name]);
+    }
+    return hosts;
+  }
+
+  function setupMotion(hosts) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.documentElement.classList.toggle("v4-reduced-motion", reduced);
+    if (reduced || !("IntersectionObserver" in window)) {
+      hosts.forEach((host) => host.classList.add("is-illustration-complete"));
+      return;
+    }
+
+    const finishTimers = new WeakMap();
+    const playOnce = (host) => {
+      host.classList.remove("is-illustration-paused");
+      if (host.dataset.v4Played === "true") return;
+      host.dataset.v4Played = "true";
+      host.classList.add("is-illustration-active");
+      const timer = window.setTimeout(() => {
+        host.classList.remove("is-illustration-active", "is-illustration-paused");
+        host.classList.add("is-illustration-complete");
+      }, Number(host.dataset.v4Duration || 1800) + 120);
+      finishTimers.set(host, timer);
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const host = entry.target;
+        if (entry.isIntersecting) playOnce(host);
+        else if (host.classList.contains("is-illustration-active")) host.classList.add("is-illustration-paused");
+      }
+    }, { threshold: 0.24, rootMargin: "0px 0px -4% 0px" });
+    hosts.forEach((host) => observer.observe(host));
+
+    const replay = (container) => {
+      const host = container.querySelector("[data-v4-illustration]") || (container.matches?.("[data-v4-illustration]") ? container : null);
+      if (!host || reduced) return;
+      host.classList.remove("is-illustration-replay");
+      void host.offsetWidth;
+      host.classList.add("is-illustration-replay");
+      window.setTimeout(() => host.classList.remove("is-illustration-replay"), Number(host.dataset.v4Duration || 1800) + 120);
+    };
+    document.querySelectorAll(".capability-card, .journey-card, .landing-hero-illustration").forEach((container) => {
+      container.addEventListener("pointerenter", () => replay(container));
+      container.addEventListener("focusin", () => replay(container));
+      container.addEventListener("pointerdown", (event) => {
+        if (event.pointerType === "touch") replay(container);
+      }, { passive: true });
+    });
+  }
+
+  function boot() {
+    const hosts = mountIllustrations();
+    setupMotion(hosts);
+    document.documentElement.classList.add("v4-illustrations-ready");
+    window.__fuelPhysiqueIllustratedV4 = Object.freeze({ durations: DURATIONS, hostCount: hosts.length });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
+})();
