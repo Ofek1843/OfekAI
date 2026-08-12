@@ -308,12 +308,14 @@ async function seed() {
   const messages = [
     { id: "review-message-1", senderUid: userA.uid, type: "text", text: "Strong lower session today. I kept the final set at RIR 2.", createdAt: daysAgo(1, 18) },
     { id: "review-message-2", senderUid: userB.uid, type: "text", text: "Nice. I shared the nutrition setup I use on training days.", createdAt: daysAgo(1, 19) },
-    { id: "review-message-3", senderUid: userA.uid, type: "voice", voice: { assetId: "local-review-unavailable", durationMs: 6200, mimeType: "audio/webm", sizeBytes: 18000, unavailable: true }, createdAt: daysAgo(1, 20) },
     { id: "review-message-4", senderUid: userB.uid, type: "text", text: "Recovery session looks good — see you Thursday.", createdAt: daysAgo(0) },
   ];
   messages.forEach((message) => batch.set(db.doc(`conversations/${conversationId}/messages/${message.id}`), { ...message, clientId: message.id, schemaVersion: 1 }));
   batch.set(db.doc(`conversations/${conversationId}/messages/review-music-1`), { type: "music_link", music: { provider: "spotify", title: "Heavy day focus", url: "https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP" }, senderUid: userA.uid, clientId: "review-music-1", schemaVersion: 1, createdAt: daysAgo(1, 17) });
   batch.set(db.doc(`conversations/${conversationId}/messages/review-music-2`), { type: "music_link", music: { provider: "youtube_music", title: "Recovery tempo", url: "https://music.youtube.com/watch?v=dQw4w9WgXcQ" }, senderUid: userB.uid, clientId: "review-music-2", schemaVersion: 1, createdAt: daysAgo(0, 16) });
+  batch.set(db.doc(`conversations/${conversationId}/messages/review-music-3`), { type: "music_link", music: { provider: "apple_music", title: "Strength session mix", url: "https://music.apple.com/us/playlist/pure-workout/pl.2f2fd9b69cae4a9a98e75cae92b0f453" }, senderUid: userA.uid, clientId: "review-music-3", schemaVersion: 1, createdAt: daysAgo(0, 15) });
+  batch.set(db.doc(`conversations/${conversationId}/messages/review-music-4`), { type: "music_link", music: { provider: "soundcloud", title: "Warm-up rhythm", url: "https://soundcloud.com/discover/sets/charts-top:all-music" }, senderUid: userB.uid, clientId: "review-music-4", schemaVersion: 1, createdAt: daysAgo(0, 14) });
+  batch.set(db.doc(`conversations/${conversationId}/messages/review-music-5`), { type: "music_link", music: { provider: "link", title: "Independent training mix", url: "https://bandcamp.com/discover/fitness" }, senderUid: userA.uid, clientId: "review-music-5", schemaVersion: 1, createdAt: daysAgo(0, 13) });
 
   const contactC = SOCIAL_CONTACTS[0];
   const secondConversationId = [userA.uid, contactC.uid].sort().map(encodeURIComponent).join("__");

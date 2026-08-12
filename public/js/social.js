@@ -473,7 +473,7 @@ function artifactCard(message) {
   const typeLabel = ui[message.artifactType] || message.artifactType;
   const copyable = ["workout", "nutrition"].includes(message.artifactType);
   const copied = state.copiedArtifacts.has(message.artifactId);
-  return `<article class="artifact-card" data-artifact-id="${escapeHtml(message.artifactId)}">
+  return `<article class="artifact-card" data-artifact-id="${escapeHtml(message.artifactId)}" data-artifact-type="${escapeHtml(message.artifactType)}">
     <div class="artifact-visual"><span>${escapeHtml(typeLabel).toUpperCase()}</span></div>
     <div class="artifact-body"><h3>${escapeHtml(message.artifactTitle || typeLabel)}</h3><p>${ui.shared} · ${formatMessageTime(message.createdAt, language)}</p></div>
     <div class="artifact-actions"><button type="button" data-action="preview-artifact" data-artifact-id="${escapeHtml(message.artifactId)}">${ui.preview}</button>${copyable ? `<button class="copy-action" type="button" data-action="copy-artifact" data-artifact-id="${escapeHtml(message.artifactId)}">${copied ? ui.copied : message.artifactType === "nutrition" ? ui.copyNutrition : ui.copyWorkout}</button>` : ""}</div>
@@ -502,7 +502,8 @@ function musicLinkBubble(message) {
   const providers = { spotify: "Spotify", apple_music: "Apple Music", youtube: "YouTube", youtube_music: "YouTube Music", soundcloud: "SoundCloud", link: "Music link" };
   const provider = providers[message.music?.provider] || providers.link;
   const title = message.music?.title || (language === "he" ? "מוזיקה לאימון" : "Workout music");
-  return `<a class="message-bubble music-link-card" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><img src="/icons/tabler/music.svg" alt=""><span><small>${escapeHtml(provider)}</small><strong>${escapeHtml(title)}</strong><em>${language === "he" ? "פתיחה מאובטחת בכרטיסייה חדשה" : "Open safely in a new tab"}</em></span></a>`;
+  const providerKey = Object.hasOwn(providers, message.music?.provider) ? message.music.provider : "link";
+  return `<a class="message-bubble music-link-card" data-music-provider="${escapeHtml(providerKey)}" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><img src="/icons/tabler/music.svg" alt=""><span><small>${escapeHtml(provider)}</small><strong>${escapeHtml(title)}</strong><em>${language === "he" ? "פתיחה מאובטחת בכרטיסייה חדשה" : "Open safely in a new tab"}</em></span></a>`;
 }
 
 function updateVoicePlayer(messageId, update) {
@@ -532,7 +533,7 @@ function renderMessages({ preserveScroll = false } = {}) {
       : message.type === "voice" ? voiceMessageBubble(message)
         : message.type === "music_link" ? musicLinkBubble(message)
         : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
-    return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}">
+    return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}" data-message-type="${escapeHtml(message.type || "text")}">
       ${content}
       <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent ? (!message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : "") : (!message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">Report</button>` : "")}</span>
       ${failed ? `<span class="message-failed">${message.type === "voice" ? ui.voiceUploadFailed : ui.sendFailed}<button type="button" data-action="retry-message" data-message-id="${escapeHtml(message.id)}">${ui.retry}</button></span>` : ""}
