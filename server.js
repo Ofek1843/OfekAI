@@ -23,6 +23,10 @@ const { createPushRouter } = require("./lib/push-router");
 const { createAccountRouter } = require("./lib/account-router");
 const { AccountService } = require("./lib/account-service");
 const { VoiceMediaService } = require("./lib/voice-media-service");
+const {
+  createLocalReviewVoiceProvider,
+  localReviewVoiceEnabled
+} = require("./lib/local-review-voice-provider");
 const { voiceMessageConfig } = require("./lib/voice-message-domain");
 const { cleanupAccountVoiceMessages: cleanupVoiceMessages } = require("./lib/voice-account-lifecycle");
 const { hasAcceptedCurrentTerms, publicLegalPolicy } = require("./lib/legal-policy");
@@ -99,6 +103,9 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SERVER_HOST = localDemoMode
+  ? String(process.env.LOCAL_REVIEW_BIND_HOST || "127.0.0.1").trim()
+  : undefined;
 const BUILD_ID = String(process.env.RENDER_GIT_COMMIT || "local").trim() || "local";
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
@@ -616,6 +623,10 @@ function logPhotoStorageStartupDiagnostics() {
 }
 
 function logVoiceMessageStartupDiagnostics() {
+  if (localReviewVoiceEnabled(process.env)) {
+    console.log("[voice-messages] LOCAL REVIEW ONLY: loopback storage, authorized playback and deletion enabled.");
+    return;
+  }
   const required = ["IMAGEKIT_PUBLIC_KEY", "IMAGEKIT_PRIVATE_KEY", "IMAGEKIT_URL_ENDPOINT"];
   const missing = required.filter((name) => !process.env[name]?.trim());
   if (missing.length) {
@@ -728,7 +739,16 @@ const pushNotifications = new PushNotificationService({
   transport: pushTransport
 });
 const voiceConfig = voiceMessageConfig();
-const voiceMedia = new VoiceMediaService({ provider: imageKitVoiceProvider(), config: voiceConfig });
+const localReviewVoiceProvider = createLocalReviewVoiceProvider({
+  env: process.env,
+  rootDir: path.resolve(__dirname, process.env.LOCAL_REVIEW_VOICE_ROOT || ".redesign-review/voice"),
+  bindHost: SERVER_HOST || "127.0.0.1",
+  port: PORT
+});
+const voiceMedia = new VoiceMediaService({
+  provider: localReviewVoiceProvider || imageKitVoiceProvider(),
+  config: voiceConfig
+});
 const accountService = new AccountService({
   pushService: pushNotifications,
   imageCleanup: deleteAccountOwnedImageKitFile,
@@ -740,6 +760,10 @@ app.use("/api/account", createAccountRouter({
   service: accountService,
   rateLimit: rateLimiters.account
 }));
+
+if (localReviewVoiceProvider) {
+  app.get("/api/local-review/voice/:assetId", (req, res) => localReviewVoiceProvider.servePlayback(req, res));
+}
 
 app.use("/api/social", createSocialRouter({
   authenticate: requireFirebaseUser,
@@ -4372,8 +4396,9 @@ app.use((error, req, res, next) => {
   });
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`FuelPhysique AI Server running on http://localhost:${PORT}`);
+const server = app.listen(PORT, SERVER_HOST, () => {
+  const displayedHost = SERVER_HOST || "localhost";
+  console.log(`FuelPhysique AI Server running on http://${displayedHost}:${PORT}`);
   telemetry.start();
 });
 

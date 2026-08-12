@@ -43,7 +43,17 @@ async function verify() {
     if (!Array.isArray(conversations.conversations) || conversations.conversations.length < 1) {
       throw new Error(`${user.email} signed in but seeded Social bootstrap did not complete.`);
     }
-    results.push({ email: user.email, login: "PASS", protectedBootstrap: "PASS", conversations: conversations.conversations.length });
+    const voice = await jsonResponse(await fetch(`${APP_URL}/api/social/voice-config`, {
+      headers: { Authorization: `Bearer ${credential.idToken}` },
+    }), `${user.email} local voice configuration`);
+    if (voice.enabled !== true) throw new Error(`${user.email} signed in but local-only voice review is disabled.`);
+    results.push({
+      email: user.email,
+      login: "PASS",
+      protectedBootstrap: "PASS",
+      localVoice: "PASS",
+      conversations: conversations.conversations.length
+    });
   }
 
   console.log(JSON.stringify({
@@ -61,4 +71,3 @@ verify().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
