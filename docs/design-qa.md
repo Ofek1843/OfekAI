@@ -1,54 +1,74 @@
-# FuelPhysique Ultramarine Editorial - visual QA
+# FuelPhysique Athletic Spectrum — Phase 4 visual QA
 
 Status: **PASSED**
 
-The approved Phase 1 information architecture remains intact. Phase 2 replaces its former coral identity with the exact black, paper, steel, and Ultramarine system and adds performance-specific motion without changing routing or product behavior.
+Phase 4 preserves the approved Phase 3 navigation and product architecture while replacing the monochromatic authenticated experience with five persistent capability identities, original athlete scenes, and a unified marketing canvas.
 
 ## Same-input review
 
-The generated direction and authenticated implementation were reviewed together at 1440x900:
+The Phase 3 dashboard and Phase 4 implementation were compared at the same desktop state and viewport:
 
-- target: `outputs/complete-redesign/ultramarine-motion/targets/ultramarine-dashboard-target.png`
-- implementation: `outputs/complete-redesign/ultramarine-motion/dashboard-desktop-en-1440x900.jpg`
-- comparison: `outputs/complete-redesign/ultramarine-motion/dashboard-same-input-comparison.jpg`
+- Phase 3: `outputs/complete-redesign/product-polish-v3/dashboard-progress-1440x900.png`
+- Phase 4: `outputs/complete-redesign/illustrated-v4/dashboard-light-en-1440x900.png`
+- comparison: `outputs/complete-redesign/illustrated-v4/dashboard-phase3-vs-v4-comparison.png`
 
-The implementation matches the selected palette, editorial type, ruled hierarchy, compact active-navigation indicator, and deliberate brand emphasis. It deliberately preserves the already-approved five-destination shell instead of restoring the exploration target's permanent sidebar.
+The combined image shows the intended change directly: the oversized greeting and nearly identical dark cards are replaced by a compact context header and a varied Training, Nutrition, Progress, Coach, and Social capability studio. The existing five-destination product navigation remains intact.
 
-## Three review passes
+## Pass 1 — intuitiveness and color
 
-### Pass 1 - color
+- Training is immediately identified by performance blue and a controlled resistance rep.
+- Nutrition is amber and uses an athlete, meal, plate, and utensil scene.
+- Progress is violet and combines body measurement with an optional bench-press capability replay.
+- Coach is emerald and uses a training checklist interaction, not sparkle or robot imagery.
+- Social is berry and shows two athletes exchanging message, workout, and music cards.
+- The light canvas is `#E9EEF8`; the dark canvas is `#151A29`. Domain surfaces remain distinct in both themes.
+- Provider cards are full-surface identities: Spotify green, YouTube red, Apple Music pink/red, SoundCloud orange, and generic music Ultramarine.
 
-- 21 coral-system references were found in the Phase 1 public/docs/test audit and removed from brand use.
-- Semantic danger red, success green, and warning amber remain distinct.
-- Final computed-style route sweeps found zero visible gradients and zero legacy cyan/coral/AI-blue values in the redesigned states.
+Result: a viewer can distinguish the five capabilities before reading the supporting copy.
 
-### Pass 2 - motion
+## Pass 2 — motion and interaction
 
-- Micro, interface, content, and moment tiers use centralized durations and easing.
-- Fitness-specific states cover performance assembly, set completion, recovery timing, metrics, charts, muscle activation, messaging, voice recording, and milestone completion.
-- Reduced motion resolves every animated state immediately without hiding content or blocking controls.
+- Browser inspection confirmed the five dashboard scenes run their named CSS animations at 1.4–1.8 seconds after entering the viewport.
+- The landing deadlift uses a 2.4-second controlled rep.
+- `IntersectionObserver` starts each scene once, offscreen active scenes pause, and focus/hover/touch can replay one sequence.
+- Action links retain `pointer-events: auto`; motion never owns navigation or business state.
+- Reduced motion returns complete static scenes and leaves every control usable.
+- The approved Workout Day rail and mobile day selector remain functional; Day 3 was selected and rendered on desktop and mobile.
 
-### Pass 3 - whole product
+Result: motion explains a fitness or product action instead of acting as generic decoration.
 
-| Viewport | Language | Result |
+## Pass 3 — brand, responsive, and RTL
+
+| Viewport | Language/theme | Result |
 | --- | --- | --- |
-| 390x844 | English LTR | PASS - Dashboard and Social/chat navigation fit with no horizontal overflow |
-| 430x932 | English LTR | PASS - all selected core routes fit; no legacy gradients or colors |
-| 430x932 | Hebrew RTL | PASS - Dashboard, builders, Tracker, Progress, Social, Settings, and Terms initialize in RTL |
-| 768x1024 | English and Hebrew | PASS - tablet hierarchy, dialogs, and controls remain reachable |
-| 1440x900 | English LTR | PASS - desktop hierarchy and route composition remain stable |
+| 390×844 | English light/dark | PASS — compact Dashboard, landing hero, Social composer, and Workout Day selector fit without horizontal overflow |
+| 430×932 | Hebrew light | PASS — Dashboard and Social initialize in RTL, labels are localized, illustrations do not cover actions |
+| 768×1024 | Hebrew light | PASS — two-column Dashboard and Social workspace remain readable; fixed feedback does not cover controls |
+| 1440×900 | English light/dark | PASS — varied studio, provider cards, desktop Workout Day rail, metrics, and weekly plan remain stable |
 
-The Windows device-scale screenshot backend can crop fixed viewport captures; screenshots were therefore evaluated together with DOM geometry, computed styles, and fresh-tab diagnostics. The clean final tab produced no console warning or error.
+The landing hero, five journeys, and transformation section use one continuous cool-performance canvas. Section identity comes from typography, composition, illustration, and domain color rather than alternating full-width white and black templates.
 
-## Assets and install surface
+The Windows in-app browser can briefly expose a stale device-scale compositor frame after changing viewport size. Final captures were taken only after a settled second frame and were cross-checked against DOM geometry. Final geometry reported no horizontal overflow. The console contained no warning or error.
 
-- `public/images/brand/ultramarine-athlete-hero.png`
-- `public/images/brand/ultramarine-athlete-hero.webp`
-- `public/images/brand/fuelphysique-icon-192.png`
-- `public/images/brand/fuelphysique-icon-512.png`
+## Local voice review
 
-The manifest no longer contains a mock screenshot or inline emoji shortcut artwork.
+- The original local disable condition was missing ImageKit configuration; it was not a MediaRecorder or membership defect.
+- The review server now exposes a strictly loopback, emulator-only, non-production voice provider.
+- Local Auth, voice configuration, raw upload, signed private playback, byte-range playback, deletion, and empty storage cleanup passed through the running application routes.
+- The microphone control is enabled in the real Social composer. Hardware recording remains subject to the inspecting browser's normal microphone permission; no permission or production security bypass is introduced.
 
-## Final visual verdict
+## Evidence
 
-**PASSED.** FuelPhysique now presents a coherent Ultramarine Editorial identity, purposeful performance motion, responsive English/Hebrew layouts, and a safe local authenticated review path.
+Final evidence is stored in `outputs/complete-redesign/illustrated-v4/`, including:
+
+- English Dashboard light/dark at 1440×900 and 390×844
+- Hebrew Dashboard at 430×932 and 768×1024
+- Dashboard metrics and weekly plan at 1440×900
+- landing hero, journey, transformation, mobile, and full-page captures
+- English and Hebrew Social/provider captures
+- Workout Day 3 at desktop and mobile widths
+- Phase 3 versus Phase 4 comparison board
+
+## Final visual result
+
+**PASSED.** FuelPhysique now reads as one illustrated performance product: the five capabilities are visually distinct, the motion is athletic and finite, the landing is continuous, and the approved Workout and Social structures are preserved.

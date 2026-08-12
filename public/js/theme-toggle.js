@@ -66,13 +66,20 @@ function updateButtonState(button, resolvedTheme) {
   const label = button.querySelector("[data-theme-toggle-label]");
   const short = button.querySelector("[data-theme-toggle-short]");
   const targetTheme = resolvedTheme === "dark" ? "light" : "dark";
+  const isHebrew = (localStorage.getItem("ofek-ai-language") || document.documentElement.lang) === "he";
+  const longLabel = targetTheme === "light"
+    ? (isHebrew ? "מעבר למצב בהיר" : "Switch to light mode")
+    : (isHebrew ? "מעבר למצב כהה" : "Switch to dark mode");
+  const visibleLabel = resolvedTheme === "dark"
+    ? (isHebrew ? "מצב בהיר" : "Light mode")
+    : (isHebrew ? "מצב כהה" : "Dark mode");
+  const shortLabel = resolvedTheme === "dark"
+    ? (isHebrew ? "בהיר" : "Light")
+    : (isHebrew ? "כהה" : "Dark");
 
   button.dataset.themeState = resolvedTheme;
   button.dataset.themeTarget = targetTheme;
-  button.setAttribute(
-    "aria-label",
-    targetTheme === "light" ? "Switch to light mode" : "Switch to dark mode"
-  );
+  button.setAttribute("aria-label", longLabel);
   button.setAttribute("aria-pressed", String(resolvedTheme === "dark"));
 
   if (icon) {
@@ -80,11 +87,11 @@ function updateButtonState(button, resolvedTheme) {
   }
 
   if (label) {
-    label.textContent = resolvedTheme === "dark" ? "Light mode" : "Dark mode";
+    label.textContent = visibleLabel;
   }
 
   if (short) {
-    short.textContent = resolvedTheme === "dark" ? "Light" : "Dark";
+    short.textContent = shortLabel;
   }
 }
 

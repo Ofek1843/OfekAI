@@ -14,6 +14,9 @@ const LANDING = read("public", "index.html");
 const SOCIAL_HTML = read("public", "social.html");
 const SOCIAL_JS = read("public", "js", "social.js");
 const WORKOUT = read("public", "js", "workout-builder.js");
+const DASHBOARD_JS = read("public", "js", "dashboard.js");
+const SHELL = read("public", "js", "redesign-shell.js");
+const THEME = read("public", "js", "theme-toggle.js");
 
 test("Illustrated V4 uses the exact Athletic Spectrum tokens without gradients or glow", () => {
   for (const [name, value] of Object.entries({
@@ -68,6 +71,17 @@ test("approved Workout Day navigation and Social workspace architecture remain i
   assert.match(WORKOUT, /planDaySelect/);
   for (const region of ["social-sidebar", "social-workspace", "social-context-panel"]) assert.match(SOCIAL_HTML, new RegExp(`class="${region}`));
   assert.match(CSS, /\.fp-route-workout-builder \.plan-day-rail/);
+});
+
+test("mobile and Hebrew polish keeps core controls visible and localized", () => {
+  assert.match(CSS, /@media \(max-width:\s*820px\)[\s\S]*?site-feedback-widget \{ display:\s*none/);
+  assert.match(CSS, /messages-view \{ height:\s*calc\(100dvh - 154px/);
+  assert.match(CSS, /messages-view \.chat-panel \{ min-height:\s*0 !important; height:\s*100% !important/);
+  for (const label of ["תאריך", "רצף", "משך", "תרגילים"]) assert.match(DASHBOARD_JS, new RegExp(label));
+  for (const label of ["חדש", "חזרה", "עוד", "קול"]) assert.match(SHELL, new RegExp(label));
+  assert.match(SOCIAL_JS, /language === "he" \? "דיווח" : "Report"/);
+  assert.match(THEME, /מעבר למצב בהיר/);
+  assert.match(THEME, /מעבר למצב כהה/);
 });
 
 test("the PWA cache is versioned with the Illustrated V4 assets and private voice remains network-only", () => {

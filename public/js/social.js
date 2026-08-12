@@ -535,7 +535,7 @@ function renderMessages({ preserveScroll = false } = {}) {
         : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
     return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}" data-message-type="${escapeHtml(message.type || "text")}">
       ${content}
-      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent ? (!message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : "") : (!message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">Report</button>` : "")}</span>
+      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent ? (!message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : "") : (!message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">${language === "he" ? "דיווח" : "Report"}</button>` : "")}</span>
       ${failed ? `<span class="message-failed">${message.type === "voice" ? ui.voiceUploadFailed : ui.sendFailed}<button type="button" data-action="retry-message" data-message-id="${escapeHtml(message.id)}">${ui.retry}</button></span>` : ""}
     </li>`;
   }).join("");

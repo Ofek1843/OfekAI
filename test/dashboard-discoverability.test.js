@@ -9,14 +9,16 @@ const JS = fs.readFileSync(path.join(ROOT, "public", "js", "dashboard.js"), "utf
 const CSS = fs.readFileSync(path.join(ROOT, "public", "css", "dashboard.css"), "utf8");
 
 function primaryActions() {
-  const match = HTML.match(/<nav class="dashboard-primary-actions"[\s\S]*?<\/nav>/);
-  assert.ok(match, "dashboard must expose a primary quick-action nav");
+  const match = HTML.match(/<(?:nav|section)\b[^>]*class="[^"]*\bdashboard-primary-actions\b[^"]*"[\s\S]*?<\/(?:nav|section)>/);
+  assert.ok(match, "dashboard must expose a primary capability surface");
   return match[0];
 }
 
 test("dashboard primary actions include the direct social chat destination", () => {
   const actions = primaryActions();
-  const links = [...actions.matchAll(/<a\b[^>]*>/g)].map(match => match[0]);
+  const links = [...actions.matchAll(/<a\b[^>]*>/g)]
+    .map(match => match[0])
+    .filter(link => /class="[^"]*\bdashboard-action\b/.test(link));
 
   assert.equal(links.length, 5);
   assert.match(actions, /id="chatLink"[^>]*href="\/app\.html"/);

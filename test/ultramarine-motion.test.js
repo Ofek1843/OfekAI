@@ -84,6 +84,6 @@ test("all public pages and the service worker use the Ultramarine cache generati
     assert.match(html, /redesign-v1\.css\?v=20260810-ultramarine-motion/);
     assert.match(html, /redesign-shell\.js\?v=20260810-ultramarine-motion/);
   }
-  assert.match(SW, /fuelphysique-v12-product-polish-v3/);
+  assert.match(SW, /fuelphysique-v13-illustrated-v4/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);
 });

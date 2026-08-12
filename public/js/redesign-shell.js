@@ -149,7 +149,19 @@
   });
 
   const exposeIconActions = () => {
-    const labels = {
+    const language = (localStorage.getItem("ofek-ai-language") || document.documentElement.lang) === "he" ? "he" : "en";
+    const labels = language === "he" ? {
+      "Start conversation": "חדש",
+      "Back to conversations": "חזרה",
+      "Friend options": "עוד",
+      "Voice input": "קול",
+      "Switch to light mode": "מצב בהיר",
+      "Switch to dark mode": "מצב כהה",
+      "Toggle theme": "ערכת נושא",
+      "Close": "סגירה",
+      "Close profile preview": "סגירה",
+      "Close preview": "סגירה",
+    } : {
       "Start conversation": "New",
       "Back to conversations": "Back",
       "Friend options": "More",
@@ -164,7 +176,12 @@
     document.querySelectorAll(".icon-button[aria-label], .composer-tool[aria-label], .send-button[aria-label], #voiceInputBtn[aria-label], [data-theme-toggle][aria-label]").forEach((button) => {
       const replacement = labels[button.getAttribute("aria-label")];
       if (!replacement) return;
-      button.textContent = replacement;
+      button.setAttribute("aria-label", replacement);
+      const themeLabel = button.matches("[data-theme-toggle]")
+        ? button.querySelector("[data-theme-toggle-label]")
+        : null;
+      if (themeLabel) themeLabel.textContent = replacement;
+      else button.textContent = replacement;
       button.classList.add("fp-text-action");
     });
     document.querySelectorAll(".dashboard-action, .builder-navigation a, .page-nav a, .top-nav a, .back-link, #mobileHistoryToggle").forEach((action) => {
