@@ -92,25 +92,41 @@
    * Torso: shoulder yoke -> lat taper -> waist -> pelvis. Drawn as one filled
    * path so the chest/back structure and hip line are legible in silhouette.
    */
-  function torso(sx, sy, hx, hy, facing = 1) {
+  /**
+   * `view` selects the span table. This matters more than anything else in
+   * the system: applying front-view shoulder BREADTH (46) to a profile
+   * figure produces a giant angular kite that swallows the limbs. In
+   * profile the perpendicular span is torso DEPTH, which is roughly half.
+   */
+  const SPANS = Object.freeze({
+    front: { shoulder: P.shoulderW, chest: P.chestW, waist: P.waistW, pelvis: P.pelvisW },
+    profile: { shoulder: 25, chest: 24, waist: 20, pelvis: 26 }
+  });
+
+  function torso(sx, sy, hx, hy, facing = 1, view = "front") {
+    const span = SPANS[view] || SPANS.front;
     const ang = Math.atan2(hy - sy, hx - sx);
     const px = -Math.sin(ang);
     const py = Math.cos(ang);
-    const sw = P.shoulderW / 2;
-    const ww = P.waistW / 2;
-    const pw = P.pelvisW / 2;
+    const sw = span.shoulder / 2;
+    const ww = span.waist / 2;
+    const pw = span.pelvis / 2;
     const at = (t, w) => ({ x: sx + (hx - sx) * t + px * w, y: sy + (hy - sy) * t + py * w });
     const L0 = at(0, sw);
-    const L1 = at(0.42, P.chestW / 2);   // lat sweep
+    const L1 = at(0.42, span.chest / 2);  // lat sweep
     const L2 = at(0.72, ww);             // waist
     const L3 = at(1, pw);
     const R3 = at(1, -pw);
     const R2 = at(0.72, -ww);
-    const R1 = at(0.42, -P.chestW / 2);
+    const R1 = at(0.42, -span.chest / 2);
     const R0 = at(0, -sw);
     const p = (o) => `${num(o.x)},${num(o.y)}`;
-    return `<path class="fa-torso" d="M${p(L0)}C${p(L1)} ${p(L2)} ${p(L3)}L${p(R3)}C${p(R2)} ${p(R1)} ${p(R0)}
-      C${num(sx - px * sw * 0.2)},${num(sy - py * sw * 0.2 - facing * 2)} ${num(sx + px * sw * 0.2)},${num(sy + py * sw * 0.2 - facing * 2)} ${p(L0)}Z"/>`;
+    // Walked as an explicit outline: shoulder -> lat -> waist -> hip down the
+    // front, then back up the rear. Q curves smooth the lat sweep and the
+    // waist only. (An earlier version fed these points to a cubic C, which
+    // treats them as CONTROL points -- the outline was dragged into a hook
+    // and the torso rendered as an angular kite that swallowed the limbs.)
+    return `<path class="fa-torso" d="M${p(L0)}Q${p(L1)} ${p(L2)}L${p(L3)}L${p(R3)}Q${p(R2)} ${p(R1)}L${p(R0)}Z"/>`;
   }
 
   /** Grip abstraction: a rounded mitt, oriented along the forearm. */
@@ -187,6 +203,6 @@
     </g>`;
 
   window.FuelPhysiqueAthlete = Object.freeze({
-    P, seg, project, head, torso, hand, foot, arm, leg, athlete, barbell, dumbbell, num
+    P, SPANS, seg, project, head, torso, hand, foot, arm, leg, athlete, barbell, dumbbell, num
   });
 })();
