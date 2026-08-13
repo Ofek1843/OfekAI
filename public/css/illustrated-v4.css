@@ -812,3 +812,89 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   .v4-illustration .pr-cue { opacity: 1; }
 }
 
+/* ── scenes/coachsocial.css ─────────────────────────────────────────────── */
+/* FuelPhysique V4.1 scene styles: Coach + Social.
+   Scoped to the .co-scene / .so-scene root groups emitted by
+   public/js/scenes/coachsocial.js, so nothing here can reach another
+   scene. Flat vector only: no colour ramps, no blur, no bloom. */
+
+/* Ground: same weight as the rest of the V4.1 set. */
+.co-scene .co-ground, .so-scene .so-ground { stroke: currentColor; stroke-width: 3; fill: none; }
+
+/* ── Coach: plan board ────────────────────────────────────────────── */
+.co-scene .co-frame { fill: none; stroke: currentColor; stroke-width: 2.6; opacity: .4; }
+.co-scene .co-title { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; opacity: .5; }
+.co-scene .co-row { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; opacity: .28; }
+/* The single highlighted recommendation. Accent is used here and on the
+   two resolution marks only -- everything else stays monochrome. */
+.co-scene .co-band { fill: #1fa978; stroke: none; opacity: .2; }
+.co-scene .co-row--rec { stroke: #1fa978; stroke-width: 5.5; opacity: 1; }
+.co-scene .co-next { fill: none; stroke: #1fa978; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
+.co-scene .co-check { fill: none; stroke: #1fa978; stroke-width: 4.4; stroke-linecap: round; stroke-linejoin: round; }
+.co-scene .co-check--done { opacity: .45; }
+
+/* Informational staging inside one duration: the plan row highlights,
+   the recommendation writes on, the next-step chevron arrives, the check
+   resolves. The athlete answers with one small pointing beat -- posture
+   response, not a wave. */
+.is-illustration-active .co-band,
+.is-illustration-replay .co-band {
+  animation: v41-co-band var(--motion-illustrative-coach) var(--ease-illustrative) 1 both;
+  transform-origin: 138px 115px;
+}
+.is-illustration-active .co-row--rec,
+.is-illustration-replay .co-row--rec { animation: v41-co-write var(--motion-illustrative-coach) var(--ease-illustrative) 1 both; }
+.is-illustration-active .co-next,
+.is-illustration-replay .co-next { animation: v41-co-next var(--motion-illustrative-coach) var(--ease-illustrative) 1 both; }
+.is-illustration-active .co-check--resolve,
+.is-illustration-replay .co-check--resolve { animation: v41-co-check var(--motion-illustrative-coach) var(--ease-illustrative) 1 both; }
+.is-illustration-active .co-forearm,
+.is-illustration-replay .co-forearm { animation: v41-co-point var(--motion-illustrative-coach) var(--ease-illustrative) 1 both; }
+
+@keyframes v41-co-band  { 0% { opacity: 0; transform: scaleX(.12); } 26%, 100% { opacity: .2; transform: scaleX(1); } }
+@keyframes v41-co-write { 0%, 18% { stroke-dasharray: 90; stroke-dashoffset: 90; } 52%, 100% { stroke-dasharray: 90; stroke-dashoffset: 0; } }
+@keyframes v41-co-next  { 0%, 52% { opacity: 0; transform: translateX(-7px); } 74%, 100% { opacity: 1; transform: none; } }
+@keyframes v41-co-check { 0%, 66% { stroke-dasharray: 22; stroke-dashoffset: 22; } 92%, 100% { stroke-dasharray: 22; stroke-dashoffset: 0; } }
+@keyframes v41-co-point { 0% { transform: rotate(7deg); } 34%, 100% { transform: rotate(0deg); } }
+
+/* ── Social: exchanged content cards ──────────────────────────────── */
+.so-scene .so-frame { fill: #d94f82; fill-opacity: .16; stroke: #d94f82; stroke-opacity: .85; stroke-width: 2.6; }
+.so-scene .so-glyph { fill: none; stroke: #d94f82; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.so-scene .so-note { fill: #d94f82; stroke: none; }
+
+/* A sends the workout card; B answers with music, then a message.
+   Each leg is ~60% of the scene duration, staggered so the whole
+   exchange lands inside the 1600ms budget. */
+.is-illustration-active .so-card,
+.is-illustration-replay .so-card {
+  animation-duration: calc(var(--motion-illustrative-social) * .6);
+  animation-timing-function: var(--ease-illustrative);
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+.is-illustration-active .so-card--workout,
+.is-illustration-replay .so-card--workout { animation-name: v41-so-from-a; }
+.is-illustration-active .so-card--music,
+.is-illustration-replay .so-card--music { animation-name: v41-so-from-b; animation-delay: calc(var(--motion-illustrative-social) * .26); }
+.is-illustration-active .so-card--message,
+.is-illustration-replay .so-card--message { animation-name: v41-so-from-b; animation-delay: calc(var(--motion-illustrative-social) * .4); }
+.is-illustration-active .so-arm--a,
+.is-illustration-replay .so-arm--a { animation: v41-so-share var(--motion-illustrative-social) var(--ease-illustrative) 1 both; }
+.is-illustration-active .so-arm--b,
+.is-illustration-replay .so-arm--b {
+  animation: v41-so-reply calc(var(--motion-illustrative-social) * .7) var(--ease-illustrative) 1 both;
+  animation-delay: calc(var(--motion-illustrative-social) * .26);
+}
+
+@keyframes v41-so-from-a { 0% { opacity: 0; transform: translate(-52px, 16px) scale(.72); } 55%, 100% { opacity: 1; transform: none; } }
+@keyframes v41-so-from-b { 0% { opacity: 0; transform: translate(56px, -8px) scale(.72); } 55%, 100% { opacity: 1; transform: none; } }
+@keyframes v41-so-share  { 0% { transform: rotate(16deg); } 40%, 100% { transform: rotate(0deg); } }
+@keyframes v41-so-reply  { 0% { transform: rotate(-14deg); } 45%, 100% { transform: rotate(0deg); } }
+
+/* Reduced motion: hold the resolved end state for both scenes. */
+@media (prefers-reduced-motion: reduce) {
+  .co-scene .co-band, .co-scene .co-row--rec, .co-scene .co-next,
+  .co-scene .co-check--resolve, .co-scene .co-forearm,
+  .so-scene .so-card, .so-scene .so-arm { animation: none !important; }
+}
+
