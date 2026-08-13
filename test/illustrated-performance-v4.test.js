@@ -48,7 +48,7 @@ test("landing uses one continuous canvas and five original illustrated journeys"
 });
 
 test("illustrations have one-shot replayable motion and a complete reduced-motion state", () => {
-  for (const duration of ["1800", "1500", "1700", "1400", "1600", "2400"]) assert.match(ILLUSTRATIONS, new RegExp(`${duration}`));
+  for (const duration of ["1800", "1800", "1700", "1400", "1600", "2400"]) assert.match(ILLUSTRATIONS, new RegExp(`${duration}`));
   assert.match(ILLUSTRATIONS, /IntersectionObserver/);
   assert.match(ILLUSTRATIONS, /pointerenter/);
   assert.match(ILLUSTRATIONS, /prefers-reduced-motion/);

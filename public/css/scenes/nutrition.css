@@ -1,0 +1,49 @@
+/* ══ V4.1 NUTRITION scene ═══════════════════════════════════════════════
+   An athlete eating a meal. Domain accent: #f0a326 (the food mass only).
+
+   The arm is a real kinematic chain -- shoulder group (.nu-uarm) contains
+   the elbow group (.nu-farm) which contains the wrist group (.nu-fork), so
+   the utensil is carried BY the hand instead of floating beside it. Every
+   value below is a LOCAL delta; parent rotations accumulate.
+
+   Base (unanimated) pose already has the fork in the food, which is what
+   reduced motion falls back to. Flat editorial vector only. */
+
+.v4-illustration .nu-scene { --v4-figure-accent: #f0a326; }
+
+/* Furniture is solid ink, no outline -- it must sit BEHIND the figure and
+   read as environment, not as another body. */
+.v4-illustration .nu-chair rect,
+.v4-illustration .nu-table rect { fill: currentColor; stroke: none; }
+.v4-illustration .nu-chair { opacity: .74; }
+
+/* The bowl is ink-coloured with the shared canvas outline so the accent
+   food mass reads as a separate object rising out of it. */
+.v4-illustration .nu-bowl { fill: currentColor; }
+
+/* ── Eating cycle ──────────────────────────────────────────────────────
+   rest -> down to the food -> spear -> lift -> to the mouth -> return.
+   Effort down/up is slower than the return so it reads as a deliberate
+   bite rather than a metronome. No chewing loop, no particles. */
+.is-illustration-active .nu-uarm,
+.is-illustration-replay .nu-uarm { animation: v41-nu-uarm var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
+.is-illustration-active .nu-farm,
+.is-illustration-replay .nu-farm { animation: v41-nu-farm var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
+.is-illustration-active .nu-fork,
+.is-illustration-replay .nu-fork { animation: v41-nu-fork var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
+.is-illustration-active .nu-torso,
+.is-illustration-replay .nu-torso { animation: v41-nu-torso var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
+
+@keyframes v41-nu-uarm  { 0%,6% { transform: rotate(0deg); }    20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-3deg); }   60%,74% { transform: rotate(-6deg); }    100% { transform: rotate(0deg); } }
+@keyframes v41-nu-farm  { 0%,6% { transform: rotate(-18deg); }  20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-22deg); }  60%,74% { transform: rotate(-74.7deg); } 100% { transform: rotate(-18deg); } }
+/* The wrist counter-rotates: a fork that stayed rigid to the forearm would
+   point at the ceiling by the time the hand reached the face. */
+@keyframes v41-nu-fork  { 0%,6% { transform: rotate(-8deg); }   20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-20deg); }  60%,74% { transform: rotate(-78deg); }   100% { transform: rotate(-8deg); } }
+/* Torso leans in over the bowl, settles back to chew height. */
+@keyframes v41-nu-torso { 0%,6% { transform: rotate(0deg); }    20%,32% { transform: rotate(2.5deg); }  46% { transform: rotate(1deg); }    60%,74% { transform: rotate(-1.5deg); }  100% { transform: rotate(0deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* Falls back to the authored base pose: utensil already in the food. */
+  .v4-illustration .nu-uarm, .v4-illustration .nu-farm,
+  .v4-illustration .nu-fork, .v4-illustration .nu-torso { animation: none !important; }
+}

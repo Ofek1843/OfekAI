@@ -3,7 +3,7 @@
 
   const DURATIONS = Object.freeze({
     training: 1800,
-    nutrition: 1500,
+    nutrition: 1800,
     progress: 1700,
     benchPr: 1700,
     coach: 1400,

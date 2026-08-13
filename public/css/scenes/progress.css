@@ -1,0 +1,151 @@
+/* FuelPhysique V4.1 — Progress domain scenes (scale + bench PR).
+   Pairs with public/js/scenes/progress.js. Every selector is namespaced
+   `pr-` so it cannot collide with the other V4.1 scene modules.
+
+   Flat vector only: no colour ramps, no soft-focus effects, no depth
+   tricks beyond overlapping filled limbs. */
+
+/* Domain accent. Applied on the scene root so plates, the chart line and
+   the PR tick carry Progress purple while the figure stays ink-white. */
+.v4-illustration--progress,
+.v4-illustration--benchPr {
+  --v4-figure-accent: #7957e8;
+}
+
+/* Equipment surfaces are structural outlines, not solid slabs, so the
+   athlete's filled body stays the brightest mass in the frame. */
+.v4-illustration .pr-scale-deck,
+.v4-illustration .pr-scale-base,
+.v4-illustration .pr-bench-pad { fill: currentColor; stroke: none; }
+.v4-illustration .pr-bench-frame { stroke: currentColor; fill: none; }
+.v4-illustration .pr-chart-axis { stroke: currentColor; fill: none; }
+.v4-illustration .pr-readout rect { fill: var(--v4-canvas-dark, #151a29); }
+html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canvas-light, #e9eef8); }
+.v4-illustration .pr-chart-line { stroke-dasharray: 122; stroke-dashoffset: 0; }
+
+/* ── Scene 1: settle onto the scale ────────────────────────────────────
+   Three beats inside --motion-illustrative-progress:
+     0–45%  the athlete settles (pelvis drops, knees take it),
+     45–68% the readout resolves,
+     58–100% the progress line establishes.
+   The pelvis group carries the whole upper body and the thigh chains, so
+   the legs stay attached; each shin counter-translates by the same amount
+   the pelvis dropped, which is what keeps the feet planted on the deck
+   instead of sinking through it. */
+.is-illustration-active .pr-hips,
+.is-illustration-replay .pr-hips {
+  animation: v41-pr-settle var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-thigh--l,
+.is-illustration-replay .pr-thigh--l {
+  animation: v41-pr-thigh-l var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-thigh--r,
+.is-illustration-replay .pr-thigh--r {
+  animation: v41-pr-thigh-r var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-shin--l,
+.is-illustration-replay .pr-shin--l {
+  animation: v41-pr-shin-l var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-shin--r,
+.is-illustration-replay .pr-shin--r {
+  animation: v41-pr-shin-r var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+/* The arm swings a couple of degrees behind the pelvis, which is what
+   stops the settle reading as a rigid lift-shaft descent. */
+.is-illustration-active .pr-uarm--stand,
+.is-illustration-replay .pr-uarm--stand {
+  animation: v41-pr-arm-stand var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-readout,
+.is-illustration-replay .pr-readout {
+  animation: v41-pr-readout var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-chart-line,
+.is-illustration-replay .pr-chart-line {
+  animation: v41-pr-chart var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-chart-dot,
+.is-illustration-replay .pr-chart-dot {
+  animation: v41-pr-chart-dot var(--motion-illustrative-progress) var(--ease-illustrative) 1 both;
+}
+
+@keyframes v41-pr-settle   { 0%, 8% { transform: translateY(-3.4px); } 34% { transform: translateY(3.6px); } 62%, 100% { transform: translateY(0); } }
+@keyframes v41-pr-thigh-l  { 0%, 8% { transform: rotate(1.4deg); }  34% { transform: rotate(-3deg); }  62%, 100% { transform: rotate(0deg); } }
+@keyframes v41-pr-thigh-r  { 0%, 8% { transform: rotate(-1.4deg); } 34% { transform: rotate(3deg); }   62%, 100% { transform: rotate(0deg); } }
+@keyframes v41-pr-shin-l   { 0%, 8% { transform: translateY(3.4px) rotate(-1.4deg); } 34% { transform: translateY(-3.6px) rotate(3deg); }  62%, 100% { transform: translateY(0) rotate(0deg); } }
+@keyframes v41-pr-shin-r   { 0%, 8% { transform: translateY(3.4px) rotate(1.4deg); }  34% { transform: translateY(-3.6px) rotate(-3deg); } 62%, 100% { transform: translateY(0) rotate(0deg); } }
+@keyframes v41-pr-arm-stand{ 0%, 8% { transform: rotate(4deg); }     34% { transform: rotate(-3deg); }  62%, 100% { transform: rotate(0deg); } }
+/* Measurement resolves: marks step in, hold. No numbers are ever drawn. */
+@keyframes v41-pr-readout  { 0%, 44% { opacity: 0; } 54% { opacity: .55; } 68%, 100% { opacity: 1; } }
+@keyframes v41-pr-chart    { 0%, 56% { stroke-dashoffset: 122; } 100% { stroke-dashoffset: 0; } }
+@keyframes v41-pr-chart-dot{ 0%, 88% { opacity: 0; } 100% { opacity: 1; } }
+
+/* ── Scene 2: bench press ──────────────────────────────────────────────
+   The static markup IS the lockout, so a held frame is a legal position.
+   Beats inside --motion-illustrative-bench-pr:
+     0–14%  top / lockout,
+     14–46% controlled descent to the chest (slower than the press),
+     46–56% pause at the chest,
+     56–82% press,
+     82–100% lockout + a restrained PR tick.
+   Upper arm and forearm rotate about their own joints and the bar
+   translates with the hands, so the grip never leaves the knurl. */
+.is-illustration-active .pr-uarm--bench,
+.is-illustration-replay .pr-uarm--bench,
+.is-illustration-active .pr-uarm--far,
+.is-illustration-replay .pr-uarm--far {
+  animation: v41-pr-bench-uarm var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-farm--bench,
+.is-illustration-replay .pr-farm--bench,
+.is-illustration-active .pr-farm--far,
+.is-illustration-replay .pr-farm--far {
+  animation: v41-pr-bench-farm var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-bar,
+.is-illustration-replay .pr-bar {
+  animation: v41-pr-bench-bar var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
+}
+/* Chest rises a hair under load — an arch cue, not a bounce. */
+.is-illustration-active .pr-torso--bench,
+.is-illustration-replay .pr-torso--bench {
+  animation: v41-pr-bench-torso var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
+}
+.is-illustration-active .pr-cue,
+.is-illustration-replay .pr-cue {
+  animation: v41-pr-cue var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
+}
+
+@keyframes v41-pr-bench-uarm  { 0%, 14% { transform: rotate(0deg); }   46%, 56% { transform: rotate(52deg); }    82%, 100% { transform: rotate(0deg); } }
+@keyframes v41-pr-bench-farm  { 0%, 14% { transform: rotate(0deg); }   46%, 56% { transform: rotate(-116deg); }  82%, 100% { transform: rotate(0deg); } }
+@keyframes v41-pr-bench-bar   { 0%, 14% { transform: translate(0, 0); } 46%, 56% { transform: translate(-4px, 26px); } 82%, 100% { transform: translate(0, 0); } }
+@keyframes v41-pr-bench-torso { 0%, 14% { transform: translateY(0); }  46%, 56% { transform: translateY(-1.4px); } 82%, 100% { transform: translateY(0); } }
+/* Restrained PR cue: a tick, drawn on, no number and no burst. */
+@keyframes v41-pr-cue         { 0%, 80% { opacity: 0; } 92% { opacity: .95; } 100% { opacity: 1; } }
+
+/* ── Reduced motion ───────────────────────────────────────────────────
+   Everything holds its authored frame: the athlete stands measured on the
+   scale with the chart drawn, and the bench figure holds LOCKOUT. */
+@media (prefers-reduced-motion: reduce) {
+  .v4-illustration .pr-hips,
+  .v4-illustration .pr-thigh--l,
+  .v4-illustration .pr-thigh--r,
+  .v4-illustration .pr-shin--l,
+  .v4-illustration .pr-shin--r,
+  .v4-illustration .pr-uarm--stand,
+  .v4-illustration .pr-readout,
+  .v4-illustration .pr-chart-line,
+  .v4-illustration .pr-chart-dot,
+  .v4-illustration .pr-uarm--bench,
+  .v4-illustration .pr-uarm--far,
+  .v4-illustration .pr-farm--bench,
+  .v4-illustration .pr-farm--far,
+  .v4-illustration .pr-bar,
+  .v4-illustration .pr-torso--bench,
+  .v4-illustration .pr-cue { animation: none !important; }
+  .v4-illustration .pr-chart-line { stroke-dashoffset: 0; }
+  .v4-illustration .pr-readout,
+  .v4-illustration .pr-cue { opacity: 1; }
+}
