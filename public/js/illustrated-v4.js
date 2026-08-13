@@ -76,17 +76,64 @@
       <g class="v4-social-card v4-social-card--music"><rect x="118" y="138" width="87" height="34" rx="6"/><path d="M139 160V148L153 144V157"/><circle cx="136" cy="161" r="4"/><circle cx="150" cy="158" r="4"/></g>
       <path class="v4-social-path" d="M91 90C121 24 199 24 230 90"/>
       <text class="v4-poster-label" x="28" y="35">SHARE THE MOMENT</text>`),
-    deadlift: () => svg("deadlift", `
-      <g class="v4-ground"><path d="M20 193H302"/></g>
-      <g class="v4-barbell v4-barbell--deadlift"><path d="M52 174H274"/><rect x="30" y="153" width="20" height="42" rx="4"/><rect x="276" y="153" width="20" height="42" rx="4"/></g>
-      <g class="v4-athlete v4-athlete--deadlift">
-        <circle class="v4-head" cx="163" cy="67" r="18"/>
-        <path class="v4-torso" d="M139 88Q162 77 181 91L191 133L156 151L126 116Z"/>
-        <g class="v4-arm"><path d="M139 98L120 130L112 173M178 98L201 131L211 173"/></g>
-        <g class="v4-leg"><path d="M157 145L129 164L120 191M172 143L200 164L211 191"/></g>
-        <path class="v4-muscle-mark" d="M144 103Q160 110 176 101"/>
+    /**
+     * Deadlift hero, V4.1.
+     *
+     * Composition rules learned from rasterised review of the first attempt:
+     *   - round plates sitting ON the ground are the barbell signal;
+     *   - the athlete occupies ~110 of 320 units, not half the canvas, so the
+     *     bar reads as long and loaded rather than as a prop;
+     *   - profile torso spans are DEPTH (~22), never front-view breadth.
+     *
+     * Kinematics are rooted at the planted ankle and chain upward
+     * (ankle -> knee -> hip -> shoulder -> elbow). V4 translated and rotated
+     * the whole figure as one piece, which is why it read as a rocking stick.
+     */
+    deadlift: () => {
+      const A = window.FuelPhysiqueAthlete;
+      const F = A.P;
+      const ankle = { x: 155, y: 194 };
+      const knee = { x: 163, y: 165 };
+      const hip = { x: 129, y: 142 };
+      const shoulder = { x: 163, y: 114 };
+      // Arms hang from the FRONT edge of the profile torso; hung from its
+      // centre they are drawn inside the silhouette and vanish.
+      const grip = { x: 168, y: 118 };
+      const elbow = { x: 169, y: 143 };
+      const wrist = { x: 170, y: 166 };
+      const neck = { x: shoulder.x + 1.5, y: shoulder.y - F.neck };
+      return svg("deadlift", `
+      <g class="v4-ground"><path d="M20 196H302"/></g>
+      <g class="dl-bar">${A.barbellRound(160, 170, 90, 26)}</g>
+      <g class="dl-chain" style="transform-origin:${ankle.x}px ${ankle.y}px">
+        <path class="fa-limb fa-far" d="${A.seg(ankle.x - 10, ankle.y - 1, knee.x - 10, knee.y, F.wShin[1], F.wShin[0])}"/>
+        ${A.foot(ankle.x - 10, ankle.y - 1, 1)}
+        ${A.foot(ankle.x, ankle.y, 1)}
+        <path class="fa-limb fa-shin" d="${A.seg(ankle.x, ankle.y, knee.x, knee.y, F.wShin[1], F.wShin[0])}"/>
+        <g class="dl-thigh" style="transform-origin:${knee.x}px ${knee.y}px">
+          <path class="fa-limb fa-far" d="${A.seg(knee.x - 10, knee.y, hip.x - 10, hip.y, F.wThigh[1], F.wThigh[0])}"/>
+
+          <path class="fa-limb fa-thigh" d="${A.seg(knee.x, knee.y, hip.x, hip.y, F.wThigh[1], F.wThigh[0])}"/>
+          <g class="dl-torso" style="transform-origin:${hip.x}px ${hip.y}px">
+            <path class="fa-torso" d="${A.seg(shoulder.x, shoulder.y, hip.x, hip.y, 13.5, 12)}"/>
+            <path class="fa-limb fa-neck" d="${A.seg(shoulder.x, shoulder.y, neck.x, neck.y, 6, 5)}"/>
+            ${A.head(neck.x + 4, neck.y - F.head * 0.4, 1)}
+            <path class="fa-accent" d="M${hip.x + 8},${hip.y - 12}L${shoulder.x - 8},${shoulder.y + 10}"/>
+            <g class="dl-arm dl-arm--far" style="transform-origin:${grip.x - 9}px ${grip.y + 3}px">
+              <path class="fa-limb fa-far" d="${A.seg(grip.x - 9, grip.y + 3, elbow.x - 9, elbow.y, F.wUpperArm[0], F.wUpperArm[1])}"/>
+              <path class="fa-limb fa-far" d="${A.seg(elbow.x - 9, elbow.y, wrist.x - 9, wrist.y, F.wForeArm[0], F.wForeArm[1])}"/>
+              ${A.hand(wrist.x - 9, wrist.y + 4, 0)}
+            </g>
+            <g class="dl-arm" style="transform-origin:${grip.x}px ${grip.y}px">
+              <path class="fa-limb" d="${A.seg(grip.x, grip.y, elbow.x, elbow.y, F.wUpperArm[0], F.wUpperArm[1])}"/>
+              <path class="fa-limb" d="${A.seg(elbow.x, elbow.y, wrist.x, wrist.y, F.wForeArm[0], F.wForeArm[1])}"/>
+              ${A.hand(wrist.x, wrist.y + 4, 0)}
+            </g>
+          </g>
+        </g>
       </g>
-      <g class="v4-hero-readout"><text x="24" y="34">ATHLETIC SPECTRUM</text><text x="24" y="51">ONE CONTROLLED REP</text></g>`)
+      <g class="v4-hero-readout"><text x="24" y="34">ATHLETIC SPECTRUM</text><text x="24" y="51">ONE CONTROLLED REP</text></g>`);
+    }
   });
 
   function mountIllustrations() {
@@ -152,7 +199,9 @@
     const hosts = mountIllustrations();
     setupMotion(hosts);
     document.documentElement.classList.add("v4-illustrations-ready");
-    window.__fuelPhysiqueIllustratedV4 = Object.freeze({ durations: DURATIONS, hostCount: hosts.length });
+    // `templates` is exposed so the visual-QA harness can render a scene
+    // headlessly and inspect the real markup instead of asserting on source text.
+    window.__fuelPhysiqueIllustratedV4 = Object.freeze({ durations: DURATIONS, hostCount: hosts.length, templates });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });

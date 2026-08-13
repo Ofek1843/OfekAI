@@ -495,3 +495,63 @@ html[data-theme="light"] .fp-route-dashboard .card-icon img { filter: none; }
   .v4-social-card,
   .v4-pr-state { opacity: 1 !important; transform: none !important; }
 }
+
+/* ══ V4.1 PREMIUM ATHLETIC FIGURE ═══════════════════════════════════════
+   Filled anatomy + per-joint articulation.
+   docs/premium-athletic-illustration-system.md */
+
+/* Limbs are filled volumes, not strokes. Must beat the base
+   :where(path,line,ellipse) stroke rule, hence the .v4-illustration scope. */
+.v4-illustration :where(.fa-limb, .fa-torso, .fa-head, .fa-hand, .fa-foot) {
+  fill: currentColor;
+  /* A canvas-coloured outline painted UNDER the fill separates overlapping
+     limbs from the body. Without it the arm and torso merge into one white
+     mass and the pose stops reading. */
+  stroke: var(--v4-canvas-dark);
+  stroke-width: 2.6;
+  paint-order: stroke fill;
+}
+html[data-theme="light"] .v4-illustration :where(.fa-limb, .fa-torso, .fa-head, .fa-hand, .fa-foot) {
+  stroke: var(--v4-canvas-light);
+}
+/* Depth: far-side limbs sit back and are overlapped by the body.
+   Flat vector only: no blur, no bloom, no colour ramps. */
+.v4-illustration .fa-far { opacity: .55; }
+.v4-illustration .fa-bar { stroke: currentColor; stroke-width: 6; fill: none; }
+.v4-illustration .fa-plate { fill: var(--v4-figure-accent, #7f9dff); stroke: none; }
+.v4-illustration .fa-plate--inner { opacity: .5; }
+.v4-illustration .fa-accent {
+  stroke: var(--v4-figure-accent, #7f9dff);
+  stroke-width: 3.5; stroke-linecap: round; fill: none; opacity: .8;
+}
+
+/* ── Deadlift articulation ──────────────────────────────────────────────
+   Chain rooted at the planted ankle, running upward. Each group rotates
+   about its own joint; parent rotations accumulate, so these are LOCAL
+   deltas. LOAD -> PULL -> LOCKOUT -> settle, with effort slower than
+   recovery so the bar reads as heavy. */
+.is-illustration-active .dl-chain,
+.is-illustration-replay .dl-chain { animation: v41-dl-shin var(--motion-illustrative-deadlift) var(--ease-illustrative) 1 both; }
+.is-illustration-active .dl-thigh,
+.is-illustration-replay .dl-thigh { animation: v41-dl-thigh var(--motion-illustrative-deadlift) var(--ease-illustrative) 1 both; }
+.is-illustration-active .dl-torso,
+.is-illustration-replay .dl-torso { animation: v41-dl-torso var(--motion-illustrative-deadlift) var(--ease-illustrative) 1 both; }
+.is-illustration-active .dl-arm,
+.is-illustration-replay .dl-arm { animation: v41-dl-arm var(--motion-illustrative-deadlift) var(--ease-illustrative) 1 both; }
+.is-illustration-active .dl-bar,
+.is-illustration-replay .dl-bar { animation: v41-dl-bar var(--motion-illustrative-deadlift) var(--ease-illustrative) 1 both; }
+
+@keyframes v41-dl-shin  { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(-16deg); }  100% { transform: rotate(-14deg); } }
+@keyframes v41-dl-thigh { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(54deg); }   100% { transform: rotate(50deg); } }
+@keyframes v41-dl-torso { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(-84deg); }  100% { transform: rotate(-78deg); } }
+/* Arms counter-rotate against the torso so they stay vertical through the
+   pull -- this is what stops the bar swinging away from the body. */
+@keyframes v41-dl-arm   { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(46deg); }   100% { transform: rotate(43deg); } }
+/* Bar tracks the hands: predominantly vertical, drawn slightly back toward
+   the hips, which is the real bar path. */
+@keyframes v41-dl-bar   { 0%,8% { transform: translate(0,0); } 55%,74% { transform: translate(-8px,-34px); } 100% { transform: translate(-7px,-31px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .v4-illustration .dl-chain, .v4-illustration .dl-thigh, .v4-illustration .dl-torso,
+  .v4-illustration .dl-arm, .v4-illustration .dl-bar { animation: none !important; }
+}

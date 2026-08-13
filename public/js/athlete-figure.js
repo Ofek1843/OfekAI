@@ -60,13 +60,24 @@
     const dx = x2 - x1;
     const dy = y2 - y1;
     const len = Math.hypot(dx, dy) || 1;
-    const nx = -dy / len;
-    const ny = dx / len;
-    const a = `${num(x1 + nx * w1)},${num(y1 + ny * w1)}`;
-    const b = `${num(x2 + nx * w2)},${num(y2 + ny * w2)}`;
-    const c = `${num(x2 - nx * w2)},${num(y2 - ny * w2)}`;
-    const d = `${num(x1 - nx * w1)},${num(y1 - ny * w1)}`;
-    return `M${a}L${b}A${num(w2)},${num(w2)} 0 0 1 ${c}L${d}A${num(w1)},${num(w1)} 0 0 1 ${a}Z`;
+    const ux = dx / len;          // unit direction
+    const uy = dy / len;
+    const nx = -uy;               // left normal
+    const ny = ux;
+    // Cubic caps, NOT arc (A) commands. The arc version's sweep flags wound
+    // the wrong way for some segment orientations, folding the cap back over
+    // the body and punching visible holes in the limb. K approximates a
+    // semicircle with one cubic.
+    const K = 1.3333;
+    const P0 = [x1 + nx * w1, y1 + ny * w1];
+    const P1 = [x2 + nx * w2, y2 + ny * w2];
+    const P2 = [x2 - nx * w2, y2 - ny * w2];
+    const P3 = [x1 - nx * w1, y1 - ny * w1];
+    const f = (p) => `${num(p[0])},${num(p[1])}`;
+    const outD = [ux * w2 * K, uy * w2 * K];
+    const outP = [-ux * w1 * K, -uy * w1 * K];
+    const add = (p, o) => [p[0] + o[0], p[1] + o[1]];
+    return `M${f(P0)}L${f(P1)}C${f(add(P1, outD))} ${f(add(P2, outD))} ${f(P2)}L${f(P3)}C${f(add(P3, outP))} ${f(add(P0, outP))} ${f(P0)}Z`;
   }
 
   /** Forward kinematics: project a point at an angle (deg, 0 = +x, 90 = down). */
@@ -202,7 +213,21 @@
       <rect class="fa-plate" x="${num(x + 11)}" y="${num(y - 11)}" width="9" height="22" rx="3"/>
     </g>`;
 
+  /**
+   * Loaded barbell seen from the side. Circular plates are what make a
+   * barbell instantly identifiable; the rectangular version reads as two
+   * blocks on a stick, which is most of why the V4 deadlift was ambiguous.
+   */
+  const barbellRound = (cx, y, halfSpan, r = 26) => `
+    <g class="fa-equip fa-barbell">
+      <path class="fa-bar" d="M${num(cx - halfSpan)},${y}H${num(cx + halfSpan)}"/>
+      <circle class="fa-plate" cx="${num(cx - halfSpan)}" cy="${y}" r="${r}"/>
+      <circle class="fa-plate fa-plate--inner" cx="${num(cx - halfSpan)}" cy="${y}" r="${num(r * 0.42)}"/>
+      <circle class="fa-plate" cx="${num(cx + halfSpan)}" cy="${y}" r="${r}"/>
+      <circle class="fa-plate fa-plate--inner" cx="${num(cx + halfSpan)}" cy="${y}" r="${num(r * 0.42)}"/>
+    </g>`;
+
   window.FuelPhysiqueAthlete = Object.freeze({
-    P, SPANS, seg, project, head, torso, hand, foot, arm, leg, athlete, barbell, dumbbell, num
+    P, SPANS, seg, project, head, torso, hand, foot, arm, leg, athlete, barbell, barbellRound, dumbbell, num
   });
 })();
