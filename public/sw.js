@@ -48,6 +48,7 @@ const urlsToCache = [
   '/js/social.js',
   '/js/redesign-shell.js?v=20260810-ultramarine-motion',
   '/js/athlete-figure.js?v=20260812-athletic-spectrum',
+  '/js/scenes/training.js?v=20260812-athletic-spectrum',
   '/js/illustrated-v4.js?v=20260812-athletic-spectrum',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',

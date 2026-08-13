@@ -12,7 +12,14 @@
   });
 
   const svg = (name, content) => `<svg class="v4-illustration v4-illustration--${name}" viewBox="0 0 320 220" role="presentation" aria-hidden="true" focusable="false">${content}</svg>`;
-  const templates = Object.freeze({
+
+  /**
+   * V4 poster art. Kept as the fallback for every domain so a missing or
+   * broken scene module degrades to the previous illustration instead of an
+   * empty card. Each of these is superseded by a V4.1 scene module when one
+   * is loaded -- see SCENE_KEYS below.
+   */
+  const v4Templates = Object.freeze({
     training: () => svg("training", `
       <g class="v4-ground"><path d="M38 190H292"/></g>
       <g class="v4-barbell"><path d="M64 78H254"/><rect x="47" y="62" width="15" height="32" rx="3"/><rect x="256" y="62" width="15" height="32" rx="3"/></g>
@@ -136,13 +143,44 @@
     }
   });
 
+  /**
+   * V4.1 scene modules (public/js/scenes/*.js) register themselves on
+   * window.FuelPhysiqueScenes and return INNER markup only; the <svg>
+   * wrapper, the domain class hook and the motion machinery below stay here
+   * so a scene author never has to reproduce them.
+   *
+   * Resolution is deliberately done per call, not once at load: the scene
+   * scripts are deferred siblings of this file, and a scene that fails to
+   * parse must fall back to its V4 poster rather than blank the card.
+   * `deadlift` is NOT in this list -- the hero is authored in this file.
+   */
+  const SCENE_KEYS = Object.freeze(["training", "nutrition", "progress", "benchPr", "coach", "social"]);
+  const sceneFor = (name) => {
+    const scene = window.FuelPhysiqueScenes && window.FuelPhysiqueScenes[name];
+    return typeof scene === "function" ? scene : null;
+  };
+  const sourceOf = (name) => (sceneFor(name) ? "v4.1-scene" : (v4Templates[name] ? "v4-fallback" : "missing"));
+  const templates = Object.freeze(Object.assign({}, v4Templates, Object.fromEntries(SCENE_KEYS.map((name) => [name, () => {
+    const scene = sceneFor(name);
+    if (scene) {
+      try {
+        return svg(name, scene());
+      } catch (error) {
+        console.warn(`[illustrated-v4] scene "${name}" failed, falling back to V4 art`, error);
+      }
+    }
+    return v4Templates[name] ? v4Templates[name]() : "";
+  }]))));
+
   function mountIllustrations() {
     const hosts = [...document.querySelectorAll("[data-v4-illustration]")];
     for (const host of hosts) {
       const name = host.dataset.v4Illustration;
       const template = templates[name];
       if (!template || host.querySelector(".v4-illustration")) continue;
-      host.innerHTML = template();
+      const markup = template();
+      if (!markup) continue;
+      host.innerHTML = markup;
       host.dataset.v4Duration = String(DURATIONS[name]);
     }
     return hosts;
@@ -201,7 +239,14 @@
     document.documentElement.classList.add("v4-illustrations-ready");
     // `templates` is exposed so the visual-QA harness can render a scene
     // headlessly and inspect the real markup instead of asserting on source text.
-    window.__fuelPhysiqueIllustratedV4 = Object.freeze({ durations: DURATIONS, hostCount: hosts.length, templates });
+    window.__fuelPhysiqueIllustratedV4 = Object.freeze({
+      durations: DURATIONS,
+      hostCount: hosts.length,
+      templates,
+      // Which art each domain actually rendered, so integration checks can
+      // prove a rebuilt scene did not silently fall back to the V4 poster.
+      sources: Object.freeze(Object.fromEntries([...SCENE_KEYS, "deadlift"].map((name) => [name, name === "deadlift" ? "v4.1-hero" : sourceOf(name)])))
+    });
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });

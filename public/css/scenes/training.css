@@ -1,0 +1,43 @@
+/* ── V4.1 Training scene: standing dumbbell curl ────────────────────────
+   Domain colour Training #315bff, applied to the WEIGHT only -- the body
+   stays the shared figure ink, so Training reads as the same athlete as
+   every other scene, just holding a blue dumbbell.
+
+   Kinematics: the upper arm is effectively pinned (a few degrees of drift,
+   no shoulder swing); the FOREARM group rotates about the elbow. That
+   single articulation is what makes the action read as a curl rather than a
+   press or a row. */
+.v4-illustration .tr-scene { --v4-figure-accent: #315bff; }
+
+/* The plates cross the torso at the top of the rep, so they need the same
+   canvas-coloured under-outline the limbs get, or they read as flat discs
+   pasted onto the chest. */
+.v4-illustration .tr-bell .fa-plate {
+  stroke: var(--v4-canvas-dark);
+  stroke-width: 2.6;
+  paint-order: stroke fill;
+}
+html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-canvas-light); }
+
+.is-illustration-active .tr-farm,
+.is-illustration-replay .tr-farm { animation: v41-tr-curl var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
+.is-illustration-active .tr-uarm,
+.is-illustration-replay .tr-uarm { animation: v41-tr-uarm var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
+.is-illustration-active .tr-torso,
+.is-illustration-replay .tr-torso { animation: v41-tr-brace var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
+
+/* Lift is faster than the descent (42% up, 40% down) so the rep reads as
+   controlled rather than dropped. */
+@keyframes v41-tr-curl  { 0%,6% { transform: rotate(0deg); }   44%,60% { transform: rotate(120deg); }  100% { transform: rotate(5deg); } }
+/* Elbow drifts a few degrees only. Anything larger becomes a swing, which
+   is the exact form fault this illustration should not be teaching. */
+@keyframes v41-tr-uarm  { 0%,6% { transform: rotate(0deg); }   44%,60% { transform: rotate(-5deg); }  100% { transform: rotate(-1deg); } }
+@keyframes v41-tr-brace { 0%,6% { transform: translateY(0); }  44%,60% { transform: translateY(-1.6px); } 100% { transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .v4-illustration .tr-farm,
+  .v4-illustration .tr-uarm,
+  .v4-illustration .tr-torso { animation: none !important; }
+  /* Held mid-high pose: unmistakably a curl in progress, zero motion. */
+  .v4-illustration .tr-farm { transform: rotate(104deg) !important; }
+}
