@@ -1,10 +1,10 @@
 {
-  "version": "20260814-real-athlete-v43-final-assets",
+  "version": "20260814-real-athlete-v43-polish-3",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-14T17:41:29.459Z",
+  "generatedAt": "2026-08-14T18:53:36.900Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -12,7 +12,7 @@
           "file": "frame-01.webp",
           "semantic": "setup",
           "sourceBytes": 301731,
-          "normalizedBytes": 29202,
+          "normalizedBytes": 203980,
           "sourceBounds": {
             "left": 2,
             "top": 0,
@@ -30,7 +30,7 @@
           "file": "frame-02.webp",
           "semantic": "early-pull",
           "sourceBytes": 320189,
-          "normalizedBytes": 32952,
+          "normalizedBytes": 201196,
           "sourceBounds": {
             "left": 2,
             "top": 0,
@@ -48,7 +48,7 @@
           "file": "frame-03.webp",
           "semantic": "lockout",
           "sourceBytes": 319474,
-          "normalizedBytes": 34446,
+          "normalizedBytes": 209750,
           "sourceBounds": {
             "left": 2,
             "top": 0,
@@ -66,7 +66,7 @@
           "file": "frame-04.webp",
           "semantic": "controlled-descent",
           "sourceBytes": 311836,
-          "normalizedBytes": 31850,
+          "normalizedBytes": 198034,
           "sourceBounds": {
             "left": 2,
             "top": 0,
@@ -84,7 +84,7 @@
           "file": "frame-05.webp",
           "semantic": "return-to-setup",
           "sourceBytes": 299683,
-          "normalizedBytes": 28940,
+          "normalizedBytes": 192494,
           "sourceBounds": {
             "left": 2,
             "top": 0,
@@ -148,7 +148,7 @@
         }
       ],
       "splitSourceBytes": 1552913,
-      "normalizedBytes": 157390,
+      "normalizedBytes": 1005454,
       "contactSheet": "docs/illustration/v43/deadlift-final-5-frame-contact-sheet.png"
     },
     "bench": {
@@ -157,12 +157,12 @@
           "file": "frame-01.webp",
           "semantic": "lockout",
           "sourceBytes": 120033,
-          "normalizedBytes": 75006,
+          "normalizedBytes": 109248,
           "sourceBounds": {
-            "left": 55,
-            "top": 6,
-            "width": 1186,
-            "height": 832
+            "left": 49,
+            "top": 0,
+            "width": 1199,
+            "height": 840
           },
           "placement": {
             "left": 20,
@@ -175,59 +175,59 @@
           "file": "frame-02.webp",
           "semantic": "controlled-descent",
           "sourceBytes": 119440,
-          "normalizedBytes": 68474,
+          "normalizedBytes": 100886,
           "sourceBounds": {
-            "left": 52,
-            "top": 92,
-            "width": 1218,
-            "height": 719
+            "left": 48,
+            "top": 88,
+            "width": 1224,
+            "height": 728
           },
           "placement": {
             "left": 20,
-            "top": 161,
+            "top": 157,
             "width": 920,
-            "height": 543
+            "height": 547
           }
         },
         {
           "file": "frame-03.webp",
           "semantic": "bottom-lower-mid-chest",
           "sourceBytes": 1217880,
-          "normalizedBytes": 62474,
+          "normalizedBytes": 302604,
           "sourceBounds": {
-            "left": 40,
-            "top": 176,
-            "width": 1470,
-            "height": 793
+            "left": 0,
+            "top": 0,
+            "width": 1537,
+            "height": 1023
           },
           "placement": {
             "left": 20,
-            "top": 208,
+            "top": 92,
             "width": 920,
-            "height": 496
+            "height": 612
           }
         },
         {
           "file": "frame-04.webp",
           "semantic": "mid-press",
           "sourceBytes": 130995,
-          "normalizedBytes": 68572,
+          "normalizedBytes": 103882,
           "sourceBounds": {
-            "left": 21,
-            "top": 3,
-            "width": 1259,
-            "height": 807
+            "left": 16,
+            "top": 0,
+            "width": 1264,
+            "height": 815
           },
           "placement": {
             "left": 20,
-            "top": 114,
+            "top": 111,
             "width": 920,
-            "height": 590
+            "height": 593
           }
         }
       ],
       "sourceBytes": 1588348,
-      "normalizedBytes": 274526,
+      "normalizedBytes": 616620,
       "contactSheet": "docs/illustration/v43/bench-final-contact-sheet.png",
       "correctedFrameSource": "public/assets/athlete-motion/v43/bench/final-source/frame-03.png",
       "correctedFrameSourceBytes": 1217880
@@ -238,17 +238,17 @@
           "file": "frame-01.webp",
           "semantic": "utensil-near-meal",
           "sourceBytes": 103063,
-          "normalizedBytes": 73070,
+          "normalizedBytes": 113192,
           "sourceBounds": {
-            "left": 311,
-            "top": 7,
-            "width": 680,
-            "height": 823
+            "left": 304,
+            "top": 1,
+            "width": 688,
+            "height": 831
           },
           "placement": {
             "left": 180,
             "top": 0,
-            "width": 595,
+            "width": 596,
             "height": 720
           }
         },
@@ -256,12 +256,12 @@
           "file": "frame-02.webp",
           "semantic": "food-lifted",
           "sourceBytes": 99964,
-          "normalizedBytes": 72896,
+          "normalizedBytes": 115518,
           "sourceBounds": {
-            "left": 311,
-            "top": 8,
-            "width": 681,
-            "height": 822
+            "left": 304,
+            "top": 0,
+            "width": 689,
+            "height": 832
           },
           "placement": {
             "left": 180,
@@ -274,17 +274,17 @@
           "file": "frame-03.webp",
           "semantic": "food-to-mouth",
           "sourceBytes": 101630,
-          "normalizedBytes": 73880,
+          "normalizedBytes": 116248,
           "sourceBounds": {
-            "left": 311,
-            "top": 11,
-            "width": 682,
-            "height": 820
+            "left": 305,
+            "top": 8,
+            "width": 695,
+            "height": 824
           },
           "placement": {
             "left": 180,
             "top": 0,
-            "width": 599,
+            "width": 607,
             "height": 720
           }
         },
@@ -292,17 +292,17 @@
           "file": "frame-04.webp",
           "semantic": "bite",
           "sourceBytes": 100875,
-          "normalizedBytes": 73504,
+          "normalizedBytes": 114970,
           "sourceBounds": {
-            "left": 311,
-            "top": 9,
-            "width": 683,
-            "height": 822
+            "left": 304,
+            "top": 8,
+            "width": 696,
+            "height": 824
           },
           "placement": {
             "left": 180,
             "top": 0,
-            "width": 598,
+            "width": 608,
             "height": 720
           }
         },
@@ -310,24 +310,24 @@
           "file": "frame-05.webp",
           "semantic": "utensil-return",
           "sourceBytes": 102467,
-          "normalizedBytes": 74706,
+          "normalizedBytes": 116884,
           "sourceBounds": {
-            "left": 311,
-            "top": 8,
-            "width": 683,
-            "height": 824
+            "left": 306,
+            "top": 0,
+            "width": 694,
+            "height": 832
           },
           "placement": {
             "left": 180,
             "top": 0,
-            "width": 597,
+            "width": 601,
             "height": 720
           }
         }
       ],
       "sourceBytes": 507999,
-      "normalizedBytes": 368056,
-      "contactSheet": "docs/illustration/v43/nutrition-normalized-contact-sheet.png"
+      "normalizedBytes": 576812,
+      "contactSheet": "docs/illustration/v43/nutrition-final-contact-sheet.png"
     }
   }
 }

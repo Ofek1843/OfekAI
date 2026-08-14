@@ -8,11 +8,12 @@ const {
   ASSET_ROOT,
   REVIEW_ROOT,
   CANVAS,
+  SCENES,
   normalizeFrame,
   contactSheet
 } = require("./prepare-real-athlete-v43");
 
-const VERSION = "20260814-real-athlete-v43-final-assets";
+const VERSION = "20260814-real-athlete-v43-polish-3";
 const DEADLIFT_DIRECTORY = path.join(ASSET_ROOT, "deadlift", "final-source");
 const DEADLIFT_SHEET = path.join(DEADLIFT_DIRECTORY, "deadlift-motion-sheet.png");
 const BENCH_DIRECTORY = path.join(ASSET_ROOT, "bench", "final-source");
@@ -56,17 +57,29 @@ async function main() {
     }));
   }
 
-  const correctedBench = await normalizeFrame("bench", {
-    file: "frame-03.png",
-    semantic: "bottom-lower-mid-chest",
-    width: 920,
-    x: 20,
-    bottom: 704
-  }, 2, { sourceDirectory: "final-source" });
-  const benchFrames = previous.scenes.bench.frames.map((frame, index) => index === 2 ? correctedBench : frame);
+  const benchFrames = [];
+  for (let index = 0; index < SCENES.bench.frames.length; index += 1) {
+    if (index === 2) {
+      benchFrames.push(await normalizeFrame("bench", {
+        file: "frame-03.png",
+        semantic: "bottom-lower-mid-chest",
+        width: 920,
+        x: 20,
+        bottom: 704
+      }, index, { sourceDirectory: "final-source" }));
+      continue;
+    }
+    benchFrames.push(await normalizeFrame("bench", SCENES.bench.frames[index], index));
+  }
+
+  const nutritionFrames = [];
+  for (let index = 0; index < SCENES.nutrition.frames.length; index += 1) {
+    nutritionFrames.push(await normalizeFrame("nutrition", SCENES.nutrition.frames[index], index));
+  }
 
   const deadliftContactSheet = await contactSheet("deadlift", "#203a9c", deadliftFrames.length, "deadlift-final-5-frame-contact-sheet.png");
   const benchContactSheet = await contactSheet("bench", "#4b338f", benchFrames.length, "bench-final-contact-sheet.png");
+  const nutritionContactSheet = await contactSheet("nutrition", "#81510f", nutritionFrames.length, "nutrition-final-contact-sheet.png");
 
   const manifest = {
     ...previous,
@@ -92,6 +105,13 @@ async function main() {
         sourceBytes: benchFrames.reduce((sum, frame) => sum + frame.sourceBytes, 0),
         normalizedBytes: benchFrames.reduce((sum, frame) => sum + frame.normalizedBytes, 0),
         contactSheet: path.relative(ROOT, benchContactSheet).replaceAll("\\", "/")
+      },
+      nutrition: {
+        ...previous.scenes.nutrition,
+        frames: nutritionFrames,
+        sourceBytes: nutritionFrames.reduce((sum, frame) => sum + frame.sourceBytes, 0),
+        normalizedBytes: nutritionFrames.reduce((sum, frame) => sum + frame.normalizedBytes, 0),
+        contactSheet: path.relative(ROOT, nutritionContactSheet).replaceAll("\\", "/")
       }
     }
   };

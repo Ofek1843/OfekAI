@@ -49,6 +49,13 @@ function isBackgroundPixel(data, offset) {
   return min >= 230 && max - min <= 28;
 }
 
+function removeWhiteMatte(channel, alpha) {
+  if (alpha <= 0) return 0;
+  if (alpha >= 250) return channel;
+  const opacity = alpha / 255;
+  return Math.max(0, Math.min(255, Math.round((channel - 255 * (1 - opacity)) / opacity)));
+}
+
 async function removeConnectedWhiteBackground(input) {
   const { data, info } = await sharp(input)
     .removeAlpha()
@@ -85,11 +92,43 @@ async function removeConnectedWhiteBackground(input) {
     if (y + 1 < info.height) enqueue(index + info.width);
   }
 
-  // Pull the matte one or two pixels into pale JPEG edge contamination.
-  // This removes the white fringe without globally keying white shoe soles,
-  // plate highlights, glass reflections, or food details.
+  // A bench, table, arm or bar can enclose islands of the original white
+  // studio backdrop so they are unreachable from the canvas edge. Remove
+  // only large neutral-white components; small shoe and equipment highlights
+  // remain intact.
+  const componentSeen = new Uint8Array(count);
+  for (let start = 0; start < count; start += 1) {
+    if (visited[start] || componentSeen[start] || !isBackgroundPixel(data, start * 3)) continue;
+    const component = [];
+    head = 0;
+    tail = 0;
+    componentSeen[start] = 1;
+    queue[tail++] = start;
+    while (head < tail) {
+      const index = queue[head++];
+      component.push(index);
+      const x = index % info.width;
+      const y = Math.floor(index / info.width);
+      const inspect = (candidate) => {
+        if (componentSeen[candidate] || visited[candidate] || !isBackgroundPixel(data, candidate * 3)) return;
+        componentSeen[candidate] = 1;
+        queue[tail++] = candidate;
+      };
+      if (x > 0) inspect(index - 1);
+      if (x + 1 < info.width) inspect(index + 1);
+      if (y > 0) inspect(index - info.width);
+      if (y + 1 < info.height) inspect(index + info.width);
+    }
+    if (component.length >= 480) {
+      for (const index of component) visited[index] = 1;
+    }
+  }
+
+  // Pull the matte a few pixels into pale JPEG edge contamination. This is
+  // deliberately connected-edge-only so isolated shoe, plate, glass and food
+  // highlights remain opaque.
   const edgeDepth = new Uint8Array(count);
-  for (let depth = 1; depth <= 2; depth += 1) {
+  for (let depth = 1; depth <= 3; depth += 1) {
     const additions = [];
     for (let index = 0; index < count; index += 1) {
       if (visited[index]) continue;
@@ -104,7 +143,8 @@ async function removeConnectedWhiteBackground(input) {
       const r = data[offset];
       const g = data[offset + 1];
       const b = data[offset + 2];
-      if (Math.min(r, g, b) >= 205 && Math.max(r, g, b) - Math.min(r, g, b) <= 50) additions.push(index);
+      const minimum = depth === 1 ? 198 : depth === 2 ? 207 : 218;
+      if (Math.min(r, g, b) >= minimum && Math.max(r, g, b) - Math.min(r, g, b) <= 54) additions.push(index);
     }
     for (const index of additions) {
       visited[index] = 1;
@@ -119,18 +159,55 @@ async function removeConnectedWhiteBackground(input) {
     const r = data[source];
     const g = data[source + 1];
     const b = data[source + 2];
-    rgba[target] = r;
-    rgba[target + 1] = g;
-    rgba[target + 2] = b;
     if (!visited[index]) {
+      rgba[target] = r;
+      rgba[target + 1] = g;
+      rgba[target + 2] = b;
       rgba[target + 3] = 255;
       continue;
     }
     const average = (r + g + b) / 3;
     const alpha = edgeDepth[index]
-      ? (245 - average) * (255 / 40)
-      : (248 - average) * (255 / 13);
-    rgba[target + 3] = Math.max(0, Math.min(255, Math.round(alpha)));
+      ? (255 - average) * (edgeDepth[index] === 1 ? 4 : edgeDepth[index] === 2 ? 3.25 : 2.75)
+      : (255 - average) * 4;
+    const resolvedAlpha = Math.max(0, Math.min(255, Math.round(alpha)));
+    rgba[target] = removeWhiteMatte(r, resolvedAlpha);
+    rgba[target + 1] = removeWhiteMatte(g, resolvedAlpha);
+    rgba[target + 2] = removeWhiteMatte(b, resolvedAlpha);
+    rgba[target + 3] = resolvedAlpha;
+  }
+
+  // Decontaminate the final one-pixel JPEG fringe. Restrict this to pale,
+  // low-chroma pixels touching transparency so skin, food, plates and white
+  // shoe details away from the silhouette are not altered.
+  for (let pass = 0; pass < 2; pass += 1) {
+    const updates = [];
+    for (let index = 0; index < count; index += 1) {
+      const target = index * 4;
+      if (rgba[target + 3] === 0) continue;
+      const x = index % info.width;
+      const y = Math.floor(index / info.width);
+      const transparentNeighbor = (candidate) => rgba[candidate * 4 + 3] < 32;
+      const touchesTransparency = (x > 0 && transparentNeighbor(index - 1))
+        || (x + 1 < info.width && transparentNeighbor(index + 1))
+        || (y > 0 && transparentNeighbor(index - info.width))
+        || (y + 1 < info.height && transparentNeighbor(index + info.width));
+      if (!touchesTransparency) continue;
+      const r = rgba[target];
+      const g = rgba[target + 1];
+      const b = rgba[target + 2];
+      const average = (r + g + b) / 3;
+      if (Math.min(r, g, b) < 178 || Math.max(r, g, b) - Math.min(r, g, b) > 72) continue;
+      const nextAlpha = Math.max(0, Math.min(rgba[target + 3], Math.round((255 - average) * 4.25)));
+      updates.push({ index, r, g, b, alpha: nextAlpha });
+    }
+    for (const update of updates) {
+      const target = update.index * 4;
+      rgba[target] = removeWhiteMatte(update.r, update.alpha);
+      rgba[target + 1] = removeWhiteMatte(update.g, update.alpha);
+      rgba[target + 2] = removeWhiteMatte(update.b, update.alpha);
+      rgba[target + 3] = update.alpha;
+    }
   }
 
   return sharp(rgba, {
@@ -261,6 +338,7 @@ module.exports = Object.freeze({
   ASSET_ROOT,
   REVIEW_ROOT,
   CANVAS,
+  SCENES,
   removeConnectedWhiteBackground,
   alphaBounds,
   normalizeFrame,
