@@ -12,12 +12,12 @@ const LANDING = read("public", "index.html");
 const DASHBOARD = read("public", "dashboard.html");
 const ILLUSTRATIONS = read("public", "js", "illustrated-v4.js");
 const SW = read("public", "sw.js");
-const ASSET_VERSION = "20260814-premium-v42-final";
+const ASSET_VERSION = "20260814-real-athlete-v43-prototype";
 
 function illustrationScripts(html) {
   return [...html.matchAll(/<script defer src="([^"]+)"/g)]
     .map((match) => match[1])
-    .filter((source) => /athlete-figure|\/scenes\/|illustrated-v4/.test(source));
+    .filter((source) => /athlete-figure|\/scenes\/|image-sequence-v43|illustrated-v4/.test(source));
 }
 
 function sceneRegistry() {
@@ -40,6 +40,7 @@ test("Landing and Dashboard load each V4.1 browser module exactly once and in de
     `/js/scenes/nutrition.js?v=${ASSET_VERSION}`,
     `/js/scenes/progress.js?v=${ASSET_VERSION}`,
     `/js/scenes/coachsocial.js?v=${ASSET_VERSION}`,
+    `/js/image-sequence-v43.js?v=${ASSET_VERSION}`,
     `/js/illustrated-v4.js?v=${ASSET_VERSION}`,
   ];
   assert.deepEqual(illustrationScripts(LANDING), expected);
@@ -48,7 +49,7 @@ test("Landing and Dashboard load each V4.1 browser module exactly once and in de
 
 test("V4.1 scene CSS is merged into the single illustrated stylesheet without duplicate links", () => {
   const merged = read("public", "css", "illustrated-v4.css");
-  for (const file of ["training.css", "nutrition.css", "progress.css", "coachsocial.css"]) {
+  for (const file of ["training.css", "nutrition.css", "progress.css", "coachsocial.css", "image-sequence-v43.css"]) {
     for (const line of read("public", "css", "scenes", file).split(/\r?\n/).filter(Boolean)) {
       assert.ok(merged.includes(line), `${file} line is absent from illustrated-v4.css: ${line}`);
     }
@@ -133,8 +134,8 @@ test("runtime diagnostics mark rendered V4.1 sources rather than hiding a fallba
   assert.match(ILLUSTRATIONS, /"v4-fallback"/);
 });
 
-test("the V4.1 service worker cache is synchronized and retains private/auth bypasses", () => {
-  assert.match(SW, /CACHE_NAME = 'fuelphysique-v16-premium-v42'/);
+test("the V4.3 prototype service worker cache is synchronized and retains private/auth bypasses", () => {
+  assert.match(SW, /CACHE_NAME = 'fuelphysique-v17-real-athlete-v43-prototype'/);
   assert.doesNotMatch(SW, /20260812-athletic-spectrum|fuelphysique-v13-illustrated-v4/);
   for (const asset of [
     "css/illustrated-v4.css",
@@ -143,6 +144,7 @@ test("the V4.1 service worker cache is synchronized and retains private/auth byp
     "js/scenes/nutrition.js",
     "js/scenes/progress.js",
     "js/scenes/coachsocial.js",
+    "js/image-sequence-v43.js",
     "js/illustrated-v4.js",
   ]) assert.match(SW, new RegExp(`${asset.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=${ASSET_VERSION}`));
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
