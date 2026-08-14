@@ -182,6 +182,7 @@
       if (!markup) continue;
       host.innerHTML = markup;
       host.dataset.v4Duration = String(DURATIONS[name]);
+      host.dataset.v4Source = name === "deadlift" ? "v4.1-hero" : sourceOf(name);
     }
     return hosts;
   }

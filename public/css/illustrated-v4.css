@@ -277,6 +277,8 @@ html[data-theme="light"] .fp-route-dashboard .capability-card--social { --capabi
 .fp-route-dashboard .stats-grid article:nth-child(3) { border-block-start: 4px solid var(--v4-progress) !important; }
 .fp-route-dashboard .stats-grid article:nth-child(4) { border-block-start: 4px solid var(--v4-training) !important; }
 .fp-route-dashboard .stats-grid strong { font-size: clamp(1.65rem,3vw,2.5rem) !important; }
+.fp-route-dashboard #dashboardContent { grid-template-columns: minmax(0,1fr) !important; }
+.fp-route-dashboard #dashboardContent > * { grid-column: 1 / -1 !important; min-width: 0; width: 100%; }
 .fp-route-dashboard .schedule-card { border-inline-start: 5px solid var(--v4-training) !important; }
 .fp-route-dashboard .dashboard-grid { display: grid !important; grid-template-columns: repeat(12,minmax(0,1fr)) !important; gap: 12px !important; }
 .fp-route-dashboard .next-workout-card { grid-column: span 7; border-block-start: 4px solid var(--v4-training) !important; }
@@ -443,7 +445,7 @@ html[data-theme="light"] .fp-route-dashboard .card-icon img { filter: none; }
   .fp-route-dashboard .capability-copy { width: 69% !important; }
   .fp-route-dashboard .capability-card h2 { max-width: 100%; white-space: normal !important; overflow-wrap: anywhere; font-size: 1.9rem !important; }
   .fp-route-dashboard .capability-card p { font-size: .82rem; }
-  .fp-route-dashboard .capability-illustration { inset-inline-end: -16%; width: 62% !important; height: 66% !important; opacity: .8; }
+  .fp-route-dashboard .capability-illustration { inset-inline-end: 0; width: 62% !important; height: 66% !important; opacity: .8; }
   .fp-route-dashboard .capability-actions { display: grid; grid-template-columns: 1fr; }
   .fp-route-dashboard .capability-action { width: 100% !important; }
   .fp-route-dashboard .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
@@ -468,7 +470,7 @@ html[data-theme="light"] .fp-route-dashboard .card-icon img { filter: none; }
   .fp-route-index .athletic-journey-grid .journey-card--coach { grid-column: 1 !important; min-width: 0; width: 100%; min-height: 350px; }
   .fp-route-index .journey-card h3 { max-width: 72%; }
   .fp-route-index .feature-section .journey-card p { max-width: 66% !important; }
-  .fp-route-index .journey-illustration { inset-inline-end: -18%; width: 66%; height: 64%; opacity: .8; }
+  .fp-route-index .journey-illustration { inset-inline-end: 0; width: 66%; height: 64%; opacity: .8; }
 
   .fp-route-social .composer textarea {
     min-height: 44px !important;
@@ -897,4 +899,3 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   .co-scene .co-check--resolve, .co-scene .co-forearm,
   .so-scene .so-card, .so-scene .so-arm { animation: none !important; }
 }
-
