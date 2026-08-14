@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260814-real-athlete-v43-prototype";
+  const VERSION = "20260814-real-athlete-v43-final-assets";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const ROOT = "/assets/athlete-motion/v43";
 
@@ -13,26 +13,24 @@
   const SCENES = Object.freeze({
     deadlift: Object.freeze({
       frames: Object.freeze([
-        frame("deadlift", 1, 350),
-        frame("deadlift", 2, 220),
-        frame("deadlift", 3, 450),
+        frame("deadlift", 1, 380),
+        frame("deadlift", 2, 240),
+        frame("deadlift", 3, 470),
         frame("deadlift", 4, 320),
+        frame("deadlift", 5, 340),
         frame("deadlift", 1, 360)
       ]),
       reducedFrame: frame("deadlift", 3, 0)
     }),
-    // Source frame 03 is intentionally retained for review but omitted from
-    // playback: the generated bar intersects the athlete's neck/face rather
-    // than reaching a safe lower-chest bottom position.
     benchPr: Object.freeze({
       frames: Object.freeze([
         frame("bench", 1, 380),
         frame("bench", 2, 300),
+        frame("bench", 3, 380),
         frame("bench", 4, 340),
         frame("bench", 1, 380)
       ]),
-      reducedFrame: frame("bench", 1, 0),
-      omittedSourceFrames: Object.freeze([3])
+      reducedFrame: frame("bench", 1, 0)
     }),
     nutrition: Object.freeze({
       frames: Object.freeze([
