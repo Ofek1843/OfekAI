@@ -1,0 +1,265 @@
+{
+  "version": "20260814-real-athlete-v43-prototype",
+  "canvas": {
+    "width": 960,
+    "height": 720
+  },
+  "generatedAt": "2026-08-14T14:52:04.821Z",
+  "scenes": {
+    "deadlift": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "semantic": "setup",
+          "sourceBytes": 107134,
+          "normalizedBytes": 66508,
+          "sourceBounds": {
+            "left": 150,
+            "top": 13,
+            "width": 980,
+            "height": 779
+          },
+          "placement": {
+            "left": 50,
+            "top": 50,
+            "width": 830,
+            "height": 660
+          }
+        },
+        {
+          "file": "frame-02.webp",
+          "semantic": "early-pull",
+          "sourceBytes": 135143,
+          "normalizedBytes": 49678,
+          "sourceBounds": {
+            "left": 58,
+            "top": 18,
+            "width": 966,
+            "height": 1165
+          },
+          "placement": {
+            "left": 190,
+            "top": 20,
+            "width": 572,
+            "height": 690
+          }
+        },
+        {
+          "file": "frame-03.webp",
+          "semantic": "lockout",
+          "sourceBytes": 110545,
+          "normalizedBytes": 42582,
+          "sourceBounds": {
+            "left": 80,
+            "top": 0,
+            "width": 921,
+            "height": 1236
+          },
+          "placement": {
+            "left": 195,
+            "top": 20,
+            "width": 514,
+            "height": 690
+          }
+        },
+        {
+          "file": "frame-04.webp",
+          "semantic": "controlled-descent",
+          "sourceBytes": 121512,
+          "normalizedBytes": 45214,
+          "sourceBounds": {
+            "left": 1,
+            "top": 36,
+            "width": 852,
+            "height": 1187
+          },
+          "placement": {
+            "left": 188,
+            "top": 20,
+            "width": 495,
+            "height": 690
+          }
+        }
+      ],
+      "sourceBytes": 474334,
+      "normalizedBytes": 203982,
+      "contactSheet": "docs/illustration/v43/deadlift-normalized-contact-sheet.png"
+    },
+    "bench": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "semantic": "lockout",
+          "sourceBytes": 120033,
+          "normalizedBytes": 75006,
+          "sourceBounds": {
+            "left": 55,
+            "top": 6,
+            "width": 1186,
+            "height": 832
+          },
+          "placement": {
+            "left": 20,
+            "top": 59,
+            "width": 920,
+            "height": 645
+          }
+        },
+        {
+          "file": "frame-02.webp",
+          "semantic": "controlled-descent",
+          "sourceBytes": 119440,
+          "normalizedBytes": 68474,
+          "sourceBounds": {
+            "left": 52,
+            "top": 92,
+            "width": 1218,
+            "height": 719
+          },
+          "placement": {
+            "left": 20,
+            "top": 161,
+            "width": 920,
+            "height": 543
+          }
+        },
+        {
+          "file": "frame-03.webp",
+          "semantic": "bottom-high-neck",
+          "sourceBytes": 123108,
+          "normalizedBytes": 61848,
+          "sourceBounds": {
+            "left": 30,
+            "top": 123,
+            "width": 1250,
+            "height": 686
+          },
+          "placement": {
+            "left": 20,
+            "top": 199,
+            "width": 920,
+            "height": 505
+          }
+        },
+        {
+          "file": "frame-04.webp",
+          "semantic": "mid-press",
+          "sourceBytes": 130995,
+          "normalizedBytes": 68572,
+          "sourceBounds": {
+            "left": 21,
+            "top": 3,
+            "width": 1259,
+            "height": 807
+          },
+          "placement": {
+            "left": 20,
+            "top": 114,
+            "width": 920,
+            "height": 590
+          }
+        }
+      ],
+      "sourceBytes": 493576,
+      "normalizedBytes": 273900,
+      "contactSheet": "docs/illustration/v43/bench-normalized-contact-sheet.png"
+    },
+    "nutrition": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "semantic": "utensil-near-meal",
+          "sourceBytes": 103063,
+          "normalizedBytes": 73070,
+          "sourceBounds": {
+            "left": 311,
+            "top": 7,
+            "width": 680,
+            "height": 823
+          },
+          "placement": {
+            "left": 180,
+            "top": 0,
+            "width": 595,
+            "height": 720
+          }
+        },
+        {
+          "file": "frame-02.webp",
+          "semantic": "food-lifted",
+          "sourceBytes": 99964,
+          "normalizedBytes": 72896,
+          "sourceBounds": {
+            "left": 311,
+            "top": 8,
+            "width": 681,
+            "height": 822
+          },
+          "placement": {
+            "left": 180,
+            "top": 0,
+            "width": 596,
+            "height": 720
+          }
+        },
+        {
+          "file": "frame-03.webp",
+          "semantic": "food-to-mouth",
+          "sourceBytes": 101630,
+          "normalizedBytes": 73880,
+          "sourceBounds": {
+            "left": 311,
+            "top": 11,
+            "width": 682,
+            "height": 820
+          },
+          "placement": {
+            "left": 180,
+            "top": 0,
+            "width": 599,
+            "height": 720
+          }
+        },
+        {
+          "file": "frame-04.webp",
+          "semantic": "bite",
+          "sourceBytes": 100875,
+          "normalizedBytes": 73504,
+          "sourceBounds": {
+            "left": 311,
+            "top": 9,
+            "width": 683,
+            "height": 822
+          },
+          "placement": {
+            "left": 180,
+            "top": 0,
+            "width": 598,
+            "height": 720
+          }
+        },
+        {
+          "file": "frame-05.webp",
+          "semantic": "utensil-return",
+          "sourceBytes": 102467,
+          "normalizedBytes": 74706,
+          "sourceBounds": {
+            "left": 311,
+            "top": 8,
+            "width": 683,
+            "height": 824
+          },
+          "placement": {
+            "left": 180,
+            "top": 0,
+            "width": 597,
+            "height": 720
+          }
+        }
+      ],
+      "sourceBytes": 507999,
+      "normalizedBytes": 368056,
+      "contactSheet": "docs/illustration/v43/nutrition-normalized-contact-sheet.png"
+    }
+  }
+}
