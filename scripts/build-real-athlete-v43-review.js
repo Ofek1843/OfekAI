@@ -81,8 +81,8 @@ async function main() {
   fs.mkdirSync(OUTPUT, { recursive: true });
   const templates = loadV42Templates();
   const scenes = [
-    { output: "deadlift-v42-vs-v43-prototype.png", key: "deadlift", dir: "deadlift", frame: "frame-03.webp", background: "#283fa8" },
-    { output: "bench-v42-vs-v43-prototype.png", key: "benchPr", dir: "bench", frame: "frame-01.webp", background: "#53379b" },
+    { output: "deadlift-v42-v43-final.png", key: "deadlift", dir: "deadlift", frame: "frame-03.webp", background: "#283fa8" },
+    { output: "bench-v42-v43-final.png", key: "benchPr", dir: "bench", frame: "frame-03.webp", background: "#53379b" },
     { output: "nutrition-v42-vs-v43-prototype.png", key: "nutrition", dir: "nutrition", frame: "frame-04.webp", background: "#8c5809" }
   ];
   for (const scene of scenes) {

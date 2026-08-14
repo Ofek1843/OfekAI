@@ -12,7 +12,7 @@ const LANDING = read("public", "index.html");
 const DASHBOARD = read("public", "dashboard.html");
 const ILLUSTRATIONS = read("public", "js", "illustrated-v4.js");
 const SW = read("public", "sw.js");
-const ASSET_VERSION = "20260814-real-athlete-v43-prototype";
+const ASSET_VERSION = "20260814-real-athlete-v43-final-assets";
 
 function illustrationScripts(html) {
   return [...html.matchAll(/<script defer src="([^"]+)"/g)]
@@ -135,7 +135,7 @@ test("runtime diagnostics mark rendered V4.1 sources rather than hiding a fallba
 });
 
 test("the V4.3 prototype service worker cache is synchronized and retains private/auth bypasses", () => {
-  assert.match(SW, /CACHE_NAME = 'fuelphysique-v17-real-athlete-v43-prototype'/);
+  assert.match(SW, /CACHE_NAME = 'fuelphysique-v18-real-athlete-v43-final-assets'/);
   assert.doesNotMatch(SW, /20260812-athletic-spectrum|fuelphysique-v13-illustrated-v4/);
   for (const asset of [
     "css/illustrated-v4.css",

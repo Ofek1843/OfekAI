@@ -7,7 +7,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260814-real-athlete-v43-prototype";
+const VERSION = "20260814-real-athlete-v43-final-assets";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -22,17 +22,18 @@ function loadEngine(hostname, search) {
   return window.FuelPhysiqueImageSequenceV43;
 }
 
-test("all 13 source JPEGs and 13 transparent normalized WebPs are preserved by scene", () => {
+test("original sources remain preserved while final Deadlift and Bench sources are traceable", () => {
   assert.equal(MANIFEST.version, VERSION);
   assert.deepEqual(MANIFEST.canvas, { width: 960, height: 720 });
-  const expected = { deadlift: 4, bench: 4, nutrition: 5 };
-  for (const [scene, count] of Object.entries(expected)) {
+  const sourceExpected = { deadlift: 4, bench: 4, nutrition: 5 };
+  const normalizedExpected = { deadlift: 5, bench: 4, nutrition: 5 };
+  for (const [scene, count] of Object.entries(sourceExpected)) {
     const sourceDir = path.join(ROOT, "public", "assets", "athlete-motion", "v43", scene, "source");
     const normalizedDir = path.join(ROOT, "public", "assets", "athlete-motion", "v43", scene, "normalized");
     const sources = fs.readdirSync(sourceDir).filter((file) => file.endsWith(".jpg"));
     const normalized = fs.readdirSync(normalizedDir).filter((file) => file.endsWith(".webp"));
     assert.equal(sources.length, count, `${scene} source count`);
-    assert.equal(normalized.length, count, `${scene} normalized count`);
+    assert.equal(normalized.length, normalizedExpected[scene], `${scene} normalized count`);
     for (const file of sources) {
       const bytes = fs.readFileSync(path.join(sourceDir, file));
       assert.deepEqual([...bytes.subarray(0, 2)], [0xff, 0xd8], `${scene}/${file} is JPEG`);
@@ -43,6 +44,33 @@ test("all 13 source JPEGs and 13 transparent normalized WebPs are preserved by s
       assert.equal(bytes.subarray(8, 12).toString("ascii"), "WEBP", `${scene}/${file} WebP signature`);
     }
   }
+
+  const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
+  const finalDeadlift = path.join(ROOT, "public", "assets", "athlete-motion", "v43", "deadlift", "final-source");
+  const finalBench = path.join(ROOT, "public", "assets", "athlete-motion", "v43", "bench", "final-source", "frame-03.png");
+  assert.deepEqual(fs.readFileSync(path.join(finalDeadlift, "deadlift-motion-sheet.png")).subarray(0, 4), pngSignature);
+  for (let index = 1; index <= 5; index += 1) {
+    const file = `frame-${String(index).padStart(2, "0")}.png`;
+    assert.deepEqual(fs.readFileSync(path.join(finalDeadlift, file)).subarray(0, 4), pngSignature);
+  }
+  assert.deepEqual(fs.readFileSync(finalBench).subarray(0, 4), pngSignature);
+});
+
+test("final source mapping uses exact equal-width Deadlift boundaries and corrected Bench semantics", () => {
+  assert.deepEqual(MANIFEST.scenes.deadlift.motionSheetSourceDimensions, { width: 1983, height: 793 });
+  assert.deepEqual(MANIFEST.scenes.deadlift.splitFrames.map(({ left, right, width }) => ({ left, right, width })), [
+    { left: 0, right: 396, width: 396 },
+    { left: 396, right: 793, width: 397 },
+    { left: 793, right: 1189, width: 396 },
+    { left: 1189, right: 1586, width: 397 },
+    { left: 1586, right: 1983, width: 397 }
+  ]);
+  assert.deepEqual(MANIFEST.scenes.deadlift.frames.map((frame) => frame.semantic), [
+    "setup", "early-pull", "lockout", "controlled-descent", "return-to-setup"
+  ]);
+  assert.equal(MANIFEST.scenes.bench.frames[2].semantic, "bottom-lower-mid-chest");
+  assert.equal(MANIFEST.scenes.nutrition.sourceBytes, 507999);
+  assert.equal(MANIFEST.scenes.nutrition.normalizedBytes, 368056);
 });
 
 test("the V4.3 switch is local-only and requires the exact query value", () => {
@@ -55,11 +83,10 @@ test("the V4.3 switch is local-only and requires the exact query value", () => {
 
 test("semantic frame order and reviewed timings are encoded without inventing poses", () => {
   const scenes = loadEngine("localhost", "?athleteMotion=v43").scenes;
-  assert.deepEqual(Array.from(scenes.deadlift.frames, (item) => item.duration), [350, 220, 450, 320, 360]);
+  assert.deepEqual(Array.from(scenes.deadlift.frames, (item) => item.duration), [380, 240, 470, 320, 340, 360]);
   assert.deepEqual(Array.from(scenes.nutrition.frames, (item) => item.duration), [300, 220, 250, 450, 300, 320]);
-  assert.deepEqual(Array.from(scenes.benchPr.omittedSourceFrames), [3]);
   assert.deepEqual(Array.from(scenes.benchPr.frames, (item) => path.basename(new URL(item.url, "http://local").pathname)), [
-    "frame-01.webp", "frame-02.webp", "frame-04.webp", "frame-01.webp"
+    "frame-01.webp", "frame-02.webp", "frame-03.webp", "frame-04.webp", "frame-01.webp"
   ]);
 });
 
@@ -109,7 +136,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v17-real-athlete-v43-prototype/);
+  assert.match(SW, /fuelphysique-v18-real-athlete-v43-final-assets/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
