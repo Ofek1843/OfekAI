@@ -1,0 +1,92 @@
+/* V4.3 local-review image sequences. The query-gated engine creates these
+   nodes; deployed pages without the local flag continue to render V4.2. */
+.v43-image-sequence {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: end center;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.v43-image-sequence__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: 1;
+  filter: drop-shadow(0 12px 16px rgba(4, 9, 28, .18));
+}
+
+/* Frame changes are deliberately discrete. Crossfading generated human
+   poses produces doubled faces, limbs, barbells and utensils. */
+.v43-image-sequence.is-v43-loading .v43-image-sequence__frame,
+.v43-image-sequence.is-v43-playing .v43-image-sequence__frame,
+.v43-image-sequence.is-v43-complete .v43-image-sequence__frame {
+  transition: none;
+}
+
+.fp-route-index .landing-hero-illustration[data-v43-motion="prototype"] {
+  inset-block-end: 88px;
+  padding: 4px;
+}
+
+.fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame {
+  width: 108%;
+  max-width: none;
+}
+
+.fp-route-index .journey-illustration[data-v43-motion="prototype"],
+.fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
+  z-index: 3;
+  inset-inline-end: 0;
+  inset-block-end: 0;
+  width: 58%;
+  height: 88%;
+  opacity: 1;
+}
+
+.fp-route-index .journey-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame,
+.fp-route-dashboard .capability-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame {
+  width: 112%;
+  max-width: none;
+}
+
+.fp-route-dashboard .capability-illustration .v43-image-sequence--benchPr .v43-image-sequence__frame {
+  width: 108%;
+  max-width: none;
+}
+
+@media (max-width: 720px) {
+  .fp-route-index .landing-hero-illustration[data-v43-motion="prototype"] {
+    inset-block-end: 116px;
+    padding: 0;
+  }
+
+  .fp-route-index .journey-illustration[data-v43-motion="prototype"],
+  .fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
+    width: 68% !important;
+    height: 66% !important;
+    opacity: .88;
+  }
+}
+
+@media (max-width: 900px) {
+  .v43-image-sequence__frame,
+  .fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame,
+  .fp-route-index .journey-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame,
+  .fp-route-dashboard .capability-illustration .v43-image-sequence__frame {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v43-image-sequence,
+  .v43-image-sequence__frame {
+    animation: none !important;
+    transition: none !important;
+  }
+}

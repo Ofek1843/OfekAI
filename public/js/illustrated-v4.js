@@ -177,17 +177,22 @@
     for (const host of hosts) {
       const name = host.dataset.v4Illustration;
       const template = templates[name];
-      if (!template || host.querySelector(".v4-illustration")) continue;
+      if (!template || host.querySelector(".v4-illustration, .v43-image-sequence")) continue;
       const markup = template();
       if (!markup) continue;
       host.innerHTML = markup;
       host.dataset.v4Duration = String(DURATIONS[name]);
       host.dataset.v4Source = name === "deadlift" ? "v4.1-hero" : sourceOf(name);
+      const v43 = window.FuelPhysiqueImageSequenceV43;
+      if (v43?.isEnabled() && v43.mount(host, name)) {
+        host.dataset.v4Source = "v4.3-real-athlete";
+      }
     }
     return hosts;
   }
 
   function setupMotion(hosts) {
+    hosts = hosts.filter((host) => host.dataset.v43Motion !== "prototype");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     document.documentElement.classList.toggle("v4-reduced-motion", reduced);
     if (reduced || !("IntersectionObserver" in window)) {
@@ -246,7 +251,11 @@
       templates,
       // Which art each domain actually rendered, so integration checks can
       // prove a rebuilt scene did not silently fall back to the V4 poster.
-      sources: Object.freeze(Object.fromEntries([...SCENE_KEYS, "deadlift"].map((name) => [name, name === "deadlift" ? "v4.1-hero" : sourceOf(name)])))
+      sources: Object.freeze(Object.fromEntries([...SCENE_KEYS, "deadlift"].map((name) => {
+        const rendered = hosts.find((host) => host.dataset.v4Illustration === name)?.dataset.v4Source;
+        return [name, rendered || (name === "deadlift" ? "v4.1-hero" : sourceOf(name))];
+      }))),
+      prototypeEnabled: Boolean(window.FuelPhysiqueImageSequenceV43?.isEnabled())
     });
   }
 
