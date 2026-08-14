@@ -20,6 +20,7 @@
 
 const DISMISS_KEY_PREFIX = "fuelphysique-pwa-install-dismissed-until";
 const DISMISS_DAYS = 14;
+const IOS_INSTRUCTION_DELAY_MS = 6000;
 
 const isHebrew = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 
@@ -129,6 +130,8 @@ function injectStyles() {
     .pwa-install-banner.instructional {
       flex-direction: column;
       align-items: stretch;
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
     .pwa-install-icon {
       flex-shrink: 0;
@@ -222,6 +225,19 @@ function injectStyles() {
       color: #bcc6c2;
     }
     @media (max-width: 480px) {
+      .pwa-install-banner.instructional {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        max-height: 34dvh;
+        padding: 12px;
+      }
+      .pwa-install-banner.instructional .pwa-install-actions {
+        position: sticky;
+        bottom: -1px;
+        padding-top: 8px;
+        background: rgba(10, 22, 38, 0.98);
+      }
       .pwa-install-banner:not(.instructional) {
         flex-wrap: wrap;
       }
@@ -410,9 +426,9 @@ function init() {
 
   if (isIOS()) {
     if (isIOSSafari()) {
-      showIOSSafariInstructions();
+      window.setTimeout(showIOSSafariInstructions, IOS_INSTRUCTION_DELAY_MS);
     } else {
-      showIOSOtherBrowserNotice();
+      window.setTimeout(showIOSOtherBrowserNotice, IOS_INSTRUCTION_DELAY_MS);
     }
     return;
   }
