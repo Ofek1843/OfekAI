@@ -84,7 +84,7 @@ test("sw.js exists and is syntactically valid", () => {
 
 test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
-  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v13-illustrated-v4['"]/);
+  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-v14-premium-v41['"]/);
   assert.match(source, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
   assert.match(source, /['"]\/manifest\.json['"]/);
   assert.match(source, /NETWORK_ONLY_PREFIXES\s*=\s*\[['"]\/api\/['"]\]/);
@@ -181,6 +181,15 @@ test("iOS instructions include a visible Share icon and localized Hebrew/English
   assert.match(source, /<svg/);
   assert.match(source, /הוסף למסך הבית/, "Hebrew Add-to-Home-Screen instruction must be present");
   assert.match(source, /Add to Home Screen/, "English Add-to-Home-Screen instruction must be present");
+});
+
+test("iOS install guidance waits for the first page view and stays dismissible on a phone", () => {
+  const source = fs.readFileSync(path.join(PUBLIC, "js", "pwa-install.js"), "utf8");
+  assert.match(source, /IOS_INSTRUCTION_DELAY_MS\s*=\s*6000/);
+  assert.match(source, /setTimeout\(showIOSSafariInstructions, IOS_INSTRUCTION_DELAY_MS\)/);
+  assert.match(source, /setTimeout\(showIOSOtherBrowserNotice, IOS_INSTRUCTION_DELAY_MS\)/);
+  assert.match(source, /\.pwa-install-banner\.instructional\s*\{[\s\S]*?max-height:\s*34dvh/);
+  assert.match(source, /\.pwa-install-banner\.instructional \.pwa-install-actions\s*\{[\s\S]*?position:\s*sticky/);
 });
 
 // --- HTTP-level: manifest and service worker actually serve -------------

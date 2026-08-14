@@ -32,7 +32,9 @@ test("the dashboard is a varied five-capability studio with compact context", ()
   assert.match(DASHBOARD, /class="dashboard-primary-actions capability-studio"/);
   for (const domain of ["training", "nutrition", "progress", "coach", "social"]) {
     assert.match(DASHBOARD, new RegExp(`capability-card--${domain}`));
-    assert.match(DASHBOARD, new RegExp(`data-v4-illustration="${domain}"`));
+  }
+  for (const scene of ["training", "nutrition", "benchPr", "coach", "social"]) {
+    assert.match(DASHBOARD, new RegExp(`data-v4-illustration="${scene}"`));
   }
   assert.equal((DASHBOARD.match(/class="capability-card capability-card--/g) || []).length, 5);
   assert.match(CSS, /grid-template-columns:\s*repeat\(12,minmax\(0,1fr\)\)/);
@@ -86,9 +88,9 @@ test("mobile and Hebrew polish keeps core controls visible and localized", () =>
 
 test("the PWA cache is versioned with the Illustrated V4 assets and private voice remains network-only", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v13-illustrated-v4/);
-  assert.match(sw, /illustrated-v4\.css\?v=20260812-athletic-spectrum/);
-  assert.match(sw, /illustrated-v4\.js\?v=20260812-athletic-spectrum/);
+  assert.match(sw, /fuelphysique-v14-premium-v41/);
+  assert.match(sw, /illustrated-v4\.css\?v=20260814-premium-v41/);
+  assert.match(sw, /illustrated-v4\.js\?v=20260814-premium-v41/);
   assert.match(sw, /const NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /event\.request\.destination === 'audio'/);
 });
