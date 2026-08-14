@@ -157,11 +157,25 @@ async function alphaBounds(input) {
   return { left, top, width: right - left + 1, height: bottom - top + 1 };
 }
 
-async function normalizeFrame(sceneName, frame, index) {
-  const source = path.join(ASSET_ROOT, sceneName, "source", frame.file);
+async function normalizeFrame(sceneName, frame, index, options = {}) {
+  const sourceDirectory = options.sourceDirectory || "source";
+  const outputDirectory = options.outputDirectory || "normalized";
+  const source = path.join(ASSET_ROOT, sceneName, sourceDirectory, frame.file);
   const keyed = await removeConnectedWhiteBackground(source);
-  const bounds = await alphaBounds(keyed);
-  const subject = sharp(keyed).extract(bounds);
+  const keyedMeta = await sharp(keyed).metadata();
+  const edgeInsetX = options.preserveFullFrame ? Math.max(0, options.edgeInsetX || 0) : 0;
+  const edgeInsetY = options.preserveFullFrame ? Math.max(0, options.edgeInsetY || 0) : 0;
+  const bounds = options.preserveFullFrame
+    ? {
+      left: edgeInsetX,
+      top: edgeInsetY,
+      width: keyedMeta.width - edgeInsetX * 2,
+      height: keyedMeta.height - edgeInsetY * 2
+    }
+    : await alphaBounds(keyed);
+  const subject = options.preserveFullFrame && edgeInsetX === 0 && edgeInsetY === 0
+    ? sharp(keyed)
+    : sharp(keyed).extract(bounds);
   const resize = frame.width
     ? { width: frame.width, height: CANVAS.height }
     : { width: CANVAS.width, height: frame.height };
@@ -173,7 +187,8 @@ async function normalizeFrame(sceneName, frame, index) {
     create: { width: CANVAS.width, height: CANVAS.height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } }
   }).composite([{ input: resized, left, top }]).webp({ quality: 88, alphaQuality: 100, effort: 6 }).toBuffer();
   const outputName = `frame-${String(index + 1).padStart(2, "0")}.webp`;
-  const output = path.join(ASSET_ROOT, sceneName, "normalized", outputName);
+  const output = path.join(ASSET_ROOT, sceneName, outputDirectory, outputName);
+  fs.mkdirSync(path.dirname(output), { recursive: true });
   fs.writeFileSync(output, canvas);
   return {
     file: outputName,
@@ -185,7 +200,7 @@ async function normalizeFrame(sceneName, frame, index) {
   };
 }
 
-async function contactSheet(sceneName, surface, frameCount) {
+async function contactSheet(sceneName, surface, frameCount, outputName = `${sceneName}-normalized-contact-sheet.png`) {
   const columns = Math.min(4, frameCount);
   const rows = Math.ceil(frameCount / columns);
   const cellWidth = 480;
@@ -205,7 +220,7 @@ async function contactSheet(sceneName, surface, frameCount) {
       top: gap + Math.floor(index / columns) * (cellHeight + gap)
     });
   }
-  const output = path.join(REVIEW_ROOT, `${sceneName}-normalized-contact-sheet.png`);
+  const output = path.join(REVIEW_ROOT, outputName);
   await sharp({ create: { width, height, channels: 4, background: "#101420" } }).composite(composites).png().toFile(output);
   return output;
 }
@@ -234,7 +249,20 @@ async function main() {
   process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = Object.freeze({
+  ROOT,
+  ASSET_ROOT,
+  REVIEW_ROOT,
+  CANVAS,
+  removeConnectedWhiteBackground,
+  alphaBounds,
+  normalizeFrame,
+  contactSheet
 });
