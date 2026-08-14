@@ -7,7 +7,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260814-real-athlete-v43-final-assets";
+const VERSION = "20260814-real-athlete-v43-polish-3";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -70,7 +70,7 @@ test("final source mapping uses exact equal-width Deadlift boundaries and correc
   ]);
   assert.equal(MANIFEST.scenes.bench.frames[2].semantic, "bottom-lower-mid-chest");
   assert.equal(MANIFEST.scenes.nutrition.sourceBytes, 507999);
-  assert.equal(MANIFEST.scenes.nutrition.normalizedBytes, 368056);
+  assert.equal(MANIFEST.scenes.nutrition.normalizedBytes, 576812);
 });
 
 test("the V4.3 switch is local-only and requires the exact query value", () => {
@@ -124,6 +124,19 @@ test("the single production stylesheet contains the reviewed V4.3 source CSS", (
   assert.match(MERGED_CSS, /max-width: 720px/);
 });
 
+test("V4.3 athlete stages contain frames and expose the Bench review host", () => {
+  const dashboard = read("public", "dashboard.html");
+  assert.match(CSS, /\.v43-image-sequence\s*\{[^}]*overflow: hidden/s);
+  assert.match(CSS, /landing-hero-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*contain: paint/s);
+  assert.match(CSS, /journey-illustration\[data-v43-motion="prototype"\][\s\S]*?overflow: hidden;[\s\S]*?contain: paint;/);
+  assert.doesNotMatch(CSS, /width:\s*(108|112)%/);
+  assert.match(dashboard, /id="v43-bench-review"\s+data-capability="progress"/);
+  assert.match(CSS, /#v43-bench-review\s*\{[^}]*scroll-margin-top: 92px/s);
+  assert.match(CSS, /#v43-bench-review \.capability-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*width: 44%;[^}]*height: 72%;/s);
+  assert.match(CSS, /#v43-bench-review\s*\{[^}]*min-height: 530px/s);
+  assert.match(CSS, /#v43-bench-review \.capability-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*height: 50% !important/s);
+});
+
 test("landing and dashboard load the engine before integration with one cache generation", () => {
   for (const file of ["index.html", "dashboard.html"]) {
     const html = read("public", file);
@@ -136,7 +149,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v18-real-athlete-v43-final-assets/);
+  assert.match(SW, /fuelphysique-v22-real-athlete-v43-polish-3/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

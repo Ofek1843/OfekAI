@@ -946,7 +946,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   display: grid;
   place-items: end center;
   pointer-events: none;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .v43-image-sequence__frame {
@@ -968,47 +968,83 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
 }
 
 .fp-route-index .landing-hero-illustration[data-v43-motion="prototype"] {
-  inset-block-end: 88px;
-  padding: 4px;
+  inset-block-end: 112px;
+  padding: 8px;
+  overflow: hidden;
+  contain: paint;
 }
 
 .fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame {
-  width: 108%;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
 }
 
-.fp-route-index .journey-illustration[data-v43-motion="prototype"],
+.fp-route-index .journey-illustration[data-v43-motion="prototype"] {
+  z-index: 3;
+  inset-inline-end: 0;
+  inset-block-end: 2%;
+  width: 56%;
+  height: 80%;
+  opacity: 1;
+  overflow: hidden;
+  contain: paint;
+}
+
 .fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
   z-index: 3;
   inset-inline-end: 0;
-  inset-block-end: 0;
+  inset-block-end: 2%;
   width: 58%;
-  height: 88%;
+  height: 84%;
   opacity: 1;
+  overflow: hidden;
+  contain: paint;
 }
 
 .fp-route-index .journey-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame,
 .fp-route-dashboard .capability-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame {
-  width: 112%;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
 }
 
 .fp-route-dashboard .capability-illustration .v43-image-sequence--benchPr .v43-image-sequence__frame {
-  width: 108%;
-  max-width: none;
+  width: 100%;
+  max-width: 100%;
+}
+
+.fp-route-dashboard #v43-bench-review {
+  scroll-margin-top: 92px;
+}
+
+.fp-route-dashboard #v43-bench-review .capability-illustration[data-v43-motion="prototype"] {
+  width: 44%;
+  height: 72%;
 }
 
 @media (max-width: 720px) {
   .fp-route-index .landing-hero-illustration[data-v43-motion="prototype"] {
-    inset-block-end: 116px;
+    inset-block-end: 124px;
     padding: 0;
   }
 
   .fp-route-index .journey-illustration[data-v43-motion="prototype"],
   .fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
     width: 68% !important;
-    height: 66% !important;
+    height: 64% !important;
+    inset-block-end: 2%;
     opacity: .88;
+  }
+
+  .fp-route-dashboard #v43-bench-review {
+    min-height: 530px;
+  }
+
+  .fp-route-dashboard #v43-bench-review .capability-illustration[data-v43-motion="prototype"] {
+    width: 100% !important;
+    height: 50% !important;
+    inset-inline-end: 0;
+    inset-block-end: 2%;
+    opacity: 1;
   }
 }
 

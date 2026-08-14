@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260814-real-athlete-v43-final-assets";
+  const VERSION = "20260814-real-athlete-v43-polish-3";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const ROOT = "/assets/athlete-motion/v43";
 
