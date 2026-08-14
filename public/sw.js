@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v14-premium-v41';
+const CACHE_NAME = 'fuelphysique-v16-premium-v42';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -39,7 +39,7 @@ const urlsToCache = [
   '/css/dashboard.css',
   '/css/redesign-v1.css?v=20260810-ultramarine-motion',
   '/css/product-polish-v3.css?v=20260811-spectrum-v3',
-  '/css/illustrated-v4.css?v=20260814-premium-v41',
+  '/css/illustrated-v4.css?v=20260814-premium-v42-final',
   '/css/workout-builder.css',
   '/css/nutrition-builder.css',
   '/css/legal.css',
@@ -47,12 +47,12 @@ const urlsToCache = [
   '/css/social.css',
   '/js/social.js',
   '/js/redesign-shell.js?v=20260810-ultramarine-motion',
-  '/js/athlete-figure.js?v=20260814-premium-v41',
-  '/js/scenes/training.js?v=20260814-premium-v41',
-  '/js/scenes/nutrition.js?v=20260814-premium-v41',
-  '/js/scenes/progress.js?v=20260814-premium-v41',
-  '/js/scenes/coachsocial.js?v=20260814-premium-v41',
-  '/js/illustrated-v4.js?v=20260814-premium-v41',
+  '/js/athlete-figure.js?v=20260814-premium-v42-final',
+  '/js/scenes/training.js?v=20260814-premium-v42-final',
+  '/js/scenes/nutrition.js?v=20260814-premium-v42-final',
+  '/js/scenes/progress.js?v=20260814-premium-v42-final',
+  '/js/scenes/coachsocial.js?v=20260814-premium-v42-final',
+  '/js/illustrated-v4.js?v=20260814-premium-v42-final',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',
   '/images/brand/fuelphysique-icon-192.png',

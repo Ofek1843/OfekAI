@@ -12,7 +12,7 @@ const LANDING = read("public", "index.html");
 const DASHBOARD = read("public", "dashboard.html");
 const ILLUSTRATIONS = read("public", "js", "illustrated-v4.js");
 const SW = read("public", "sw.js");
-const ASSET_VERSION = "20260814-premium-v41";
+const ASSET_VERSION = "20260814-premium-v42-final";
 
 function illustrationScripts(html) {
   return [...html.matchAll(/<script defer src="([^"]+)"/g)]
@@ -77,6 +77,35 @@ test("every authored V4.1 scene registers and emits its recognition-critical mar
   }
 });
 
+test("the shared figure language has an athletic taper and organic muscle contours", () => {
+  const { FuelPhysiqueAthlete: athlete } = sceneRegistry();
+  assert.ok(athlete.P.shoulderW > athlete.P.chestW);
+  assert.ok(athlete.P.chestW > athlete.P.pelvisW);
+  assert.ok(athlete.P.pelvisW > athlete.P.waistW);
+  assert.match(athlete.seg(0, 0, 20, 20, 8, 5), /Q/);
+  assert.match(athlete.torso(100, 60, 100, 112, 1, "front"), /fa-definition--chest/);
+  assert.match(athlete.torso(100, 60, 130, 112, 1, "profile"), /fa-torso-shell--profile/);
+});
+
+test("key static poses remain recognizable after one-shot motion completes", () => {
+  const css = read("public", "css", "illustrated-v4.css");
+  assert.match(css, /is-illustration-complete \.tr-farm \{ transform: rotate\(78deg\); \}/);
+  assert.match(css, /is-illustration-complete \.nu-farm \{ transform: rotate\(-74\.7deg\); \}/);
+  assert.match(css, /is-illustration-complete \.nu-head \{ transform: translate\(3px,1px\) rotate\(4deg\); \}/);
+});
+
+test("bench and deadlift paths encode the reviewed biomechanics", () => {
+  const { FuelPhysiqueScenes } = sceneRegistry();
+  const bench = FuelPhysiqueScenes.benchPr();
+  const css = read("public", "css", "illustrated-v4.css");
+  assert.match(bench, /pr-head-pad/);
+  assert.match(bench, /barbellRound\(155, 68, 82, 22\)|cx="73"/);
+  assert.match(bench, /pr-chest/);
+  assert.ok(css.includes("48%,58% { transform: translate(-10px,40px); }"));
+  assert.ok(css.includes("60%,78% { transform: translate(-3px,-37px); }"));
+  assert.match(ILLUSTRATIONS, /A\.torso\(shoulder\.x, shoulder\.y, hip\.x, hip\.y, 1, "profile"\)/);
+});
+
 test("the existing page architecture visibly adopts both progress scenes without adding a sixth card", () => {
   assert.match(LANDING, /capability="progress"|journey-card--progress/);
   assert.match(LANDING, /data-v4-illustration="progress"/);
@@ -105,7 +134,7 @@ test("runtime diagnostics mark rendered V4.1 sources rather than hiding a fallba
 });
 
 test("the V4.1 service worker cache is synchronized and retains private/auth bypasses", () => {
-  assert.match(SW, /CACHE_NAME = 'fuelphysique-v14-premium-v41'/);
+  assert.match(SW, /CACHE_NAME = 'fuelphysique-v16-premium-v42'/);
   assert.doesNotMatch(SW, /20260812-athletic-spectrum|fuelphysique-v13-illustrated-v4/);
   for (const asset of [
     "css/illustrated-v4.css",
