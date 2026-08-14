@@ -33,17 +33,32 @@
 .is-illustration-replay .nu-fork { animation: v41-nu-fork var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
 .is-illustration-active .nu-torso,
 .is-illustration-replay .nu-torso { animation: v41-nu-torso var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
+.is-illustration-active .nu-head,
+.is-illustration-replay .nu-head { animation: v41-nu-head var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
 
-@keyframes v41-nu-uarm  { 0%,6% { transform: rotate(0deg); }    20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-3deg); }   60%,74% { transform: rotate(-6deg); }    100% { transform: rotate(0deg); } }
-@keyframes v41-nu-farm  { 0%,6% { transform: rotate(-18deg); }  20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-22deg); }  60%,74% { transform: rotate(-74.7deg); } 100% { transform: rotate(-18deg); } }
+@keyframes v41-nu-uarm  { 0%,8% { transform: rotate(0deg); }   24%,34% { transform: rotate(1.5deg); } 52% { transform: rotate(-3deg); } 70%,100% { transform: rotate(-6deg); } }
+@keyframes v41-nu-farm  { 0%,8% { transform: rotate(-18deg); } 24%,34% { transform: rotate(0deg); }   52% { transform: rotate(-24deg); } 70%,100% { transform: rotate(-74.7deg); } }
 /* The wrist counter-rotates: a fork that stayed rigid to the forearm would
    point at the ceiling by the time the hand reached the face. */
-@keyframes v41-nu-fork  { 0%,6% { transform: rotate(-8deg); }   20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-20deg); }  60%,74% { transform: rotate(-78deg); }   100% { transform: rotate(-8deg); } }
+@keyframes v41-nu-fork  { 0%,8% { transform: rotate(-8deg); }  24%,34% { transform: rotate(0deg); }   52% { transform: rotate(-20deg); } 70%,100% { transform: rotate(102deg); } }
 /* Torso leans in over the bowl, settles back to chew height. */
-@keyframes v41-nu-torso { 0%,6% { transform: rotate(0deg); }    20%,32% { transform: rotate(2.5deg); }  46% { transform: rotate(1deg); }    60%,74% { transform: rotate(-1.5deg); }  100% { transform: rotate(0deg); } }
+@keyframes v41-nu-torso { 0%,8% { transform: rotate(0deg); }   24%,34% { transform: rotate(2.5deg); } 52% { transform: rotate(.5deg); }  70%,100% { transform: rotate(-2deg); } }
+@keyframes v41-nu-head  { 0%,34% { transform: translate(0,0) rotate(0deg); } 52% { transform: translate(1px,1px) rotate(1deg); } 70%,100% { transform: translate(3px,1px) rotate(4deg); } }
+
+.is-illustration-complete .nu-uarm { transform: rotate(-6deg); }
+.is-illustration-complete .nu-farm { transform: rotate(-74.7deg); }
+.is-illustration-complete .nu-fork { transform: rotate(102deg); }
+.is-illustration-complete .nu-torso { transform: rotate(-2deg); }
+.is-illustration-complete .nu-head { transform: translate(3px,1px) rotate(4deg); }
 
 @media (prefers-reduced-motion: reduce) {
   /* Falls back to the authored base pose: utensil already in the food. */
   .v4-illustration .nu-uarm, .v4-illustration .nu-farm,
-  .v4-illustration .nu-fork, .v4-illustration .nu-torso { animation: none !important; }
+  .v4-illustration .nu-fork, .v4-illustration .nu-torso,
+  .v4-illustration .nu-head { animation: none !important; }
+  .v4-illustration .nu-uarm { transform: rotate(-6deg) !important; }
+  .v4-illustration .nu-farm { transform: rotate(-74.7deg) !important; }
+  .v4-illustration .nu-fork { transform: rotate(102deg) !important; }
+  .v4-illustration .nu-torso { transform: rotate(-2deg) !important; }
+  .v4-illustration .nu-head { transform: translate(3px,1px) rotate(4deg) !important; }
 }

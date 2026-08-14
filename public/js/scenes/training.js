@@ -58,6 +58,7 @@
 
     return `<g class="tr-scene">
       <g class="v4-ground"><path d="M30 190H290"/></g>
+      <g class="tr-stage" transform="translate(-13 -15) scale(1.08)">
       <path class="fa-limb fa-far" d="${A.seg(fHip.x, fHip.y, fKnee.x, fKnee.y, F.wThigh[0], F.wThigh[1])}"/>
       <path class="fa-limb fa-far" d="${A.seg(fKnee.x, fKnee.y, fAnkle.x, fAnkle.y, F.wShin[0], F.wShin[1])}"/>
       ${A.foot(fAnkle.x, fAnkle.y, -1)}
@@ -78,9 +79,12 @@
         <path class="fa-limb" d="${A.seg(sh.x, sh.y, elbow.x, elbow.y, F.wUpperArm[0], F.wUpperArm[1])}"/>
         <g class="tr-farm" style="transform-origin:${elbow.x}px ${elbow.y}px">
           <path class="fa-limb" d="${A.seg(elbow.x, elbow.y, wrist.x, wrist.y, F.wForeArm[0], F.wForeArm[1])}"/>
-          ${dumbbell(A, wrist.x, wrist.y + 7)}
-          ${A.hand(wrist.x, wrist.y + 7, 0)}
+          <g class="tr-grip" style="transform-origin:${wrist.x}px ${wrist.y + 7}px">
+            ${dumbbell(A, wrist.x, wrist.y + 7)}
+            ${A.hand(wrist.x, wrist.y + 7, 0)}
+          </g>
         </g>
+      </g>
       </g>
     </g>`;
   };

@@ -16,7 +16,8 @@
    athlete's filled body stays the brightest mass in the frame. */
 .v4-illustration .pr-scale-deck,
 .v4-illustration .pr-scale-base,
-.v4-illustration .pr-bench-pad { fill: currentColor; stroke: none; }
+.v4-illustration .pr-bench-pad,
+.v4-illustration .pr-head-pad { fill: currentColor; stroke: none; }
 .v4-illustration .pr-bench-frame { stroke: currentColor; fill: none; }
 .v4-illustration .pr-chart-axis { stroke: currentColor; fill: none; }
 .v4-illustration .pr-readout rect { fill: var(--v4-canvas-dark, #151a29); }
@@ -118,9 +119,9 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   animation: v41-pr-cue var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
 }
 
-@keyframes v41-pr-bench-uarm  { 0%, 14% { transform: rotate(0deg); }   46%, 56% { transform: rotate(52deg); }    82%, 100% { transform: rotate(0deg); } }
-@keyframes v41-pr-bench-farm  { 0%, 14% { transform: rotate(0deg); }   46%, 56% { transform: rotate(-116deg); }  82%, 100% { transform: rotate(0deg); } }
-@keyframes v41-pr-bench-bar   { 0%, 14% { transform: translate(0, 0); } 46%, 56% { transform: translate(-4px, 26px); } 82%, 100% { transform: translate(0, 0); } }
+@keyframes v41-pr-bench-uarm  { 0%,14% { transform: rotate(0deg); } 48%,58% { transform: rotate(-58deg); } 84%,100% { transform: rotate(0deg); } }
+@keyframes v41-pr-bench-farm  { 0%,14% { transform: rotate(0deg); } 48%,58% { transform: rotate(122deg); } 84%,100% { transform: rotate(0deg); } }
+@keyframes v41-pr-bench-bar   { 0%,14% { transform: translate(0,0); } 48%,58% { transform: translate(-10px,40px); } 84%,100% { transform: translate(0,0); } }
 @keyframes v41-pr-bench-torso { 0%, 14% { transform: translateY(0); }  46%, 56% { transform: translateY(-1.4px); } 82%, 100% { transform: translateY(0); } }
 /* Restrained PR cue: a tick, drawn on, no number and no burst. */
 @keyframes v41-pr-cue         { 0%, 80% { opacity: 0; } 92% { opacity: .95; } 100% { opacity: 1; } }

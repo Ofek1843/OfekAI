@@ -29,11 +29,11 @@ heroic (8+) and not childlike (6).
 |---|---|---|
 | Cranium height | 22 | |
 | Cranium width | 17 | Narrower than tall — never a circle |
-| Neck | 7 | Short and thick; a thin neck reads fragile |
-| Shoulder width | 46 | ≈2.7 head widths |
-| Chest width | 40 | Lat sweep sits at 42% of torso length |
-| Waist width | 27 | **The taper is what reads as "trained"** |
-| Pelvis width | 33 | Hips must be visible, or the figure reads as a tube |
+| Neck | 6.5 | Short and thick; a thin neck reads fragile |
+| Shoulder width | 52 | Broad clavicle line without bodybuilder exaggeration |
+| Chest width | 46 | Lat sweep sits at 42% of torso length |
+| Waist width | 25 | **The taper is what reads as "trained"** |
+| Pelvis width | 32 | Hips remain visible without becoming a tube |
 | Torso (shoulder→hip) | 52 | |
 | Upper arm / forearm | 33 / 31 | |
 | Thigh / shin | 42 / 38 | |
@@ -46,12 +46,13 @@ caps. Half-widths step down distally:
 
 | Segment | Proximal → distal |
 |---|---|
-| Upper arm | 7.4 → 5.4 |
-| Forearm | 5.4 → 3.9 |
-| Thigh | 11.2 → 7.6 |
-| Shin | 7.6 → 4.6 |
+| Upper arm | 8.3 → 5.5 |
+| Forearm | 5.8 → 4.1 |
+| Thigh | 12.2 → 7.8 |
+| Shin | 8.0 → 4.8 |
 
-Consequences that matter: limbs have mass; the rounded caps *are* the joints,
+The capsule sides use a subtle proximal muscle curve rather than a rigid
+straight edge. Consequences that matter: limbs have mass; the rounded caps *are* the joints,
 so elbows and knees are visible without drawing them; and one path per segment
 keeps the node cost close to the old stroke version.
 
@@ -60,9 +61,10 @@ keeps the node cost close to the old stroke version.
 - **Head** — cranium with a jaw taper and a slight facing bias. No face, no
   features. Direction comes from the jaw, which is most of what tells a viewer
   the figure is *doing* something.
-- **Torso** — a single filled path: shoulder yoke → lat sweep (42%) → waist
-  (72%) → pelvis. Drawn between the shoulder point and the hip point, so it
-  re-derives correctly for any torso angle.
+- **Torso** — one filled silhouette plus two restrained definition strokes:
+  shoulder yoke → lat sweep (42%) → waist (72%) → pelvis. It re-derives for
+  any torso angle. Profile depth stays deliberately narrow so a hinged or
+  seated athlete never becomes a diamond-shaped slab.
 - **Hands** — a rounded mitt oriented along the forearm. Grip is abstracted,
   never fingers. The mitt must visibly *overlap* the bar, never touch it.
 - **Feet** — a wedge with a facing direction, never a line end.

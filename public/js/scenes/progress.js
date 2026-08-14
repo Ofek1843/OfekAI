@@ -114,25 +114,27 @@
     const A = window.FuelPhysiqueAthlete;
     const F = A.P;
 
-    const shoulder = { x: 152, y: 128 };
-    const hip = { x: 200, y: 132 };
-    const neck = { x: 137, y: 124 };
+    const shoulder = { x: 122, y: 129 };
+    const hip = { x: 190, y: 134 };
+    const neck = { x: 108, y: 125 };
 
-    // Near leg planted forward of the far leg; both feet on the floor.
-    const legHip = { x: 198, y: 136 };
-    const legKnee = { x: 230, y: 157 };
-    const legAnkle = { x: 240, y: 188 };
-    const farHip = { x: 190, y: 139 };
-    const farKnee = { x: 220, y: 159 };
+    // Knees bend over planted feet instead of extending into an impossible
+    // straight-leg press. The near foot tucks slightly behind the knee.
+    const legHip = { x: 190, y: 137 };
+    const legKnee = { x: 224, y: 158 };
+    const legAnkle = { x: 211, y: 188 };
+    const farHip = { x: 183, y: 139 };
+    const farKnee = { x: 214, y: 161 };
     const farAnkle = { x: 228, y: 188 };
 
-    // Arm chain at LOCKOUT: bar stacked over the shoulder joint.
-    const armS = { x: 154, y: 126 };
-    const armE = { x: 158, y: 100 };
-    const armW = { x: 160, y: 74 };
-    const farS = { x: 145, y: 128 };
-    const farE = { x: 149, y: 102 };
-    const farW = { x: 151, y: 76 };
+    // Arm chain at LOCKOUT. The grip is above the shoulder line; the
+    // animated descent travels down and slightly toward the lower chest.
+    const armS = { x: 128, y: 126 };
+    const armE = { x: 151, y: 96 };
+    const armW = { x: 168, y: 68 };
+    const farS = { x: 121, y: 129 };
+    const farE = { x: 133, y: 98 };
+    const farW = { x: 141, y: 68 };
 
     const armChain = (mod, s, e, w, far) => `
       <g class="pr-uarm pr-uarm--${mod}" style="transform-origin:${s.x}px ${s.y}px">
@@ -146,23 +148,25 @@
     return `
       <g class="v4-ground"><path d="M18 192H302"/></g>
       <g class="pr-bench">
-        <rect class="pr-bench-pad" x="96" y="140" width="134" height="14" rx="4"/>
-        <path class="pr-bench-frame" d="M124,154L112,190M210,154L222,190M100,190H126M208,190H236" style="stroke-width:6"/>
+        <rect class="pr-bench-pad" x="76" y="140" width="162" height="14" rx="4"/>
+        <rect class="pr-head-pad" x="76" y="135" width="52" height="9" rx="4"/>
+        <path class="pr-bench-frame" d="M112,154L102,190M214,154L224,190M90,190H116M210,190H238" style="stroke-width:6"/>
       </g>
-      <g class="pr-bar">${A.barbellRound(160, 74, 76, 23)}</g>
+      <g class="pr-bar">${A.barbellRound(155, 68, 82, 22)}</g>
       <g class="pr-athlete">
         <path class="fa-limb fa-far" d="${A.seg(farHip.x, farHip.y, farKnee.x, farKnee.y, F.wThigh[0], F.wThigh[1])}"/>
         <path class="fa-limb fa-far" d="${A.seg(farKnee.x, farKnee.y, farAnkle.x, farAnkle.y, F.wShin[0], F.wShin[1])}"/>
-        ${A.foot(farAnkle.x, farAnkle.y, 1)}
+        ${A.foot(farAnkle.x, farAnkle.y, -1)}
         ${armChain("far", farS, farE, farW, " fa-far")}
         <g class="pr-torso pr-torso--bench">
           ${A.torso(shoulder.x, shoulder.y, hip.x, hip.y, -1, "profile")}
           <path class="fa-limb" d="${A.seg(shoulder.x, shoulder.y, neck.x, neck.y, 6.4, 5.4)}"/>
-          ${A.head(neck.x - 13, neck.y + 2, -1)}
+          ${A.head(neck.x - 11, neck.y + 1, -1)}
+          <path class="fa-accent pr-chest" d="M126,124Q147,116 169,126"/>
         </g>
         <path class="fa-limb" d="${A.seg(legHip.x, legHip.y, legKnee.x, legKnee.y, F.wThigh[0], F.wThigh[1])}"/>
         <path class="fa-limb" d="${A.seg(legKnee.x, legKnee.y, legAnkle.x, legAnkle.y, F.wShin[0], F.wShin[1])}"/>
-        ${A.foot(legAnkle.x, legAnkle.y, 1)}
+        ${A.foot(legAnkle.x, legAnkle.y, -1)}
         ${armChain("bench", armS, armE, armW, "")}
       </g>
       <g class="pr-cue">

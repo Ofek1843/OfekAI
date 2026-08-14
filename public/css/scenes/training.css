@@ -21,6 +21,8 @@ html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-
 
 .is-illustration-active .tr-farm,
 .is-illustration-replay .tr-farm { animation: v41-tr-curl var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
+.is-illustration-active .tr-grip,
+.is-illustration-replay .tr-grip { animation: v41-tr-grip var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
 .is-illustration-active .tr-uarm,
 .is-illustration-replay .tr-uarm { animation: v41-tr-uarm var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
 .is-illustration-active .tr-torso,
@@ -28,16 +30,24 @@ html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-
 
 /* Lift is faster than the descent (42% up, 40% down) so the rep reads as
    controlled rather than dropped. */
-@keyframes v41-tr-curl  { 0%,6% { transform: rotate(0deg); }   44%,60% { transform: rotate(120deg); }  100% { transform: rotate(5deg); } }
+@keyframes v41-tr-curl  { 0%,8% { transform: rotate(0deg); }  46%,64% { transform: rotate(112deg); } 100% { transform: rotate(78deg); } }
+@keyframes v41-tr-grip  { 0%,8% { transform: rotate(0deg); }  46%,64% { transform: rotate(-112deg); } 100% { transform: rotate(-78deg); } }
 /* Elbow drifts a few degrees only. Anything larger becomes a swing, which
    is the exact form fault this illustration should not be teaching. */
-@keyframes v41-tr-uarm  { 0%,6% { transform: rotate(0deg); }   44%,60% { transform: rotate(-5deg); }  100% { transform: rotate(-1deg); } }
-@keyframes v41-tr-brace { 0%,6% { transform: translateY(0); }  44%,60% { transform: translateY(-1.6px); } 100% { transform: translateY(0); } }
+@keyframes v41-tr-uarm  { 0%,8% { transform: rotate(0deg); }  46%,64% { transform: rotate(-4deg); } 100% { transform: rotate(-3deg); } }
+@keyframes v41-tr-brace { 0%,8% { transform: translateY(0); } 46%,64% { transform: translateY(-1.2px); } 100% { transform: translateY(0); } }
+
+.is-illustration-complete .tr-farm { transform: rotate(78deg); }
+.is-illustration-complete .tr-grip { transform: rotate(-78deg); }
+.is-illustration-complete .tr-uarm { transform: rotate(-3deg); }
 
 @media (prefers-reduced-motion: reduce) {
   .v4-illustration .tr-farm,
+  .v4-illustration .tr-grip,
   .v4-illustration .tr-uarm,
   .v4-illustration .tr-torso { animation: none !important; }
   /* Held mid-high pose: unmistakably a curl in progress, zero motion. */
-  .v4-illustration .tr-farm { transform: rotate(104deg) !important; }
+  .v4-illustration .tr-farm { transform: rotate(78deg) !important; }
+  .v4-illustration .tr-grip { transform: rotate(-78deg) !important; }
+  .v4-illustration .tr-uarm { transform: rotate(-3deg) !important; }
 }

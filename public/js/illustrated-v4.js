@@ -122,7 +122,7 @@
 
           <path class="fa-limb fa-thigh" d="${A.seg(knee.x, knee.y, hip.x, hip.y, F.wThigh[1], F.wThigh[0])}"/>
           <g class="dl-torso" style="transform-origin:${hip.x}px ${hip.y}px">
-            <path class="fa-torso" d="${A.seg(shoulder.x, shoulder.y, hip.x, hip.y, 13.5, 12)}"/>
+            ${A.torso(shoulder.x, shoulder.y, hip.x, hip.y, 1, "profile")}
             <path class="fa-limb fa-neck" d="${A.seg(shoulder.x, shoulder.y, neck.x, neck.y, 6, 5)}"/>
             ${A.head(neck.x + 4, neck.y - F.head * 0.4, 1)}
             <path class="fa-accent" d="M${hip.x + 8},${hip.y - 12}L${shoulder.x - 8},${shoulder.y + 10}"/>

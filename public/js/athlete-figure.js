@@ -28,11 +28,11 @@
   const P = Object.freeze({
     head: 22,          // cranium height
     headW: 17,         // cranium width (narrower than tall -> not a circle)
-    neck: 7,
-    shoulderW: 46,     // ~2.7 head widths: athletic, not bodybuilder
-    chestW: 40,
-    waistW: 27,        // taper is what makes the silhouette read "trained"
-    pelvisW: 33,
+    neck: 6.5,
+    shoulderW: 52,     // broad clavicle line, still shy of bodybuilder scale
+    chestW: 46,
+    waistW: 25,        // stronger shoulder-to-waist taper reads lean/athletic
+    pelvisW: 32,
     torso: 52,         // shoulder line to hip line
     upperArm: 33,
     foreArm: 31,
@@ -40,10 +40,10 @@
     shin: 38,
     // Limb half-widths, proximal -> distal. The step down at each joint is
     // what gives the limb its tapered, muscled read.
-    wUpperArm: [7.4, 5.4],
-    wForeArm: [5.4, 3.9],
-    wThigh: [11.2, 7.6],
-    wShin: [7.6, 4.6],
+    wUpperArm: [8.3, 5.5],
+    wForeArm: [5.8, 4.1],
+    wThigh: [12.2, 7.8],
+    wShin: [8, 4.8],
     hand: 4.6,
     foot: 11
   });
@@ -73,11 +73,19 @@
     const P1 = [x2 + nx * w2, y2 + ny * w2];
     const P2 = [x2 - nx * w2, y2 - ny * w2];
     const P3 = [x1 - nx * w1, y1 - ny * w1];
+    // A subtle belly through the proximal half keeps long straight capsules
+    // from reading as robot tubing. Ends stay identical, so every existing
+    // joint origin and equipment grip remains stable.
+    const mx = x1 + dx * 0.44;
+    const my = y1 + dy * 0.44;
+    const bulge = Math.max(0.7, (w1 + w2) * 0.13);
+    const ML = [mx + nx * ((w1 + w2) * 0.54 + bulge), my + ny * ((w1 + w2) * 0.54 + bulge)];
+    const MR = [mx - nx * ((w1 + w2) * 0.54 + bulge), my - ny * ((w1 + w2) * 0.54 + bulge)];
     const f = (p) => `${num(p[0])},${num(p[1])}`;
     const outD = [ux * w2 * K, uy * w2 * K];
     const outP = [-ux * w1 * K, -uy * w1 * K];
     const add = (p, o) => [p[0] + o[0], p[1] + o[1]];
-    return `M${f(P0)}L${f(P1)}C${f(add(P1, outD))} ${f(add(P2, outD))} ${f(P2)}L${f(P3)}C${f(add(P3, outP))} ${f(add(P0, outP))} ${f(P0)}Z`;
+    return `M${f(P0)}Q${f(ML)} ${f(P1)}C${f(add(P1, outD))} ${f(add(P2, outD))} ${f(P2)}Q${f(MR)} ${f(P3)}C${f(add(P3, outP))} ${f(add(P0, outP))} ${f(P0)}Z`;
   }
 
   /** Forward kinematics: project a point at an angle (deg, 0 = +x, 90 = down). */
@@ -92,11 +100,17 @@
   function head(cx, cy, facing = 1) {
     const w = P.headW / 2;
     const h = P.head / 2;
-    const jaw = facing * w * 0.55;
-    return `<path class="fa-head" d="M${num(cx - w)},${num(cy - h * 0.15)}
-      C${num(cx - w)},${num(cy - h * 1.05)} ${num(cx + w)},${num(cy - h * 1.05)} ${num(cx + w)},${num(cy - h * 0.1)}
-      C${num(cx + w)},${num(cy + h * 0.55)} ${num(cx + jaw)},${num(cy + h)} ${num(cx + jaw * 0.2)},${num(cy + h)}
-      C${num(cx - w * 0.7)},${num(cy + h)} ${num(cx - w)},${num(cy + h * 0.5)} ${num(cx - w)},${num(cy - h * 0.15)}Z"/>`;
+    const x = (offset) => num(cx + facing * offset);
+    const y = (offset) => num(cy + offset);
+    // A restrained brow/nose/chin silhouette adds direction without drawing
+    // facial features. Mirroring the x offsets gives both facing directions
+    // the same editorial profile instead of a blank mannequin oval.
+    return `<path class="fa-head" d="M${x(-w * 0.82)},${y(h * 0.52)}
+      C${x(-w * 1.02)},${y(0)} ${x(-w * 0.88)},${y(-h * 0.76)} ${x(-w * 0.3)},${y(-h)}
+      C${x(w * 0.24)},${y(-h * 1.08)} ${x(w * 0.7)},${y(-h * 0.72)} ${x(w * 0.72)},${y(-h * 0.34)}
+      L${x(w * 1.03)},${y(-h * 0.05)}L${x(w * 0.72)},${y(h * 0.12)}
+      C${x(w * 0.62)},${y(h * 0.54)} ${x(w * 0.34)},${y(h * 0.88)} ${x(w * 0.05)},${y(h * 0.92)}
+      C${x(-w * 0.48)},${y(h * 0.92)} ${x(-w * 0.72)},${y(h * 0.72)} ${x(-w * 0.82)},${y(h * 0.52)}Z"/>`;
   }
 
   /**
@@ -111,7 +125,7 @@
    */
   const SPANS = Object.freeze({
     front: { shoulder: P.shoulderW, chest: P.chestW, waist: P.waistW, pelvis: P.pelvisW },
-    profile: { shoulder: 25, chest: 24, waist: 20, pelvis: 26 }
+    profile: { shoulder: 19, chest: 24, waist: 17, pelvis: 22 }
   });
 
   function torso(sx, sy, hx, hy, facing = 1, view = "front") {
@@ -137,7 +151,16 @@
     // waist only. (An earlier version fed these points to a cubic C, which
     // treats them as CONTROL points -- the outline was dragged into a hook
     // and the torso rendered as an angular kite that swallowed the limbs.)
-    return `<path class="fa-torso" d="M${p(L0)}Q${p(L1)} ${p(L2)}L${p(L3)}L${p(R3)}Q${p(R2)} ${p(R1)}L${p(R0)}Z"/>`;
+    const chestL = at(0.27, span.chest * (view === "front" ? 0.31 : 0.38));
+    const chestR = at(0.27, -span.chest * (view === "front" ? 0.31 : 0.2));
+    const sternum = at(0.34, 0);
+    const waistL = at(0.68, span.waist * 0.42);
+    const waistR = at(0.68, -span.waist * 0.42);
+    return `<g class="fa-torso-shell fa-torso-shell--${view}">
+      <path class="fa-torso" d="M${p(L0)}Q${p(L1)} ${p(L2)}L${p(L3)}L${p(R3)}Q${p(R2)} ${p(R1)}L${p(R0)}Z"/>
+      <path class="fa-definition fa-definition--chest" d="M${p(chestL)}Q${p(sternum)} ${p(chestR)}"/>
+      <path class="fa-definition fa-definition--waist" d="M${p(waistL)}Q${p(at(0.73, 0))} ${p(waistR)}"/>
+    </g>`;
   }
 
   /** Grip abstraction: a rounded mitt, oriented along the forearm. */
@@ -145,8 +168,11 @@
     `<rect class="fa-hand" x="${num(x - P.hand)}" y="${num(y - P.hand * 0.8)}" width="${num(P.hand * 2)}" height="${num(P.hand * 1.6)}" rx="${num(P.hand * 0.7)}" transform="rotate(${num(deg)} ${num(x)} ${num(y)})"/>`;
 
   /** Foot: wedge, not a line end. */
-  const foot = (x, y, facing = 1) =>
-    `<path class="fa-foot" d="M${num(x - 4)},${num(y - 4)}L${num(x + facing * P.foot)},${num(y - 1)}L${num(x + facing * P.foot)},${num(y + 3)}L${num(x - 5)},${num(y + 3)}Z"/>`;
+  const foot = (x, y, facing = 1) => {
+    const heel = x - facing * 4.5;
+    const toe = x + facing * P.foot;
+    return `<path class="fa-foot" d="M${num(heel)},${num(y - 4)}Q${num(x + facing * 1.5)},${num(y - 2.5)} ${num(toe)},${num(y - 1)}L${num(toe)},${num(y + 3)}Q${num(x + facing * 1.5)},${num(y + 4)} ${num(heel)},${num(y + 2.5)}Z"/>`;
+  };
 
   /**
    * Arm chain: upper arm rotates at the shoulder, forearm at the elbow.

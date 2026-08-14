@@ -510,9 +510,10 @@ html[data-theme="light"] .fp-route-dashboard .card-icon img { filter: none; }
      limbs from the body. Without it the arm and torso merge into one white
      mass and the pose stops reading. */
   stroke: var(--v4-canvas-dark);
-  stroke-width: 2.6;
+  stroke-width: 1.5;
   paint-order: stroke fill;
 }
+.v4-illustration :where(.fa-torso, .fa-head) { stroke-width: 2.1; }
 html[data-theme="light"] .v4-illustration :where(.fa-limb, .fa-torso, .fa-head, .fa-hand, .fa-foot) {
   stroke: var(--v4-canvas-light);
 }
@@ -526,6 +527,15 @@ html[data-theme="light"] .v4-illustration :where(.fa-limb, .fa-torso, .fa-head, 
   stroke: var(--v4-figure-accent, #7f9dff);
   stroke-width: 3.5; stroke-linecap: round; fill: none; opacity: .8;
 }
+.v4-illustration .fa-definition {
+  fill: none;
+  stroke: var(--v4-canvas-dark);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: .62;
+}
+html[data-theme="light"] .v4-illustration .fa-definition { stroke: var(--v4-canvas-light); }
+.v4-illustration .fa-torso-shell--profile .fa-definition--waist { opacity: .38; }
 
 /* ── Deadlift articulation ──────────────────────────────────────────────
    Chain rooted at the planted ankle, running upward. Each group rotates
@@ -543,15 +553,15 @@ html[data-theme="light"] .v4-illustration :where(.fa-limb, .fa-torso, .fa-head, 
 .is-illustration-active .dl-bar,
 .is-illustration-replay .dl-bar { animation: v41-dl-bar var(--motion-illustrative-deadlift) var(--ease-illustrative) 1 both; }
 
-@keyframes v41-dl-shin  { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(-16deg); }  100% { transform: rotate(-14deg); } }
-@keyframes v41-dl-thigh { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(54deg); }   100% { transform: rotate(50deg); } }
-@keyframes v41-dl-torso { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(-84deg); }  100% { transform: rotate(-78deg); } }
+@keyframes v41-dl-shin  { 0%,10% { transform: rotate(0deg); } 30% { transform: rotate(-4deg); } 60%,78% { transform: rotate(-15deg); } 100% { transform: rotate(-14deg); } }
+@keyframes v41-dl-thigh { 0%,10% { transform: rotate(0deg); } 30% { transform: rotate(16deg); } 60%,78% { transform: rotate(52deg); } 100% { transform: rotate(50deg); } }
+@keyframes v41-dl-torso { 0%,10% { transform: rotate(0deg); } 30% { transform: rotate(-24deg); } 60%,78% { transform: rotate(-80deg); } 100% { transform: rotate(-78deg); } }
 /* Arms counter-rotate against the torso so they stay vertical through the
    pull -- this is what stops the bar swinging away from the body. */
-@keyframes v41-dl-arm   { 0%,8% { transform: rotate(0deg); }   55%,74% { transform: rotate(46deg); }   100% { transform: rotate(43deg); } }
+@keyframes v41-dl-arm   { 0%,10% { transform: rotate(0deg); } 30% { transform: rotate(13deg); } 60%,78% { transform: rotate(44deg); } 100% { transform: rotate(43deg); } }
 /* Bar tracks the hands: predominantly vertical, drawn slightly back toward
    the hips, which is the real bar path. */
-@keyframes v41-dl-bar   { 0%,8% { transform: translate(0,0); } 55%,74% { transform: translate(-8px,-34px); } 100% { transform: translate(-7px,-31px); } }
+@keyframes v41-dl-bar   { 0%,10% { transform: translate(0,0); } 30% { transform: translate(-1px,-10px); } 60%,78% { transform: translate(-3px,-37px); } 100% { transform: translate(-3px,-35px); } }
 
 @media (prefers-reduced-motion: reduce) {
   .v4-illustration .dl-chain, .v4-illustration .dl-thigh, .v4-illustration .dl-torso,
@@ -589,6 +599,8 @@ html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-
 
 .is-illustration-active .tr-farm,
 .is-illustration-replay .tr-farm { animation: v41-tr-curl var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
+.is-illustration-active .tr-grip,
+.is-illustration-replay .tr-grip { animation: v41-tr-grip var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
 .is-illustration-active .tr-uarm,
 .is-illustration-replay .tr-uarm { animation: v41-tr-uarm var(--motion-illustrative-training) var(--ease-illustrative) 1 both; }
 .is-illustration-active .tr-torso,
@@ -596,18 +608,26 @@ html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-
 
 /* Lift is faster than the descent (42% up, 40% down) so the rep reads as
    controlled rather than dropped. */
-@keyframes v41-tr-curl  { 0%,6% { transform: rotate(0deg); }   44%,60% { transform: rotate(120deg); }  100% { transform: rotate(5deg); } }
+@keyframes v41-tr-curl  { 0%,8% { transform: rotate(0deg); }  46%,64% { transform: rotate(112deg); } 100% { transform: rotate(78deg); } }
+@keyframes v41-tr-grip  { 0%,8% { transform: rotate(0deg); }  46%,64% { transform: rotate(-112deg); } 100% { transform: rotate(-78deg); } }
 /* Elbow drifts a few degrees only. Anything larger becomes a swing, which
    is the exact form fault this illustration should not be teaching. */
-@keyframes v41-tr-uarm  { 0%,6% { transform: rotate(0deg); }   44%,60% { transform: rotate(-5deg); }  100% { transform: rotate(-1deg); } }
-@keyframes v41-tr-brace { 0%,6% { transform: translateY(0); }  44%,60% { transform: translateY(-1.6px); } 100% { transform: translateY(0); } }
+@keyframes v41-tr-uarm  { 0%,8% { transform: rotate(0deg); }  46%,64% { transform: rotate(-4deg); } 100% { transform: rotate(-3deg); } }
+@keyframes v41-tr-brace { 0%,8% { transform: translateY(0); } 46%,64% { transform: translateY(-1.2px); } 100% { transform: translateY(0); } }
+
+.is-illustration-complete .tr-farm { transform: rotate(78deg); }
+.is-illustration-complete .tr-grip { transform: rotate(-78deg); }
+.is-illustration-complete .tr-uarm { transform: rotate(-3deg); }
 
 @media (prefers-reduced-motion: reduce) {
   .v4-illustration .tr-farm,
+  .v4-illustration .tr-grip,
   .v4-illustration .tr-uarm,
   .v4-illustration .tr-torso { animation: none !important; }
   /* Held mid-high pose: unmistakably a curl in progress, zero motion. */
-  .v4-illustration .tr-farm { transform: rotate(104deg) !important; }
+  .v4-illustration .tr-farm { transform: rotate(78deg) !important; }
+  .v4-illustration .tr-grip { transform: rotate(-78deg) !important; }
+  .v4-illustration .tr-uarm { transform: rotate(-3deg) !important; }
 }
 
 /* ── scenes/nutrition.css ─────────────────────────────────────────────── */
@@ -646,19 +666,34 @@ html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-
 .is-illustration-replay .nu-fork { animation: v41-nu-fork var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
 .is-illustration-active .nu-torso,
 .is-illustration-replay .nu-torso { animation: v41-nu-torso var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
+.is-illustration-active .nu-head,
+.is-illustration-replay .nu-head { animation: v41-nu-head var(--motion-illustrative-nutrition) var(--ease-illustrative) 1 both; }
 
-@keyframes v41-nu-uarm  { 0%,6% { transform: rotate(0deg); }    20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-3deg); }   60%,74% { transform: rotate(-6deg); }    100% { transform: rotate(0deg); } }
-@keyframes v41-nu-farm  { 0%,6% { transform: rotate(-18deg); }  20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-22deg); }  60%,74% { transform: rotate(-74.7deg); } 100% { transform: rotate(-18deg); } }
+@keyframes v41-nu-uarm  { 0%,8% { transform: rotate(0deg); }   24%,34% { transform: rotate(1.5deg); } 52% { transform: rotate(-3deg); } 70%,100% { transform: rotate(-6deg); } }
+@keyframes v41-nu-farm  { 0%,8% { transform: rotate(-18deg); } 24%,34% { transform: rotate(0deg); }   52% { transform: rotate(-24deg); } 70%,100% { transform: rotate(-74.7deg); } }
 /* The wrist counter-rotates: a fork that stayed rigid to the forearm would
    point at the ceiling by the time the hand reached the face. */
-@keyframes v41-nu-fork  { 0%,6% { transform: rotate(-8deg); }   20%,32% { transform: rotate(0deg); }    46% { transform: rotate(-20deg); }  60%,74% { transform: rotate(-78deg); }   100% { transform: rotate(-8deg); } }
+@keyframes v41-nu-fork  { 0%,8% { transform: rotate(-8deg); }  24%,34% { transform: rotate(0deg); }   52% { transform: rotate(-20deg); } 70%,100% { transform: rotate(102deg); } }
 /* Torso leans in over the bowl, settles back to chew height. */
-@keyframes v41-nu-torso { 0%,6% { transform: rotate(0deg); }    20%,32% { transform: rotate(2.5deg); }  46% { transform: rotate(1deg); }    60%,74% { transform: rotate(-1.5deg); }  100% { transform: rotate(0deg); } }
+@keyframes v41-nu-torso { 0%,8% { transform: rotate(0deg); }   24%,34% { transform: rotate(2.5deg); } 52% { transform: rotate(.5deg); }  70%,100% { transform: rotate(-2deg); } }
+@keyframes v41-nu-head  { 0%,34% { transform: translate(0,0) rotate(0deg); } 52% { transform: translate(1px,1px) rotate(1deg); } 70%,100% { transform: translate(3px,1px) rotate(4deg); } }
+
+.is-illustration-complete .nu-uarm { transform: rotate(-6deg); }
+.is-illustration-complete .nu-farm { transform: rotate(-74.7deg); }
+.is-illustration-complete .nu-fork { transform: rotate(102deg); }
+.is-illustration-complete .nu-torso { transform: rotate(-2deg); }
+.is-illustration-complete .nu-head { transform: translate(3px,1px) rotate(4deg); }
 
 @media (prefers-reduced-motion: reduce) {
   /* Falls back to the authored base pose: utensil already in the food. */
   .v4-illustration .nu-uarm, .v4-illustration .nu-farm,
-  .v4-illustration .nu-fork, .v4-illustration .nu-torso { animation: none !important; }
+  .v4-illustration .nu-fork, .v4-illustration .nu-torso,
+  .v4-illustration .nu-head { animation: none !important; }
+  .v4-illustration .nu-uarm { transform: rotate(-6deg) !important; }
+  .v4-illustration .nu-farm { transform: rotate(-74.7deg) !important; }
+  .v4-illustration .nu-fork { transform: rotate(102deg) !important; }
+  .v4-illustration .nu-torso { transform: rotate(-2deg) !important; }
+  .v4-illustration .nu-head { transform: translate(3px,1px) rotate(4deg) !important; }
 }
 
 /* ── scenes/progress.css ─────────────────────────────────────────────── */
@@ -680,7 +715,8 @@ html[data-theme="light"] .v4-illustration .tr-bell .fa-plate { stroke: var(--v4-
    athlete's filled body stays the brightest mass in the frame. */
 .v4-illustration .pr-scale-deck,
 .v4-illustration .pr-scale-base,
-.v4-illustration .pr-bench-pad { fill: currentColor; stroke: none; }
+.v4-illustration .pr-bench-pad,
+.v4-illustration .pr-head-pad { fill: currentColor; stroke: none; }
 .v4-illustration .pr-bench-frame { stroke: currentColor; fill: none; }
 .v4-illustration .pr-chart-axis { stroke: currentColor; fill: none; }
 .v4-illustration .pr-readout rect { fill: var(--v4-canvas-dark, #151a29); }
@@ -782,9 +818,9 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   animation: v41-pr-cue var(--motion-illustrative-bench-pr) var(--ease-illustrative) 1 both;
 }
 
-@keyframes v41-pr-bench-uarm  { 0%, 14% { transform: rotate(0deg); }   46%, 56% { transform: rotate(52deg); }    82%, 100% { transform: rotate(0deg); } }
-@keyframes v41-pr-bench-farm  { 0%, 14% { transform: rotate(0deg); }   46%, 56% { transform: rotate(-116deg); }  82%, 100% { transform: rotate(0deg); } }
-@keyframes v41-pr-bench-bar   { 0%, 14% { transform: translate(0, 0); } 46%, 56% { transform: translate(-4px, 26px); } 82%, 100% { transform: translate(0, 0); } }
+@keyframes v41-pr-bench-uarm  { 0%,14% { transform: rotate(0deg); } 48%,58% { transform: rotate(-58deg); } 84%,100% { transform: rotate(0deg); } }
+@keyframes v41-pr-bench-farm  { 0%,14% { transform: rotate(0deg); } 48%,58% { transform: rotate(122deg); } 84%,100% { transform: rotate(0deg); } }
+@keyframes v41-pr-bench-bar   { 0%,14% { transform: translate(0,0); } 48%,58% { transform: translate(-10px,40px); } 84%,100% { transform: translate(0,0); } }
 @keyframes v41-pr-bench-torso { 0%, 14% { transform: translateY(0); }  46%, 56% { transform: translateY(-1.4px); } 82%, 100% { transform: translateY(0); } }
 /* Restrained PR cue: a tick, drawn on, no number and no burst. */
 @keyframes v41-pr-cue         { 0%, 80% { opacity: 0; } 92% { opacity: .95; } 100% { opacity: 1; } }

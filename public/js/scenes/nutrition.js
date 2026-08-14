@@ -77,8 +77,10 @@
       </g>
       <g class="nu-torso" style="transform-origin:${pelvis.x}px ${pelvis.y}px">
         ${A.torso(shoulders.x, shoulders.y, pelvis.x, pelvis.y, 1, "profile")}
-        <path class="fa-limb fa-neck" d="${A.seg(shoulders.x, shoulders.y, neck.x, neck.y, 6.4, 5.4)}"/>
-        ${A.head(neck.x + 1.5, neck.y - F.head * 0.42, 1)}
+        <g class="nu-head" style="transform-origin:${shoulders.x}px ${shoulders.y}px">
+          <path class="fa-limb fa-neck" d="${A.seg(shoulders.x, shoulders.y, neck.x, neck.y, 6.4, 5.4)}"/>
+          ${A.head(neck.x + 1.5, neck.y - F.head * 0.42, 1)}
+        </g>
         <g class="nu-armrest">
           <path class="fa-limb fa-far" d="${A.seg(fS.x, fS.y, fE.x, fE.y, F.wUpperArm[0], F.wUpperArm[1])}"/>
           <path class="fa-limb fa-far" d="${A.seg(fE.x, fE.y, fW.x, fW.y, F.wForeArm[0], F.wForeArm[1])}"/>
