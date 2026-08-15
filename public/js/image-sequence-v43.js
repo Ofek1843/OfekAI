@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260814-real-athlete-v43-polish-3";
+  const VERSION = "20260815-real-athlete-v43-training-final-2";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const ROOT = "/assets/athlete-motion/v43";
 
@@ -11,6 +11,17 @@
   });
 
   const SCENES = Object.freeze({
+    training: Object.freeze({
+      frames: Object.freeze([
+        frame("training", 1, 360),
+        frame("training", 2, 230),
+        frame("training", 3, 440),
+        frame("training", 4, 300),
+        frame("training", 5, 340),
+        frame("training", 1, 360)
+      ]),
+      reducedFrame: frame("training", 3, 0)
+    }),
     deadlift: Object.freeze({
       frames: Object.freeze([
         frame("deadlift", 1, 380),

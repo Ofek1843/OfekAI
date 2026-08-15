@@ -12,12 +12,18 @@
 
 .v43-image-sequence__frame {
   display: block;
+  min-width: 0;
+  min-height: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center bottom;
   opacity: 1;
   filter: drop-shadow(0 12px 16px rgba(4, 9, 28, .18));
+}
+
+.v43-image-sequence--training .v43-image-sequence__frame {
+  max-height: 100%;
 }
 
 /* Frame changes are deliberately discrete. Crossfading generated human
@@ -52,7 +58,13 @@
 }
 
 .fp-route-index .journey-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame,
+.fp-route-index .journey-illustration .v43-image-sequence--training .v43-image-sequence__frame,
 .fp-route-dashboard .capability-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame {
+  width: 100%;
+  max-width: 100%;
+}
+
+.fp-route-dashboard .capability-illustration .v43-image-sequence--training .v43-image-sequence__frame {
   width: 100%;
   max-width: 100%;
 }
@@ -82,10 +94,29 @@
   height: 72%;
 }
 
+.fp-route-index .journey-card--training .journey-illustration[data-v43-motion="prototype"] {
+  width: 48%;
+  height: 72%;
+  inset-block-end: 5%;
+}
+
+.fp-route-dashboard .capability-card--training .capability-illustration[data-v43-motion="prototype"] {
+  width: 50%;
+  height: 72%;
+  inset-block-end: 5%;
+}
+
 @media (max-width: 720px) {
+  :where(html, body):has(.fp-route-index) { overflow-x: hidden; }
   .fp-route-index .landing-hero-illustration[data-v43-motion="prototype"] {
     inset-block-end: 124px;
     padding: 0;
+  }
+
+  .fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame {
+    width: 116% !important;
+    max-width: none !important;
+    transform: translateX(-5%);
   }
 
   .fp-route-index .journey-illustration[data-v43-motion="prototype"],
@@ -95,6 +126,20 @@
     inset-block-end: 2%;
     opacity: .88;
   }
+
+  .fp-route-index .journey-card--training .journey-illustration[data-v43-motion="prototype"],
+  .fp-route-dashboard .capability-card--training .capability-illustration[data-v43-motion="prototype"] {
+    width: 100% !important;
+    height: 40% !important;
+    inset-inline-end: 0;
+    inset-block-end: 2%;
+    opacity: 1;
+  }
+
+  .fp-route-index .journey-card--training,
+  .fp-route-dashboard .capability-card--training { min-height: 470px !important; }
+  .fp-route-index .journey-card--training :where(h3, p) { max-width: 92% !important; }
+  .fp-route-dashboard .capability-card--training .capability-copy { width: 92% !important; }
 
   .fp-route-dashboard #v43-bench-review {
     min-height: 530px;
@@ -113,9 +158,18 @@
   .v43-image-sequence__frame,
   .fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame,
   .fp-route-index .journey-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame,
+  .fp-route-index .journey-illustration .v43-image-sequence--training .v43-image-sequence__frame,
   .fp-route-dashboard .capability-illustration .v43-image-sequence__frame {
     width: 100% !important;
     max-width: 100% !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame {
+    width: 116% !important;
+    max-width: none !important;
+    transform: translateX(-5%);
   }
 }
 

@@ -1,10 +1,10 @@
 {
-  "version": "20260814-real-athlete-v43-polish-3",
+  "version": "20260815-real-athlete-v43-training-final-2",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-14T18:53:36.900Z",
+  "generatedAt": "2026-08-15T04:42:58.394Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -328,6 +328,91 @@
       "sourceBytes": 507999,
       "normalizedBytes": 576812,
       "contactSheet": "docs/illustration/v43/nutrition-final-contact-sheet.png"
+    },
+    "training": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "sourceBytes": 311890,
+          "normalizedBytes": 34164,
+          "index": 0
+        },
+        {
+          "file": "frame-02.webp",
+          "sourceBytes": 297673,
+          "normalizedBytes": 35616,
+          "index": 1
+        },
+        {
+          "file": "frame-03.webp",
+          "sourceBytes": 296419,
+          "normalizedBytes": 35134,
+          "index": 2
+        },
+        {
+          "file": "frame-04.webp",
+          "sourceBytes": 302765,
+          "normalizedBytes": 35758,
+          "index": 3
+        },
+        {
+          "file": "frame-05.webp",
+          "sourceBytes": 310657,
+          "normalizedBytes": 34082,
+          "index": 4
+        }
+      ],
+      "motionSheetSource": "training/final-source/training-curl-motion-sheet-transparent.png",
+      "motionSheetSourceDimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "motionSheetSourceBytes": 1145811,
+      "splitFrames": [
+        {
+          "file": "frame-01.png",
+          "left": 0,
+          "right": 354,
+          "width": 354,
+          "height": 887,
+          "bytes": 311890
+        },
+        {
+          "file": "frame-02.png",
+          "left": 354,
+          "right": 709,
+          "width": 355,
+          "height": 887,
+          "bytes": 297673
+        },
+        {
+          "file": "frame-03.png",
+          "left": 709,
+          "right": 1064,
+          "width": 355,
+          "height": 887,
+          "bytes": 296419
+        },
+        {
+          "file": "frame-04.png",
+          "left": 1064,
+          "right": 1419,
+          "width": 355,
+          "height": 887,
+          "bytes": 302765
+        },
+        {
+          "file": "frame-05.png",
+          "left": 1419,
+          "right": 1774,
+          "width": 355,
+          "height": 887,
+          "bytes": 310657
+        }
+      ],
+      "splitSourceBytes": 1519404,
+      "normalizedBytes": 174754,
+      "contactSheet": "docs/illustration/v43/training-final-contact-sheet.png"
     }
   }
 }
