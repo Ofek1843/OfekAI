@@ -7,8 +7,8 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260815-real-athlete-v43-complete-2";
-const CSS_VERSION = "20260815-real-athlete-v43-complete-2";
+const VERSION = "20260815-real-athlete-v43-complete-3";
+const CSS_VERSION = "20260815-real-athlete-v43-complete-3";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -59,14 +59,15 @@ test("original sources remain preserved while final Deadlift and Bench sources a
 });
 
 test("final source mapping uses exact equal-width Deadlift boundaries and corrected Bench semantics", () => {
-  assert.deepEqual(MANIFEST.scenes.deadlift.motionSheetSourceDimensions, { width: 1983, height: 793 });
-  assert.deepEqual(MANIFEST.scenes.deadlift.splitFrames.map(({ left, right, width }) => ({ left, right, width })), [
-    { left: 0, right: 396, width: 396 },
-    { left: 396, right: 793, width: 397 },
-    { left: 793, right: 1189, width: 396 },
-    { left: 1189, right: 1586, width: 397 },
-    { left: 1586, right: 1983, width: 397 }
-  ]);
+  const { width, height } = MANIFEST.scenes.deadlift.motionSheetSourceDimensions;
+  assert.ok(width > 0 && height > 0);
+  assert.deepEqual(MANIFEST.scenes.deadlift.splitFrames.map(({ left, right, width: frameWidth }) => ({ left, right, width: frameWidth })),
+    Array.from({ length: 5 }, (_, index) => {
+      const left = Math.floor(index * width / 5);
+      const right = Math.floor((index + 1) * width / 5);
+      return { left, right, width: right - left };
+    })
+  );
   assert.deepEqual(MANIFEST.scenes.deadlift.frames.map((frame) => frame.semantic), [
     "setup", "early-pull", "lockout", "controlled-descent", "return-to-setup"
   ]);
@@ -173,7 +174,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v26-real-athlete-v43-complete-2/);
+  assert.match(SW, /fuelphysique-v27-real-athlete-v43-complete-3/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

@@ -276,11 +276,47 @@ async function alphaBounds(input) {
   return { left, top, width: right - left + 1, height: bottom - top + 1 };
 }
 
+async function removeSmallAlphaComponents(input, minimumSize) {
+  const { data, info } = await sharp(input).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const count = info.width * info.height;
+  const seen = new Uint8Array(count);
+  const queue = new Uint32Array(count);
+  for (let start = 0; start < count; start += 1) {
+    if (seen[start] || data[start * 4 + 3] < 16) continue;
+    const component = [];
+    let head = 0;
+    let tail = 0;
+    seen[start] = 1;
+    queue[tail++] = start;
+    while (head < tail) {
+      const index = queue[head++];
+      component.push(index);
+      const x = index % info.width;
+      const y = Math.floor(index / info.width);
+      const inspect = (candidate) => {
+        if (seen[candidate] || data[candidate * 4 + 3] < 16) return;
+        seen[candidate] = 1;
+        queue[tail++] = candidate;
+      };
+      if (x > 0) inspect(index - 1);
+      if (x + 1 < info.width) inspect(index + 1);
+      if (y > 0) inspect(index - info.width);
+      if (y + 1 < info.height) inspect(index + info.width);
+    }
+    if (component.length < minimumSize) {
+      for (const index of component) data[index * 4 + 3] = 0;
+    }
+  }
+  return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
+}
+
 async function normalizeFrame(sceneName, frame, index, options = {}) {
   const sourceDirectory = options.sourceDirectory || "source";
   const outputDirectory = options.outputDirectory || "normalized";
   const source = path.join(ASSET_ROOT, sceneName, sourceDirectory, frame.file);
-  const keyed = await removeConnectedWhiteBackground(source, options);
+  const keyed = options.preserveAlphaSource
+    ? await removeSmallAlphaComponents(await sharp(source).ensureAlpha().png().toBuffer(), options.minimumAlphaComponent || 0)
+    : await removeConnectedWhiteBackground(source, options);
   const keyedMeta = await sharp(keyed).metadata();
   const edgeInsetX = options.preserveFullFrame ? Math.max(0, options.edgeInsetX || 0) : 0;
   const edgeInsetY = options.preserveFullFrame ? Math.max(0, options.edgeInsetY || 0) : 0;

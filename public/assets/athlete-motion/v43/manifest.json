@@ -1,154 +1,154 @@
 {
-  "version": "20260815-real-athlete-v43-complete-2",
+  "version": "20260815-real-athlete-v43-complete-3",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-15T06:09:12.569Z",
+  "generatedAt": "2026-08-15T06:59:36.399Z",
   "scenes": {
     "deadlift": {
       "frames": [
         {
           "file": "frame-01.webp",
           "semantic": "setup",
-          "sourceBytes": 301731,
-          "normalizedBytes": 29264,
+          "sourceBytes": 133687,
+          "normalizedBytes": 20052,
           "sourceBounds": {
             "left": 8,
             "top": 0,
-            "width": 380,
-            "height": 793
+            "width": 346,
+            "height": 887
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 345,
+            "width": 281,
             "height": 720
           }
         },
         {
           "file": "frame-02.webp",
           "semantic": "early-pull",
-          "sourceBytes": 320189,
-          "normalizedBytes": 31404,
+          "sourceBytes": 149555,
+          "normalizedBytes": 22220,
           "sourceBounds": {
             "left": 8,
             "top": 0,
-            "width": 381,
-            "height": 793
+            "width": 347,
+            "height": 887
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 346,
+            "width": 282,
             "height": 720
           }
         },
         {
           "file": "frame-03.webp",
           "semantic": "lockout",
-          "sourceBytes": 319474,
-          "normalizedBytes": 30762,
+          "sourceBytes": 148189,
+          "normalizedBytes": 21640,
           "sourceBounds": {
             "left": 8,
             "top": 0,
-            "width": 380,
-            "height": 793
+            "width": 347,
+            "height": 887
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 345,
+            "width": 282,
             "height": 720
           }
         },
         {
           "file": "frame-04.webp",
           "semantic": "controlled-descent",
-          "sourceBytes": 311836,
-          "normalizedBytes": 31514,
+          "sourceBytes": 146292,
+          "normalizedBytes": 21194,
           "sourceBounds": {
             "left": 8,
             "top": 0,
-            "width": 381,
-            "height": 793
+            "width": 347,
+            "height": 887
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 346,
+            "width": 282,
             "height": 720
           }
         },
         {
           "file": "frame-05.webp",
           "semantic": "return-to-setup",
-          "sourceBytes": 299683,
-          "normalizedBytes": 29134,
+          "sourceBytes": 133687,
+          "normalizedBytes": 20052,
           "sourceBounds": {
             "left": 8,
             "top": 0,
-            "width": 381,
-            "height": 793
+            "width": 346,
+            "height": 887
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 346,
+            "width": 281,
             "height": 720
           }
         }
       ],
       "motionSheetSource": "public/assets/athlete-motion/v43/deadlift/final-source/deadlift-motion-sheet.png",
       "motionSheetSourceDimensions": {
-        "width": 1983,
-        "height": 793
+        "width": 1894,
+        "height": 887
       },
-      "motionSheetSourceBytes": 1376298,
+      "motionSheetSourceBytes": 577496,
       "splitFrames": [
         {
           "file": "frame-01.png",
           "left": 0,
-          "right": 396,
-          "width": 396,
-          "height": 793,
-          "bytes": 301731
+          "right": 378,
+          "width": 378,
+          "height": 887,
+          "bytes": 133687
         },
         {
           "file": "frame-02.png",
-          "left": 396,
-          "right": 793,
-          "width": 397,
-          "height": 793,
-          "bytes": 320189
+          "left": 378,
+          "right": 757,
+          "width": 379,
+          "height": 887,
+          "bytes": 149555
         },
         {
           "file": "frame-03.png",
-          "left": 793,
-          "right": 1189,
-          "width": 396,
-          "height": 793,
-          "bytes": 319474
+          "left": 757,
+          "right": 1136,
+          "width": 379,
+          "height": 887,
+          "bytes": 148189
         },
         {
           "file": "frame-04.png",
-          "left": 1189,
-          "right": 1586,
-          "width": 397,
-          "height": 793,
-          "bytes": 311836
+          "left": 1136,
+          "right": 1515,
+          "width": 379,
+          "height": 887,
+          "bytes": 146292
         },
         {
           "file": "frame-05.png",
-          "left": 1586,
-          "right": 1983,
-          "width": 397,
-          "height": 793,
-          "bytes": 299683
+          "left": 1515,
+          "right": 1894,
+          "width": 379,
+          "height": 887,
+          "bytes": 130769
         }
       ],
-      "splitSourceBytes": 1552913,
-      "normalizedBytes": 152078,
+      "splitSourceBytes": 708492,
+      "normalizedBytes": 105158,
       "contactSheet": "docs/illustration/v43/deadlift-final-5-frame-contact-sheet.png"
     },
     "bench": {
@@ -462,29 +462,29 @@
       "frames": [
         {
           "file": "frame-01.webp",
-          "sourceBytes": 730723,
-          "normalizedBytes": 82762,
+          "sourceBytes": 756744,
+          "normalizedBytes": 36548,
           "index": 0,
           "semantic": "engage"
         },
         {
           "file": "frame-02.webp",
-          "sourceBytes": 670053,
-          "normalizedBytes": 84904,
+          "sourceBytes": 724706,
+          "normalizedBytes": 37030,
           "index": 1,
           "semantic": "show-phone"
         },
         {
           "file": "frame-03.webp",
-          "sourceBytes": 738187,
-          "normalizedBytes": 90988,
+          "sourceBytes": 772210,
+          "normalizedBytes": 40400,
           "index": 2,
           "semantic": "respond"
         },
         {
           "file": "frame-04.webp",
-          "sourceBytes": 733178,
-          "normalizedBytes": 82170,
+          "sourceBytes": 701114,
+          "normalizedBytes": 33130,
           "index": 3,
           "semantic": "together"
         }
@@ -494,8 +494,8 @@
         "width": 1672,
         "height": 941
       },
-      "motionSheetSourceBytes": 2215208,
-      "normalizedBytes": 340824,
+      "motionSheetSourceBytes": 2023923,
+      "normalizedBytes": 147108,
       "canvas": {
         "width": 760,
         "height": 720
@@ -506,29 +506,29 @@
       "frames": [
         {
           "file": "frame-01.webp",
-          "sourceBytes": 274740,
-          "normalizedBytes": 32244,
+          "sourceBytes": 473424,
+          "normalizedBytes": 26084,
           "index": 0,
           "semantic": "review"
         },
         {
           "file": "frame-02.webp",
-          "sourceBytes": 274121,
-          "normalizedBytes": 32436,
+          "sourceBytes": 494710,
+          "normalizedBytes": 27164,
           "index": 1,
           "semantic": "raise"
         },
         {
           "file": "frame-03.webp",
-          "sourceBytes": 274575,
-          "normalizedBytes": 32538,
+          "sourceBytes": 498658,
+          "normalizedBytes": 26946,
           "index": 2,
           "semantic": "tap"
         },
         {
           "file": "frame-04.webp",
-          "sourceBytes": 273378,
-          "normalizedBytes": 31576,
+          "sourceBytes": 473292,
+          "normalizedBytes": 26220,
           "index": 3,
           "semantic": "ready"
         }
@@ -538,8 +538,8 @@
         "width": 1774,
         "height": 887
       },
-      "motionSheetSourceBytes": 812727,
-      "normalizedBytes": 128794,
+      "motionSheetSourceBytes": 1481469,
+      "normalizedBytes": 106414,
       "canvas": {
         "width": 600,
         "height": 720

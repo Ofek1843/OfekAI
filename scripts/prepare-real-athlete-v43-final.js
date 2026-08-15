@@ -13,7 +13,7 @@ const {
   contactSheet
 } = require("./prepare-real-athlete-v43");
 
-const VERSION = "20260815-real-athlete-v43-complete-2";
+const VERSION = "20260815-real-athlete-v43-complete-3";
 const DEADLIFT_DIRECTORY = path.join(ASSET_ROOT, "deadlift", "final-source");
 const DEADLIFT_SHEET = path.join(DEADLIFT_DIRECTORY, "deadlift-motion-sheet.png");
 const BENCH_DIRECTORY = path.join(ASSET_ROOT, "bench", "final-source");
@@ -31,16 +31,39 @@ async function splitDeadliftSheet() {
   const metadata = await sharp(DEADLIFT_SHEET).metadata();
   if (!metadata.width || !metadata.height) throw new Error("Deadlift motion sheet dimensions are unavailable");
   const frames = [];
+  const panelInset = 8;
   for (let index = 0; index < DEADLIFT_FRAMES.length; index += 1) {
-    const left = Math.floor(index * metadata.width / DEADLIFT_FRAMES.length);
-    const right = Math.floor((index + 1) * metadata.width / DEADLIFT_FRAMES.length);
+    const panelLeft = Math.floor(index * metadata.width / DEADLIFT_FRAMES.length);
+    const panelRight = Math.floor((index + 1) * metadata.width / DEADLIFT_FRAMES.length);
+    const left = panelLeft + panelInset;
+    const right = panelRight - panelInset;
     const output = path.join(DEADLIFT_DIRECTORY, DEADLIFT_FRAMES[index].file);
     await sharp(DEADLIFT_SHEET)
       .extract({ left, top: 0, width: right - left, height: metadata.height })
       .png()
       .toFile(output);
-    frames.push({ file: DEADLIFT_FRAMES[index].file, left, right, width: right - left, height: metadata.height, bytes: fs.statSync(output).size });
+    if (index === 3) {
+      const { data, info } = await sharp(output).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      for (let y = 0; y < info.height; y += 1) {
+        for (let x = Math.max(0, info.width - 28); x < info.width; x += 1) data[(y * info.width + x) * 4 + 3] = 0;
+      }
+      await sharp(data, { raw: info }).png().toFile(output);
+    }
+    frames.push({
+      file: DEADLIFT_FRAMES[index].file,
+      left: panelLeft,
+      right: panelRight,
+      width: panelRight - panelLeft,
+      height: metadata.height,
+      bytes: fs.statSync(output).size
+    });
   }
+  // The generated return panel has a cropped plate at the sheet edge. Reuse the
+  // clean setup frame as the exact reset pose instead of preserving that defect.
+  fs.copyFileSync(
+    path.join(DEADLIFT_DIRECTORY, DEADLIFT_FRAMES[0].file),
+    path.join(DEADLIFT_DIRECTORY, DEADLIFT_FRAMES[4].file)
+  );
   return { width: metadata.width, height: metadata.height, bytes: fs.statSync(DEADLIFT_SHEET).size, frames };
 }
 
@@ -54,10 +77,8 @@ async function main() {
       sourceDirectory: "final-source",
       preserveFullFrame: true,
       edgeInsetX: 8,
-      backgroundMinimum: 210,
-      backgroundChromaLimit: 64,
-      hardBackgroundTransparency: true,
-      minimumForegroundComponent: 200
+      preserveAlphaSource: true,
+      minimumAlphaComponent: 200
     }));
   }
 
