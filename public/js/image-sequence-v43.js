@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260815-real-athlete-v43-training-final-2";
+  const VERSION = "20260815-real-athlete-v43-complete-1";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const ROOT = "/assets/athlete-motion/v43";
 
@@ -53,6 +53,36 @@
         frame("nutrition", 1, 320)
       ]),
       reducedFrame: frame("nutrition", 4, 0)
+    }),
+    track: Object.freeze({
+      frames: Object.freeze([
+        frame("track", 1, 360),
+        frame("track", 2, 360),
+        frame("track", 3, 420),
+        frame("track", 4, 420),
+        frame("track", 1, 360)
+      ]),
+      reducedFrame: frame("track", 3, 0)
+    }),
+    social: Object.freeze({
+      frames: Object.freeze([
+        frame("connect", 1, 420),
+        frame("connect", 2, 360),
+        frame("connect", 3, 420),
+        frame("connect", 4, 420),
+        frame("connect", 1, 360)
+      ]),
+      reducedFrame: frame("connect", 4, 0)
+    }),
+    coach: Object.freeze({
+      frames: Object.freeze([
+        frame("coach", 1, 380),
+        frame("coach", 2, 320),
+        frame("coach", 3, 420),
+        frame("coach", 4, 420),
+        frame("coach", 1, 360)
+      ]),
+      reducedFrame: frame("coach", 4, 0)
     })
   });
 

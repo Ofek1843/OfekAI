@@ -1,10 +1,10 @@
 {
-  "version": "20260815-real-athlete-v43-training-final-2",
+  "version": "20260815-real-athlete-v43-complete-1",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-15T04:42:58.394Z",
+  "generatedAt": "2026-08-15T05:27:16.436Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -413,6 +413,138 @@
       "splitSourceBytes": 1519404,
       "normalizedBytes": 174754,
       "contactSheet": "docs/illustration/v43/training-final-contact-sheet.png"
+    },
+    "track": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "sourceBytes": 294339,
+          "normalizedBytes": 37276,
+          "index": 0,
+          "semantic": "approach"
+        },
+        {
+          "file": "frame-02.webp",
+          "sourceBytes": 287304,
+          "normalizedBytes": 32860,
+          "index": 1,
+          "semantic": "planted"
+        },
+        {
+          "file": "frame-03.webp",
+          "sourceBytes": 289228,
+          "normalizedBytes": 33726,
+          "index": 2,
+          "semantic": "reading"
+        },
+        {
+          "file": "frame-04.webp",
+          "sourceBytes": 286348,
+          "normalizedBytes": 34106,
+          "index": 3,
+          "semantic": "settled"
+        }
+      ],
+      "motionSheetSource": "track/final-source/track-progress-motion-sheet-transparent.png",
+      "motionSheetSourceDimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "motionSheetSourceBytes": 849727,
+      "normalizedBytes": 137968,
+      "canvas": {
+        "width": 600,
+        "height": 720
+      },
+      "contactSheet": "docs/illustration/v43/track-final-contact-sheet.png"
+    },
+    "connect": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "sourceBytes": 469263,
+          "normalizedBytes": 59650,
+          "index": 0,
+          "semantic": "engage"
+        },
+        {
+          "file": "frame-02.webp",
+          "sourceBytes": 507036,
+          "normalizedBytes": 60806,
+          "index": 1,
+          "semantic": "show-phone"
+        },
+        {
+          "file": "frame-03.webp",
+          "sourceBytes": 483954,
+          "normalizedBytes": 63112,
+          "index": 2,
+          "semantic": "respond"
+        },
+        {
+          "file": "frame-04.webp",
+          "sourceBytes": 491447,
+          "normalizedBytes": 53802,
+          "index": 3,
+          "semantic": "together"
+        }
+      ],
+      "motionSheetSource": "connect/final-source/connect-social-motion-sheet-transparent.png",
+      "motionSheetSourceDimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "motionSheetSourceBytes": 1427708,
+      "normalizedBytes": 237370,
+      "canvas": {
+        "width": 760,
+        "height": 720
+      },
+      "contactSheet": "docs/illustration/v43/connect-final-contact-sheet.png"
+    },
+    "coach": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "sourceBytes": 274740,
+          "normalizedBytes": 32244,
+          "index": 0,
+          "semantic": "review"
+        },
+        {
+          "file": "frame-02.webp",
+          "sourceBytes": 274121,
+          "normalizedBytes": 32436,
+          "index": 1,
+          "semantic": "raise"
+        },
+        {
+          "file": "frame-03.webp",
+          "sourceBytes": 274575,
+          "normalizedBytes": 32538,
+          "index": 2,
+          "semantic": "tap"
+        },
+        {
+          "file": "frame-04.webp",
+          "sourceBytes": 273378,
+          "normalizedBytes": 31576,
+          "index": 3,
+          "semantic": "ready"
+        }
+      ],
+      "motionSheetSource": "coach/final-source/coach-plan-motion-sheet-transparent.png",
+      "motionSheetSourceDimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "motionSheetSourceBytes": 812727,
+      "normalizedBytes": 128794,
+      "canvas": {
+        "width": 600,
+        "height": 720
+      },
+      "contactSheet": "docs/illustration/v43/coach-final-contact-sheet.png"
     }
   }
 }

@@ -77,11 +77,11 @@ test("focus, reduced motion, disabled controls, and minimum control size are exp
 });
 
 test("the service worker versions and pre-caches the shared redesign assets", () => {
-  assert.match(SW, /fuelphysique-v24-real-athlete-v43-training-final-2/);
+  assert.match(SW, /fuelphysique-v25-real-athlete-v43-complete-1/);
   assert.ok(SW.includes("/css/redesign-v1.css?v=20260810-ultramarine-motion"));
   assert.ok(SW.includes("/js/redesign-shell.js?v=20260810-ultramarine-motion"));
-  assert.ok(SW.includes("/css/illustrated-v4.css?v=20260815-real-athlete-v43-training-final-8"));
-  assert.ok(SW.includes("/js/illustrated-v4.js?v=20260815-real-athlete-v43-training-final-2"));
+  assert.ok(SW.includes("/css/illustrated-v4.css?v=20260815-real-athlete-v43-complete-1"));
+  assert.ok(SW.includes("/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-1"));
   assert.ok(SW.includes("/images/brand/ultramarine-athlete-hero.webp"));
 });
 

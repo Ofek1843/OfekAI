@@ -106,6 +106,32 @@
   inset-block-end: 5%;
 }
 
+/* Remaining V4.3 landing scenes: keep the generated subjects readable while
+   reserving the copy column and clipping strictly to the card. */
+.fp-route-index .journey-card--progress .journey-illustration[data-v43-motion="prototype"],
+.fp-route-index .journey-card--coach .journey-illustration[data-v43-motion="prototype"] {
+  width: 52%;
+  height: 80%;
+  inset-block-end: 4%;
+}
+
+.fp-route-index .journey-card--social .journey-illustration[data-v43-motion="prototype"] {
+  width: 58%;
+  height: 82%;
+  inset-block-end: 3%;
+}
+
+.fp-route-dashboard .capability-card--coach .capability-illustration[data-v43-motion="prototype"],
+.fp-route-dashboard .capability-card--social .capability-illustration[data-v43-motion="prototype"] {
+  width: 46%;
+  height: 82%;
+}
+
+.fp-route-dashboard .capability-card--progress .capability-illustration[data-v43-motion="prototype"] {
+  width: 48%;
+  height: 78%;
+}
+
 @media (max-width: 720px) {
   :where(html, body):has(.fp-route-index) { overflow-x: hidden; }
   .fp-route-index .landing-hero-illustration[data-v43-motion="prototype"] {
@@ -138,6 +164,19 @@
 
   .fp-route-index .journey-card--training,
   .fp-route-dashboard .capability-card--training { min-height: 470px !important; }
+
+  .fp-route-index .journey-card--progress .journey-illustration[data-v43-motion="prototype"],
+  .fp-route-index .journey-card--social .journey-illustration[data-v43-motion="prototype"],
+  .fp-route-index .journey-card--coach .journey-illustration[data-v43-motion="prototype"],
+  .fp-route-dashboard .capability-card--progress .capability-illustration[data-v43-motion="prototype"],
+  .fp-route-dashboard .capability-card--social .capability-illustration[data-v43-motion="prototype"],
+  .fp-route-dashboard .capability-card--coach .capability-illustration[data-v43-motion="prototype"] {
+    width: 100% !important;
+    height: 48% !important;
+    inset-inline-end: 0;
+    inset-block-end: 2%;
+    opacity: 1;
+  }
   .fp-route-index .journey-card--training :where(h3, p) { max-width: 92% !important; }
   .fp-route-dashboard .capability-card--training .capability-copy { width: 92% !important; }
 

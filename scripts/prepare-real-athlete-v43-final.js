@@ -13,7 +13,7 @@ const {
   contactSheet
 } = require("./prepare-real-athlete-v43");
 
-const VERSION = "20260815-real-athlete-v43-training-final-2";
+const VERSION = "20260815-real-athlete-v43-complete-1";
 const DEADLIFT_DIRECTORY = path.join(ASSET_ROOT, "deadlift", "final-source");
 const DEADLIFT_SHEET = path.join(DEADLIFT_DIRECTORY, "deadlift-motion-sheet.png");
 const BENCH_DIRECTORY = path.join(ASSET_ROOT, "bench", "final-source");

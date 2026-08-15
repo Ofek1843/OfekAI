@@ -7,8 +7,8 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260815-real-athlete-v43-training-final-2";
-const CSS_VERSION = "20260815-real-athlete-v43-training-final-8";
+const VERSION = "20260815-real-athlete-v43-complete-1";
+const CSS_VERSION = "20260815-real-athlete-v43-complete-1";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -26,10 +26,10 @@ function loadEngine(hostname, search) {
 test("original sources remain preserved while final Deadlift and Bench sources are traceable", () => {
   assert.equal(MANIFEST.version, VERSION);
   assert.deepEqual(MANIFEST.canvas, { width: 960, height: 720 });
-  const sourceExpected = { deadlift: 4, bench: 4, nutrition: 5, training: 5 };
-  const normalizedExpected = { deadlift: 5, bench: 4, nutrition: 5, training: 5 };
+  const sourceExpected = { deadlift: 4, bench: 4, nutrition: 5, training: 5, track: 4, connect: 4, coach: 4 };
+  const normalizedExpected = { deadlift: 5, bench: 4, nutrition: 5, training: 5, track: 4, connect: 4, coach: 4 };
   for (const [scene, count] of Object.entries(sourceExpected)) {
-    const sourceDir = path.join(ROOT, "public", "assets", "athlete-motion", "v43", scene, scene === "training" ? "final-source" : "source");
+    const sourceDir = path.join(ROOT, "public", "assets", "athlete-motion", "v43", scene, ["training", "track", "connect", "coach"].includes(scene) ? "final-source" : "source");
     const normalizedDir = path.join(ROOT, "public", "assets", "athlete-motion", "v43", scene, "normalized");
     const sources = fs.readdirSync(sourceDir).filter((file) => /^frame-\d+\.(?:jpg|png)$/i.test(file));
     const normalized = fs.readdirSync(normalizedDir).filter((file) => file.endsWith(".webp"));
@@ -78,6 +78,9 @@ test("final source mapping uses exact equal-width Deadlift boundaries and correc
   assert.match(MANIFEST.scenes.training.motionSheetSource, /training\/final-source\/training-curl-motion-sheet-transparent\.png$/);
   assert.equal(MANIFEST.scenes.nutrition.sourceBytes, 507999);
   assert.equal(MANIFEST.scenes.nutrition.normalizedBytes, 576812);
+  assert.deepEqual(MANIFEST.scenes.track.frames.map((frame) => frame.semantic), ["approach", "planted", "reading", "settled"]);
+  assert.deepEqual(MANIFEST.scenes.connect.frames.map((frame) => frame.semantic), ["engage", "show-phone", "respond", "together"]);
+  assert.deepEqual(MANIFEST.scenes.coach.frames.map((frame) => frame.semantic), ["review", "raise", "tap", "ready"]);
 });
 
 test("the V4.3 switch is local-only and requires the exact query value", () => {
@@ -93,6 +96,9 @@ test("semantic frame order and reviewed timings are encoded without inventing po
   assert.deepEqual(Array.from(scenes.deadlift.frames, (item) => item.duration), [380, 240, 470, 320, 340, 360]);
   assert.deepEqual(Array.from(scenes.training.frames, (item) => item.duration), [360, 230, 440, 300, 340, 360]);
   assert.deepEqual(Array.from(scenes.nutrition.frames, (item) => item.duration), [300, 220, 250, 450, 300, 320]);
+  assert.deepEqual(Array.from(scenes.track.frames, (item) => item.duration), [360, 360, 420, 420, 360]);
+  assert.deepEqual(Array.from(scenes.social.frames, (item) => item.duration), [420, 360, 420, 420, 360]);
+  assert.deepEqual(Array.from(scenes.coach.frames, (item) => item.duration), [380, 320, 420, 420, 360]);
   assert.deepEqual(Array.from(scenes.benchPr.frames, (item) => path.basename(new URL(item.url, "http://local").pathname)), [
     "frame-01.webp", "frame-02.webp", "frame-03.webp", "frame-04.webp", "frame-01.webp"
   ]);
@@ -115,13 +121,17 @@ test("reduced motion holds a reviewed static pose and automatic playback is one-
   assert.match(ENGINE, /reducedFrame: frame\("bench", 1, 0\)/);
   assert.match(ENGINE, /reducedFrame: frame\("nutrition", 4, 0\)/);
   assert.match(ENGINE, /reducedFrame: frame\("training", 3, 0\)/);
+  assert.match(ENGINE, /reducedFrame: frame\("track", 3, 0\)/);
+  assert.match(ENGINE, /reducedFrame: frame\("connect", 4, 0\)/);
+  assert.match(ENGINE, /reducedFrame: frame\("coach", 4, 0\)/);
 });
 
 test("preload failures restore the original V4.2 markup instead of blanking a scene", () => {
   assert.match(ENGINE, /const fallbackMarkup = host\.innerHTML/);
   assert.match(ENGINE, /host\.innerHTML = fallbackMarkup/);
   assert.match(ENGINE, /v43-fallback-restored/);
-  assert.match(INTEGRATION, /v43\?\.isEnabled\(\) && v43\.mount\(host, name\)/);
+  assert.match(INTEGRATION, /const v43Scene = name === "progress" \? "track" : name/);
+  assert.match(INTEGRATION, /v43\?\.isEnabled\(\) && v43\.mount\(host, v43Scene\)/);
   assert.match(INTEGRATION, /hosts = hosts\.filter\(\(host\) => host\.dataset\.v43Motion !== "prototype"\)/);
 });
 
@@ -146,6 +156,9 @@ test("V4.3 athlete stages contain frames and expose the Bench review host", () =
   assert.match(CSS, /#v43-bench-review \.capability-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*height: 50% !important/s);
   assert.match(CSS, /journey-card--training[\s\S]*v43-motion="prototype"/s);
   assert.match(CSS, /capability-card--training[\s\S]*v43-motion="prototype"/s);
+  assert.match(ENGINE, /frame\("track", 1/);
+  assert.match(ENGINE, /frame\("connect", 1/);
+  assert.match(ENGINE, /frame\("coach", 1/);
 });
 
 test("landing and dashboard load the engine before integration with one cache generation", () => {
@@ -160,7 +173,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v24-real-athlete-v43-training-final-2/);
+  assert.match(SW, /fuelphysique-v25-real-athlete-v43-complete-1/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
