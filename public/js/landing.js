@@ -16,9 +16,9 @@ const LANDING_FALLBACKS = {
     landingDescriptionFirst:
       "FuelPhysique gives you personalized workout and nutrition plans, progress photos, body metrics, workout tracking and the ability to update your plan as your body and goals change.",
     landingDescriptionSecond:
-      "Stop managing your fitness through scattered notes, screenshots and guesswork. Build a clear plan, follow it, measure what changes and adjust when needed.",
+      "Build a clear plan, follow it, measure what changes and adjust when needed — without scattered notes or guesswork.",
     landingDescriptionThird:
-      "A practical fitness system that can reduce your dependence on scattered apps, generic plans and constant guesswork.",
+      "One practical system for training, food and progress.",
     landingPreviewWorkoutLabel: "Workout plan",
     landingPreviewWorkoutTitle: "Workout Program Based on Every Detail of Your Goals",
     landingPreviewWorkoutText: "Saved, editable and ready for the next session.",
@@ -28,7 +28,7 @@ const LANDING_FALLBACKS = {
     landingPreviewProgressLabel: "Progress loop",
     landingPreviewProgressTitle: "Photos · charts · workout history",
     landingPreviewProgressText: "Measure what changes and adjust the system.",
-    landingPrimaryCta: "Build my program",
+    landingPrimaryCta: "Choose your starting point",
     landingSecondaryCta: "Log in",
     landingFeatureWorkouts: "Workout plans",
     landingFeatureNutrition: "Nutrition",

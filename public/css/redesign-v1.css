@@ -85,7 +85,7 @@
   --fp-radius-md: 6px;
   --fp-radius-lg: 8px;
   --fp-content: min(1180px, calc(100vw - 48px));
-  --fp-display: "Arial Narrow", "Roboto Condensed", Impact, sans-serif;
+  --fp-display: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
   --fp-ui: Inter, "Segoe UI", Arial, sans-serif;
   --motion-instant: 80ms;
   --motion-fast: 160ms;
@@ -425,7 +425,7 @@ body.fp-redesign::after,
 }
 
 .fp-global-link[aria-current="page"]::after {
-  content: "";
+  content: "" !important;
   position: absolute;
   inset-inline: 18px;
   inset-block-end: -1px;
@@ -472,7 +472,7 @@ body.fp-redesign::after,
 
 .fp-route-index .hero {
   min-height: auto !important;
-  padding: clamp(48px, 8vw, 112px) 0 72px !important;
+  padding: clamp(36px, 5vw, 72px) 0 64px !important;
   background: var(--fp-bg-page) !important;
 }
 
@@ -504,9 +504,9 @@ body.fp-redesign::after,
 
 .fp-route-index .hero h1 {
   max-width: 760px;
-  margin-block: 24px 20px !important;
-  font-size: clamp(4rem, 7vw, 6.75rem) !important;
-  line-height: 0.86 !important;
+  margin-block: 18px 16px !important;
+  font-size: clamp(3.55rem, 6vw, 5.85rem) !important;
+  line-height: 0.89 !important;
   text-transform: uppercase;
 }
 
@@ -544,6 +544,11 @@ body.fp-redesign::after,
   font-size: clamp(1.08rem, 1.8vw, 1.35rem) !important;
 }
 
+.fp-route-index .hero-content :where(.hero-subcopy, .hero-support) {
+  margin-block: 8px 0;
+  line-height: 1.48;
+}
+
 .fp-route-index :where(.hero-subcopy, .hero-support) {
   max-width: 700px;
   color: var(--fp-text-muted) !important;
@@ -553,8 +558,8 @@ body.fp-redesign::after,
   display: grid !important;
   align-content: end;
   gap: 0 !important;
-  min-height: 720px;
-  padding: clamp(280px, 34vw, 420px) 0 0 !important;
+  min-height: 640px;
+  padding: clamp(230px, 28vw, 350px) 0 0 !important;
   border: 1px solid var(--fp-border-dark) !important;
   background-color: var(--fp-ink) !important;
   background-image: image-set(
@@ -566,6 +571,57 @@ body.fp-redesign::after,
   background-size: 100% auto !important;
   grid-column: 2;
   grid-row: 1 / span 3;
+}
+
+/* A restrained motion layer gives the two high-traffic entry surfaces more
+   depth without reintroducing gradients, glow, or motion behind controls. */
+.fp-route-index .hero-panel,
+.fp-route-dashboard .dashboard-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.fp-route-index .hero-panel::before,
+.fp-route-dashboard .dashboard-shell::before {
+  display: block !important;
+  position: absolute;
+  z-index: 0;
+  display: block;
+  content: "" !important;
+  pointer-events: none;
+  background: rgba(48, 79, 254, 0.18);
+  border-radius: 999px;
+  transform: translate3d(-8%, -18%, 0) rotate(-12deg);
+  animation: fp-surface-drift 18s var(--ease-recovery) 2 alternate;
+}
+
+.fp-route-index .hero-panel::before {
+  top: -22%;
+  right: -8%;
+  width: 64%;
+  height: 62%;
+}
+
+.fp-route-dashboard .dashboard-shell::before {
+  top: -10%;
+  right: -12%;
+  width: 32rem;
+  height: 18rem;
+  background: rgba(24, 169, 121, 0.1);
+  transform: translate3d(6%, -14%, 0) rotate(8deg);
+  animation-duration: 22s;
+}
+
+.fp-route-index .hero-panel > *,
+.fp-route-dashboard .dashboard-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fp-surface-drift {
+  0% { opacity: 0.42; transform: translate3d(-8%, -18%, 0) rotate(-12deg); }
+  100% { opacity: 0.78; transform: translate3d(8%, 8%, 0) rotate(-4deg); }
 }
 
 .fp-route-index .system-card {
@@ -1639,7 +1695,14 @@ html[dir="rtl"] .fp-route-social .conversation-rail {
   }
 
   .fp-route-index .hero h1 {
-    font-size: clamp(3.25rem, 17vw, 5.4rem) !important;
+    max-width: 100%;
+    font-size: clamp(2.85rem, 13vw, 4.4rem) !important;
+    letter-spacing: -.08em;
+  }
+
+  .fp-route-index .hero-meta-chip {
+    max-width: 100%;
+    white-space: normal;
   }
 
   .fp-route-index .hero-meta {
@@ -2211,7 +2274,248 @@ html[dir="rtl"] .fp-redesign :where(.macro-progress, .macro-bar, .nutrition-prog
     clip-path: none !important;
   }
 
+  .fp-route-index .hero-panel::before,
+  .fp-route-dashboard .dashboard-shell::before {
+    animation: none !important;
+    opacity: 0.42 !important;
+    transform: none !important;
+  }
+
   .voice-recording-state:not([hidden]) .recording-dot {
     opacity: 1 !important;
+  }
+}
+
+/* Dashboard and product navigation polish ---------------------------------
+   The feature bar is the first orientation cue after sign-in. Keep the five
+   primary destinations visible, but give the rest of the product a clear,
+   keyboard-accessible home behind one familiar menu button. */
+.fp-global-nav {
+  position: sticky;
+  min-height: 72px;
+  padding-inline: max(16px, calc((100vw - 1520px) / 2));
+  gap: 8px;
+  box-shadow: 0 12px 30px rgba(16, 24, 43, 0.12);
+}
+
+.fp-global-brand {
+  min-width: 198px;
+  padding-inline: 18px;
+  font-size: 1.18rem;
+}
+
+.fp-global-links {
+  gap: 2px;
+  padding-inline: 8px;
+}
+
+.fp-global-link {
+  padding-inline: 18px;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: 0.035em;
+}
+
+.fp-global-link[aria-current="page"]::after {
+  inset-inline: 14px;
+  height: 4px;
+  border-radius: 999px 999px 0 0;
+}
+
+.fp-global-menu-button {
+  display: inline-grid;
+  flex: 0 0 44px;
+  place-items: center;
+  gap: 4px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--fp-brand-primary) 38%, var(--fp-border));
+  border-radius: 12px;
+  background: var(--fp-active-surface);
+  color: var(--fp-text-primary);
+  cursor: pointer;
+  transition: background var(--motion-fast) var(--ease-effort), transform var(--motion-fast) var(--ease-effort), border-color var(--motion-fast) var(--ease-effort);
+}
+
+.fp-global-menu-button:hover,
+.fp-global-menu-button:focus-visible,
+.fp-global-nav.is-menu-open .fp-global-menu-button {
+  background: var(--fp-brand-primary);
+  border-color: var(--fp-brand-primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.fp-global-menu-button span {
+  display: block;
+  width: 19px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.fp-global-menu {
+  position: absolute;
+  inset-block-start: calc(100% + 10px);
+  inset-inline-start: max(16px, calc((100vw - 1520px) / 2));
+  z-index: 1001;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: min(390px, calc(100vw - 32px));
+  padding: 10px;
+  border: 1px solid color-mix(in srgb, var(--fp-brand-primary) 30%, var(--fp-border));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--fp-nav-surface) 96%, #304ffe 4%);
+  box-shadow: 0 24px 60px rgba(8, 13, 24, 0.28);
+}
+
+.fp-global-menu[hidden] { display: none; }
+
+.fp-global-menu-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  color: var(--fp-text-secondary) !important;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-decoration: none;
+  transition: background var(--motion-fast) var(--ease-effort), color var(--motion-fast) var(--ease-effort), transform var(--motion-fast) var(--ease-effort);
+}
+
+.fp-global-menu-link:hover,
+.fp-global-menu-link:focus-visible {
+  background: var(--fp-active-surface);
+  color: var(--fp-text-primary) !important;
+  outline: none;
+  transform: translateX(2px);
+}
+
+body.fp-route-dashboard {
+  position: relative;
+  background: #10182b !important;
+}
+
+body.fp-route-dashboard::before,
+body.fp-route-dashboard::after,
+body.fp-route-index::before,
+body.fp-route-index::after {
+  position: fixed;
+  z-index: 0;
+  display: block !important;
+  content: "" !important;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.52;
+  will-change: transform;
+}
+
+body.fp-route-dashboard::before,
+body.fp-route-index::before {
+  inset-block-start: 8vh;
+  inset-inline-end: -12vw;
+  width: min(46vw, 620px);
+  height: min(46vw, 620px);
+  background: rgba(48, 79, 254, 0.18);
+  animation: fp-page-orbit 24s var(--ease-recovery) 2 alternate;
+}
+
+body.fp-route-dashboard::after,
+body.fp-route-index::after {
+  inset-block-end: -18vh;
+  inset-inline-start: -10vw;
+  width: min(38vw, 520px);
+  height: min(38vw, 520px);
+  background: rgba(24, 169, 121, 0.13);
+  animation: fp-page-orbit-reverse 28s var(--ease-recovery) 2 alternate;
+}
+
+body.fp-route-dashboard > *,
+body.fp-route-index > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fp-route-dashboard .dashboard-shell {
+  background: rgba(16, 24, 43, 0.7);
+  border-inline: 1px solid rgba(130, 146, 255, 0.1);
+  border-radius: 0 0 28px 28px;
+}
+
+.fp-route-dashboard .dashboard-shell::after {
+  position: absolute;
+  inset-block-start: 26%;
+  inset-inline-start: -10rem;
+  z-index: 0;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  background: rgba(213, 77, 121, 0.08);
+  content: "";
+  pointer-events: none;
+  animation: fp-page-orbit-reverse 22s var(--ease-recovery) 2 alternate;
+}
+
+.fp-route-dashboard .dashboard-compact-header {
+  background: #182441 !important;
+  border-color: rgba(130, 146, 255, 0.24) !important;
+  box-shadow: 0 18px 42px rgba(8, 13, 24, 0.2);
+}
+
+.fp-route-dashboard .dashboard-context-item span,
+.fp-route-dashboard .dashboard-context-item strong {
+  font-size: 0.83rem;
+}
+
+@keyframes fp-page-orbit {
+  0% { transform: translate3d(0, -3vh, 0) scale(0.92); }
+  100% { transform: translate3d(-9vw, 10vh, 0) scale(1.08); }
+}
+
+@keyframes fp-page-orbit-reverse {
+  0% { transform: translate3d(0, 5vh, 0) scale(0.9); }
+  100% { transform: translate3d(12vw, -8vh, 0) scale(1.1); }
+}
+
+@media (max-width: 760px) {
+  .fp-global-nav {
+    position: fixed;
+    inset: auto 0 0;
+    min-height: 0;
+    padding-inline: 0;
+    padding-block-end: env(safe-area-inset-bottom);
+  }
+
+  .fp-global-menu-button {
+    display: none;
+  }
+
+  .fp-global-links {
+    padding-inline: 0;
+  }
+
+  .fp-global-link {
+    font-size: clamp(0.64rem, 2.7vw, 0.76rem);
+    font-weight: 850;
+  }
+
+  body.fp-route-dashboard .dashboard-shell {
+    border-radius: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.fp-route-dashboard::before,
+  body.fp-route-dashboard::after,
+  body.fp-route-index::before,
+  body.fp-route-index::after,
+  .fp-route-dashboard .dashboard-shell::after {
+    animation: none !important;
+    transform: none !important;
   }
 }
