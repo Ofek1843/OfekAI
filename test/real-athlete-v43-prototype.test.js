@@ -87,12 +87,15 @@ test("final source mapping uses exact equal-width Deadlift boundaries and correc
   assert.deepEqual(MANIFEST.scenes.session.frames.map((frame) => frame.semantic), ["hip-thrust-setup", "hip-thrust-top", "shoulder-press-lower", "shoulder-press-top"]);
 });
 
-test("the V4.3 switch is local-only and requires the exact query value", () => {
+test("V4.3 is default on the production hosts while localhost remains opt-in", () => {
   assert.equal(loadEngine("127.0.0.1", "?athleteMotion=v43").isEnabled(), true);
   assert.equal(loadEngine("localhost", "?athleteMotion=v43").isEnabled(), true);
-  assert.equal(loadEngine("fuelphysique.com", "?athleteMotion=v43").isEnabled(), false);
+  assert.equal(loadEngine("fuelphysique.com", "").isEnabled(), true);
+  assert.equal(loadEngine("www.fuelphysique.com", "").isEnabled(), true);
+  assert.equal(loadEngine("fuelphysique.com", "?athleteMotion=v42").isEnabled(), true);
   assert.equal(loadEngine("127.0.0.1", "").isEnabled(), false);
   assert.equal(loadEngine("127.0.0.1", "?athleteMotion=v42").isEnabled(), false);
+  assert.equal(loadEngine("preview.fuelphysique.com", "?athleteMotion=v43").isEnabled(), false);
 });
 
 test("semantic frame order and reviewed timings are encoded without inventing poses", () => {

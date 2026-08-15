@@ -4,6 +4,7 @@
   const VERSION = "20260815-real-athlete-v43-complete-5";
   const PLATE_ASSET_VERSION = "20260815-real-athlete-v43-plate-bulk-fix-2";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
+  const PRODUCTION_HOSTS = new Set(["fuelphysique.com", "www.fuelphysique.com"]);
   const ROOT = "/assets/athlete-motion/v43";
 
   const frame = (scene, number, duration) => Object.freeze({
@@ -107,6 +108,7 @@
   });
 
   function isEnabled() {
+    if (PRODUCTION_HOSTS.has(window.location.hostname)) return true;
     if (!LOCAL_HOSTS.has(window.location.hostname)) return false;
     return new URLSearchParams(window.location.search).get("athleteMotion") === "v43";
   }
