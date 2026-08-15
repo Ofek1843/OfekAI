@@ -7,8 +7,8 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260815-real-athlete-v43-complete-3";
-const CSS_VERSION = "20260815-real-athlete-v43-complete-3";
+const VERSION = "20260815-real-athlete-v43-complete-4";
+const CSS_VERSION = "20260815-real-athlete-v43-complete-4";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -174,7 +174,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v27-real-athlete-v43-complete-3/);
+  assert.match(SW, /fuelphysique-v28-real-athlete-v43-complete-4/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
