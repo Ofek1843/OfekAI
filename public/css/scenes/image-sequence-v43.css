@@ -69,6 +69,16 @@
   max-width: 100%;
 }
 
+.fp-route-dashboard .capability-illustration .v43-image-sequence--session .v43-image-sequence__frame {
+  width: 100%;
+  max-width: 100%;
+}
+
+.fp-route-dashboard .capability-illustration .v43-image-sequence--plate .v43-image-sequence__frame {
+  width: 94%;
+  max-width: 94%;
+}
+
 .fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
   z-index: 3;
   inset-inline-end: 0;
@@ -104,6 +114,12 @@
   width: 50%;
   height: 72%;
   inset-block-end: 5%;
+}
+
+.fp-route-dashboard .capability-card--nutrition .capability-illustration[data-v43-motion="prototype"] {
+  width: 52%;
+  height: 76%;
+  inset-block-end: 4%;
 }
 
 /* Remaining V4.3 landing scenes: keep the generated subjects readable while
@@ -160,6 +176,13 @@
     inset-inline-end: 0;
     inset-block-end: 2%;
     opacity: 1;
+  }
+
+  .fp-route-dashboard .capability-card--nutrition .capability-illustration[data-v43-motion="prototype"] {
+    width: 100% !important;
+    height: 48% !important;
+    inset-inline-end: 0;
+    inset-block-end: 2%;
   }
 
   .fp-route-index .journey-card--training,

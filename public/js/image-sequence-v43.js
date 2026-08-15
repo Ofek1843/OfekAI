@@ -1,12 +1,13 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260815-real-athlete-v43-complete-4";
+  const VERSION = "20260815-real-athlete-v43-complete-5";
+  const PLATE_ASSET_VERSION = "20260815-real-athlete-v43-plate-bulk-fix-2";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const ROOT = "/assets/athlete-motion/v43";
 
   const frame = (scene, number, duration) => Object.freeze({
-    url: `${ROOT}/${scene}/normalized/frame-${String(number).padStart(2, "0")}.webp?v=${VERSION}`,
+    url: `${ROOT}/${scene}/normalized/frame-${String(number).padStart(2, "0")}.webp?v=${scene === "plate" ? PLATE_ASSET_VERSION : VERSION}`,
     duration
   });
 
@@ -53,6 +54,25 @@
         frame("nutrition", 1, 320)
       ]),
       reducedFrame: frame("nutrition", 4, 0)
+    }),
+    plate: Object.freeze({
+      frames: Object.freeze([
+        frame("plate", 1, 520),
+        frame("plate", 2, 520),
+        frame("plate", 3, 620),
+        frame("plate", 4, 620)
+      ]),
+      reducedFrame: frame("plate", 4, 0)
+    }),
+    session: Object.freeze({
+      frames: Object.freeze([
+        frame("session", 1, 520),
+        frame("session", 2, 620),
+        frame("session", 3, 520),
+        frame("session", 4, 620),
+        frame("session", 1, 420)
+      ]),
+      reducedFrame: frame("session", 1, 0)
     }),
     track: Object.freeze({
       frames: Object.freeze([

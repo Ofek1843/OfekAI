@@ -8,12 +8,14 @@ const ROOT = path.resolve(__dirname, "..");
 const ASSET_ROOT = path.join(ROOT, "public", "assets", "athlete-motion", "v43");
 const REVIEW_ROOT = path.join(ROOT, "docs", "illustration", "v43");
 const MANIFEST_PATH = path.join(ASSET_ROOT, "manifest.json");
-const VERSION = "20260815-real-athlete-v43-complete-4";
+const VERSION = "20260815-real-athlete-v43-complete-5";
 
 const SCENES = Object.freeze({
   track: { frameCount: 4, canvas: { width: 600, height: 720 }, height: 680, source: "track-progress-motion-sheet-transparent.png", contact: "track-final-contact-sheet.png" },
-  connect: { frameCount: 4, canvas: { width: 760, height: 720 }, height: 680, source: "connect-social-motion-sheet-source.png", contact: "connect-final-contact-sheet.png" },
-  coach: { frameCount: 4, canvas: { width: 600, height: 720 }, height: 680, source: "coach-plan-motion-sheet-transparent.png", contact: "coach-final-contact-sheet.png" }
+  connect: { frameCount: 4, canvas: { width: 760, height: 720 }, height: 680, source: "connect-social-motion-sheet-transparent.png", contact: "connect-final-contact-sheet.png", semantic: ["phone-review", "desktop-review", "phone-share", "desktop-receive"] },
+  coach: { frameCount: 4, canvas: { width: 600, height: 720 }, height: 680, source: "coach-plan-motion-sheet-transparent.png", contact: "coach-final-contact-sheet.png" },
+  plate: { frameCount: 4, canvas: { width: 600, height: 720 }, height: 680, source: "plan-plate-motion-sheet-transparent.png", contact: "plan-plate-final-contact-sheet.png", semantic: ["cut-male", "cut-female", "bulk-male", "bulk-female"] },
+  session: { frameCount: 4, canvas: { width: 760, height: 720 }, height: 680, source: "build-session-motion-sheet-transparent.png", contact: "build-session-final-contact-sheet.png", semantic: ["hip-thrust-setup", "hip-thrust-top", "shoulder-press-lower", "shoulder-press-top"] }
 });
 
 async function removeConnectSeparators(input) {
@@ -41,7 +43,7 @@ async function splitScene(sceneName, config) {
   const normalizedRoot = path.join(sceneRoot, "normalized");
   fs.mkdirSync(normalizedRoot, { recursive: true });
   const original = path.join(sourceRoot, config.source);
-  const cleaned = sceneName === "connect" ? await removeConnectSeparators(original) : { path: original };
+    const cleaned = sceneName === "connect" ? await removeConnectSeparators(original) : { path: original };
   const meta = await sharp(cleaned.path).metadata();
   if (!meta.width || !meta.height) throw new Error(`${sceneName}: missing source dimensions`);
   const frames = [];
@@ -59,7 +61,8 @@ async function splitScene(sceneName, config) {
       .composite([{ input: trimmed.data, left: leftPad, top: topPad }])
       .webp({ quality: 88, alphaQuality: 95, effort: 6 })
       .toFile(output);
-    frames.push({ file: path.basename(output), sourceBytes: fs.statSync(framePath).size, normalizedBytes: fs.statSync(output).size, index, semantic: sceneName === "track" ? ["approach", "planted", "reading", "settled"][index] : sceneName === "connect" ? ["engage", "show-phone", "respond", "together"][index] : ["review", "raise", "tap", "ready"][index] });
+    const semantic = config.semantic || (sceneName === "track" ? ["approach", "planted", "reading", "settled"] : ["review", "raise", "tap", "ready"]);
+    frames.push({ file: path.basename(output), sourceBytes: fs.statSync(framePath).size, normalizedBytes: fs.statSync(output).size, index, semantic: semantic[index] });
   }
   const contactInputs = await Promise.all(frames.map(frame => sharp(path.join(normalizedRoot, frame.file)).resize(320, 240, { fit: "contain", background: sceneName === "track" ? "#315bff" : sceneName === "connect" ? "#a9305d" : "#147a58" }).png().toBuffer()));
   const contactPath = path.join(REVIEW_ROOT, config.contact);

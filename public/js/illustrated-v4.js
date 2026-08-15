@@ -184,7 +184,7 @@
       host.dataset.v4Duration = String(DURATIONS[name]);
       host.dataset.v4Source = name === "deadlift" ? "v4.1-hero" : sourceOf(name);
       const v43 = window.FuelPhysiqueImageSequenceV43;
-      const v43Scene = name === "progress" ? "track" : name;
+      const v43Scene = name === "progress" ? "track" : name === "training" ? "session" : name === "nutrition" ? "plate" : name;
       if (v43?.isEnabled() && v43.mount(host, v43Scene)) {
         host.dataset.v4Source = "v4.3-real-athlete";
       }

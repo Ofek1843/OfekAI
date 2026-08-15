@@ -1,10 +1,10 @@
 {
-  "version": "20260815-real-athlete-v43-complete-4",
+  "version": "20260815-real-athlete-v43-complete-5",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-15T07:34:24.622Z",
+  "generatedAt": "2026-08-15T14:01:14.506Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -462,40 +462,40 @@
       "frames": [
         {
           "file": "frame-01.webp",
-          "sourceBytes": 584238,
-          "normalizedBytes": 53404,
+          "sourceBytes": 754922,
+          "normalizedBytes": 47046,
           "index": 0,
-          "semantic": "engage"
+          "semantic": "phone-review"
         },
         {
           "file": "frame-02.webp",
-          "sourceBytes": 537467,
-          "normalizedBytes": 56510,
+          "sourceBytes": 673767,
+          "normalizedBytes": 46096,
           "index": 1,
-          "semantic": "show-phone"
+          "semantic": "desktop-review"
         },
         {
           "file": "frame-03.webp",
-          "sourceBytes": 602147,
-          "normalizedBytes": 63066,
+          "sourceBytes": 736913,
+          "normalizedBytes": 46018,
           "index": 2,
-          "semantic": "respond"
+          "semantic": "phone-share"
         },
         {
           "file": "frame-04.webp",
-          "sourceBytes": 527526,
-          "normalizedBytes": 51486,
+          "sourceBytes": 671574,
+          "normalizedBytes": 42726,
           "index": 3,
-          "semantic": "together"
+          "semantic": "desktop-receive"
         }
       ],
-      "motionSheetSource": "connect/final-source/connect-social-motion-sheet-source.png",
+      "motionSheetSource": "connect/final-source/connect-social-motion-sheet-transparent.png",
       "motionSheetSourceDimensions": {
-        "width": 1672,
-        "height": 941
+        "width": 1983,
+        "height": 793
       },
-      "motionSheetSourceBytes": 1681703,
-      "normalizedBytes": 224466,
+      "motionSheetSourceBytes": 3006014,
+      "normalizedBytes": 181886,
       "canvas": {
         "width": 760,
         "height": 720
@@ -545,6 +545,94 @@
         "height": 720
       },
       "contactSheet": "docs/illustration/v43/coach-final-contact-sheet.png"
+    },
+    "plate": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "sourceBytes": 551380,
+          "normalizedBytes": 32732,
+          "index": 0,
+          "semantic": "cut-male"
+        },
+        {
+          "file": "frame-02.webp",
+          "sourceBytes": 532222,
+          "normalizedBytes": 32570,
+          "index": 1,
+          "semantic": "cut-female"
+        },
+        {
+          "file": "frame-03.webp",
+          "sourceBytes": 562314,
+          "normalizedBytes": 38418,
+          "index": 2,
+          "semantic": "bulk-male"
+        },
+        {
+          "file": "frame-04.webp",
+          "sourceBytes": 390904,
+          "normalizedBytes": 39128,
+          "index": 3,
+          "semantic": "bulk-female"
+        }
+      ],
+      "motionSheetSource": "plate/final-source/plan-plate-motion-sheet-transparent.png",
+      "motionSheetSourceDimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "motionSheetSourceBytes": 2135494,
+      "normalizedBytes": 142848,
+      "canvas": {
+        "width": 600,
+        "height": 720
+      },
+      "contactSheet": "docs/illustration/v43/plan-plate-final-contact-sheet.png"
+    },
+    "session": {
+      "frames": [
+        {
+          "file": "frame-01.webp",
+          "sourceBytes": 479754,
+          "normalizedBytes": 25010,
+          "index": 0,
+          "semantic": "hip-thrust-setup"
+        },
+        {
+          "file": "frame-02.webp",
+          "sourceBytes": 476177,
+          "normalizedBytes": 26418,
+          "index": 1,
+          "semantic": "hip-thrust-top"
+        },
+        {
+          "file": "frame-03.webp",
+          "sourceBytes": 502705,
+          "normalizedBytes": 29144,
+          "index": 2,
+          "semantic": "shoulder-press-lower"
+        },
+        {
+          "file": "frame-04.webp",
+          "sourceBytes": 520249,
+          "normalizedBytes": 33142,
+          "index": 3,
+          "semantic": "shoulder-press-top"
+        }
+      ],
+      "motionSheetSource": "session/final-source/build-session-motion-sheet-transparent.png",
+      "motionSheetSourceDimensions": {
+        "width": 1774,
+        "height": 887
+      },
+      "motionSheetSourceBytes": 2058384,
+      "normalizedBytes": 113714,
+      "canvas": {
+        "width": 760,
+        "height": 720
+      },
+      "contactSheet": "docs/illustration/v43/build-session-final-contact-sheet.png"
     }
   }
 }
