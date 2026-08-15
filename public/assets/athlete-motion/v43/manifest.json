@@ -1,10 +1,10 @@
 {
-  "version": "20260815-real-athlete-v43-complete-1",
+  "version": "20260815-real-athlete-v43-complete-2",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-15T05:27:16.436Z",
+  "generatedAt": "2026-08-15T06:09:12.569Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -12,17 +12,17 @@
           "file": "frame-01.webp",
           "semantic": "setup",
           "sourceBytes": 301731,
-          "normalizedBytes": 203980,
+          "normalizedBytes": 29264,
           "sourceBounds": {
-            "left": 2,
+            "left": 8,
             "top": 0,
-            "width": 392,
+            "width": 380,
             "height": 793
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 356,
+            "width": 345,
             "height": 720
           }
         },
@@ -30,17 +30,17 @@
           "file": "frame-02.webp",
           "semantic": "early-pull",
           "sourceBytes": 320189,
-          "normalizedBytes": 201196,
+          "normalizedBytes": 31404,
           "sourceBounds": {
-            "left": 2,
+            "left": 8,
             "top": 0,
-            "width": 393,
+            "width": 381,
             "height": 793
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 357,
+            "width": 346,
             "height": 720
           }
         },
@@ -48,17 +48,17 @@
           "file": "frame-03.webp",
           "semantic": "lockout",
           "sourceBytes": 319474,
-          "normalizedBytes": 209750,
+          "normalizedBytes": 30762,
           "sourceBounds": {
-            "left": 2,
+            "left": 8,
             "top": 0,
-            "width": 392,
+            "width": 380,
             "height": 793
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 356,
+            "width": 345,
             "height": 720
           }
         },
@@ -66,17 +66,17 @@
           "file": "frame-04.webp",
           "semantic": "controlled-descent",
           "sourceBytes": 311836,
-          "normalizedBytes": 198034,
+          "normalizedBytes": 31514,
           "sourceBounds": {
-            "left": 2,
+            "left": 8,
             "top": 0,
-            "width": 393,
+            "width": 381,
             "height": 793
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 357,
+            "width": 346,
             "height": 720
           }
         },
@@ -84,17 +84,17 @@
           "file": "frame-05.webp",
           "semantic": "return-to-setup",
           "sourceBytes": 299683,
-          "normalizedBytes": 192494,
+          "normalizedBytes": 29134,
           "sourceBounds": {
-            "left": 2,
+            "left": 8,
             "top": 0,
-            "width": 393,
+            "width": 381,
             "height": 793
           },
           "placement": {
             "left": 300,
             "top": 0,
-            "width": 357,
+            "width": 346,
             "height": 720
           }
         }
@@ -148,7 +148,7 @@
         }
       ],
       "splitSourceBytes": 1552913,
-      "normalizedBytes": 1005454,
+      "normalizedBytes": 152078,
       "contactSheet": "docs/illustration/v43/deadlift-final-5-frame-contact-sheet.png"
     },
     "bench": {
@@ -462,40 +462,40 @@
       "frames": [
         {
           "file": "frame-01.webp",
-          "sourceBytes": 469263,
-          "normalizedBytes": 59650,
+          "sourceBytes": 730723,
+          "normalizedBytes": 82762,
           "index": 0,
           "semantic": "engage"
         },
         {
           "file": "frame-02.webp",
-          "sourceBytes": 507036,
-          "normalizedBytes": 60806,
+          "sourceBytes": 670053,
+          "normalizedBytes": 84904,
           "index": 1,
           "semantic": "show-phone"
         },
         {
           "file": "frame-03.webp",
-          "sourceBytes": 483954,
-          "normalizedBytes": 63112,
+          "sourceBytes": 738187,
+          "normalizedBytes": 90988,
           "index": 2,
           "semantic": "respond"
         },
         {
           "file": "frame-04.webp",
-          "sourceBytes": 491447,
-          "normalizedBytes": 53802,
+          "sourceBytes": 733178,
+          "normalizedBytes": 82170,
           "index": 3,
           "semantic": "together"
         }
       ],
-      "motionSheetSource": "connect/final-source/connect-social-motion-sheet-transparent.png",
+      "motionSheetSource": "connect/final-source/connect-social-motion-sheet-source.png",
       "motionSheetSourceDimensions": {
-        "width": 1774,
-        "height": 887
+        "width": 1672,
+        "height": 941
       },
-      "motionSheetSourceBytes": 1427708,
-      "normalizedBytes": 237370,
+      "motionSheetSourceBytes": 2215208,
+      "normalizedBytes": 340824,
       "canvas": {
         "width": 760,
         "height": 720

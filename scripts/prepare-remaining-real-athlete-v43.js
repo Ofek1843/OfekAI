@@ -8,11 +8,11 @@ const ROOT = path.resolve(__dirname, "..");
 const ASSET_ROOT = path.join(ROOT, "public", "assets", "athlete-motion", "v43");
 const REVIEW_ROOT = path.join(ROOT, "docs", "illustration", "v43");
 const MANIFEST_PATH = path.join(ASSET_ROOT, "manifest.json");
-const VERSION = "20260815-real-athlete-v43-complete-1";
+const VERSION = "20260815-real-athlete-v43-complete-2";
 
 const SCENES = Object.freeze({
   track: { frameCount: 4, canvas: { width: 600, height: 720 }, height: 680, source: "track-progress-motion-sheet-transparent.png", contact: "track-final-contact-sheet.png" },
-  connect: { frameCount: 4, canvas: { width: 760, height: 720 }, height: 680, source: "connect-social-motion-sheet-transparent.png", contact: "connect-final-contact-sheet.png" },
+  connect: { frameCount: 4, canvas: { width: 760, height: 720 }, height: 680, source: "connect-social-motion-sheet-source.png", contact: "connect-final-contact-sheet.png" },
   coach: { frameCount: 4, canvas: { width: 600, height: 720 }, height: 680, source: "coach-plan-motion-sheet-transparent.png", contact: "coach-final-contact-sheet.png" }
 });
 

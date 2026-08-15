@@ -13,7 +13,7 @@ const {
   contactSheet
 } = require("./prepare-real-athlete-v43");
 
-const VERSION = "20260815-real-athlete-v43-complete-1";
+const VERSION = "20260815-real-athlete-v43-complete-2";
 const DEADLIFT_DIRECTORY = path.join(ASSET_ROOT, "deadlift", "final-source");
 const DEADLIFT_SHEET = path.join(DEADLIFT_DIRECTORY, "deadlift-motion-sheet.png");
 const BENCH_DIRECTORY = path.join(ASSET_ROOT, "bench", "final-source");
@@ -53,7 +53,11 @@ async function main() {
     deadliftFrames.push(await normalizeFrame("deadlift", DEADLIFT_FRAMES[index], index, {
       sourceDirectory: "final-source",
       preserveFullFrame: true,
-      edgeInsetX: 2
+      edgeInsetX: 8,
+      backgroundMinimum: 210,
+      backgroundChromaLimit: 64,
+      hardBackgroundTransparency: true,
+      minimumForegroundComponent: 200
     }));
   }
 

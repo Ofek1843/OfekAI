@@ -40,13 +40,13 @@ const SCENES = Object.freeze({
   }
 });
 
-function isBackgroundPixel(data, offset) {
+function isBackgroundPixel(data, offset, minimum = 230, chromaLimit = 28) {
   const r = data[offset];
   const g = data[offset + 1];
   const b = data[offset + 2];
   const min = Math.min(r, g, b);
   const max = Math.max(r, g, b);
-  return min >= 230 && max - min <= 28;
+  return min >= minimum && max - min <= chromaLimit;
 }
 
 function removeWhiteMatte(channel, alpha) {
@@ -56,19 +56,22 @@ function removeWhiteMatte(channel, alpha) {
   return Math.max(0, Math.min(255, Math.round((channel - 255 * (1 - opacity)) / opacity)));
 }
 
-async function removeConnectedWhiteBackground(input) {
+async function removeConnectedWhiteBackground(input, options = {}) {
   const { data, info } = await sharp(input)
     .removeAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
   const count = info.width * info.height;
+  const backgroundMinimum = options.backgroundMinimum || 230;
+  const backgroundChromaLimit = options.backgroundChromaLimit || 28;
+  const isBackground = (offset) => isBackgroundPixel(data, offset, backgroundMinimum, backgroundChromaLimit);
   const visited = new Uint8Array(count);
   const queue = new Uint32Array(count);
   let head = 0;
   let tail = 0;
 
   const enqueue = (index) => {
-    if (visited[index] || !isBackgroundPixel(data, index * 3)) return;
+    if (visited[index] || !isBackground(index * 3)) return;
     visited[index] = 1;
     queue[tail++] = index;
   };
@@ -97,8 +100,9 @@ async function removeConnectedWhiteBackground(input) {
   // only large neutral-white components; small shoe and equipment highlights
   // remain intact.
   const componentSeen = new Uint8Array(count);
-  for (let start = 0; start < count; start += 1) {
-    if (visited[start] || componentSeen[start] || !isBackgroundPixel(data, start * 3)) continue;
+  const preserveInteriorComponents = options.preserveInteriorComponents !== false;
+  for (let start = 0; preserveInteriorComponents && start < count; start += 1) {
+    if (visited[start] || componentSeen[start] || !isBackground(start * 3)) continue;
     const component = [];
     head = 0;
     tail = 0;
@@ -110,7 +114,7 @@ async function removeConnectedWhiteBackground(input) {
       const x = index % info.width;
       const y = Math.floor(index / info.width);
       const inspect = (candidate) => {
-        if (componentSeen[candidate] || visited[candidate] || !isBackgroundPixel(data, candidate * 3)) return;
+        if (componentSeen[candidate] || visited[candidate] || !isBackground(candidate * 3)) return;
         componentSeen[candidate] = 1;
         queue[tail++] = candidate;
       };
@@ -167,9 +171,11 @@ async function removeConnectedWhiteBackground(input) {
       continue;
     }
     const average = (r + g + b) / 3;
+    // Fully connected studio background is not a soft edge: keep it at true
+    // zero alpha so resize/compositing cannot resurrect a matte rectangle.
     const alpha = edgeDepth[index]
       ? (255 - average) * (edgeDepth[index] === 1 ? 4 : edgeDepth[index] === 2 ? 3.25 : 2.75)
-      : (255 - average) * 4;
+      : options.hardBackgroundTransparency ? 0 : (255 - average) * 4;
     const resolvedAlpha = Math.max(0, Math.min(255, Math.round(alpha)));
     rgba[target] = removeWhiteMatte(r, resolvedAlpha);
     rgba[target + 1] = removeWhiteMatte(g, resolvedAlpha);
@@ -210,6 +216,42 @@ async function removeConnectedWhiteBackground(input) {
     }
   }
 
+  // JPEG/AI matte contamination can survive as hundreds of tiny opaque
+  // islands even after the white edge has been keyed out. For isolated
+  // studio cutouts, discard only small foreground components; the connected
+  // athlete/bar assembly remains intact.
+  const minimumForegroundComponent = options.minimumForegroundComponent || 0;
+  if (minimumForegroundComponent > 0) {
+    const foregroundSeen = new Uint8Array(count);
+    for (let start = 0; start < count; start += 1) {
+      const alpha = rgba[start * 4 + 3];
+      if (foregroundSeen[start] || alpha < 16) continue;
+      const component = [];
+      head = 0;
+      tail = 0;
+      foregroundSeen[start] = 1;
+      queue[tail++] = start;
+      while (head < tail) {
+        const index = queue[head++];
+        component.push(index);
+        const x = index % info.width;
+        const y = Math.floor(index / info.width);
+        const inspect = (candidate) => {
+          if (foregroundSeen[candidate] || rgba[candidate * 4 + 3] < 16) return;
+          foregroundSeen[candidate] = 1;
+          queue[tail++] = candidate;
+        };
+        if (x > 0) inspect(index - 1);
+        if (x + 1 < info.width) inspect(index + 1);
+        if (y > 0) inspect(index - info.width);
+        if (y + 1 < info.height) inspect(index + info.width);
+      }
+      if (component.length < minimumForegroundComponent) {
+        for (const index of component) rgba[index * 4 + 3] = 0;
+      }
+    }
+  }
+
   return sharp(rgba, {
     raw: { width: info.width, height: info.height, channels: 4 }
   }).png().toBuffer();
@@ -238,7 +280,7 @@ async function normalizeFrame(sceneName, frame, index, options = {}) {
   const sourceDirectory = options.sourceDirectory || "source";
   const outputDirectory = options.outputDirectory || "normalized";
   const source = path.join(ASSET_ROOT, sceneName, sourceDirectory, frame.file);
-  const keyed = await removeConnectedWhiteBackground(source);
+  const keyed = await removeConnectedWhiteBackground(source, options);
   const keyedMeta = await sharp(keyed).metadata();
   const edgeInsetX = options.preserveFullFrame ? Math.max(0, options.edgeInsetX || 0) : 0;
   const edgeInsetY = options.preserveFullFrame ? Math.max(0, options.edgeInsetY || 0) : 0;
