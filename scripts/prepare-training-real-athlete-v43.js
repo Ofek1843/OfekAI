@@ -11,7 +11,7 @@ const SOURCE_ROOT = path.join(TRAINING_ROOT, "final-source");
 const NORMALIZED_ROOT = path.join(TRAINING_ROOT, "normalized");
 const REVIEW_ROOT = path.join(ROOT, "docs", "illustration", "v43");
 const MANIFEST_PATH = path.join(ASSET_ROOT, "manifest.json");
-const VERSION = "20260815-real-athlete-v43-complete-3";
+const VERSION = "20260815-real-athlete-v43-complete-4";
 // The source panels are portrait-oriented. A narrower transparent canvas keeps
 // the full athlete readable inside the card instead of wasting half the stage
 // on empty horizontal padding.
