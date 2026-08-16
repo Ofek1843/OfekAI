@@ -57,7 +57,6 @@
 
   const translations = {
     en: {
-      skip: "Skip to main content",
       navigation: "Primary product navigation",
       brand: "Fuel / Physique",
       dashboard: "Dashboard",
@@ -76,7 +75,6 @@
       plans: "Plans",
     },
     he: {
-      skip: "דילוג לתוכן הראשי",
       navigation: "ניווט ראשי במוצר",
       brand: "Fuel / Physique",
       dashboard: "לוח בקרה",
@@ -94,18 +92,6 @@
       settings: "הגדרות",
       plans: "מסלולים",
     },
-  };
-
-  const addSkipLink = (copy) => {
-    if (document.querySelector(".fp-skip-link")) return;
-    const target = document.querySelector("main");
-    if (!target) return;
-    if (!target.id) target.id = "main-content";
-    const link = document.createElement("a");
-    link.className = "fp-skip-link";
-    link.href = `#${target.id}`;
-    link.textContent = copy.skip;
-    document.body.prepend(link);
   };
 
   const addProductNavigation = (copy, language) => {
@@ -200,8 +186,6 @@
   const updateProductLanguage = (language) => {
     const safeLanguage = language === "he" ? "he" : "en";
     const copy = translations[safeLanguage];
-    const skipLink = document.querySelector(".fp-skip-link");
-    if (skipLink) skipLink.textContent = copy.skip;
     const nav = document.querySelector(".fp-global-nav");
     if (!nav) return;
     nav.setAttribute("aria-label", copy.navigation);
@@ -455,7 +439,6 @@
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
     if (!protectedRoutes.has(route)) document.body.classList.add("fp-public-route");
-    addSkipLink(copy);
     addProductNavigation(copy, language);
     exposeIconActions();
     window.setTimeout(exposeIconActions, 500);

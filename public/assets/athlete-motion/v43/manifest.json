@@ -571,19 +571,21 @@
         },
         {
           "file": "frame-04.webp",
-          "sourceBytes": 390904,
-          "normalizedBytes": 39128,
+          "source": "frame-04-regenerated.png",
+          "sourceBytes": 1526417,
+          "normalizedBytes": 34148,
           "index": 3,
           "semantic": "bulk-female"
         }
       ],
+      "regeneratedFrameSource": "plate/final-source/frame-04-regenerated.png",
       "motionSheetSource": "plate/final-source/plan-plate-motion-sheet-transparent.png",
       "motionSheetSourceDimensions": {
         "width": 1774,
         "height": 887
       },
       "motionSheetSourceBytes": 2135494,
-      "normalizedBytes": 142848,
+      "normalizedBytes": 137868,
       "canvas": {
         "width": 600,
         "height": 720

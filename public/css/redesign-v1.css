@@ -347,24 +347,6 @@ body.fp-redesign::after,
   display: none !important;
 }
 
-.fp-skip-link {
-  position: fixed;
-  inset-block-start: 8px;
-  inset-inline-start: 8px;
-  z-index: 10000;
-  translate: 0 -160%;
-  padding: 10px 14px;
-  border: 2px solid var(--fp-brand-primary);
-  border-radius: var(--fp-radius-sm);
-  background: var(--fp-bg-deep);
-  color: var(--fp-text-primary);
-  font-weight: 800;
-}
-
-.fp-skip-link:focus {
-  translate: 0;
-}
-
 /* Product navigation */
 .fp-global-nav {
   position: sticky;
@@ -2292,6 +2274,8 @@ html[dir="rtl"] .fp-redesign :where(.macro-progress, .macro-bar, .nutrition-prog
    keyboard-accessible home behind one familiar menu button. */
 .fp-global-nav {
   position: sticky;
+  isolation: isolate;
+  z-index: 2100;
   min-height: 72px;
   padding-inline: max(16px, calc((100vw - 1520px) / 2));
   gap: 8px;
@@ -2359,7 +2343,7 @@ html[dir="rtl"] .fp-redesign :where(.macro-progress, .macro-bar, .nutrition-prog
   position: absolute;
   inset-block-start: calc(100% + 10px);
   inset-inline-start: max(16px, calc((100vw - 1520px) / 2));
-  z-index: 1001;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
@@ -2398,6 +2382,22 @@ html[dir="rtl"] .fp-redesign :where(.macro-progress, .macro-bar, .nutrition-prog
 body.fp-route-dashboard {
   position: relative;
   background: #10182b !important;
+}
+
+body.fp-route-dashboard .hero-copy h1 {
+  color: #dce6ff !important;
+  text-shadow: 0 0 22px rgba(79, 111, 255, 0.24);
+}
+
+@media (max-width: 1100px) {
+  body.fp-route-dashboard .dashboard-shell {
+    position: relative;
+    z-index: 100;
+  }
+
+  body.fp-route-dashboard.drawer-open .fp-global-nav {
+    z-index: 80;
+  }
 }
 
 body.fp-route-dashboard::before,

@@ -137,7 +137,7 @@ test("runtime diagnostics mark rendered V4.1 sources rather than hiding a fallba
 });
 
 test("the V4.3 prototype service worker cache is synchronized and retains private/auth bypasses", () => {
-  assert.match(SW, /CACHE_NAME = 'fuelphysique-v29-real-athlete-v43-complete-5'/);
+  assert.match(SW, /CACHE_NAME = 'fuelphysique-v30-real-athlete-v43-polish-1'/);
   assert.doesNotMatch(SW, /20260812-athletic-spectrum|fuelphysique-v13-illustrated-v4/);
   for (const asset of [
     "css/illustrated-v4.css",
@@ -148,7 +148,7 @@ test("the V4.3 prototype service worker cache is synchronized and retains privat
     "js/scenes/coachsocial.js",
     "js/image-sequence-v43.js",
     "js/illustrated-v4.js",
-  ]) assert.match(SW, new RegExp(`${asset.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=${asset.startsWith("css/") ? CSS_VERSION : ASSET_VERSION}`));
+  ]) assert.match(SW, new RegExp(`${asset.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=${asset.startsWith("css/") ? CSS_VERSION : asset === "js/image-sequence-v43.js" ? ENGINE_VERSION : ASSET_VERSION}`));
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(SW, /https:\/\/apis\.google\.com/);
   assert.match(SW, /https:\/\/accounts\.google\.com/);
