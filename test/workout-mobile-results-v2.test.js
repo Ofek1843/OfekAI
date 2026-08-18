@@ -98,7 +98,7 @@ test("every exercise retains its Effort value and accessible RIR control", () =>
 
 test("mobile controls remain touch-sized and the feedback control clears safe areas", () => {
   assert.match(rule(MOBILE, ".exercise-demo-button"), /min-height:\s*44px/);
-  assert.match(rule(MOBILE, ".reroll-button"), /width:\s*44px[^}]*height:\s*44px/s);
+  assert.match(rule(MOBILE, ".reroll-button"), /min-width:\s*96px[^}]*height:\s*44px/s);
   assert.match(rule(MOBILE, ".training-effort-help"), /width:\s*44px[^}]*height:\s*44px/s);
   assert.match(FEEDBACK, /right:\s*max\(10px,\s*env\(safe-area-inset-right\)\)/);
   assert.match(FEEDBACK, /bottom:\s*calc\(12px \+ env\(safe-area-inset-bottom\)\)/);

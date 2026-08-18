@@ -28,11 +28,14 @@ test("the complete redesign is applied once to every public HTML route", () => {
   assert.deepEqual(failures, []);
 });
 
-test("the selected editorial direction uses the narrow Ultramarine brand system", () => {
+test("the selected editorial direction keeps the Ultramarine brand system inside the Deep Ocean atmosphere", () => {
   assert.match(CSS, /--fp-ultramarine:\s*#304ffe/);
   assert.match(CSS, /--fp-brand-primary:\s*var\(--fp-ultramarine\)/);
   assert.match(CSS, /--fp-brand-secondary:\s*var\(--fp-ultramarine\)/);
-  assert.doesNotMatch(CSS, /linear-gradient|radial-gradient|conic-gradient/);
+  assert.match(CSS, /--fp-bg-deep:\s*#061222/);
+  assert.match(CSS, /--fp-bg-page:\s*#08182b/);
+  assert.match(CSS, /--fp-bg-section:\s*#0c2139/);
+  assert.match(CSS, /radial-gradient/);
   assert.doesNotMatch(CSS, /#ff5a3c|#d3351c|rgba\(255,\s*90,\s*60|rgba\(216,\s*58,\s*32/i);
   assert.match(CSS, /--fp-danger:\s*#e05a67/);
   assert.match(CSS, /--fp-success:\s*#62b37c/);
@@ -77,7 +80,7 @@ test("focus, reduced motion, disabled controls, and minimum control size are exp
 });
 
 test("the service worker versions and pre-caches the shared redesign assets", () => {
-  assert.match(SW, /fuelphysique-v30-real-athlete-v43-polish-1/);
+  assert.match(SW, /fuelphysique-v31-deep-ocean-v44/);
   assert.ok(SW.includes("/css/redesign-v1.css?v=20260810-ultramarine-motion"));
   assert.ok(SW.includes("/js/redesign-shell.js?v=20260810-ultramarine-motion"));
   assert.ok(SW.includes("/css/illustrated-v4.css?v=20260815-real-athlete-v43-complete-5"));

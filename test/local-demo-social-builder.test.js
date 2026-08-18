@@ -4,7 +4,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { buildLocalWorkoutProgram } = require("../lib/local-demo-generators");
+const { buildLocalWorkoutProgram, buildLocalExerciseReplacement } = require("../lib/local-demo-generators");
 const { repairWorkoutProgram } = require("../lib/workout-repair");
 const { validateWorkoutProgram } = require("../lib/workout-validator");
 const { calculateWeeklyVolume } = require("../lib/workout-volume");
@@ -82,6 +82,85 @@ test("representative advanced four-day local workout passes the hard volume gate
   }));
 });
 
+test("local deterministic workout reroll preserves the target muscle and avoids same-day duplicates", () => {
+  const currentExercise = {
+    exerciseId: "dumbbell-bicep-curl",
+    name: "Dumbbell Bicep Curl",
+    muscleGroup: "biceps",
+    equipment: "Dumbbell",
+    sets: 3,
+    reps: "10-12",
+    restSeconds: 75,
+    rir: "1-2",
+    notes: "Keep elbows near the torso."
+  };
+
+  const replacement = buildLocalExerciseReplacement({
+    currentExercise,
+    equipment: ["dumbbell"],
+    reservedExerciseIds: ["hammer-curl"],
+    limitations: "None",
+    language: "en"
+  });
+
+  assert.ok(replacement, "Expected a local catalog replacement");
+  assert.notEqual(replacement.exerciseId, currentExercise.exerciseId);
+  assert.notEqual(replacement.exerciseId, "hammer-curl");
+  assert.equal(replacement.muscleGroup, "biceps");
+  assert.equal(replacement.equipment, "Dumbbell");
+  assert.equal(replacement.sets, currentExercise.sets);
+  assert.equal(replacement.reps, currentExercise.reps);
+  assert.equal(replacement.restSeconds, currentExercise.restSeconds);
+  assert.equal(replacement.rir, currentExercise.rir);
+  assert.equal(replacement.notes, currentExercise.notes);
+});
+
+test("local deterministic workout reroll never swaps a glute isolation into an unrelated muscle", () => {
+  const replacement = buildLocalExerciseReplacement({
+    currentExercise: {
+      exerciseId: "abductors",
+      name: "Abductors",
+      muscleGroup: "glutes",
+      equipment: "Machine",
+      sets: 3,
+      reps: "12-15",
+      restSeconds: 60,
+      rir: "1-3"
+    },
+    equipment: ["machine"],
+    reservedExerciseIds: [],
+    limitations: "None",
+    language: "en"
+  });
+
+  assert.ok(replacement, "Expected a same-muscle machine alternative");
+  assert.notEqual(replacement.exerciseId, "abductors");
+  assert.equal(replacement.muscleGroup, "glutes");
+  assert.equal(replacement.equipment, "Machine");
+  assert.doesNotMatch(replacement.exerciseId, /chest|press|curl/);
+});
+
+test("local deterministic workout reroll reports no replacement when every valid local alternative is already reserved", () => {
+  const replacement = buildLocalExerciseReplacement({
+    currentExercise: {
+      exerciseId: "abductors",
+      name: "Abductors",
+      muscleGroup: "glutes",
+      equipment: "Machine",
+      sets: 3,
+      reps: "12-15",
+      restSeconds: 60,
+      rir: "1-3"
+    },
+    equipment: ["machine"],
+    reservedExerciseIds: ["hip-thrust-machine"],
+    limitations: "None",
+    language: "en"
+  });
+
+  assert.equal(replacement, null);
+});
+
 test("local nutrition fallback ranks candidates by macros as well as calories", () => {
   const pool = [
     { id: "calorie-only", slots: ["breakfast"], baseCalories: 500, baseProtein: 8, baseCarbs: 90, baseFat: 20, nutrients: [] },
@@ -149,6 +228,7 @@ test("nutrition alternative checks preserve the validated opening totals", () =>
 test("local mode bypasses provider calls only behind the explicit server flag", () => {
   assert.match(SERVER, /process\.env\.FUELPHYSIQUE_LOCAL_DEMO === "1"/);
   assert.match(SERVER, /localDemoMode\s*\?\s*JSON\.stringify\(buildLocalWorkoutProgram/);
+  assert.match(SERVER, /const aiResponse = localDemoMode\s*\?\s*JSON\.stringify\(localReplacement\)\s*:\s*await createChatCompletion/);
   assert.match(SERVER, /localDemoMode \? "" : await createChatCompletion/);
   assert.doesNotMatch(SERVER, /req\.query\.localDemo/);
 });

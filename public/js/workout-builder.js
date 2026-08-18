@@ -1595,7 +1595,8 @@ try {
     experience: formData.get("experience"),
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
-    limitations: formData.get("limitations")
+    limitations: formData.get("limitations"),
+    language: currentLanguage
   };
 
   const response = await fetch(
@@ -1607,7 +1608,22 @@ try {
     }
   );
 
-  const data = await response.json();
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok || !data.exercise) {
+    throw new Error(builderErrorMessage({
+      status: response.status,
+      data,
+      language: currentLanguage,
+      fallback: isHebrew
+        ? "לא ניתן היה להחליף את התרגיל."
+        : "Could not replace this exercise."
+    }) || data.error || (
+      isHebrew
+        ? "לא ניתן היה להחליף את התרגיל."
+        : "Could not replace this exercise."
+    ));
+  }
 
   if (data.exercise) {
 
@@ -1678,6 +1694,16 @@ try {
     `;
   }
 }
+} catch (error) {
+  console.error("Could not replace exercise:", error);
+  setStatus(
+    error instanceof Error && error.message
+      ? error.message
+      : isHebrew
+        ? "לא ניתן היה להחליף את התרגיל."
+        : "Could not replace this exercise.",
+    true
+  );
 } finally {
   rerollButton.classList.remove("is-loading");
   rerollButton.disabled = false;

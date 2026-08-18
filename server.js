@@ -50,7 +50,7 @@ const {
   formatLedgerForAiRepair
 } = require("./lib/workout-volume-ledger");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
-const { buildLocalWorkoutProgram } = require("./lib/local-demo-generators");
+const { buildLocalWorkoutProgram, buildLocalExerciseReplacement } = require("./lib/local-demo-generators");
 const { calculateNutritionTargets } = require("./lib/nutrition-targets");
 const { mealById, searchManualMeals } = require("./lib/manual-nutrition");
 const socialTyping = require("./lib/social-typing");
@@ -70,6 +70,7 @@ const {
   buildMealOption,
   getMealById,
   detectAllergens,
+  parseFoodPreferenceTerms,
   CONDITION_NUTRIENTS
 } = require("./lib/meal-catalog");
 const {
@@ -1848,6 +1849,7 @@ const {
 } = require("./lib/nutrition-totals");
 const {
   balancePlanWithMealSearch,
+  balancePortions,
   findImplausibleServings,
   markSelectableOptions
 } = require("./lib/nutrition-portion-balancer");
@@ -3371,6 +3373,10 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
     if (!muscleFocus.ok) {
       return res.status(400).json({ error: "Invalid muscle focus preferences", details: muscleFocus.errors });
     }
+    const reservedSiblingExerciseIds = (program.sessions?.[sessionIndex]?.exercises || [])
+      .filter((_, index) => index !== exerciseIndex)
+      .map((exercise) => exercise?.exerciseId)
+      .filter(Boolean);
 
     const rerollPrompt = `
 Replace only this exercise with another suitable exercise.
@@ -3416,7 +3422,37 @@ Required JSON format:
 }
 `;
 
-    const aiResponse = await createChatCompletion({
+    const localReplacement = localDemoMode
+      ? buildLocalExerciseReplacement({
+        currentExercise,
+        equipment: selectedEquipment,
+        reservedExerciseIds: reservedSiblingExerciseIds,
+        limitations,
+        language
+      })
+      : null;
+
+    if (localDemoMode && !localReplacement) {
+      return res.status(422).json({
+        success: false,
+        error: language === "he"
+          ? "לא נמצא תרגיל חלופי תקין עם הציוד והמגבלות שנבחרו."
+          : "No valid replacement exercise is available for the selected equipment and constraints."
+      });
+    }
+
+    if (localDemoMode) {
+      console.info("[local-demo] deterministic workout reroll", {
+        uid: user.uid,
+        currentExerciseId: currentExercise.exerciseId,
+        replacementExerciseId: localReplacement.exerciseId,
+        equipment: selectedEquipment
+      });
+    }
+
+    const aiResponse = localDemoMode
+      ? JSON.stringify(localReplacement)
+      : await createChatCompletion({
       temperature: 0.7,
       maxTokens: 500,
       model: resolveWorkoutModel(),
@@ -3464,10 +3500,7 @@ Required JSON format:
         // session from the substitution passes, which could then swap in an
         // exercise the session already contains and fail the duplicate-id
         // validation rule. Reserve the siblings' ids so that cannot happen.
-        reservedExerciseIds: (program.sessions?.[sessionIndex]?.exercises || [])
-          .filter((_, index) => index !== exerciseIndex)
-          .map((exercise) => exercise?.exerciseId)
-          .filter(Boolean)
+        reservedExerciseIds: reservedSiblingExerciseIds
         // applyVolumeTargets intentionally omitted: a single-exercise
         // synthetic session has no meaningful "weekly volume" of its own.
         // That repair pass runs where it belongs, against the full real
@@ -3770,8 +3803,30 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
     const catalogDiet = plan.dietaryPreference || "omnivore";
     const excludeAllergens = Array.isArray(plan.excludeAllergens) ? plan.excludeAllergens : [];
     const slot = meal.slot || "lunch";
+    const mealFormatPreference = ["ready", "quick", "cook", "mix"].includes(plan.mealFormatPreference)
+      ? plan.mealFormatPreference
+      : "mix";
+    const prepTimePreference = ["zero", "five", "fifteen", "any"].includes(plan.prepTimePreference)
+      ? plan.prepTimePreference
+      : "any";
+    const foodStylePreference = ["mediterranean", "mix"].includes(plan.foodStylePreference)
+      ? plan.foodStylePreference
+      : "mix";
+    const avoidTerms = Array.isArray(plan.avoidTerms)
+      ? plan.avoidTerms
+      : parseFoodPreferenceTerms(plan.foodsToAvoid);
+    const favoriteTerms = Array.isArray(plan.favoriteTerms)
+      ? plan.favoriteTerms
+      : parseFoodPreferenceTerms(plan.favoriteFoods);
 
-    const pool = filterMeals({ diet: catalogDiet, excludeAllergens, slot });
+    const pool = filterMeals({
+      diet: catalogDiet,
+      excludeAllergens,
+      slot,
+      mealFormatPreference,
+      prepTimePreference,
+      avoidTerms
+    });
 
     const usedMealIds = new Set();
     for (const entry of plan.meals) {
@@ -3780,15 +3835,22 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       }
     }
 
-    const [nextMealId] = selectMeals({
+    const candidateIds = selectMeals({
       pool,
       slot,
       targetCalories: meal.targetCalories,
-      count: 1,
-      exclude: [...usedMealIds]
+      targetProteinGrams: meal.targetProteinGrams,
+      targetCarbsGrams: meal.targetCarbsGrams,
+      targetFatGrams: meal.targetFatGrams,
+      macroAware: true,
+      count: Math.min(pool.length, 12),
+      exclude: [...usedMealIds],
+      mealFormatPreference,
+      foodStylePreference,
+      favoriteTerms
     });
 
-    if (!nextMealId) {
+    if (!candidateIds.length) {
       return res.status(409).json({
         error: isHebrew
           ? "אין ארוחה חלופית זמינה בקטגוריה הזו."
@@ -3796,16 +3858,60 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       });
     }
 
-    const newOption = buildMealOption(nextMealId, {
-      targetCalories: meal.targetCalories,
-      isHebrew,
-      optionNumber,
-      foodImages: localFoodImages
-    });
+    const targets = {
+      calories: Number(plan.dailyCalories),
+      proteinGrams: Number(plan.proteinGrams),
+      carbsGrams: Number(plan.carbsGrams),
+      fatGrams: Number(plan.fatGrams)
+    };
 
-    return res.json({
-      success: true,
-      option: newOption
+    for (const candidateId of candidateIds) {
+      const candidatePlan = JSON.parse(JSON.stringify(plan));
+      const candidateMeal = candidatePlan.meals.find((entry) => entry.mealNumber === mealNumber);
+      const candidateIndex = candidateMeal?.options?.findIndex((entry) => entry && entry.optionNumber === optionNumber);
+      if (!candidateMeal || candidateIndex < 0) continue;
+
+      const replacement = buildMealOption(candidateId, {
+        targetCalories: candidateMeal.targetCalories,
+        isHebrew,
+        optionNumber,
+        foodImages: localFoodImages
+      });
+      if (!replacement) continue;
+      candidateMeal.options[candidateIndex] = replacement;
+
+      // Replacing the opening card changes the active daily plan, so rebalance
+      // portions before returning anything. Replacing an alternative is checked
+      // by markSelectableOptions below against the unchanged opening plan.
+      if (candidateIndex === 0) {
+        balancePortions(candidatePlan, targets, { isHebrew });
+        attachActualTotals(candidatePlan);
+        const openingTotals = evaluatePlanTotals(candidatePlan, null);
+        if (!openingTotals.withinTolerance || findImplausibleServings(candidatePlan).length) continue;
+      }
+
+      markSelectableOptions(candidatePlan, targets, { isHebrew });
+      attachActualTotals(candidatePlan);
+      const exact = verifyDisplayedArithmetic(candidatePlan, null);
+      const totals = evaluatePlanTotals(candidatePlan, null);
+      const returnedOption = candidateMeal.options[candidateIndex];
+      if (!exact.exact || !totals.withinTolerance || returnedOption?.keepsPlanValid === false) continue;
+
+      candidatePlan.totalsSummary = {
+        ...(candidatePlan.totalsSummary || {}),
+        targets: totals.targets,
+        actual: totals.actual,
+        deviations: totals.deviations,
+        withinTolerance: totals.withinTolerance,
+        displayedArithmeticExact: exact.exact
+      };
+      return res.json({ success: true, plan: candidatePlan, option: returnedOption });
+    }
+
+    return res.status(409).json({
+      error: isHebrew
+        ? "אין כרגע ארוחה חלופית שתשמור על יעדי היום שלך."
+        : "No replacement can keep your current daily targets right now."
     });
   } catch (error) {
     console.error("Meal reroll error:", error);
@@ -3868,6 +3974,9 @@ app.post("/api/nutrition-builder", async (req, res) => {
       trainingDays,
       mealsPerDay,
       dietaryPreference,
+      mealFormatPreference = "mix",
+      prepTimePreference = "any",
+      foodStylePreference = "mix",
       diagnosedConditions = [],
       youthGuardianConsent = false,
       favoriteFoods = "No preference",
@@ -4000,6 +4109,17 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
     };
     const catalogDiet = DIET_MAP[dietaryPreference] || "omnivore";
     const excludeAllergens = detectAllergens(allergies, foodsToAvoid);
+    const practicalMealFormat = ["ready", "quick", "cook", "mix"].includes(mealFormatPreference)
+      ? mealFormatPreference
+      : "mix";
+    const practicalPrepTime = ["zero", "five", "fifteen", "any"].includes(prepTimePreference)
+      ? prepTimePreference
+      : "any";
+    const practicalFoodStyle = ["mediterranean", "mix"].includes(foodStylePreference)
+      ? foodStylePreference
+      : "mix";
+    const avoidTerms = parseFoodPreferenceTerms(foodsToAvoid);
+    const favoriteTerms = parseFoodPreferenceTerms(favoriteFoods);
     const preferNutrients = safeConditions
       .map((condition) => CONDITION_NUTRIENTS[condition])
       .filter(Boolean);
@@ -4011,9 +4131,30 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
       if (!slotPools.has(slot.slot)) {
         slotPools.set(
           slot.slot,
-          filterMeals({ diet: catalogDiet, excludeAllergens, slot: slot.slot })
+          filterMeals({
+            diet: catalogDiet,
+            excludeAllergens,
+            slot: slot.slot,
+            mealFormatPreference: practicalMealFormat,
+            prepTimePreference: practicalPrepTime,
+            avoidTerms
+          })
         );
       }
+    }
+
+    // A result card presents three genuinely different alternatives. Never
+    // manufacture duplicates or silently relax diet/allergy/prep filters when
+    // a highly restrictive combination cannot support that contract.
+    const underfilledSlots = [...slotPools.entries()]
+      .filter(([, pool]) => pool.length < 3)
+      .map(([slotName]) => slotName);
+    if (underfilledSlots.length) {
+      return res.status(422).json({
+        error: isHebrew
+          ? "השילוב שבחרת של תזונה, מגבלות ורמת הכנה אינו משאיר שלוש חלופות בטוחות לכל ארוחה. נסה/י להרחיב את זמן ההכנה או לבחור בשילוב של הכול."
+          : "Your diet, restrictions and preparation choice do not leave three safe alternatives for every meal. Try allowing more preparation time or choosing a mix of meal types."
+      });
     }
 
     const promptSections = [...slotPools.entries()]
@@ -4049,6 +4190,8 @@ Rules:
 - Only use ids that appear verbatim in the matching slot's list. Never invent an id.
 - Prefer ids whose calorie count is close to that slot's target calories.
 - Avoid repeating the same meal id across different meal numbers in the same day when the slot's list has enough alternatives.
+- Meal practicality preference: ${practicalMealFormat}; preparation-time preference: ${practicalPrepTime}; food-style preference: ${practicalFoodStyle}.
+- Food-style preference is a positive preference, never a reason to break dietary restrictions or allergies.
 - Do not diagnose medical conditions. Treat any diagnosed condition only as user-provided context, never as something to treat or cure.
 - ${olderAdultInstructions}
 - ${youthInstructions}
@@ -4070,6 +4213,9 @@ Build today's plan.
 Goal: ${String(goal)}
 Daily calorie target: ${targetCalories} calories
 Dietary preference: ${String(dietaryPreference)}
+Meal practicality: ${practicalMealFormat}
+Preparation time: ${practicalPrepTime}
+Food style: ${practicalFoodStyle}
 Diagnosed nutrition-related conditions: ${safeConditions.length ? safeConditions.map((condition) => conditionNames[condition]).join(", ") : "None selected"}
 Favorite foods: ${String(favoriteFoods)}
 Foods to avoid: ${String(foodsToAvoid)}
@@ -4118,6 +4264,10 @@ ${slots
           macroAware: true,
           count: 3,
           preferNutrients
+          ,
+          mealFormatPreference: practicalMealFormat,
+          foodStylePreference: practicalFoodStyle,
+          favoriteTerms
         }));
       }
     }
@@ -4158,7 +4308,10 @@ ${slots
           macroAware: localDemoMode,
           count: 3 - validIds.length,
           exclude: [...validIds, ...usedMealIds],
-          preferNutrients
+          preferNutrients,
+          mealFormatPreference: practicalMealFormat,
+          foodStylePreference: practicalFoodStyle,
+          favoriteTerms
         });
         fallbackIds.forEach((id) => {
           if (!validIds.includes(id)) validIds.push(id);
@@ -4226,6 +4379,13 @@ ${slots
       // (diet + allergen exclusions) without the client resending the form.
       dietaryPreference: catalogDiet,
       excludeAllergens,
+      mealFormatPreference: practicalMealFormat,
+      prepTimePreference: practicalPrepTime,
+      foodStylePreference: practicalFoodStyle,
+      foodsToAvoid: String(foodsToAvoid),
+      favoriteFoods: String(favoriteFoods),
+      avoidTerms,
+      favoriteTerms,
       meals,
       notes: Array.isArray(aiPlan?.notes)
         ? aiPlan.notes.filter((note) => typeof note === "string").slice(0, 5)
@@ -4259,7 +4419,14 @@ ${slots
       {
         isHebrew,
         candidatesForSlot: (meal) =>
-          filterMeals({ diet: catalogDiet, excludeAllergens, slot: meal.slot }),
+          filterMeals({
+            diet: catalogDiet,
+            excludeAllergens,
+            slot: meal.slot,
+            mealFormatPreference: practicalMealFormat,
+            prepTimePreference: practicalPrepTime,
+            avoidTerms
+          }),
         buildOption: (mealId, meal) =>
           buildMealOption(mealId, {
             targetCalories: meal.targetCalories,

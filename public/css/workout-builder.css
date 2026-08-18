@@ -943,14 +943,16 @@ textarea:focus {
   position: absolute;
   top: 12px;
   inset-inline-end: 12px;
-  width: 38px;
+  min-width: 96px;
   height: 38px;
+  padding: 0 12px;
   border: none;
   border-radius: 12px;
   background: rgba(5, 10, 20, 0.72);
   backdrop-filter: blur(6px);
   color: #ffffff;
-  font-size: 18px;
+  font-size: 12px;
+  font-weight: 900;
   cursor: pointer;
   transition:
     transform 0.25s ease,
@@ -1518,7 +1520,7 @@ textarea:focus {
   }
 
   .reroll-button {
-    width: 44px;
+    min-width: 96px;
     height: 44px;
   }
 

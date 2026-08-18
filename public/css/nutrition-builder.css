@@ -1585,6 +1585,25 @@ html[dir="ltr"] .nutrition-food-table td {
   margin-bottom: 2px;
 }
 
+.meal-format-badge {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 26px;
+  align-items: center;
+  padding: 4px 9px;
+  border: 1px solid rgba(82, 201, 138, 0.26);
+  border-radius: 999px;
+  color: #c9f6dc;
+  background: rgba(82, 201, 138, 0.11);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.meal-format-badge--ready { border-color: rgba(82, 201, 138, 0.38); color: #c8f8db; }
+.meal-format-badge--quick { border-color: rgba(53, 207, 223, 0.4); color: #b9f2f8; background: rgba(53, 207, 223, 0.1); }
+.meal-format-badge--cook { border-color: rgba(224, 169, 64, 0.42); color: #ffe0a1; background: rgba(224, 169, 64, 0.1); }
+
 .meal-option-name {
   margin: 0;
   color: var(--card-text);
@@ -1596,13 +1615,19 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .nutrition-reroll-meal-button {
   flex: 0 0 auto;
-  width: 42px;
+  min-width: 106px;
   height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
   border: 1px solid var(--card-border);
   border-radius: 12px;
   background: var(--card-surface);
   color: var(--card-accent);
-  font-size: 18px;
+  font-size: 13px;
+  font-weight: 900;
   cursor: pointer;
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
@@ -1618,12 +1643,43 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 
 .nutrition-reroll-meal-button.is-rerolling {
-  animation: mealRerollSpin 0.8s linear infinite;
+  opacity: 0.64;
 }
 
 @keyframes mealRerollSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+.meal-practicality-fieldset {
+  margin: 20px 0 0;
+  padding: 18px;
+  border: 1px solid rgba(82, 201, 138, 0.26);
+  border-radius: 16px;
+  background: rgba(82, 201, 138, 0.06);
+}
+
+.meal-practicality-fieldset legend {
+  padding: 0 8px;
+  color: var(--card-text, #fff);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.meal-practicality-fieldset > p { margin: 0 0 14px; color: var(--card-text-secondary, #c7d1de); font-size: 13px; }
+.meal-practicality-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.meal-practicality-options label { position: relative; display: grid; min-height: 88px; }
+.meal-practicality-options input { position: absolute; opacity: 0; }
+.meal-practicality-options span { display: grid; gap: 4px; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.13); border-radius: 12px; color: var(--card-text, #fff); background: rgba(7, 11, 20, 0.32); cursor: pointer; }
+.meal-practicality-options small { color: var(--card-text-secondary, #c7d1de); line-height: 1.35; }
+.meal-practicality-options input:checked + span { border-color: #52c98a; background: rgba(82, 201, 138, 0.15); box-shadow: 0 0 0 3px rgba(82, 201, 138, 0.12); }
+.meal-practicality-options input:focus-visible + span { outline: 3px solid rgba(53, 207, 223, 0.56); outline-offset: 2px; }
+.meal-preference-selects { margin-top: 14px; }
+
+@media (max-width: 620px) {
+  .meal-practicality-options { grid-template-columns: 1fr; }
+  .nutrition-reroll-meal-button { min-width: 42px; padding: 0 10px; }
+  .nutrition-reroll-meal-button > span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 }
 
 .meal-option-macros {

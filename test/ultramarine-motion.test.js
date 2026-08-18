@@ -12,7 +12,7 @@ const PUSH = read("public/js/push-notifications.js");
 const SW = read("public/sw.js");
 const PROGRESS = read("public/js/progress.js");
 
-test("Ultramarine Editorial uses the approved exact palette without legacy brand color", () => {
+test("Ultramarine Editorial keeps the approved palette within the Deep Ocean restoration", () => {
   for (const [name, value] of Object.entries({
     ink: "#10131a", midnight: "#10182b", midnightSoft: "#172238",
     glacier: "#eef3fb", glacierSurface: "#f7f9fe", coolBlue: "#e8eefa", ultramarine: "#304ffe",
@@ -20,8 +20,11 @@ test("Ultramarine Editorial uses the approved exact palette without legacy brand
     coach: "#18a979", nutrition: "#e99a28", progress: "#7957e8", social: "#d54d79",
     steel: "#73809a", borderLight: "#d3dae8", borderDark: "#292d35"
   })) assert.ok(CSS.toLowerCase().includes(value), `${name} ${value}`);
-  assert.doesNotMatch(CSS, /linear-gradient|radial-gradient|conic-gradient/i);
-  assert.doesNotMatch(CSS, /#2f9bff|#35cfdf|#ff5a3c|rgba\(53,\s*207,\s*223|rgba\(47,\s*155,\s*255/i);
+  for (const [name, value] of Object.entries({ oceanDepth: "#061222", oceanPage: "#08182b", oceanSection: "#0c2139" })) {
+    assert.ok(CSS.toLowerCase().includes(value), `${name} ${value}`);
+  }
+  assert.match(CSS, /body\.fp-redesign\s*\{[\s\S]*radial-gradient/i);
+  assert.doesNotMatch(CSS, /#ff5a3c/i);
   assert.match(CSS, /--fp-danger:\s*#e05a67/);
   assert.match(CSS, /--fp-success:\s*#62b37c/);
   assert.match(CSS, /--fp-warning:\s*#d8a542/);
@@ -84,6 +87,6 @@ test("all public pages and the service worker use the Ultramarine cache generati
     assert.match(html, /redesign-v1\.css\?v=20260810-ultramarine-motion/);
     assert.match(html, /redesign-shell\.js\?v=20260810-ultramarine-motion/);
   }
-  assert.match(SW, /fuelphysique-v30-real-athlete-v43-polish-1/);
+  assert.match(SW, /fuelphysique-v31-deep-ocean-v44/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);
 });

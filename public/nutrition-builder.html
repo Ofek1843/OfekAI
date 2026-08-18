@@ -247,6 +247,36 @@
             </label>
           </div>
 
+          <fieldset class="meal-practicality-fieldset">
+            <legend data-en="How do you prefer your meals?" data-he="איך נוח לך לאכול ביום־יום?">How do you prefer your meals?</legend>
+            <p data-en="Choose the amount of preparation that fits your routine. You can still change any meal later." data-he="בחרו את רמת ההכנה שמתאימה לשגרה שלכם. אפשר להחליף כל ארוחה בהמשך.">Choose the amount of preparation that fits your routine. You can still change any meal later.</p>
+            <div class="meal-practicality-options" role="radiogroup" aria-label="Meal practicality">
+              <label><input type="radio" name="mealFormatPreference" value="ready"><span><strong data-en="Ready to eat" data-he="מוכן לאכילה">Ready to eat</strong><small data-en="Supermarket-ready food, no prep" data-he="מזון מוכן מהסופר, ללא הכנה">Supermarket-ready food, no prep</small></span></label>
+              <label><input type="radio" name="mealFormatPreference" value="quick"><span><strong data-en="Quick assembly" data-he="הרכבה מהירה">Quick assembly</strong><small data-en="Combine ingredients in 2–5 minutes" data-he="שילוב מצרכים ב־2–5 דקות">Combine ingredients in 2–5 minutes</small></span></label>
+              <label><input type="radio" name="mealFormatPreference" value="cook"><span><strong data-en="I’m willing to cook" data-he="מוכנ/ה לבשל">I’m willing to cook</strong><small data-en="Normal recipe and meal preparation" data-he="בישול והכנה רגילים">Normal recipe and meal preparation</small></span></label>
+              <label><input type="radio" name="mealFormatPreference" value="mix" checked><span><strong data-en="A mix of all" data-he="שילוב של הכול">A mix of all</strong><small data-en="Flexible throughout the week" data-he="גמיש לאורך השבוע">Flexible throughout the week</small></span></label>
+            </div>
+          </fieldset>
+
+          <div class="wizard-fields-grid meal-preference-selects">
+            <label>
+              <span data-en="Preparation time" data-he="זמן הכנה">Preparation time</span>
+              <select id="prepTimePreference" name="prepTimePreference">
+                <option value="zero" data-en="0 minutes" data-he="0 דקות">0 minutes</option>
+                <option value="five" data-en="Up to 5 minutes" data-he="עד 5 דקות">Up to 5 minutes</option>
+                <option value="fifteen" data-en="Up to 15 minutes" data-he="עד 15 דקות">Up to 15 minutes</option>
+                <option value="any" selected data-en="30+ minutes / no preference" data-he="30+ דקות / ללא העדפה">30+ minutes / no preference</option>
+              </select>
+            </label>
+            <label>
+              <span data-en="Food style" data-he="סגנון אוכל">Food style</span>
+              <select id="foodStylePreference" name="foodStylePreference">
+                <option value="mix" selected data-en="A mix of styles" data-he="שילוב סגנונות">A mix of styles</option>
+                <option value="mediterranean" data-en="Mediterranean & Israeli staples" data-he="מזון ים־תיכוני וישראלי">Mediterranean & Israeli staples</option>
+              </select>
+            </label>
+          </div>
+
           <div class="limitations-field" style="margin-top:20px">
             <span data-en="Preferred foods (optional)" data-he="מזונות מועדפים (אופציונלי)">Preferred foods (optional)</span>
             <textarea id="favoriteFoods" name="favoriteFoods" rows="3"

@@ -142,7 +142,12 @@ body.fp-redesign {
   min-width: 0;
   margin: 0;
   overflow-x: clip;
-  background: var(--fp-bg-page) !important;
+  background:
+    radial-gradient(900px 520px at 16% -12%, rgba(47, 155, 255, 0.24), transparent 66%),
+    radial-gradient(720px 460px at 92% 8%, rgba(53, 207, 223, 0.12), transparent 68%),
+    radial-gradient(840px 580px at 82% 106%, rgba(121, 87, 232, 0.12), transparent 72%),
+    linear-gradient(160deg, #071426 0%, #0a1b31 46%, #071323 100%) !important;
+  background-attachment: fixed !important;
   color: var(--fp-text-primary);
   font-family: var(--fp-ui) !important;
   font-size: 16px;
@@ -183,6 +188,36 @@ body.fp-composition-light {
 
 body.fp-composition-dark {
   color-scheme: dark;
+}
+
+/* V4.4 restores the earlier Deep Ocean stage on the public entry and planning
+   journeys. The current V4.3 layouts, real-athlete assets and category accents
+   remain above this layer; only the formerly paper-flat environment changes. */
+body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manual-nutrition-builder, .fp-route-my-nutrition-plans, .fp-route-workout-builder, .fp-route-my-workout-plans) {
+  --fp-bg-deep: #061222;
+  --fp-bg-page: #08182b;
+  --fp-bg-section: #0c2139;
+  --fp-surface: rgba(13, 34, 57, 0.9);
+  --fp-surface-raised: #102945;
+  --fp-surface-soft: #17395c;
+  --fp-surface-input: #0b2037;
+  --fp-nav-surface: rgba(6, 18, 34, 0.92);
+  --fp-border: rgba(147, 197, 253, 0.19);
+  --fp-border-strong: rgba(147, 197, 253, 0.38);
+  --fp-text-primary: #f3f8ff;
+  --fp-text-secondary: #ccdcf0;
+  --fp-text-muted: #9bb1cc;
+  --fp-text-inverse: #f3f8ff;
+  --fp-chart-grid: rgba(147, 197, 253, 0.17);
+  --fp-chart-label: #ccdcf0;
+  --fp-chart-tooltip-bg: #102945;
+  --fp-chart-tooltip-text: #f3f8ff;
+  color-scheme: dark;
+}
+
+body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manual-nutrition-builder, .fp-route-my-nutrition-plans, .fp-route-workout-builder, .fp-route-my-workout-plans) :where(.builder-card, .builder-wizard, .plans-page, .nutrition-plan-card, .plan-card, .program-result, .meal-option-card, .meal-option, .meal-options-carousel) {
+  background-color: rgba(8, 27, 48, 0.8) !important;
+  border-color: rgba(147, 197, 253, 0.2) !important;
 }
 
 body.fp-redesign::before,
@@ -455,7 +490,7 @@ body.fp-redesign::after,
 .fp-route-index .hero {
   min-height: auto !important;
   padding: clamp(36px, 5vw, 72px) 0 64px !important;
-  background: var(--fp-bg-page) !important;
+  background: transparent !important;
 }
 
 .fp-route-index .hero::before,
@@ -590,7 +625,7 @@ body.fp-redesign::after,
   right: -12%;
   width: 32rem;
   height: 18rem;
-  background: rgba(24, 169, 121, 0.1);
+  background: radial-gradient(circle, rgba(47, 155, 255, 0.2), rgba(53, 207, 223, 0.05) 48%, transparent 72%);
   transform: translate3d(6%, -14%, 0) rotate(8deg);
   animation-duration: 22s;
 }

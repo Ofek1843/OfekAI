@@ -62,6 +62,8 @@ const ui = isHebrew
       trainingDays: "מספר אימונים בשבוע",
       meals: "מספר ארוחות ביום",
       diet: "העדפה תזונתית",
+      prepTime: "זמן הכנה",
+      foodStyle: "סגנון אוכל",
       favorites: "מזונות מועדפים",
       avoid: "מזונות להימנע מהם",
       allergies: "אלרגיות או מגבלות תזונתיות",
@@ -104,6 +106,8 @@ const ui = isHebrew
       trainingDays: "Training days per week",
       meals: "Meals per day",
       diet: "Dietary preference",
+      prepTime: "Preparation time",
+      foodStyle: "Food style",
       favorites: "Preferred foods",
       avoid: "Foods to avoid",
       allergies: "Allergies or dietary restrictions",
@@ -145,6 +149,15 @@ function translateBuilderInterface() {
   document.title = isHebrew
     ? "FuelPhysique בונה תוכניות תזונה"
     : "FuelPhysique Nutrition Builder";
+
+  // The builder uses small, self-contained data attributes for the wizard
+  // copy so a newly added preference cannot quietly fall back to English in
+  // RTL. Select options continue through translateFormOptions() below.
+  if (isHebrew) {
+    document.querySelectorAll("[data-en][data-he]").forEach((element) => {
+      if (element.tagName !== "OPTION") element.textContent = element.dataset.he;
+    });
+  }
 
   setText("h1", ui.pageTitle);
   setText(".builder-description", ui.pageDescription);
@@ -232,7 +245,15 @@ const hebrewOptionLabels = {
   vegan: "טבעוני",
   pescatarian: "פסקטריאני",
   lowCarb: "דל פחמימות",
-  mediterranean: "תזונה ים־תיכונית"
+  mediterranean: "תזונה ים־תיכונית",
+  zero: "0 דקות",
+  five: "עד 5 דקות",
+  fifteen: "עד 15 דקות",
+  any: "30+ דקות / ללא העדפה",
+  mix: "שילוב של הכול",
+  ready: "מוכן לאכילה",
+  quick: "הרכבה מהירה",
+  cook: "מוכנ/ה לבשל"
 };
 
 function translateFormOptions() {
@@ -291,6 +312,9 @@ form.addEventListener("submit", async (event) => {
     trainingDays: Number(formData.get("trainingDays")),
     mealsPerDay: Number(formData.get("mealsPerDay")),
     dietaryPreference: formData.get("dietaryPreference"),
+    mealFormatPreference: formData.get("mealFormatPreference") || "mix",
+    prepTimePreference: formData.get("prepTimePreference") || "any",
+    foodStylePreference: formData.get("foodStylePreference") || "mix",
     diagnosedConditions: formData.getAll("diagnosedConditions"),
     youthGuardianConsent: formData.get("youthGuardianConsent") === "on",
 
@@ -493,6 +517,16 @@ function hideResult() {
   resultElement.classList.add("hidden");
   resultElement.innerHTML = "";
 }
+
+function mealFormatLabel(format, minutes) {
+  const labels = isHebrew
+    ? { ready: "מוכן", quick: "מהיר", cook: "בישול" }
+    : { ready: "READY", quick: "QUICK", cook: "COOK" };
+  const base = labels[format] || labels.cook;
+  return Number.isFinite(Number(minutes)) && Number(minutes) > 0
+    ? `${base} · ${minutes}${isHebrew ? " דק׳" : " min"}`
+    : base;
+}
 // activeOptions maps mealNumber -> visible option index, so re-rendering
 // after a meal swap keeps every carousel where the user left it instead of
 // snapping them all back to option 1.
@@ -580,10 +614,13 @@ function renderNutritionPlan(plan, activeOptions = null) {
                 <div class="meal-title-row">
                   <h3 class="meal-option-name">${escapeHtml(mealName)}</h3>
                   <button type="button" class="nutrition-reroll-meal-button"
-                          title="${isHebrew ? "החלפת הארוחה" : "Swap this meal"}"
+                          title="${isHebrew ? "החלפת הארוחה" : "Replace meal"}"
+                          aria-label="${isHebrew ? "החלפת הארוחה" : "Replace meal"}"
                           data-meal-number="${meal.mealNumber}"
-                          data-option-number="${option.optionNumber}">🔄</button>
+                          data-option-number="${option.optionNumber}"><span aria-hidden="true">↻</span><span>${isHebrew ? "החלפה" : "Replace"}</span></button>
                 </div>
+
+                <span class="meal-format-badge meal-format-badge--${escapeHtml(option.mealFormat || "cook")}">${escapeHtml(mealFormatLabel(option.mealFormat, option.prepMinutes))}</span>
 
                 <div class="meal-option-macros">
                   <span><strong>${escapeHtml(option.optionCalories ?? "-")}</strong> ${ui.calories}</span>
@@ -805,7 +842,7 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
 
       const data = await response.json();
 
-      if (!response.ok || !data.option) {
+      if (!response.ok || (!data.option && !data.plan)) {
         setStatus(
           data.error ||
             (isHebrew ? "לא ניתן היה להחליף את הארוחה." : "Could not replace the meal."),
@@ -821,7 +858,12 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
         (option) => option.optionNumber === optionNumber
       );
 
-      if (meal && optionIndex !== -1) {
+      if (data.plan) {
+        const active = captureActiveOptions();
+        window.currentNutritionPlan = data.plan;
+        setStatus("");
+        renderNutritionPlan(window.currentNutritionPlan, active);
+      } else if (meal && optionIndex !== -1) {
         meal.options[optionIndex] = data.option;
         const active = captureActiveOptions();
         setStatus("");
