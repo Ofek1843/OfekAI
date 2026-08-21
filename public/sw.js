@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v34-deep-ocean-v45-athlete-polish';
+const CACHE_NAME = 'fuelphysique-v38-daily-nutrition-v11';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -40,7 +40,7 @@ const urlsToCache = [
   '/css/dashboard.css',
   '/css/redesign-v1.css?v=20260810-ultramarine-motion',
   '/css/v45-deep-ocean.css?v=20260821-v45-athlete-polish-2',
-  '/css/daily-nutrition.css?v=20260821-v45-weekly-1',
+  '/css/daily-nutrition.css?v=20260821-v45-daily-nutrition-v11-4',
   '/css/product-polish-v3.css?v=20260811-spectrum-v3',
   '/css/illustrated-v4.css?v=20260821-v45-athlete-polish-2',
   '/css/workout-builder.css',
@@ -50,11 +50,12 @@ const urlsToCache = [
   '/css/social.css',
   '/js/social.js',
   '/js/redesign-shell.js?v=20260810-ultramarine-motion',
-  '/js/redesign-shell.js?v=20260821-v45-weekly-1',
-  '/js/daily-nutrition.js?v=20260821-v45-weekly-1',
-  '/js/daily-nutrition-domain.mjs?v=20260821-v45-weekly-1',
-  '/js/daily-nutrition-store.mjs?v=20260821-v45-weekly-1',
-  '/js/daily-nutrition-i18n.mjs?v=20260821-v45-weekly-1',
+  '/js/redesign-shell.js?v=20260821-v45-daily-nutrition-v11-4',
+  '/js/daily-nutrition.js?v=20260821-v45-daily-nutrition-v11-4',
+  '/js/daily-nutrition-domain.mjs?v=20260821-v45-daily-nutrition-v11-4',
+  '/js/daily-nutrition-store.mjs?v=20260821-v45-daily-nutrition-v11-4',
+  '/js/daily-nutrition-i18n.mjs?v=20260821-v45-daily-nutrition-v11-4',
+  '/js/daily-nutrition-format.mjs?v=20260821-v45-daily-nutrition-v11-4',
   '/js/athlete-figure.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/training.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5',

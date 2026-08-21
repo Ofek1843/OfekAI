@@ -80,7 +80,7 @@ test("focus, reduced motion, disabled controls, and minimum control size are exp
 });
 
 test("the service worker versions and pre-caches the shared redesign assets", () => {
-  assert.match(SW, /fuelphysique-v34-deep-ocean-v45-athlete-polish/);
+  assert.match(SW, /fuelphysique-v38-daily-nutrition-v11/);
   assert.ok(SW.includes("/css/redesign-v1.css?v=20260810-ultramarine-motion"));
   assert.ok(SW.includes("/js/redesign-shell.js?v=20260810-ultramarine-motion"));
   assert.ok(SW.includes("/css/illustrated-v4.css?v=20260821-v45-athlete-polish-2"));

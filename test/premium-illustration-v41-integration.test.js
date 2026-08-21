@@ -137,7 +137,7 @@ test("runtime diagnostics mark rendered V4.1 sources rather than hiding a fallba
 });
 
 test("the V4.3 prototype service worker cache is synchronized and retains private/auth bypasses", () => {
-  assert.match(SW, /CACHE_NAME = 'fuelphysique-v34-deep-ocean-v45-athlete-polish'/);
+  assert.match(SW, /CACHE_NAME = 'fuelphysique-v38-daily-nutrition-v11'/);
   assert.doesNotMatch(SW, /20260812-athletic-spectrum|fuelphysique-v13-illustrated-v4/);
   for (const asset of [
     "css/illustrated-v4.css",

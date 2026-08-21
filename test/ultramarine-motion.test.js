@@ -86,12 +86,12 @@ test("all public pages and the service worker use their exact versioned shell ge
     const html = read(`public/${page}`);
     assert.match(html, /redesign-v1\.css\?v=20260810-ultramarine-motion/);
     const expectedShell = page === "daily-nutrition.html"
-      ? /redesign-shell\.js\?v=20260821-v45-weekly-1/
+      ? /redesign-shell\.js\?v=20260821-v45-daily-nutrition-v11-4/
       : /redesign-shell\.js\?v=20260810-ultramarine-motion/;
     assert.match(html, expectedShell);
   }
-  assert.match(SW, /fuelphysique-v34-deep-ocean-v45-athlete-polish/);
+  assert.match(SW, /fuelphysique-v38-daily-nutrition-v11/);
   assert.match(SW, /redesign-shell\.js\?v=20260810-ultramarine-motion/);
-  assert.match(SW, /redesign-shell\.js\?v=20260821-v45-weekly-1/);
+  assert.match(SW, /redesign-shell\.js\?v=20260821-v45-daily-nutrition-v11-4/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);
 });
