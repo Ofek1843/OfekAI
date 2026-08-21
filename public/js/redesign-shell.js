@@ -8,6 +8,7 @@
   }
   const protectedRoutes = new Set([
     "app.html",
+    "daily-nutrition.html",
     "dashboard.html",
     "exercise-progress.html",
     "leaderboard.html",
@@ -78,6 +79,7 @@
       menuAccount: "Account",
       buildWorkout: "Build a workout",
       buildNutrition: "Build nutrition",
+      dailyNutrition: "Daily nutrition",
       tracker: "Workout tracker",
       history: "Workout history",
       settings: "Settings",
@@ -99,6 +101,7 @@
       menuAccount: "חשבון",
       buildWorkout: "בניית תוכנית אימון",
       buildNutrition: "בניית תוכנית תזונה",
+      dailyNutrition: "יומן תזונה יומי",
       tracker: "מעקב אימון",
       history: "היסטוריית אימונים",
       settings: "הגדרות",
@@ -196,6 +199,7 @@
           { key: "tracker", href: "/workout-tracker.html", label: copy.tracker },
           { key: "history", href: "/workout-history.html", label: copy.history },
           { key: "buildNutrition", href: "/nutrition-builder.html", label: copy.buildNutrition },
+          { key: "dailyNutrition", href: "/daily-nutrition.html", label: copy.dailyNutrition },
           { key: "nutrition", href: "/my-nutrition-plans.html", label: copy.nutrition },
           { key: "progress", href: "/progress.html", label: copy.progress },
         ],

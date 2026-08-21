@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Daily Nutrition · FuelPhysique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/redesign-v1.css?v=20260810-ultramarine-motion">
+  <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1">
+  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260821-v45-daily-1">
+  <script defer src="/js/redesign-shell.js?v=20260821-v45-daily-1"></script>
+</head>
+<body class="daily-nutrition-route">
+  <main class="daily-nutrition-shell" id="dailyNutritionApp">
+    <header class="daily-hero">
+      <div>
+        <span class="daily-kicker" data-copy="kicker">ATHLETE CORE · DAILY NUTRITION</span>
+        <h1 data-copy="title">Log food. See the day clearly.</h1>
+        <p data-copy="intro">Fast daily logging with your plan targets, estimated balance, and a weekly view.</p>
+      </div>
+      <nav class="daily-context-links" aria-label="Nutrition tools">
+        <a href="/dashboard.html" data-copy="dashboard">Dashboard</a>
+        <a href="/my-nutrition-plans.html" data-copy="nutritionPlans">Nutrition plans</a>
+      </nav>
+    </header>
+
+    <section class="date-toolbar daily-surface" aria-label="Nutrition log date">
+      <button id="previousDay" class="icon-action icon-action--previous" type="button" data-copy-aria="previousDay"><img src="/icons/tabler/chevron-right.svg" alt=""><span data-copy="previousDay">Previous day</span></button>
+      <div class="date-toolbar-center">
+        <strong id="selectedDateLabel">Today</strong>
+        <label class="date-picker-label"><span class="sr-only" data-copy="chooseDate">Choose date</span><input id="selectedDate" type="date"></label>
+      </div>
+      <div class="date-toolbar-actions">
+        <button id="todayButton" type="button" data-copy="today">Today</button>
+        <button id="nextDay" class="icon-action icon-action--next" type="button" data-copy-aria="nextDay"><span data-copy="nextDay">Next day</span><img src="/icons/tabler/chevron-right.svg" alt=""></button>
+      </div>
+    </section>
+
+    <p id="pageStatus" class="daily-page-status" role="status" aria-live="polite" data-copy="loading">Loading your nutrition log…</p>
+
+    <section class="daily-priority-grid" aria-label="Daily nutrition overview">
+      <article class="daily-surface primary-metric-card" id="calorieCard">
+        <div class="calorie-ring" id="calorieRing" role="img" aria-label="Calories consumed">
+          <div><strong id="calorieConsumed">0</strong><span data-copy="calories">Calories</span></div>
+        </div>
+        <div class="metric-copy">
+          <span data-copy="goalTarget">Goal calorie target</span>
+          <strong id="calorieTarget">—</strong>
+          <p><span data-copy="remaining">Remaining</span> <b id="calorieRemaining">—</b></p>
+        </div>
+      </article>
+      <article class="daily-surface protein-card">
+        <span class="metric-eyebrow" data-copy="protein">Protein</span>
+        <strong><span id="proteinConsumed">0</span><small>g</small></strong>
+        <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
+        <p><span data-copy="remaining">Remaining</span> <b id="proteinRemaining">—</b></p>
+      </article>
+      <article class="daily-surface target-card">
+        <span class="metric-eyebrow" data-copy="maintenance">Estimated maintenance / TDEE</span>
+        <strong id="maintenanceValue">—</strong>
+        <p id="targetMessage" data-copy="targetMissing">Connect an active nutrition plan to show goal and protein targets.</p>
+        <a href="/nutrition-builder.html" data-copy="setupTargets">Set up nutrition targets</a>
+      </article>
+    </section>
+
+    <section class="food-composer daily-surface" aria-labelledby="foodComposerTitle">
+      <div class="section-heading-row">
+        <div><span class="daily-kicker" data-copy="inputLabel">What did you eat?</span><h2 id="foodComposerTitle" data-copy="inputHint">Type one or several foods in natural language.</h2></div>
+        <span class="autosave-state" id="autosaveState" aria-live="polite" data-copy="saveStatus">Saved</span>
+      </div>
+      <form id="foodComposerForm" class="food-composer-form">
+        <label class="sr-only" for="foodInput" data-copy="inputLabel">What did you eat?</label>
+        <input id="foodInput" type="text" maxlength="240" autocomplete="off" data-copy-placeholder="inputPlaceholder" placeholder="Try: 250g cottage cheese and 4 rice cakes">
+        <button id="addFoodButton" type="submit"><img src="/icons/tabler/plus.svg" alt=""><span data-copy="add">Add</span></button>
+      </form>
+      <div class="food-examples" aria-label="Food input examples">
+        <span data-copy="examples">Examples</span>
+        <button type="button" data-example="50g oats">50g oats</button>
+        <button type="button" data-example="250g cottage cheese 3% and 4 rice cakes">250g cottage + 4 rice cakes</button>
+        <button type="button" data-example="1 protein drink">1 protein drink</button>
+      </div>
+      <div id="clarificationPanel" class="clarification-panel" hidden></div>
+      <p id="composerMessage" class="composer-message" role="alert" aria-live="assertive"></p>
+      <div class="composer-actions">
+        <button id="copyYesterdayButton" type="button" class="secondary-button" data-copy="copyYesterday">Copy yesterday</button>
+        <button id="finishDayButton" type="button" class="finish-button" data-copy="finishDay">Finish day</button>
+      </div>
+    </section>
+
+    <div class="daily-content-grid">
+      <section class="entries-panel daily-surface" aria-labelledby="entriesTitle">
+        <div class="section-heading-row">
+          <div><span class="daily-kicker" data-copy="entriesTitle">Today’s food</span><h2 id="entriesTitle" data-copy="entriesHint">Every change updates totals and autosaves.</h2></div>
+          <span class="entry-count" id="entryCount">0</span>
+        </div>
+        <div class="food-table-wrap">
+          <table class="food-table">
+            <thead><tr><th data-copy="food">Food</th><th data-copy="amount">Amount</th><th data-copy="calories">Calories</th><th data-copy="protein">Protein</th><th data-copy="carbs">Carbohydrates</th><th data-copy="fat">Fat</th><th data-copy="actions">Actions</th></tr></thead>
+            <tbody id="foodEntries"></tbody>
+          </table>
+          <p id="emptyEntries" class="empty-state" data-copy="emptyEntries">Nothing logged yet. Add your first food above.</p>
+        </div>
+      </section>
+
+      <aside class="daily-side-column">
+        <section class="daily-surface macro-card" aria-labelledby="macroTitle">
+          <span class="daily-kicker" data-copy="macroDistribution">Macro energy distribution</span>
+          <h2 id="macroTitle" data-copy="dailyMetrics">Daily totals</h2>
+          <div class="macro-visual-row">
+            <div id="macroRing" class="macro-ring" role="img" aria-label="Macro energy distribution"></div>
+            <dl class="macro-breakdown">
+              <div><dt data-copy="protein">Protein</dt><dd id="proteinPercent">0%</dd></div>
+              <div><dt data-copy="carbs">Carbohydrates</dt><dd id="carbsPercent">0%</dd></div>
+              <div><dt data-copy="fat">Fat</dt><dd id="fatPercent">0%</dd></div>
+            </dl>
+          </div>
+          <p class="metric-note" data-copy="macroNote">Calculated from protein/carbohydrates at 4 kcal/g and fat at 9 kcal/g; label calories can differ slightly.</p>
+        </section>
+
+        <section class="daily-surface balance-card" id="balanceCard" aria-labelledby="balanceTitle">
+          <span class="daily-kicker" data-copy="balanceTitle">Estimated energy balance</span>
+          <h2 id="balanceTitle"><span id="balanceStatus">Needs setup</span></h2>
+          <strong id="balanceValue">—</strong>
+          <p data-copy="balanceDisclaimer">Estimate only — daily energy needs vary.</p>
+        </section>
+      </aside>
+    </div>
+
+    <section class="daily-utility-grid">
+      <article class="daily-surface compact-tool-card" aria-labelledby="recentTitle">
+        <div><span class="daily-kicker" data-copy="recentTitle">Recent foods</span><h2 id="recentTitle" data-copy="recentHint">Quick add foods you actually logged.</h2></div>
+        <div id="recentFoods" class="quick-add-list"></div>
+      </article>
+
+      <details class="daily-surface compact-tool-card">
+        <summary><span><b data-copy="customTitle">Custom food</b><small data-copy="customHint">Save a label or supermarket item once, then reuse it.</small></span><img class="details-icon" src="/icons/tabler/plus.svg" alt=""></summary>
+        <form id="customFoodForm" class="custom-food-form">
+          <label><span data-copy="customName">Food name</span><input name="name" maxlength="80" required></label>
+          <label><span data-copy="customNameHe">Hebrew name (optional)</span><input name="nameHe" maxlength="80"></label>
+          <label><span data-copy="serving">Serving amount</span><input name="baseAmount" type="number" min="0.1" max="10000" step="0.1" value="100" required></label>
+          <label><span data-copy="unit">Unit</span><select name="baseUnit"><option value="g" data-copy="grams">grams</option><option value="item" data-copy="item">item</option><option value="ml" data-copy="milliliters">ml</option></select></label>
+          <label><span data-copy="calories">Calories</span><input name="calories" type="number" min="0" max="10000" step="0.1" required></label>
+          <label><span data-copy="protein">Protein</span><input name="proteinGrams" type="number" min="0" max="1000" step="0.1" required></label>
+          <label><span data-copy="carbs">Carbohydrates</span><input name="carbsGrams" type="number" min="0" max="1000" step="0.1" required></label>
+          <label><span data-copy="fat">Fat</span><input name="fatGrams" type="number" min="0" max="1000" step="0.1" required></label>
+          <label class="custom-check"><input name="favorite" type="checkbox"><span data-copy="favorite">Add to favorites</span></label>
+          <button type="submit" class="finish-button" data-copy="saveCustom">Save custom food</button>
+        </form>
+      </details>
+
+      <details class="daily-surface compact-tool-card">
+        <summary><span><b data-copy="combinationsTitle">Saved combinations</b><small data-copy="combinationsHint">Save today’s entries as a reusable meal combination.</small></span><img class="details-icon" src="/icons/tabler/plus.svg" alt=""></summary>
+        <form id="combinationForm" class="combination-form"><label><span data-copy="combinationName">Combination name</span><input name="name" maxlength="80" required></label><button type="submit" class="secondary-button" data-copy="saveCombination">Save current entries</button></form>
+        <div id="savedCombinations" class="quick-add-list"></div>
+      </details>
+    </section>
+
+    <section class="weekly-panel daily-surface" aria-labelledby="weeklyTitle">
+      <div class="section-heading-row">
+        <div><span class="daily-kicker" data-copy="weeklyTitle">7-day view</span><h2 id="weeklyTitle" data-copy="weeklyHint">Averages include logged days only; unlogged days are never treated as zero.</h2></div>
+        <span id="weeklyDenominator" class="weekly-denominator"></span>
+      </div>
+      <div class="weekly-metrics">
+        <div><span data-copy="averageIntake">Average intake</span><strong id="weeklyCalories">—</strong></div>
+        <div><span data-copy="averageProtein">Average protein</span><strong id="weeklyProtein">—</strong></div>
+        <div><span data-copy="averageBalance">Average balance</span><strong id="weeklyBalance">—</strong></div>
+        <div><span data-copy="loggedDays">Logged days</span><strong id="weeklyLogged">0 / 7</strong></div>
+      </div>
+      <div id="weeklyChart" class="weekly-chart" role="img" aria-label="Seven-day calorie intake trend"></div>
+      <p id="weeklyTextAlternative" class="metric-note"></p>
+    </section>
+  </main>
+  <script type="module" src="/js/daily-nutrition.js?v=20260821-v45-daily-1"></script>
+  <script type="module" src="/js/site-feedback.js"></script>
+</body>
+</html>

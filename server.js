@@ -4370,6 +4370,7 @@ ${slots
           ? "תוכנית תזונה מותאמת אישית מקטלוג ארוחות אצור."
           : "A personalized nutrition plan built from a curated meal catalog."),
       goal: String(goal),
+      maintenanceCalories,
       dailyCalories: targetCalories,
       proteinGrams: targetProtein,
       carbsGrams: targetCarbs,
