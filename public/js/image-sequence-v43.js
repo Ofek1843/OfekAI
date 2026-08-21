@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260815-real-athlete-v43-complete-5";
-  const PLATE_ASSET_VERSION = "20260815-real-athlete-v43-plate-bulk-fix-2";
+  const VERSION = "20260821-v45-athlete-polish-2";
+  const PLATE_ASSET_VERSION = "20260821-v45-athlete-polish-2";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const PRODUCTION_HOSTS = new Set(["fuelphysique.com", "www.fuelphysique.com"]);
   const ROOT = "/assets/athlete-motion/v43";

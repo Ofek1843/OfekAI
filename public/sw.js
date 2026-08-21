@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v33-deep-ocean-v45-real-athlete';
+const CACHE_NAME = 'fuelphysique-v34-deep-ocean-v45-athlete-polish';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -39,10 +39,10 @@ const urlsToCache = [
   '/privacy.html',
   '/css/dashboard.css',
   '/css/redesign-v1.css?v=20260810-ultramarine-motion',
-  '/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1',
+  '/css/v45-deep-ocean.css?v=20260821-v45-athlete-polish-2',
   '/css/daily-nutrition.css?v=20260821-v45-weekly-1',
   '/css/product-polish-v3.css?v=20260811-spectrum-v3',
-  '/css/illustrated-v4.css?v=20260815-real-athlete-v43-complete-5',
+  '/css/illustrated-v4.css?v=20260821-v45-athlete-polish-2',
   '/css/workout-builder.css',
   '/css/nutrition-builder.css',
   '/css/legal.css',
@@ -60,7 +60,7 @@ const urlsToCache = [
   '/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/progress.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/coachsocial.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/image-sequence-v43.js?v=20260821-v45-real-athlete-default-1',
+  '/js/image-sequence-v43.js?v=20260821-v45-athlete-polish-2',
   '/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',

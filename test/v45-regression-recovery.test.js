@@ -83,3 +83,34 @@ test("the regenerated FUEL athlete matte has alpha and no large neutral edge fri
   assert.equal(frame.source, "frame-04-regenerated.png");
   assert.equal(frame.normalizedBytes, fs.statSync(imagePath).size);
 });
+
+test("athlete polish keeps the Deadlift floor stable and removes the Session studio separator", async () => {
+  const manifest = JSON.parse(read("public", "assets", "athlete-motion", "v43", "manifest.json"));
+  assert.deepEqual(manifest.scenes.deadlift.canvas, { width: 720, height: 720 });
+  assert.ok(manifest.scenes.deadlift.frames.every((frame) => frame.placement.top + frame.placement.height === 700));
+  assert.ok(manifest.scenes.deadlift.frames.every((frame) => frame.placement.width === 440));
+
+  for (const frame of manifest.scenes.session.frames) {
+    const imagePath = path.join(ROOT, "public", "assets", "athlete-motion", "v43", "session", "normalized", frame.file);
+    const { data, info } = await sharp(imagePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    let visibleSeparatorPixels = 0;
+    for (let y = 18; y <= 710; y += 1) {
+      for (let x = 198; x <= 562; x += 1) {
+        const inFormerSeparator = y <= 46 || (y <= 220 && (x <= 222 || x >= 538));
+        if (!inFormerSeparator) continue;
+        const offset = (y * info.width + x) * 4;
+        if (data[offset + 3] < 40) continue;
+        const channels = [data[offset], data[offset + 1], data[offset + 2]];
+        if (Math.min(...channels) >= 210 && Math.max(...channels) - Math.min(...channels) <= 52) visibleSeparatorPixels += 1;
+      }
+    }
+    assert.ok(visibleSeparatorPixels < 80, `${frame.file} retains ${visibleSeparatorPixels} visible separator pixels`);
+  }
+});
+
+test("the landing Login CTA remains a full-size colored control", () => {
+  const css = read("public", "css", "v45-deep-ocean.css");
+  assert.match(css, /\.hero-btn\.secondary\s*\{[\s\S]*?display:\s*inline-flex\s*!important;/);
+  assert.match(css, /\.hero-btn\.secondary\s*\{[\s\S]*?min-width:\s*132px;/);
+  assert.match(css, /\.hero-btn\.secondary\s*\{[\s\S]*?linear-gradient/);
+});

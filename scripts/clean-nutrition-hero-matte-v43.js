@@ -118,7 +118,7 @@ async function removeCheckerboard(input) {
     rgba[target] = data[colourIndex];
     rgba[target + 1] = data[colourIndex + 1];
     rgba[target + 2] = data[colourIndex + 2];
-    rgba[target + 3] = distance === 1 ? 72 : distance === 2 ? 160 : distance === 3 ? 224 : 255;
+    rgba[target + 3] = distance === 1 ? 32 : distance === 2 ? 112 : distance === 3 ? 204 : 255;
   }
   return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
 }
@@ -148,6 +148,11 @@ async function main() {
     ])
     .webp({ quality: 88, alphaQuality: 100, effort: 6 })
     .toFile(OUTPUT);
+  const manifestPath = path.join(ROOT, "public", "assets", "athlete-motion", "v43", "manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  manifest.scenes.plate.frames[3].normalizedBytes = fs.statSync(OUTPUT).size;
+  manifest.scenes.plate.normalizedBytes = manifest.scenes.plate.frames.reduce((sum, frame) => sum + frame.normalizedBytes, 0);
+  fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   const sourceStat = fs.statSync(SOURCE);
   const outputStat = fs.statSync(OUTPUT);
   const metadata = await sharp(OUTPUT).metadata();

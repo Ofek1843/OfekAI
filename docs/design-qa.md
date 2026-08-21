@@ -72,3 +72,56 @@ Final evidence is stored in `outputs/complete-redesign/illustrated-v4/`, includi
 ## Final visual result
 
 **PASSED.** FuelPhysique now reads as one illustrated performance product: the five capabilities are visually distinct, the motion is athletic and finite, the landing is continuous, and the approved Workout and Social structures are preserved.
+
+---
+
+# V4.5 targeted real-athlete polish QA
+
+Status: **PASSED**
+
+This pass addresses the four visible regressions supplied in the review screenshots without changing the V4.5 page architecture or activation model.
+
+## Same-input comparison
+
+The four supplied reference screenshots and the corrected local implementation were reviewed together in one board:
+
+- comparison board: `docs/illustration/v45/targeted-athlete-polish-before-after.png`
+- stabilized deadlift frames: `docs/illustration/v43/deadlift-v45-stabilized-contact-sheet.png`
+- cleaned Build Session frames: `docs/illustration/v43/build-session-v45-clean-contact-sheet.png`
+- final landing deadlift: `docs/illustration/v45/deadlift-final.png`
+- final Dashboard nutrition card: `docs/illustration/v45/dashboard-nutrition-final.png`
+- final hip-thrust scene: `docs/illustration/v45/hip-thrust-final.png`
+- final hero actions: `docs/illustration/v45/landing-login-final.png`
+
+The paired board confirms that the deadlift is larger, the food athlete no longer carries a white waist matte, the hip-thrust sequence no longer shows the generated studio separator, and the hero Login action is a full-size colored button.
+
+## Motion and asset checks
+
+- All five deadlift frames use a 720×720 transparent canvas, a fixed visible width, and the same floor baseline.
+- The deadlift remains contained inside the hero stage and uses the existing finite image-sequence playback.
+- The plate athlete's alpha edge was feathered conservatively; athlete, bowl, clothing, and white shoe details remain intact.
+- Long neutral studio separators were removed from all four session frames without changing the athlete or equipment.
+- Source assets remain preserved; only normalized derivatives and manifest metadata changed.
+
+## Browser checks
+
+| Viewport | Route | Result |
+| --- | --- | --- |
+| 390×844 | Landing | PASS — 321×52 Login CTA, no horizontal overflow |
+| 430×932 | Dashboard | PASS — athlete stages remain contained, no horizontal overflow |
+| 1280×720 | Landing | PASS — larger deadlift, stable floor, colored Login CTA |
+| 1280×720 | Dashboard | PASS — clean plate and session assets, hamburger/navigation intact |
+
+The normal V4.5 path loads the new `20260821-v45-athlete-polish-2` asset generation. `?athleteMotion=v42` still renders the six SVG fallback scenes and loads no real-athlete image frames. Auth redirected the already-signed-in local user to Dashboard as expected. No new browser-console error was recorded after the emulator restart; the retained log entry predates that restart.
+
+## Automated validation
+
+- Focused athlete/PWA/security regression suite: 118 passed, 0 failed.
+- Full `npm test`: 1129 passed, 0 failed.
+- Lint: passed as part of the full test command.
+- Load test: zero errors, zero timeouts, zero non-2xx responses in all three scenarios.
+- `git diff --check`: passed.
+
+## Final result
+
+**PASSED.** The reported real-athlete presentation defects are corrected locally, V4.2 remains available as a fallback, and no production system was changed.

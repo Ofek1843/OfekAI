@@ -8,9 +8,10 @@ const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
 const VERSION = "20260815-real-athlete-v43-complete-5";
-const PLATE_ASSET_VERSION = "20260815-real-athlete-v43-plate-bulk-fix-2";
-const ENGINE_VERSION = "20260821-v45-real-athlete-default-1";
-const CSS_VERSION = "20260815-real-athlete-v43-complete-5";
+const MOTION_ASSET_VERSION = "20260821-v45-athlete-polish-2";
+const PLATE_ASSET_VERSION = MOTION_ASSET_VERSION;
+const ENGINE_VERSION = MOTION_ASSET_VERSION;
+const CSS_VERSION = MOTION_ASSET_VERSION;
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -103,7 +104,7 @@ test("V4.3 is default on production and local review while localhost retains an 
 test("semantic frame order and reviewed timings are encoded without inventing poses", () => {
   const scenes = loadEngine("localhost", "?athleteMotion=v43").scenes;
   assert.ok(scenes.plate.frames.every((item) => new URL(item.url, "http://local").searchParams.get("v") === PLATE_ASSET_VERSION));
-  assert.ok(scenes.deadlift.frames.every((item) => new URL(item.url, "http://local").searchParams.get("v") === VERSION));
+  assert.ok(scenes.deadlift.frames.every((item) => new URL(item.url, "http://local").searchParams.get("v") === MOTION_ASSET_VERSION));
   assert.deepEqual(Array.from(scenes.deadlift.frames, (item) => item.duration), [380, 240, 470, 320, 340, 360]);
   assert.deepEqual(Array.from(scenes.training.frames, (item) => item.duration), [360, 230, 440, 300, 340, 360]);
   assert.deepEqual(Array.from(scenes.nutrition.frames, (item) => item.duration), [300, 220, 250, 450, 300, 320]);
@@ -189,7 +190,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v33-deep-ocean-v45-real-athlete/);
+  assert.match(SW, /fuelphysique-v34-deep-ocean-v45-athlete-polish/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

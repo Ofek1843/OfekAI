@@ -1005,6 +1005,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
 .fp-route-index .landing-hero-illustration .v43-image-sequence--deadlift .v43-image-sequence__frame {
   width: 100%;
   max-width: 100%;
+  object-position: center bottom;
 }
 
 .fp-route-index .journey-illustration[data-v43-motion="prototype"] {

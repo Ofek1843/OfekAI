@@ -12,7 +12,7 @@
           "file": "frame-01.webp",
           "semantic": "setup",
           "sourceBytes": 133687,
-          "normalizedBytes": 20052,
+          "normalizedBytes": 43782,
           "sourceBounds": {
             "left": 8,
             "top": 0,
@@ -20,17 +20,17 @@
             "height": 887
           },
           "placement": {
-            "left": 300,
-            "top": 0,
-            "width": 281,
-            "height": 720
+            "left": 140,
+            "top": 252,
+            "width": 440,
+            "height": 448
           }
         },
         {
           "file": "frame-02.webp",
           "semantic": "early-pull",
           "sourceBytes": 149555,
-          "normalizedBytes": 22220,
+          "normalizedBytes": 44088,
           "sourceBounds": {
             "left": 8,
             "top": 0,
@@ -38,17 +38,17 @@
             "height": 887
           },
           "placement": {
-            "left": 300,
-            "top": 0,
-            "width": 282,
-            "height": 720
+            "left": 140,
+            "top": 164,
+            "width": 440,
+            "height": 536
           }
         },
         {
           "file": "frame-03.webp",
           "semantic": "lockout",
           "sourceBytes": 148189,
-          "normalizedBytes": 21640,
+          "normalizedBytes": 44048,
           "sourceBounds": {
             "left": 8,
             "top": 0,
@@ -56,17 +56,17 @@
             "height": 887
           },
           "placement": {
-            "left": 300,
-            "top": 0,
-            "width": 282,
-            "height": 720
+            "left": 140,
+            "top": 67,
+            "width": 440,
+            "height": 633
           }
         },
         {
           "file": "frame-04.webp",
           "semantic": "controlled-descent",
           "sourceBytes": 146292,
-          "normalizedBytes": 21194,
+          "normalizedBytes": 45284,
           "sourceBounds": {
             "left": 8,
             "top": 0,
@@ -74,17 +74,17 @@
             "height": 887
           },
           "placement": {
-            "left": 300,
-            "top": 0,
-            "width": 282,
-            "height": 720
+            "left": 140,
+            "top": 206,
+            "width": 440,
+            "height": 494
           }
         },
         {
           "file": "frame-05.webp",
           "semantic": "return-to-setup",
           "sourceBytes": 133687,
-          "normalizedBytes": 20052,
+          "normalizedBytes": 43782,
           "sourceBounds": {
             "left": 8,
             "top": 0,
@@ -92,10 +92,10 @@
             "height": 887
           },
           "placement": {
-            "left": 300,
-            "top": 0,
-            "width": 281,
-            "height": 720
+            "left": 140,
+            "top": 252,
+            "width": 440,
+            "height": 448
           }
         }
       ],
@@ -148,8 +148,12 @@
         }
       ],
       "splitSourceBytes": 708492,
-      "normalizedBytes": 105158,
-      "contactSheet": "docs/illustration/v43/deadlift-final-5-frame-contact-sheet.png"
+      "normalizedBytes": 220984,
+      "contactSheet": "docs/illustration/v43/deadlift-final-5-frame-contact-sheet.png",
+      "canvas": {
+        "width": 720,
+        "height": 720
+      }
     },
     "bench": {
       "frames": [
@@ -573,7 +577,7 @@
           "file": "frame-04.webp",
           "source": "frame-04-regenerated.png",
           "sourceBytes": 1526417,
-          "normalizedBytes": 35652,
+          "normalizedBytes": 35686,
           "index": 3,
           "semantic": "bulk-female"
         }
@@ -585,7 +589,7 @@
         "height": 887
       },
       "motionSheetSourceBytes": 2135494,
-      "normalizedBytes": 139372,
+      "normalizedBytes": 139406,
       "canvas": {
         "width": 600,
         "height": 720
@@ -597,28 +601,28 @@
         {
           "file": "frame-01.webp",
           "sourceBytes": 479754,
-          "normalizedBytes": 25010,
+          "normalizedBytes": 24588,
           "index": 0,
           "semantic": "hip-thrust-setup"
         },
         {
           "file": "frame-02.webp",
           "sourceBytes": 476177,
-          "normalizedBytes": 26418,
+          "normalizedBytes": 24522,
           "index": 1,
           "semantic": "hip-thrust-top"
         },
         {
           "file": "frame-03.webp",
           "sourceBytes": 502705,
-          "normalizedBytes": 29144,
+          "normalizedBytes": 29176,
           "index": 2,
           "semantic": "shoulder-press-lower"
         },
         {
           "file": "frame-04.webp",
           "sourceBytes": 520249,
-          "normalizedBytes": 33142,
+          "normalizedBytes": 30156,
           "index": 3,
           "semantic": "shoulder-press-top"
         }
@@ -629,7 +633,7 @@
         "height": 887
       },
       "motionSheetSourceBytes": 2058384,
-      "normalizedBytes": 113714,
+      "normalizedBytes": 108442,
       "canvas": {
         "width": 760,
         "height": 720

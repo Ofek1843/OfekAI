@@ -249,9 +249,17 @@ body.fp-v45-deep-ocean .nav-link:hover {
 }
 
 .fp-v45-deep-ocean.fp-route-index .hero-btn.secondary {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 132px;
+  min-height: 52px;
+  padding-inline: 24px !important;
   border-color: rgba(150, 199, 238, 0.24) !important;
-  background: rgba(11, 38, 64, 0.72) !important;
+  background: linear-gradient(135deg, rgba(37, 91, 135, 0.96), rgba(22, 62, 99, 0.96)) !important;
   color: #e8f4ff !important;
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(15, 88, 144, 0.22) !important;
 }
 
 .fp-v45-deep-ocean.fp-route-index .landing-section {
