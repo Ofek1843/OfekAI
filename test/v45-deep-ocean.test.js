@@ -42,6 +42,7 @@ test("Deep Ocean preserves the real-athlete and reduced-motion contracts", () =>
   assert.match(css, /animation:\s*none !important/);
   assert.match(engine, /IntersectionObserver/);
   assert.match(engine, /prefers-reduced-motion/);
+  assert.match(engine, /get\("athleteMotion"\) !== "v42"/);
   assert.match(dashboard, /image-sequence-v43\.js/);
 });
 

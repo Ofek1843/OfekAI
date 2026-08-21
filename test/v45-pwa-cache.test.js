@@ -8,7 +8,7 @@ const path = require("node:path");
 const sw = fs.readFileSync(path.join(__dirname, "..", "public", "sw.js"), "utf8");
 
 test("V4.5 cache generation includes the Deep Ocean daily nutrition shell", () => {
-  assert.match(sw, /fuelphysique-v32-deep-ocean-v45/);
+  assert.match(sw, /fuelphysique-v33-deep-ocean-v45-real-athlete/);
   for (const asset of [
     "/daily-nutrition.html",
     "/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1",

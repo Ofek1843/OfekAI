@@ -110,7 +110,7 @@
   function isEnabled() {
     if (PRODUCTION_HOSTS.has(window.location.hostname)) return true;
     if (!LOCAL_HOSTS.has(window.location.hostname)) return false;
-    return new URLSearchParams(window.location.search).get("athleteMotion") === "v43";
+    return new URLSearchParams(window.location.search).get("athleteMotion") !== "v42";
   }
 
   function preloadFrames(frames) {

@@ -9,6 +9,7 @@ const vm = require("node:vm");
 const ROOT = path.join(__dirname, "..");
 const VERSION = "20260815-real-athlete-v43-complete-5";
 const PLATE_ASSET_VERSION = "20260815-real-athlete-v43-plate-bulk-fix-2";
+const ENGINE_VERSION = "20260821-v45-real-athlete-default-1";
 const CSS_VERSION = "20260815-real-athlete-v43-complete-5";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
@@ -87,13 +88,14 @@ test("final source mapping uses exact equal-width Deadlift boundaries and correc
   assert.deepEqual(MANIFEST.scenes.session.frames.map((frame) => frame.semantic), ["hip-thrust-setup", "hip-thrust-top", "shoulder-press-lower", "shoulder-press-top"]);
 });
 
-test("V4.3 is default on the production hosts while localhost remains opt-in", () => {
+test("V4.3 is default on production and local review while localhost retains an explicit V4.2 fallback", () => {
   assert.equal(loadEngine("127.0.0.1", "?athleteMotion=v43").isEnabled(), true);
   assert.equal(loadEngine("localhost", "?athleteMotion=v43").isEnabled(), true);
   assert.equal(loadEngine("fuelphysique.com", "").isEnabled(), true);
   assert.equal(loadEngine("www.fuelphysique.com", "").isEnabled(), true);
   assert.equal(loadEngine("fuelphysique.com", "?athleteMotion=v42").isEnabled(), true);
-  assert.equal(loadEngine("127.0.0.1", "").isEnabled(), false);
+  assert.equal(loadEngine("127.0.0.1", "").isEnabled(), true);
+  assert.equal(loadEngine("localhost", "").isEnabled(), true);
   assert.equal(loadEngine("127.0.0.1", "?athleteMotion=v42").isEnabled(), false);
   assert.equal(loadEngine("preview.fuelphysique.com", "?athleteMotion=v43").isEnabled(), false);
 });
@@ -178,7 +180,7 @@ test("V4.3 athlete stages contain frames and expose the Bench review host", () =
 test("landing and dashboard load the engine before integration with one cache generation", () => {
   for (const file of ["index.html", "dashboard.html"]) {
     const html = read("public", file);
-    const engine = `/js/image-sequence-v43.js?v=${PLATE_ASSET_VERSION}`;
+    const engine = `/js/image-sequence-v43.js?v=${ENGINE_VERSION}`;
     const integration = `/js/illustrated-v4.js?v=${VERSION}`;
     assert.ok(html.includes(engine));
     assert.ok(html.indexOf(engine) < html.indexOf(integration));
@@ -187,8 +189,8 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v32-deep-ocean-v45/);
-  assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${PLATE_ASSET_VERSION}`));
+  assert.match(SW, /fuelphysique-v33-deep-ocean-v45-real-athlete/);
+  assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(SW, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
