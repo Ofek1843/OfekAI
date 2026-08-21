@@ -24,6 +24,7 @@ service cloud.firestore {
     function isLegacyUserCollection(name) {
       return name in [
         'athleteCore', 'settings', 'workoutPlans', 'nutritionPlans',
+        'dailyNutritionLogs', 'customFoods', 'savedFoodCombinations',
         'workoutLogs', 'weightEntries', 'bodyMeasurements', 'progressPhotos',
         'runs', 'conversations', 'leaderboardSubmissions',
         'transformationSubmissions', 'waitlists'

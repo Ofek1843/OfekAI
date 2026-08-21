@@ -67,6 +67,9 @@ async function seed() {
     batch.set(doc(db, "users/alice/settings/main"), { language: "en" });
     batch.set(doc(db, "users/alice/workoutPlans/plan-a"), { name: "Alice plan", createdAt: 1 });
     batch.set(doc(db, "users/alice/nutritionPlans/nutrition-a"), { name: "Alice nutrition", createdAt: 1 });
+    batch.set(doc(db, "users/alice/dailyNutritionLogs/2026-08-21"), { dateKey: "2026-08-21", entries: [{ foodId: "oats" }], completed: false });
+    batch.set(doc(db, "users/alice/customFoods/custom-a"), { name: "Alice custom food", calories: 120 });
+    batch.set(doc(db, "users/alice/savedFoodCombinations/breakfast-a"), { name: "Alice breakfast", entries: [{ foodId: "oats" }] });
     batch.set(doc(db, "users/alice/workoutLogs/log-a"), { completedAt: 1 });
     batch.set(doc(db, "users/alice/weightEntries/weight-a"), { date: "2026-01-01", weight: 70 });
     batch.set(doc(db, "users/alice/bodyMeasurements/measurement-a"), { date: "2026-01-01", waist: 80 });
@@ -133,6 +136,7 @@ test("legacy owner access is preserved and cross-user access is denied", async (
   const other = bob();
   const legacyPaths = [
     "athleteCore/main", "settings/main", "workoutPlans/plan-a", "nutritionPlans/nutrition-a",
+    "dailyNutritionLogs/2026-08-21", "customFoods/custom-a", "savedFoodCombinations/breakfast-a",
     "workoutLogs/log-a", "weightEntries/weight-a", "bodyMeasurements/measurement-a",
     "progressPhotos/photo-a", "runs/run-a", "conversations/coach-a",
     "conversations/coach-a/messages/message-a", "leaderboardSubmissions/submission-a",
@@ -144,6 +148,8 @@ test("legacy owner access is preserved and cross-user access is denied", async (
   }
   await assertSucceeds(setDoc(doc(owner, "users/alice/workoutPlans/new-plan"), { name: "new" }));
   await assertFails(setDoc(doc(other, "users/alice/workoutPlans/forged"), { name: "forged" }));
+  await assertSucceeds(setDoc(doc(owner, "users/alice/dailyNutritionLogs/2026-08-22"), { dateKey: "2026-08-22", entries: [] }));
+  await assertFails(setDoc(doc(other, "users/alice/dailyNutritionLogs/2026-08-22"), { dateKey: "2026-08-22", entries: [] }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { displayName: "Alice updated" }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { activeNutritionPlanId: "nutrition-a" }));
   await assertFails(updateDoc(doc(owner, "users/alice"), { termsAccepted: true, termsVersion: "2026-08-08" }));
