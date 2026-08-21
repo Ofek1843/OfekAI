@@ -240,12 +240,14 @@ function weeklySummary(logs = []) {
       fatGrams: summary.fatGrams + Number(totals.fatGrams || 0),
       maintenance: summary.maintenance + (maintenance > 0 ? maintenance : 0),
       maintenanceDays: summary.maintenanceDays + (maintenance > 0 ? 1 : 0),
+      balance: summary.balance + (maintenance > 0 ? Number(totals.calories || 0) - maintenance : 0),
       completedDays: summary.completedDays + (log.completed ? 1 : 0)
     };
-  }, { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0, maintenance: 0, maintenanceDays: 0, completedDays: 0 });
+  }, { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0, maintenance: 0, maintenanceDays: 0, balance: 0, completedDays: 0 });
   const denominator = relevant.length;
   const average = (value) => denominator ? round(value / denominator) : 0;
   const averageMaintenance = total.maintenanceDays ? round(total.maintenance / total.maintenanceDays) : null;
+  const averageBalance = total.maintenanceDays ? round(total.balance / total.maintenanceDays) : null;
   const averageCalories = average(total.calories);
   return {
     loggedDays: denominator,
@@ -255,8 +257,8 @@ function weeklySummary(logs = []) {
     averageCarbsGrams: average(total.carbsGrams),
     averageFatGrams: average(total.fatGrams),
     averageMaintenance,
-    averageBalance: averageMaintenance === null ? null : round(averageCalories - averageMaintenance),
-    balanceStatus: averageMaintenance === null ? "unknown" : classifyEstimatedBalance(averageCalories, averageMaintenance).status
+    averageBalance,
+    balanceStatus: averageBalance === null ? "unknown" : classifyEstimatedBalance(averageMaintenance + averageBalance, averageMaintenance).status
   };
 }
 

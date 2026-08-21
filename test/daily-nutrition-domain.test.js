@@ -110,6 +110,19 @@ test("weekly averages exclude unlogged days instead of counting them as zero", a
   assert.equal(summary.balanceStatus, "deficit");
 });
 
+test("weekly balance excludes days that have no maintenance snapshot", async () => {
+  const { weeklySummary } = await domainPromise;
+  const summary = weeklySummary([
+    { entries: [{ calories: 2000 }], totals: { calories: 2000, proteinGrams: 140 }, maintenanceSnapshot: 2500 },
+    { entries: [{ calories: 4000 }], totals: { calories: 4000, proteinGrams: 180 }, maintenanceSnapshot: null }
+  ]);
+  assert.equal(summary.loggedDays, 2);
+  assert.equal(summary.averageCalories, 3000);
+  assert.equal(summary.averageMaintenance, 2500);
+  assert.equal(summary.averageBalance, -500);
+  assert.equal(summary.balanceStatus, "deficit");
+});
+
 test("recent foods are unique and preserve latest portions", async () => {
   const { recentFoodsFromLogs } = await domainPromise;
   const logs = [

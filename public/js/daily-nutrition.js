@@ -15,7 +15,7 @@ import {
   validateCustomFood,
   weekDateKeys,
   weeklySummary
-} from "./daily-nutrition-domain.mjs";
+} from "./daily-nutrition-domain.mjs?v=20260821-v45-weekly-1";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -25,8 +25,8 @@ import {
   saveCustomFood,
   saveDailyLog,
   saveFoodCombination
-} from "./daily-nutrition-store.mjs";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs";
+} from "./daily-nutrition-store.mjs?v=20260821-v45-weekly-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260821-v45-weekly-1";
 
 const $ = (selector) => document.querySelector(selector);
 const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
@@ -223,19 +223,39 @@ function renderWeek() {
   const summary = weeklySummary(state.weekLogs);
   $("#weeklyCalories").textContent = summary.loggedDays ? `${number(summary.averageCalories)} kcal` : "—";
   $("#weeklyProtein").textContent = summary.loggedDays ? `${number(summary.averageProteinGrams, 1)} g` : "—";
+  $("#weeklyCarbs").textContent = summary.loggedDays ? `${number(summary.averageCarbsGrams, 1)} g` : "—";
+  $("#weeklyFat").textContent = summary.loggedDays ? `${number(summary.averageFatGrams, 1)} g` : "—";
+  $("#weeklyMaintenance").textContent = summary.averageMaintenance === null ? "—" : `${number(summary.averageMaintenance)} kcal`;
   $("#weeklyBalance").textContent = summary.averageBalance === null ? "—" : `${summary.averageBalance > 0 ? "+" : ""}${number(summary.averageBalance)} kcal`;
   $("#weeklyLogged").textContent = `${summary.loggedDays} / 7`;
+  $("#weeklyCompleted").textContent = `${summary.completedDays} / 7`;
+  const balanceLabels = { deficit: copy.deficit, maintenance: copy.maintenanceStatus, surplus: copy.surplus, unknown: copy.unknown };
+  $("#weeklyBalanceStatus").textContent = balanceLabels[summary.balanceStatus];
+  $("#weeklyBalanceStatus").dataset.status = summary.balanceStatus;
   $("#weeklyDenominator").textContent = summary.loggedDays
     ? format(summary.loggedDays === 1 ? copy.averageOverOne : copy.averageOver, { count: summary.loggedDays })
     : copy.noWeekData;
 
-  const maxCalories = Math.max(1, ...state.weekLogs.map((log) => Number(log.totals?.calories || 0)), Number(currentTargets().dailyCalories || 0));
+  const maxCalories = Math.max(
+    1,
+    ...state.weekLogs.flatMap((log) => [
+      Number(log.totals?.calories || 0),
+      Number(log.targetSnapshot?.dailyCalories || 0),
+      Number(log.maintenanceSnapshot || log.targetSnapshot?.maintenanceCalories || 0)
+    ]),
+    Number(currentTargets().dailyCalories || 0),
+    Number(currentTargets().maintenanceCalories || 0)
+  );
   $("#weeklyChart").innerHTML = state.weekLogs.map((log) => {
     const calories = Number(log.totals?.calories || 0);
     const height = calories ? Math.max(5, Math.min(100, (calories / maxCalories) * 100)) : 0;
+    const goal = Number(log.targetSnapshot?.dailyCalories || 0);
+    const maintenance = Number(log.maintenanceSnapshot || log.targetSnapshot?.maintenanceCalories || 0);
+    const goalLine = goal ? `<span class="trend-reference trend-reference--goal" style="bottom:${Math.min(100, (goal / maxCalories) * 100)}%"></span>` : "";
+    const maintenanceLine = maintenance ? `<span class="trend-reference trend-reference--maintenance" style="bottom:${Math.min(100, (maintenance / maxCalories) * 100)}%"></span>` : "";
     const date = dateFromKey(log.dateKey);
     const weekday = copy.weekdayShort[date.getDay()];
-    return `<div class="trend-day${calories ? "" : " is-empty"}"><div class="trend-bar-track"><span class="trend-bar" style="height:${height}%"></span></div><strong>${calories ? `${number(calories)} kcal` : "—"}</strong><span>${esc(weekday)}</span></div>`;
+    return `<div class="trend-day${calories ? "" : " is-empty"}"><div class="trend-bar-track">${goalLine}${maintenanceLine}<span class="trend-bar" style="height:${height}%"></span></div><strong>${calories ? `${number(calories)} kcal` : "—"}</strong><span>${esc(weekday)}</span></div>`;
   }).join("");
   $("#weeklyTextAlternative").textContent = state.weekLogs.map((log) => {
     const calories = Number(log.totals?.calories || 0);

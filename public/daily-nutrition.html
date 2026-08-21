@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260810-ultramarine-motion">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1">
-  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260821-v45-daily-1">
-  <script defer src="/js/redesign-shell.js?v=20260821-v45-daily-1"></script>
+  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260821-v45-weekly-1">
+  <script defer src="/js/redesign-shell.js?v=20260821-v45-weekly-1"></script>
 </head>
 <body class="daily-nutrition-route">
   <main class="daily-nutrition-shell" id="dailyNutritionApp">
@@ -162,19 +162,24 @@
     <section class="weekly-panel daily-surface" aria-labelledby="weeklyTitle">
       <div class="section-heading-row">
         <div><span class="daily-kicker" data-copy="weeklyTitle">7-day view</span><h2 id="weeklyTitle" data-copy="weeklyHint">Averages include logged days only; unlogged days are never treated as zero.</h2></div>
-        <span id="weeklyDenominator" class="weekly-denominator"></span>
+        <div class="weekly-heading-meta"><span id="weeklyBalanceStatus" class="weekly-balance-status"></span><span id="weeklyDenominator" class="weekly-denominator"></span></div>
       </div>
       <div class="weekly-metrics">
         <div><span data-copy="averageIntake">Average intake</span><strong id="weeklyCalories">—</strong></div>
         <div><span data-copy="averageProtein">Average protein</span><strong id="weeklyProtein">—</strong></div>
+        <div><span data-copy="averageCarbs">Average carbohydrates</span><strong id="weeklyCarbs">—</strong></div>
+        <div><span data-copy="averageFat">Average fat</span><strong id="weeklyFat">—</strong></div>
+        <div><span data-copy="averageMaintenance">Average maintenance</span><strong id="weeklyMaintenance">—</strong></div>
         <div><span data-copy="averageBalance">Average balance</span><strong id="weeklyBalance">—</strong></div>
         <div><span data-copy="loggedDays">Logged days</span><strong id="weeklyLogged">0 / 7</strong></div>
+        <div><span data-copy="completedDays">Completed days</span><strong id="weeklyCompleted">0 / 7</strong></div>
       </div>
+      <div class="weekly-legend" aria-label="Chart reference lines"><span><i class="legend-goal"></i><b data-copy="goalReference">Goal target</b></span><span><i class="legend-maintenance"></i><b data-copy="maintenanceReference">Estimated maintenance</b></span></div>
       <div id="weeklyChart" class="weekly-chart" role="img" aria-label="Seven-day calorie intake trend"></div>
       <p id="weeklyTextAlternative" class="metric-note"></p>
     </section>
   </main>
-  <script type="module" src="/js/daily-nutrition.js?v=20260821-v45-daily-1"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20260821-v45-weekly-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>
