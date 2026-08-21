@@ -14,7 +14,9 @@ test("parses and scales a single gram-based food", async () => {
   assert.equal(result.entries.length, 1);
   assert.equal(result.entries[0].foodId, "oats");
   assert.equal(result.entries[0].amount, 50);
-  assert.equal(result.entries[0].calories, 194.5);
+  assert.equal(result.entries[0].calories, 187.5);
+  assert.equal(result.entries[0].reference.state, "dry");
+  assert.equal(result.entries[0].estimated, false);
 });
 
 test("parses multiple foods in one English sentence", async () => {
@@ -61,9 +63,111 @@ test("daily totals and remaining targets update across every macro", async () =>
   const entries = parseFoodText("50g oats, 1 protein drink, banana").entries;
   const totals = totalsForEntries(entries);
   const remaining = remainingAgainstTargets(totals, { dailyCalories: 500, proteinGrams: 50, carbsGrams: 80, fatGrams: 20 });
-  assert.equal(totals.calories, 459.5);
-  assert.equal(remaining.calories, 40.5);
-  assert.equal(remaining.proteinGrams, 15.2);
+  assert.equal(totals.calories, 452.5);
+  assert.equal(remaining.calories, 47.5);
+  assert.equal(remaining.proteinGrams, 17.1);
+});
+
+test("generic foods use canonical representative records with documented state", async () => {
+  const { parseFoodText } = await domainPromise;
+  const cases = [
+    ["50g oats", "oats", "dry"],
+    ["180g sweet potato", "sweet-potato", "cooked"],
+    ["118g banana", "banana", "raw"],
+    ["60g pita", "pita", "ready-to-eat"],
+    ["2 rice cakes", "rice-cake", "ready-to-eat"]
+  ];
+  for (const [input, foodId, state] of cases) {
+    const entry = parseFoodText(input).entries[0];
+    assert.equal(entry.foodId, foodId, input);
+    assert.equal(entry.reference?.state, state, input);
+  }
+  const ranges = [
+    ["100g oats", "calories", 350, 410],
+    ["100g oats", "proteinGrams", 11, 15],
+    ["100g sweet potato", "calories", 75, 110],
+    ["100g banana", "calories", 75, 105],
+    ["100g pita", "calories", 240, 310],
+    ["1 rice cake", "calories", 20, 55]
+  ];
+  for (const [input, field, minimum, maximum] of ranges) {
+    const value = parseFoodText(input).entries[0][field];
+    assert.ok(value >= minimum && value <= maximum, `${input} ${field}: ${value}`);
+  }
+});
+
+test("explicit grams override natural portion estimation", async () => {
+  const { parseFoodText } = await domainPromise;
+  const entry = parseFoodText("95 גרם בטטה").entries[0];
+  assert.equal(entry.amount, 95);
+  assert.equal(entry.estimated, false);
+  assert.equal(entry.approximate, false);
+  const suffixResult = parseFoodText("קוטג׳ 250 גרם");
+  assert.equal(suffixResult.status, "needs-clarification");
+  assert.equal(suffixResult.ambiguities[0].amount, 250);
+  assert.equal(suffixResult.ambiguities[0].unit, "g");
+  const specificSuffix = parseFoodText("קוטג׳ 5% 250 גרם").entries[0];
+  assert.equal(specificSuffix.foodId, "cottage-5");
+  assert.equal(specificSuffix.amount, 250);
+});
+
+test("natural English and Hebrew portions resolve to transparent editable estimates", async () => {
+  const { parseFoodText } = await domainPromise;
+  const cases = [
+    ["בטטה בינונית", 180, 1, "medium"],
+    ["2 בטטות בינוניות", 360, 2, "medium"],
+    ["medium banana", 118, 1, "medium"],
+    ["קערת אורז", 220, 1, null],
+    ["2 pizza slices", 240, 2, null]
+  ];
+  for (const [input, grams, count, size] of cases) {
+    const entry = parseFoodText(input).entries[0];
+    assert.equal(entry.amount, grams, input);
+    assert.equal(entry.estimatedGrams, grams, input);
+    assert.equal(entry.portionCount, count, input);
+    assert.equal(entry.portionSize, size, input);
+    assert.equal(entry.approximate, true, input);
+  }
+  const halfPita = parseFoodText("חצי פיתה").entries[0];
+  assert.equal(halfPita.amount, 30);
+  assert.equal(halfPita.portionCount, 0.5);
+});
+
+test("whole pizza requests a compact size choice instead of inventing one", async () => {
+  const { parseFoodText, resolveFoodChoice } = await domainPromise;
+  const result = parseFoodText("מגש פיצה");
+  assert.equal(result.status, "needs-clarification");
+  assert.equal(result.ambiguities[0].kind, "portion");
+  assert.deepEqual(result.ambiguities[0].choices.map((choice) => choice.choiceId), ["personal", "medium", "large"]);
+  const medium = result.ambiguities[0].choices[1];
+  const resolved = resolveFoodChoice(medium.foodId, { amount: medium.amount, unit: medium.unit, estimate: medium.estimate, rawText: "מגש פיצה" });
+  assert.equal(resolved.amount, 800);
+  assert.equal(resolved.compositeEstimate, true);
+});
+
+test("composite meals remain low-confidence estimates", async () => {
+  const { parseFoodText } = await domainPromise;
+  const entry = parseFoodText("לאפה שווארמה").entries[0];
+  assert.equal(entry.amount, 500);
+  assert.equal(entry.estimateConfidence, "low");
+  assert.equal(entry.compositeEstimate, true);
+});
+
+test("custom and known-brand records take priority over generic aliases", async () => {
+  const { parseFoodText, validateCustomFood } = await domainPromise;
+  assert.equal(parseFoodText("quaker oats").entries[0].foodId, "oats-quaker-original");
+  const custom = validateCustomFood({ id: "my-oats", name: "Oats", baseAmount: 100, baseUnit: "g", calories: 420, proteinGrams: 20, carbsGrams: 60, fatGrams: 10 });
+  const result = parseFoodText("50g oats", { customFoods: [custom] });
+  assert.equal(result.entries[0].foodId, "my-oats");
+  assert.equal(result.entries[0].calories, 210);
+});
+
+test("multiple-food parsing returns recognized entries alongside explicit errors", async () => {
+  const { parseFoodText } = await domainPromise;
+  const result = parseFoodText("50g oats and mystery food");
+  assert.equal(result.status, "partial");
+  assert.deepEqual(result.entries.map((entry) => entry.foodId), ["oats"]);
+  assert.deepEqual(result.errors.map((error) => error.segment), ["mystery food"]);
 });
 
 test("remaining values become negative after the target is exceeded", async () => {
