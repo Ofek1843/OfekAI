@@ -50,6 +50,9 @@ test("Deep Ocean remains responsive and keeps protected surfaces readable", () =
 
   assert.match(css, /@media \(max-width: 920px\)/);
   assert.match(css, /@media \(max-width: 760px\)/);
+  assert.match(css, /body\.fp-v45-deep-ocean \.fp-global-brand\s*\{\s*display:\s*none/);
+  assert.match(css, /body\.fp-v45-deep-ocean \.fp-global-links\s*\{[^}]*min-width:\s*0/);
+  assert.match(css, /body\.fp-v45-deep-ocean \.fp-global-link\s*\{[^}]*flex:\s*1 1 0/);
   assert.match(css, /\.builder-card/);
   assert.match(css, /\.nutrition-plan-card/);
   assert.match(css, /\.settings-card/);

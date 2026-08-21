@@ -484,6 +484,29 @@ html[dir="rtl"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header:
 }
 
 @media (max-width: 920px) {
+  body.fp-v45-deep-ocean .fp-global-nav {
+    padding-inline: 8px;
+    gap: 4px;
+  }
+
+  body.fp-v45-deep-ocean .fp-global-brand {
+    display: none;
+  }
+
+  body.fp-v45-deep-ocean .fp-global-links {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  body.fp-v45-deep-ocean .fp-global-link {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 8px;
+    font-size: clamp(0.68rem, 1.55vw, 0.8rem);
+    text-align: center;
+  }
+
   .fp-v45-deep-ocean.fp-route-index .hero-shell {
     width: min(100% - 28px, 760px);
     padding: clamp(22px, 5vw, 38px) !important;

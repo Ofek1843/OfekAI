@@ -22,13 +22,13 @@
         <h1 data-copy="title">Log food. See the day clearly.</h1>
         <p data-copy="intro">Fast daily logging with your plan targets, estimated balance, and a weekly view.</p>
       </div>
-      <nav class="daily-context-links" aria-label="Nutrition tools">
+      <nav class="daily-context-links" aria-label="Nutrition tools" data-copy-aria="nutritionTools">
         <a href="/dashboard.html" data-copy="dashboard">Dashboard</a>
         <a href="/my-nutrition-plans.html" data-copy="nutritionPlans">Nutrition plans</a>
       </nav>
     </header>
 
-    <section class="date-toolbar daily-surface" aria-label="Nutrition log date">
+    <section class="date-toolbar daily-surface" aria-label="Nutrition log date" data-copy-aria="nutritionLogDate">
       <button id="previousDay" class="icon-action icon-action--previous" type="button" data-copy-aria="previousDay"><img src="/icons/tabler/chevron-right.svg" alt=""><span data-copy="previousDay">Previous day</span></button>
       <div class="date-toolbar-center">
         <strong id="selectedDateLabel">Today</strong>
@@ -42,9 +42,9 @@
 
     <p id="pageStatus" class="daily-page-status" role="status" aria-live="polite" data-copy="loading">Loading your nutrition log…</p>
 
-    <section class="daily-priority-grid" aria-label="Daily nutrition overview">
+    <section class="daily-priority-grid" aria-label="Daily nutrition overview" data-copy-aria="dailyOverview">
       <article class="daily-surface primary-metric-card" id="calorieCard">
-        <div class="calorie-ring" id="calorieRing" role="img" aria-label="Calories consumed">
+        <div class="calorie-ring" id="calorieRing" role="img" aria-label="Calories consumed" data-copy-aria="caloriesConsumed">
           <div><strong id="calorieConsumed">0</strong><span data-copy="calories">Calories</span></div>
         </div>
         <div class="metric-copy">
@@ -77,7 +77,7 @@
         <input id="foodInput" type="text" maxlength="240" autocomplete="off" data-copy-placeholder="inputPlaceholder" placeholder="Try: 250g cottage cheese and 4 rice cakes">
         <button id="addFoodButton" type="submit"><img src="/icons/tabler/plus.svg" alt=""><span data-copy="add">Add</span></button>
       </form>
-      <div class="food-examples" aria-label="Food input examples">
+      <div class="food-examples" aria-label="Food input examples" data-copy-aria="foodExamples">
         <span data-copy="examples">Examples</span>
         <button type="button" data-example="50g oats">50g oats</button>
         <button type="button" data-example="250g cottage cheese 3% and 4 rice cakes">250g cottage + 4 rice cakes</button>
@@ -174,7 +174,7 @@
         <div><span data-copy="loggedDays">Logged days</span><strong id="weeklyLogged">0 / 7</strong></div>
         <div><span data-copy="completedDays">Completed days</span><strong id="weeklyCompleted">0 / 7</strong></div>
       </div>
-      <div class="weekly-legend" aria-label="Chart reference lines"><span><i class="legend-goal"></i><b data-copy="goalReference">Goal target</b></span><span><i class="legend-maintenance"></i><b data-copy="maintenanceReference">Estimated maintenance</b></span></div>
+      <div class="weekly-legend" aria-label="Chart reference lines" data-copy-aria="chartReferenceLines"><span><i class="legend-goal"></i><b data-copy="goalReference">Goal target</b></span><span><i class="legend-maintenance"></i><b data-copy="maintenanceReference">Estimated maintenance</b></span></div>
       <div id="weeklyChart" class="weekly-chart" role="img" aria-label="Seven-day calorie intake trend"></div>
       <p id="weeklyTextAlternative" class="metric-note"></p>
     </section>

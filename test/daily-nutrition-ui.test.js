@@ -75,6 +75,13 @@ test("English and Hebrew copies cover logging, ambiguity and unlogged weekly day
   assert.match(client, /document\.documentElement\.dir = language === "he" \? "rtl" : "ltr"/);
 });
 
+test("Daily Nutrition localizes structural accessibility labels in Hebrew", () => {
+  for (const key of ["nutritionTools", "nutritionLogDate", "dailyOverview", "caloriesConsumed", "foodExamples", "chartReferenceLines"]) {
+    assert.match(html, new RegExp(`data-copy-aria="${key}"`));
+    assert.equal((copy.match(new RegExp(`\\b${key}:`, "g")) || []).length, 2);
+  }
+});
+
 test("dashboard and global drawer expose one unambiguous Daily Nutrition route", () => {
   assert.match(dashboard, /id="studioDailyNutritionLink" href="\/daily-nutrition\.html"/);
   assert.match(dashboard, /id="dailyNutritionLink" class="secondary-action" href="\/daily-nutrition\.html"/);

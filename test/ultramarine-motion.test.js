@@ -79,14 +79,19 @@ test("mobile Social presents the conversation list before opening a private thre
   assert.match(SOCIAL, /state\.activeConversation\s*=\s*conversation;[\s\S]*?classList\.remove\("show-conversations"\)/);
 });
 
-test("all public pages and the service worker use the Ultramarine cache generation", () => {
+test("all public pages and the service worker use their exact versioned shell generation", () => {
   const pages = fs.readdirSync(path.join(ROOT, "public")).filter(file => file.endsWith(".html"));
-  assert.equal(pages.length, 33);
+  assert.equal(pages.length, 34);
   for (const page of pages) {
     const html = read(`public/${page}`);
     assert.match(html, /redesign-v1\.css\?v=20260810-ultramarine-motion/);
-    assert.match(html, /redesign-shell\.js\?v=20260810-ultramarine-motion/);
+    const expectedShell = page === "daily-nutrition.html"
+      ? /redesign-shell\.js\?v=20260821-v45-weekly-1/
+      : /redesign-shell\.js\?v=20260810-ultramarine-motion/;
+    assert.match(html, expectedShell);
   }
-  assert.match(SW, /fuelphysique-v31-deep-ocean-v44/);
+  assert.match(SW, /fuelphysique-v32-deep-ocean-v45/);
+  assert.match(SW, /redesign-shell\.js\?v=20260810-ultramarine-motion/);
+  assert.match(SW, /redesign-shell\.js\?v=20260821-v45-weekly-1/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);
 });
