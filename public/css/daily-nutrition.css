@@ -21,6 +21,12 @@ body.daily-nutrition-route {
   font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
 
+body.daily-nutrition-route .site-feedback-widget {
+  position: fixed;
+  inset-inline: auto 10px;
+  width: auto;
+}
+
 .daily-nutrition-shell {
   width: min(1440px, calc(100% - 36px));
   margin: 0 auto;
@@ -178,6 +184,7 @@ body.daily-nutrition-route {
 .autosave-state.error { border-color: rgba(255, 123, 138, 0.3); color: #ff9daa; }
 
 .food-composer-form { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 20px; }
+#foodInput { direction: auto; unicode-bidi: plaintext; text-align: start; }
 .food-composer-form input {
   min-width: 0;
   min-height: 58px;
@@ -237,7 +244,11 @@ body.daily-nutrition-route {
 .food-table td:first-child { min-width: 160px; }
 .food-name { display: grid; gap: 3px; }
 .food-name strong { color: #f5faff; }
-.food-name small { color: #7798b5; }
+.food-name small { color: #7798b5; unicode-bidi: plaintext; }
+.food-name .estimate-note { color: #f7c86f; font-weight: 700; }
+.nutrition-amount { display: inline-flex; direction: ltr; unicode-bidi: isolate; align-items: baseline; gap: 0.3em; white-space: nowrap; }
+.nutrition-number { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+.nutrition-unit { unicode-bidi: isolate; white-space: nowrap; }
 .entry-actions { display: flex; flex-wrap: wrap; gap: 5px; }
 .entry-actions button { min-height: 34px; padding: 5px 8px; border: 1px solid rgba(131, 194, 239, 0.18); border-radius: 8px; background: rgba(5, 24, 42, 0.72); color: #cfe0ee; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 .entry-actions button[data-entry-action="delete"] { color: #ff9daa; }
@@ -314,7 +325,10 @@ body.daily-nutrition-route {
 
 html[dir="rtl"] .icon-action > span[aria-hidden="true"],
 html[dir="rtl"] .icon-action--next > span[aria-hidden="true"] { transform: scaleX(-1); }
-html[dir="rtl"] .food-table th { text-align: right; }
+html[dir="rtl"] .food-table th,
+html[dir="rtl"] .food-table td { text-align: right; }
+html[dir="rtl"] .entry-actions { justify-content: flex-start; }
+html[dir="rtl"] .entry-edit { direction: ltr; justify-content: flex-end; }
 
 @media (max-width: 1020px) {
   .daily-priority-grid { grid-template-columns: 1fr 1fr; }
@@ -351,7 +365,9 @@ html[dir="rtl"] .food-table th { text-align: right; }
   .food-table,
   .food-table tbody,
   .food-table tr,
-  .food-table td { display: block; width: 100%; }
+  .food-table td { display: block; width: 100%; min-width: 0; }
+  .food-table { min-width: 0 !important; }
+  .food-table-wrap .fp-table-scroll { overflow: visible; }
   .food-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 10px; padding: 14px; border: 1px solid rgba(131, 194, 239, 0.14); border-radius: 13px; background: rgba(4, 20, 36, 0.66); }
   .food-table td { padding: 0; border: 0; }
   .food-table td:first-child,

@@ -15,7 +15,7 @@ import {
   validateCustomFood,
   weekDateKeys,
   weeklySummary
-} from "./daily-nutrition-domain.mjs?v=20260821-v45-weekly-1";
+} from "./daily-nutrition-domain.mjs?v=20260821-v45-daily-nutrition-v11-4";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -25,8 +25,14 @@ import {
   saveCustomFood,
   saveDailyLog,
   saveFoodCombination
-} from "./daily-nutrition-store.mjs?v=20260821-v45-weekly-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260821-v45-weekly-1";
+} from "./daily-nutrition-store.mjs?v=20260821-v45-daily-nutrition-v11-4";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260821-v45-daily-nutrition-v11-4";
+import {
+  formatNutritionAmount,
+  formatNutritionNumber,
+  nutritionAmountParts,
+  nutritionUnitLabel
+} from "./daily-nutrition-format.mjs?v=20260821-v45-daily-nutrition-v11-4";
 
 const $ = (selector) => document.querySelector(selector);
 const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
@@ -46,7 +52,19 @@ const state = {
 
 const esc = (value) => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const format = (template, values = {}) => Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), String(template || ""));
-const number = (value, precision = 0) => Number(value || 0).toLocaleString(language === "he" ? "he-IL" : "en-US", { maximumFractionDigits: precision });
+const number = (value, precision = 0) => formatNutritionNumber(value, language, precision);
+
+function amountMarkup(value, unit, precision = 1, { approximate = false, signed = false } = {}) {
+  const parts = nutritionAmountParts(Math.abs(Number(value || 0)), unit, language, precision);
+  const sign = signed && Number(value) > 0 ? "+" : signed && Number(value) < 0 ? "−" : "";
+  const approximation = approximate ? "~" : "";
+  const unitDirection = language === "he" ? ' lang="he" dir="rtl"' : ' dir="ltr"';
+  return `<span class="nutrition-amount" dir="ltr"><span class="nutrition-number">${esc(`${sign}${approximation}${parts.number}`)}</span><span class="nutrition-unit"${unitDirection}>${esc(parts.unit)}</span></span>`;
+}
+
+function setAmount(element, value, unit, precision = 1, options = {}) {
+  element.innerHTML = amountMarkup(value, unit, precision, options);
+}
 
 function applyLanguage() {
   document.documentElement.lang = language;
@@ -65,8 +83,8 @@ function applyLanguage() {
     if (typeof value === "string") element.setAttribute("aria-label", value);
   });
   const examples = language === "he"
-    ? ["50 גרם שיבולת שועל", "250 גרם קוטג׳ 3% ו-4 פריכיות", "1 משקה חלבון"]
-    : ["50g oats", "250g cottage cheese 3% and 4 rice cakes", "1 protein drink"];
+    ? ["50 גרם שיבולת שועל", "250 גרם קוטג׳ 5%", "בטטה בינונית", "2 משולשי פיצה", "משקה חלבון אחד"]
+    : ["50g oats", "250g cottage cheese 5%", "medium sweet potato", "2 pizza slices", "one protein drink"];
   document.querySelectorAll("[data-example]").forEach((button, index) => {
     button.dataset.example = examples[index];
     button.textContent = examples[index];
@@ -75,12 +93,6 @@ function applyLanguage() {
 
 function entryName(entry) {
   return entry.name?.[language] || entry.name?.en || entry.name?.he || "—";
-}
-
-function displayUnit(unit, amount) {
-  if (unit === "g") return language === "he" ? `${number(amount, 1)} גרם` : `${number(amount, 1)} g`;
-  if (unit === "ml") return language === "he" ? `${number(amount, 1)} מ״ל` : `${number(amount, 1)} ml`;
-  return language === "he" ? `${number(amount, 1)} יח׳` : `${number(amount, 1)} item${Number(amount) === 1 ? "" : "s"}`;
 }
 
 function dateFromKey(dateKey) {
@@ -141,20 +153,25 @@ function renderTargets(totals) {
   const calorieProgress = calorieTarget ? Math.min(360, (totals.calories / calorieTarget) * 360) : 0;
   $("#calorieRing").style.setProperty("--calorie-progress", `${calorieProgress}deg`);
   $("#calorieConsumed").textContent = number(totals.calories);
-  $("#calorieTarget").textContent = calorieTarget ? `${number(calorieTarget)} kcal` : "—";
-  $("#calorieRemaining").textContent = calorieTarget
-    ? `${number(Math.abs(remaining.calories))} kcal${remaining.calories < 0 ? ` ${copy.over}` : ""}`
-    : "—";
+  if (calorieTarget) setAmount($("#calorieTarget"), calorieTarget, "kcal", 0);
+  else $("#calorieTarget").textContent = "—";
+  if (calorieTarget) {
+    setAmount($("#calorieRemaining"), Math.abs(remaining.calories), "kcal", 0);
+    if (remaining.calories < 0) $("#calorieRemaining").append(` ${copy.over}`);
+  } else $("#calorieRemaining").textContent = "—";
   $("#proteinConsumed").textContent = number(totals.proteinGrams, 1);
-  $("#proteinRemaining").textContent = proteinTarget
-    ? `${number(Math.abs(remaining.proteinGrams), 1)} g${remaining.proteinGrams < 0 ? ` ${copy.over}` : ""}`
-    : "—";
+  $("#proteinConsumedUnit").textContent = nutritionUnitLabel("g", language, totals.proteinGrams);
+  if (proteinTarget) {
+    setAmount($("#proteinRemaining"), Math.abs(remaining.proteinGrams), "g", 1);
+    if (remaining.proteinGrams < 0) $("#proteinRemaining").append(` ${copy.over}`);
+  } else $("#proteinRemaining").textContent = "—";
   const proteinPercent = proteinTarget ? Math.min(100, (totals.proteinGrams / proteinTarget) * 100) : 0;
   $("#proteinProgress").style.width = `${proteinPercent}%`;
   $(".protein-progress").setAttribute("aria-valuenow", String(Math.round(proteinPercent)));
   const maintenance = Number(targets.maintenanceCalories || state.log?.maintenanceSnapshot || 0);
-  $("#maintenanceValue").textContent = maintenance ? `${number(maintenance)} kcal` : "—";
-  $("#targetMessage").textContent = !targets.complete ? copy.targetMissing : maintenance ? `${copy.goalTarget}: ${number(calorieTarget)} kcal` : copy.maintenanceMissing;
+  if (maintenance) setAmount($("#maintenanceValue"), maintenance, "kcal", 0);
+  else $("#maintenanceValue").textContent = "—";
+  $("#targetMessage").textContent = !targets.complete ? copy.targetMissing : maintenance ? `${copy.goalTarget}: ${formatNutritionAmount(calorieTarget, "kcal", language, 0)}` : copy.maintenanceMissing;
 }
 
 function renderMacroDistribution(totals) {
@@ -176,7 +193,8 @@ function renderBalance(totals) {
   const balance = classifyEstimatedBalance(totals.calories, maintenance);
   const labels = { deficit: copy.deficit, maintenance: copy.maintenanceStatus, surplus: copy.surplus, unknown: copy.unknown };
   $("#balanceStatus").textContent = labels[balance.status];
-  $("#balanceValue").textContent = balance.balance === null ? "—" : `${balance.balance > 0 ? "+" : ""}${number(balance.balance)} kcal`;
+  if (balance.balance === null) $("#balanceValue").textContent = "—";
+  else setAmount($("#balanceValue"), balance.balance, "kcal", 0, { signed: true });
   $("#balanceCard").dataset.status = balance.status;
 }
 
@@ -187,12 +205,15 @@ function renderEntries() {
   body.innerHTML = state.log.entries.map((entry) => {
     const editing = state.editingId === entry.id;
     const amountCell = editing
-      ? `<div class="entry-edit"><input data-edit-amount="${esc(entry.id)}" type="number" min="0.1" max="10000" step="0.1" value="${esc(entry.amount)}"><span>${esc(entry.unit)}</span></div>`
-      : esc(displayUnit(entry.unit, entry.amount));
+      ? `<div class="entry-edit" dir="ltr"><input data-edit-amount="${esc(entry.id)}" type="number" min="0.1" max="10000" step="0.1" value="${esc(entry.amount)}"><span class="nutrition-unit"${language === "he" ? ' lang="he" dir="rtl"' : ""}>${esc(nutritionUnitLabel(entry.unit, language, entry.amount))}</span></div>`
+      : amountMarkup(entry.amount, entry.unit, 1, { approximate: entry.approximate === true });
     const actions = editing
       ? `<button type="button" data-entry-action="save" data-entry-id="${esc(entry.id)}">${esc(copy.save)}</button><button type="button" data-entry-action="cancel" data-entry-id="${esc(entry.id)}">${esc(copy.cancel)}</button>`
       : `<button type="button" data-entry-action="edit" data-entry-id="${esc(entry.id)}">${esc(copy.edit)}</button><button type="button" data-entry-action="duplicate" data-entry-id="${esc(entry.id)}">${esc(copy.duplicate)}</button><button type="button" data-entry-action="delete" data-entry-id="${esc(entry.id)}">${esc(copy.delete)}</button>`;
-    return `<tr data-entry-row="${esc(entry.id)}"><td><div class="food-name"><strong>${esc(entryName(entry))}</strong><small>${esc(entry.rawText || entry.source || "")}</small></div></td><td data-label="${esc(copy.amount)}">${amountCell}</td><td data-label="${esc(copy.calories)}">${number(entry.calories, 1)}</td><td data-label="${esc(copy.protein)}">${number(entry.proteinGrams, 1)} g</td><td data-label="${esc(copy.carbs)}">${number(entry.carbsGrams, 1)} g</td><td data-label="${esc(copy.fat)}">${number(entry.fatGrams, 1)} g</td><td><div class="entry-actions">${actions}</div></td></tr>`;
+    const estimateText = entry.estimated
+      ? format(entry.compositeEstimate ? copy.estimatedComposite : copy.estimatedPortion, { amount: formatNutritionAmount(entry.estimatedGrams || entry.amount, "g", language, 1) })
+      : "";
+    return `<tr data-entry-row="${esc(entry.id)}"><td><div class="food-name"><strong>${esc(entryName(entry))}</strong><small dir="auto">${esc(entry.rawText || entry.source || "")}</small>${estimateText ? `<small class="estimate-note">${esc(estimateText)}</small>` : ""}</div></td><td data-label="${esc(copy.amount)}">${amountCell}</td><td data-label="${esc(copy.calories)}">${amountMarkup(entry.calories, "kcal", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.protein)}">${amountMarkup(entry.proteinGrams, "g", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.carbs)}">${amountMarkup(entry.carbsGrams, "g", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.fat)}">${amountMarkup(entry.fatGrams, "g", 1, { approximate: entry.approximate === true })}</td><td><div class="entry-actions">${actions}</div></td></tr>`;
   }).join("");
 }
 
@@ -208,7 +229,7 @@ function renderRecentFoods() {
     return true;
   }).slice(0, 8);
   $("#recentFoods").innerHTML = foods.length
-    ? foods.map((entry, index) => `<button type="button" data-recent-index="${index}">${esc(entryName(entry))}<small> · ${esc(displayUnit(entry.unit, entry.amount))}</small></button>`).join("")
+    ? foods.map((entry, index) => `<button type="button" data-recent-index="${index}">${esc(entryName(entry))}<small> · ${esc(formatNutritionAmount(entry.amount, entry.unit, language, 1))}</small></button>`).join("")
     : `<span class="empty-tool">${esc(copy.noRecent)}</span>`;
   $("#recentFoods").dataset.entries = JSON.stringify(foods);
 }
@@ -221,12 +242,16 @@ function renderCombinations() {
 
 function renderWeek() {
   const summary = weeklySummary(state.weekLogs);
-  $("#weeklyCalories").textContent = summary.loggedDays ? `${number(summary.averageCalories)} kcal` : "—";
-  $("#weeklyProtein").textContent = summary.loggedDays ? `${number(summary.averageProteinGrams, 1)} g` : "—";
-  $("#weeklyCarbs").textContent = summary.loggedDays ? `${number(summary.averageCarbsGrams, 1)} g` : "—";
-  $("#weeklyFat").textContent = summary.loggedDays ? `${number(summary.averageFatGrams, 1)} g` : "—";
-  $("#weeklyMaintenance").textContent = summary.averageMaintenance === null ? "—" : `${number(summary.averageMaintenance)} kcal`;
-  $("#weeklyBalance").textContent = summary.averageBalance === null ? "—" : `${summary.averageBalance > 0 ? "+" : ""}${number(summary.averageBalance)} kcal`;
+  const weeklyValues = [
+    ["#weeklyCalories", summary.loggedDays, summary.averageCalories, "kcal", 0],
+    ["#weeklyProtein", summary.loggedDays, summary.averageProteinGrams, "g", 1],
+    ["#weeklyCarbs", summary.loggedDays, summary.averageCarbsGrams, "g", 1],
+    ["#weeklyFat", summary.loggedDays, summary.averageFatGrams, "g", 1],
+    ["#weeklyMaintenance", summary.averageMaintenance !== null, summary.averageMaintenance, "kcal", 0]
+  ];
+  weeklyValues.forEach(([selector, available, value, unit, precision]) => available ? setAmount($(selector), value, unit, precision) : $(selector).textContent = "—");
+  if (summary.averageBalance === null) $("#weeklyBalance").textContent = "—";
+  else setAmount($("#weeklyBalance"), summary.averageBalance, "kcal", 0, { signed: true });
   $("#weeklyLogged").textContent = `${summary.loggedDays} / 7`;
   $("#weeklyCompleted").textContent = `${summary.completedDays} / 7`;
   const balanceLabels = { deficit: copy.deficit, maintenance: copy.maintenanceStatus, surplus: copy.surplus, unknown: copy.unknown };
@@ -255,11 +280,11 @@ function renderWeek() {
     const maintenanceLine = maintenance ? `<span class="trend-reference trend-reference--maintenance" style="bottom:${Math.min(100, (maintenance / maxCalories) * 100)}%"></span>` : "";
     const date = dateFromKey(log.dateKey);
     const weekday = copy.weekdayShort[date.getDay()];
-    return `<div class="trend-day${calories ? "" : " is-empty"}"><div class="trend-bar-track">${goalLine}${maintenanceLine}<span class="trend-bar" style="height:${height}%"></span></div><strong>${calories ? `${number(calories)} kcal` : "—"}</strong><span>${esc(weekday)}</span></div>`;
+    return `<div class="trend-day${calories ? "" : " is-empty"}"><div class="trend-bar-track">${goalLine}${maintenanceLine}<span class="trend-bar" style="height:${height}%"></span></div><strong>${calories ? amountMarkup(calories, "kcal", 0) : "—"}</strong><span>${esc(weekday)}</span></div>`;
   }).join("");
   $("#weeklyTextAlternative").textContent = state.weekLogs.map((log) => {
     const calories = Number(log.totals?.calories || 0);
-    return `${dateLabel(log.dateKey)}: ${calories ? `${number(calories)} kcal` : copy.notLogged}`;
+    return `${dateLabel(log.dateKey)}: ${calories ? formatNutritionAmount(calories, "kcal", language, 0) : copy.notLogged}`;
   }).join(" · ");
   $("#weeklyChart").setAttribute("aria-label", $("#weeklyTextAlternative").textContent);
 }
@@ -341,27 +366,34 @@ function renderClarification(result) {
   const ambiguity = result.ambiguities[0];
   const panel = $("#clarificationPanel");
   panel.hidden = false;
-  panel.innerHTML = `<h3>${esc(copy.clarificationTitle)}</h3><p>${esc(copy.clarificationHint)}</p><div class="clarification-choices">${ambiguity.choices.map((choice) => `<button type="button" data-food-choice="${esc(choice.foodId)}">${esc(choice.name?.[language] || choice.name?.en)}</button>`).join("")}</div>`;
+  panel.innerHTML = `<h3>${esc(copy.clarificationTitle)}</h3><p>${esc(ambiguity.kind === "portion" ? copy.portionClarificationHint : copy.clarificationHint)}</p><div class="clarification-choices">${ambiguity.choices.map((choice, index) => `<button type="button" data-food-choice-index="${index}">${esc(choice.name?.[language] || choice.name?.en)}</button>`).join("")}</div>`;
 }
 
 function submitFoodText(value) {
   let result = parseFoodText(value, { customFoods: state.customFoods });
   if (result.ambiguities.length === 1) {
     const remembered = localStorage.getItem(`fp-daily-choice-${result.ambiguities[0].segment.replace(/\d+/g, "").trim()}`);
-    if (remembered && result.ambiguities[0].choices.some((choice) => choice.foodId === remembered)) {
-      const resolved = resolveFoodChoice(remembered, { amount: result.ambiguities[0].amount, unit: result.ambiguities[0].unit, customFoods: state.customFoods });
+    const rememberedChoice = result.ambiguities[0].choices.find((choice) => (choice.choiceId || choice.foodId) === remembered);
+    if (rememberedChoice) {
+      const resolved = resolveFoodChoice(rememberedChoice.foodId, {
+        amount: rememberedChoice.amount ?? result.ambiguities[0].amount,
+        unit: rememberedChoice.unit || result.ambiguities[0].unit,
+        estimate: rememberedChoice.estimate || null,
+        rawText: result.ambiguities[0].segment,
+        customFoods: state.customFoods
+      });
       result = { ...result, status: result.errors.length ? "partial" : "ready", entries: [...result.entries, resolved], ambiguities: [] };
     }
-  }
-  if (result.errors.length) {
-    setComposerMessage(format(copy.unknownFood, { food: result.errors.map((error) => error.segment).join(", ") }), true);
-    return;
   }
   if (result.ambiguities.length) {
     renderClarification(result);
     return;
   }
-  setComposerMessage();
+  if (result.errors.length && !result.entries.length) {
+    setComposerMessage(format(copy.unknownFood, { food: result.errors.map((error) => error.segment).join(", ") }), true);
+    return;
+  }
+  setComposerMessage(result.errors.length ? format(copy.partialAdded, { food: result.errors.map((error) => error.segment).join(", ") }) : "", result.errors.length > 0);
   $("#clarificationPanel").hidden = true;
   addEntries(result.entries);
 }
@@ -377,11 +409,21 @@ function bindEvents() {
     $("#foodInput").focus();
   }));
   $("#clarificationPanel").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-food-choice]");
+    const button = event.target.closest("[data-food-choice-index]");
     if (!button || !state.pendingClarification) return;
     const ambiguity = state.pendingClarification.ambiguities[0];
-    const resolved = resolveFoodChoice(button.dataset.foodChoice, { amount: ambiguity.amount, unit: ambiguity.unit, customFoods: state.customFoods });
-    localStorage.setItem(`fp-daily-choice-${ambiguity.segment.replace(/\d+/g, "").trim()}`, button.dataset.foodChoice);
+    const choice = ambiguity.choices[Number(button.dataset.foodChoiceIndex)];
+    if (!choice) return;
+    const resolved = resolveFoodChoice(choice.foodId, {
+      amount: choice.amount ?? ambiguity.amount,
+      unit: choice.unit || ambiguity.unit,
+      estimate: choice.estimate || null,
+      rawText: ambiguity.segment,
+      customFoods: state.customFoods
+    });
+    localStorage.setItem(`fp-daily-choice-${ambiguity.segment.replace(/\d+/g, "").trim()}`, choice.choiceId || choice.foodId);
+    const unresolved = state.pendingClarification.errors || [];
+    setComposerMessage(unresolved.length ? format(copy.partialAdded, { food: unresolved.map((error) => error.segment).join(", ") }) : "", unresolved.length > 0);
     addEntries([...state.pendingClarification.entries, resolved]);
     state.pendingClarification = null;
     $("#clarificationPanel").hidden = true;
@@ -407,8 +449,8 @@ function bindEvents() {
     if (action === "save") {
       const amount = Number(document.querySelector(`[data-edit-amount="${CSS.escape(entry.id)}"]`)?.value);
       try {
-        const scaled = resolveFoodChoice(entry.foodId, { amount, unit: entry.unit, customFoods: state.customFoods });
-        state.log.entries[index] = { ...entry, ...scaled };
+        const scaled = resolveFoodChoice(entry.foodId, { amount, unit: entry.unit, rawText: entry.rawText, customFoods: state.customFoods });
+        state.log.entries[index] = { ...entry, ...scaled, estimated: false, approximate: false, estimateConfidence: null, estimatedGrams: null, portionCount: null, portionSize: null, portionKind: null, compositeEstimate: false };
         state.editingId = null;
         queueSave();
       } catch {
@@ -488,7 +530,6 @@ function bindEvents() {
 
 async function init(user) {
   state.user = user;
-  applyLanguage();
   bindEvents();
   try {
     await loadTargets();
@@ -503,4 +544,5 @@ async function init(user) {
   }
 }
 
+applyLanguage();
 guardProtectedPage({ onAuthenticated: init });

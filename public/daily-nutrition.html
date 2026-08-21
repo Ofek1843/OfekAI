@@ -11,8 +11,8 @@
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260810-ultramarine-motion">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1">
-  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260821-v45-weekly-1">
-  <script defer src="/js/redesign-shell.js?v=20260821-v45-weekly-1"></script>
+  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260821-v45-daily-nutrition-v11-4">
+  <script defer src="/js/redesign-shell.js?v=20260821-v45-daily-nutrition-v11-4"></script>
 </head>
 <body class="daily-nutrition-route">
   <main class="daily-nutrition-shell" id="dailyNutritionApp">
@@ -55,7 +55,7 @@
       </article>
       <article class="daily-surface protein-card">
         <span class="metric-eyebrow" data-copy="protein">Protein</span>
-        <strong><span id="proteinConsumed">0</span><small>g</small></strong>
+        <strong class="nutrition-amount" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
         <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
         <p><span data-copy="remaining">Remaining</span> <b id="proteinRemaining">—</b></p>
       </article>
@@ -74,14 +74,16 @@
       </div>
       <form id="foodComposerForm" class="food-composer-form">
         <label class="sr-only" for="foodInput" data-copy="inputLabel">What did you eat?</label>
-        <input id="foodInput" type="text" maxlength="240" autocomplete="off" data-copy-placeholder="inputPlaceholder" placeholder="Try: 250g cottage cheese and 4 rice cakes">
+        <input id="foodInput" type="text" maxlength="240" autocomplete="off" dir="auto" data-copy-placeholder="inputPlaceholder" placeholder="Try: medium sweet potato and 2 pizza slices">
         <button id="addFoodButton" type="submit"><img src="/icons/tabler/plus.svg" alt=""><span data-copy="add">Add</span></button>
       </form>
       <div class="food-examples" aria-label="Food input examples" data-copy-aria="foodExamples">
         <span data-copy="examples">Examples</span>
         <button type="button" data-example="50g oats">50g oats</button>
-        <button type="button" data-example="250g cottage cheese 3% and 4 rice cakes">250g cottage + 4 rice cakes</button>
-        <button type="button" data-example="1 protein drink">1 protein drink</button>
+        <button type="button" data-example="250g cottage cheese 5%">250g cottage cheese 5%</button>
+        <button type="button" data-example="medium sweet potato">medium sweet potato</button>
+        <button type="button" data-example="2 pizza slices">2 pizza slices</button>
+        <button type="button" data-example="one protein drink">one protein drink</button>
       </div>
       <div id="clarificationPanel" class="clarification-panel" hidden></div>
       <p id="composerMessage" class="composer-message" role="alert" aria-live="assertive"></p>
@@ -179,7 +181,7 @@
       <p id="weeklyTextAlternative" class="metric-note"></p>
     </section>
   </main>
-  <script type="module" src="/js/daily-nutrition.js?v=20260821-v45-weekly-1"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20260821-v45-daily-nutrition-v11-4"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

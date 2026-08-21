@@ -23,6 +23,9 @@ function dailyLogRef(db, uid, dateKey) {
 }
 
 function normalizeEntry(entry, index = 0) {
+  const estimatedGrams = Number(entry.estimatedGrams);
+  const portionCount = Number(entry.portionCount);
+  const confidence = ["high", "medium", "low"].includes(entry.estimateConfidence) ? entry.estimateConfidence : null;
   const value = {
     id: String(entry.id || `entry-${Date.now()}-${index}`).slice(0, 120),
     foodId: String(entry.foodId || "").slice(0, 120),
@@ -37,7 +40,15 @@ function normalizeEntry(entry, index = 0) {
     carbsGrams: Number(entry.carbsGrams),
     fatGrams: Number(entry.fatGrams),
     source: String(entry.source || "catalog").slice(0, 30),
-    rawText: String(entry.rawText || "").slice(0, 180)
+    rawText: String(entry.rawText || "").slice(0, 180),
+    estimated: entry.estimated === true,
+    approximate: entry.approximate === true,
+    estimateConfidence: confidence,
+    estimatedGrams: Number.isFinite(estimatedGrams) && estimatedGrams > 0 ? estimatedGrams : null,
+    portionCount: Number.isFinite(portionCount) && portionCount > 0 ? portionCount : null,
+    portionSize: String(entry.portionSize || "").slice(0, 20) || null,
+    portionKind: String(entry.portionKind || "").slice(0, 20) || null,
+    compositeEstimate: entry.compositeEstimate === true
   };
   if ([value.amount, value.calories, value.proteinGrams, value.carbsGrams, value.fatGrams].some((number) => !Number.isFinite(number) || number < 0)) {
     throw new Error("INVALID_ENTRY");

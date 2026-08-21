@@ -11,6 +11,8 @@ const html = read("public/daily-nutrition.html");
 const css = read("public/css/daily-nutrition.css");
 const client = read("public/js/daily-nutrition.js");
 const copy = read("public/js/daily-nutrition-i18n.mjs");
+const formatter = read("public/js/daily-nutrition-format.mjs");
+const store = read("public/js/daily-nutrition-store.mjs");
 const shell = read("public/js/redesign-shell.js");
 const dashboard = read("public/dashboard.html");
 const server = read("server.js");
@@ -73,6 +75,35 @@ test("English and Hebrew copies cover logging, ambiguity and unlogged weekly day
   assert.match(copy, /not logged/);
   assert.match(copy, /לא תועד/);
   assert.match(client, /document\.documentElement\.dir = language === "he" \? "rtl" : "ltr"/);
+  assert.match(copy, /הוערך כ־\{amount\}/);
+  assert.match(copy, /Variable meal estimate/);
+  assert.match(copy, /המזונות שזוהו נוספו/);
+});
+
+test("Hebrew nutrition values use one localized formatter and bidi isolation", () => {
+  assert.match(client, /daily-nutrition-format\.mjs/);
+  assert.match(client, /nutritionAmountParts/);
+  assert.match(client, /class="nutrition-amount" dir="ltr"/);
+  assert.match(css, /\.nutrition-amount\s*\{[^}]*unicode-bidi:\s*isolate/);
+  assert.match(css, /#foodInput\s*\{[^}]*unicode-bidi:\s*plaintext/);
+  assert.match(formatter, /he:\s*Object\.freeze\(\{/);
+  assert.match(formatter, /g:\s*"גרם"/);
+  assert.match(formatter, /kcal:\s*"קק״ל"/);
+  assert.doesNotMatch(client, /\$\{number\([^\n]+\}\s*g/);
+});
+
+test("natural portions, estimates, partial success and editable corrections are wired", () => {
+  assert.match(client, /medium sweet potato/);
+  assert.match(client, /2 משולשי פיצה/);
+  assert.match(client, /copy\.estimatedComposite/);
+  assert.match(client, /copy\.partialAdded/);
+  assert.match(client, /result\.errors\.length && !result\.entries\.length/);
+  assert.match(client, /estimated:\s*false, approximate:\s*false/);
+  assert.match(client, /data-food-choice-index/);
+  for (const field of ["estimated", "approximate", "estimateConfidence", "estimatedGrams", "portionCount", "portionSize", "portionKind", "compositeEstimate"]) {
+    assert.match(store, new RegExp(`\\b${field}:`), field);
+  }
+  assert.match(client, /applyLanguage\(\);\s*guardProtectedPage/);
 });
 
 test("Daily Nutrition localizes structural accessibility labels in Hebrew", () => {
@@ -93,6 +124,7 @@ test("mobile layout stacks food rows without horizontal table scrolling", () => 
   assert.match(css, /@media \(max-width: 760px\)/);
   assert.match(css, /\.food-table thead\s*\{\s*display:\s*none/);
   assert.match(css, /\.food-table tr\s*\{[\s\S]*display:\s*grid/);
+  assert.match(css, /\.food-table\s*\{\s*min-width:\s*0\s*!important/);
   assert.match(css, /body\.daily-nutrition-route\s*\{[^}]*overflow-x:\s*hidden/);
   assert.match(css, /\.food-table-wrap\s*\{[^}]*overflow:\s*hidden/);
 });
