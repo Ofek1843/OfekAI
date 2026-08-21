@@ -67,6 +67,9 @@
       menu: "Open menu",
       menuClose: "Close menu",
       menuTitle: "All features",
+      menuPrimary: "Your day",
+      menuBuild: "Build and track",
+      menuAccount: "Account",
       buildWorkout: "Build a workout",
       buildNutrition: "Build nutrition",
       tracker: "Workout tracker",
@@ -85,6 +88,9 @@
       menu: "פתיחת תפריט",
       menuClose: "סגירת תפריט",
       menuTitle: "כל התכונות",
+      menuPrimary: "היום שלך",
+      menuBuild: "בנייה ומעקב",
+      menuAccount: "חשבון",
       buildWorkout: "בניית תוכנית אימון",
       buildNutrition: "בניית תוכנית תזונה",
       tracker: "מעקב אימון",
@@ -139,45 +145,128 @@
     }
     nav.append(list);
 
+    const backdrop = document.createElement("button");
+    backdrop.className = "fp-global-menu-backdrop";
+    backdrop.type = "button";
+    backdrop.hidden = true;
+    backdrop.tabIndex = -1;
+    backdrop.setAttribute("aria-label", copy.menuClose);
+    nav.append(backdrop);
+
     const menu = document.createElement("div");
     menu.className = "fp-global-menu";
     menu.id = "fp-global-menu";
     menu.hidden = true;
+    menu.setAttribute("role", "dialog");
+    menu.setAttribute("aria-modal", "true");
     menu.setAttribute("aria-label", copy.menuTitle);
-    const menuItems = [
-      { key: "dashboard", href: "/dashboard.html", label: copy.dashboard },
-      { key: "buildWorkout", href: "/workout-builder.html", label: copy.buildWorkout },
-      { key: "tracker", href: "/workout-tracker.html", label: copy.tracker },
-      { key: "buildNutrition", href: "/nutrition-builder.html", label: copy.buildNutrition },
-      { key: "nutrition", href: "/my-nutrition-plans.html", label: copy.nutrition },
-      { key: "progress", href: "/progress.html", label: copy.progress },
-      { key: "messages", href: "/social.html", label: copy.messages },
-      { key: "history", href: "/workout-history.html", label: copy.history },
-      { key: "settings", href: "/app.html?settings=open", label: copy.settings },
-      { key: "plans", href: "/pricing.html", label: copy.plans },
+    const menuHeader = document.createElement("div");
+    menuHeader.className = "fp-global-menu-header";
+    const menuHeading = document.createElement("strong");
+    menuHeading.className = "fp-global-menu-title";
+    menuHeading.dataset.menuHeading = "true";
+    menuHeading.textContent = copy.menuTitle;
+    const menuClose = document.createElement("button");
+    menuClose.className = "fp-global-menu-close";
+    menuClose.type = "button";
+    menuClose.setAttribute("aria-label", copy.menuClose);
+    menuClose.textContent = copy.menuClose;
+    menuHeader.append(menuHeading, menuClose);
+    menu.append(menuHeader);
+
+    const menuGroups = [
+      {
+        key: "menuPrimary",
+        items: [
+          { key: "dashboard", href: "/dashboard.html", label: copy.dashboard },
+          { key: "messages", href: "/social.html", label: copy.messages },
+        ],
+      },
+      {
+        key: "menuBuild",
+        items: [
+          { key: "buildWorkout", href: "/workout-builder.html", label: copy.buildWorkout },
+          { key: "workouts", href: "/my-workout-plans.html", label: copy.workouts },
+          { key: "tracker", href: "/workout-tracker.html", label: copy.tracker },
+          { key: "history", href: "/workout-history.html", label: copy.history },
+          { key: "buildNutrition", href: "/nutrition-builder.html", label: copy.buildNutrition },
+          { key: "nutrition", href: "/my-nutrition-plans.html", label: copy.nutrition },
+          { key: "progress", href: "/progress.html", label: copy.progress },
+        ],
+      },
+      {
+        key: "menuAccount",
+        items: [
+          { key: "settings", href: "/app.html?settings=open", label: copy.settings },
+          { key: "plans", href: "/pricing.html", label: copy.plans },
+        ],
+      },
     ];
-    for (const { key, href, label } of menuItems) {
-      const link = document.createElement("a");
-      link.className = "fp-global-menu-link";
-      link.dataset.menuKey = key;
-      link.href = href;
-      link.textContent = label;
-      menu.append(link);
+    for (const group of menuGroups) {
+      const section = document.createElement("section");
+      section.className = "fp-global-menu-group";
+      const heading = document.createElement("p");
+      heading.className = "fp-global-menu-group-title";
+      heading.dataset.menuGroup = group.key;
+      heading.textContent = copy[group.key];
+      section.append(heading);
+      for (const { key, href, label } of group.items) {
+        const link = document.createElement("a");
+        link.className = "fp-global-menu-link";
+        link.dataset.menuKey = key;
+        link.href = href;
+        link.textContent = label;
+        if (routeGroup(route) === key || (key === "dashboard" && active === "dashboard")) {
+          link.setAttribute("aria-current", "page");
+        }
+        section.append(link);
+      }
+      menu.append(section);
     }
     nav.append(menu);
 
+    let restoreFocus = null;
+    const focusableSelector = "a[href], button:not([disabled]), [tabindex]:not([tabindex='-1'])";
     const setMenuOpen = (open) => {
+      if (open === !menu.hidden) return;
+      if (open) restoreFocus = document.activeElement;
       menu.hidden = !open;
+      backdrop.hidden = !open;
       menuButton.setAttribute("aria-expanded", open ? "true" : "false");
       menuButton.setAttribute("aria-label", open ? copy.menuClose : copy.menu);
       nav.classList.toggle("is-menu-open", open);
+      document.body.classList.toggle("fp-global-menu-open", open);
+      if (open) {
+        window.requestAnimationFrame(() => menuClose.focus({ preventScroll: true }));
+      } else if (restoreFocus instanceof HTMLElement) {
+        restoreFocus.focus({ preventScroll: true });
+      }
     };
     menuButton.addEventListener("click", () => setMenuOpen(menu.hidden));
+    menuClose.addEventListener("click", () => setMenuOpen(false));
+    backdrop.addEventListener("click", () => setMenuOpen(false));
     document.addEventListener("click", (event) => {
-      if (!nav.contains(event.target)) setMenuOpen(false);
+      if (!menu.hidden && !nav.contains(event.target)) setMenuOpen(false);
     });
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (menu.hidden) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMenuOpen(false);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = [...menu.querySelectorAll(focusableSelector)].filter((node) => !node.hidden);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     });
     document.body.insertBefore(nav, document.body.firstChild);
     document.body.classList.add("fp-product-shell-active");
@@ -203,7 +292,18 @@
     }
     const menuTitle = nav.querySelector(".fp-global-menu");
     if (menuTitle) menuTitle.setAttribute("aria-label", copy.menuTitle);
-    for (const key of ["dashboard", "buildWorkout", "tracker", "buildNutrition", "nutrition", "progress", "messages", "history", "settings", "plans"]) {
+    const menuHeading = nav.querySelector("[data-menu-heading]");
+    if (menuHeading) menuHeading.textContent = copy.menuTitle;
+    for (const key of ["menuPrimary", "menuBuild", "menuAccount"]) {
+      const heading = nav.querySelector(`[data-menu-group="${key}"]`);
+      if (heading) heading.textContent = copy[key];
+    }
+    const menuClose = nav.querySelector(".fp-global-menu-close");
+    const backdrop = nav.querySelector(".fp-global-menu-backdrop");
+    menuClose?.setAttribute("aria-label", copy.menuClose);
+    if (menuClose) menuClose.textContent = copy.menuClose;
+    backdrop?.setAttribute("aria-label", copy.menuClose);
+    for (const key of ["dashboard", "buildWorkout", "workouts", "tracker", "buildNutrition", "nutrition", "progress", "messages", "history", "settings", "plans"]) {
       const link = nav.querySelector(`[data-menu-key="${key}"]`);
       if (link) link.textContent = copy[key];
     }

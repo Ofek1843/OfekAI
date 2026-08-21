@@ -1633,8 +1633,14 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 
 .nutrition-reroll-meal-button:hover:not(:disabled) {
-  transform: scale(1.08);
-  background: var(--card-accent-soft);
+  transform: translateY(-1px);
+  background: var(--card-accent);
+  color: #07111d;
+}
+
+.nutrition-reroll-meal-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--card-accent) 52%, transparent);
+  outline-offset: 3px;
 }
 
 .nutrition-reroll-meal-button:disabled {
@@ -1644,6 +1650,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .nutrition-reroll-meal-button.is-rerolling {
   opacity: 0.64;
+  box-shadow: inset 0 -3px 0 currentColor;
 }
 
 @keyframes mealRerollSpin {

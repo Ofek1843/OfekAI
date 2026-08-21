@@ -391,9 +391,9 @@ textarea:focus {
   padding: 12px 20px;
   border: 1px solid rgba(47, 155, 255, 0.62);
   border-radius: 12px;
-  background: linear-gradient(135deg, #2f9bff 0%, #2f9bff 54%, #16a34a 100%);
-  box-shadow: 0 14px 34px rgba(47, 155, 255, 0.24);
-  color: #06130b;
+  background: linear-gradient(135deg, #52d9e6 0%, #64b5ff 100%);
+  box-shadow: 0 14px 34px rgba(47, 155, 255, 0.3);
+  color: #04111f;
   font: inherit;
   font-size: 15px;
   font-weight: 950;
@@ -411,9 +411,18 @@ textarea:focus {
   filter: saturate(1.08);
 }
 
+.save-program-button:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(53, 207, 223, 0.3), 0 18px 42px rgba(47, 155, 255, 0.34);
+}
+
 .save-program-button:disabled {
   cursor: not-allowed;
-  opacity: 0.72;
+  border-color: rgba(174, 191, 210, 0.42);
+  background: #8392a8;
+  color: #101827;
+  opacity: 0.82;
   transform: none;
   box-shadow: none;
 }
@@ -946,9 +955,9 @@ textarea:focus {
   min-width: 96px;
   height: 38px;
   padding: 0 12px;
-  border: none;
+  border: 1px solid rgba(53, 207, 223, 0.7);
   border-radius: 12px;
-  background: rgba(5, 10, 20, 0.72);
+  background: rgba(4, 17, 31, 0.94);
   backdrop-filter: blur(6px);
   color: #ffffff;
   font-size: 12px;
@@ -961,45 +970,24 @@ textarea:focus {
 }
 
 .reroll-button:hover {
-  background: rgba(53, 207, 223, 0.22);
-  transform: scale(1.08);
+  background: #35cfdf;
+  color: #04111f;
+  transform: translateY(-1px);
   box-shadow: 0 0 14px rgba(53, 207, 223, 0.35);
 }
 
 .reroll-button:active {
-  transform: scale(0.94) rotate(180deg);
-}
-.reroll-button:hover {
-  animation: rerollSpin 0.7s ease;
+  transform: translateY(0);
 }
 
-@keyframes rerollSpin {
-  0% {
-    transform: scale(1) rotate(0deg);
-  }
-
-  50% {
-    transform: scale(1.12) rotate(180deg);
-  }
-
-  100% {
-    transform: scale(1.08) rotate(360deg);
-  }
+.reroll-button:focus-visible {
+  outline: 3px solid rgba(53, 207, 223, 0.48);
+  outline-offset: 3px;
 }
 .reroll-button.is-loading {
-  animation: rerollLoading 0.8s linear infinite;
   pointer-events: none;
   opacity: 0.8;
-}
-
-@keyframes rerollLoading {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+  box-shadow: inset 0 -3px 0 #35cfdf;
 }
 /* Mobile */
 

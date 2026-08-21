@@ -50,20 +50,75 @@ async function removeCheckerboard(input) {
         }
       }
     }
+    // The generated source contains a baked checkerboard rather than real
+    // transparency. The arm/bowl pose encloses a few background islands, so
+    // sufficiently large neutral components are background even when they do
+    // not touch the canvas edge. Small neutral subject details survive, while
+    // shoes are restored from the known transparent source below.
     if (touchesEdge || members.length >= 24) {
       for (const index of members) background[index] = 1;
     }
   };
   for (let index = 0; index < count; index += 1) visitComponent(index);
 
+  // The first version converted every surviving pixel to fully opaque. That
+  // preserved the anti-aliased checkerboard mixed into the source edge and
+  // produced a pale waist/hip flash on the amber card. Build a small feathered
+  // matte from the actual background boundary and borrow colour from the
+  // nearest interior pixel for the feather. This removes the baked neutral
+  // fringe without globally keying white details out of the athlete.
+  const distanceToBackground = new Uint8Array(count);
+  const radius = 4;
+  for (let index = 0; index < count; index += 1) {
+    if (background[index]) continue;
+    const x = index % info.width;
+    const y = Math.floor(index / info.width);
+    let nearest = radius + 1;
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (!dx && !dy) continue;
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= info.width || ny >= info.height) continue;
+        if (!background[ny * info.width + nx]) continue;
+        nearest = Math.min(nearest, Math.max(Math.abs(dx), Math.abs(dy)));
+      }
+    }
+    distanceToBackground[index] = nearest;
+  }
+
+  const nearestInterior = (x, y) => {
+    for (let searchRadius = 1; searchRadius <= 5; searchRadius += 1) {
+      for (let dy = -searchRadius; dy <= searchRadius; dy += 1) {
+        for (let dx = -searchRadius; dx <= searchRadius; dx += 1) {
+          const nx = x + dx;
+          const ny = y + dy;
+          if (nx < 0 || ny < 0 || nx >= info.width || ny >= info.height) continue;
+          const candidate = ny * info.width + nx;
+          if (!background[candidate] && distanceToBackground[candidate] >= 4) return candidate;
+        }
+      }
+    }
+    return y * info.width + x;
+  };
+
   const rgba = Buffer.alloc(count * 4);
   for (let i = 0; i < count; i += 1) {
     const source = i * 3;
     const target = i * 4;
-    rgba[target] = data[source];
-    rgba[target + 1] = data[source + 1];
-    rgba[target + 2] = data[source + 2];
-    rgba[target + 3] = background[i] ? 0 : 255;
+    if (background[i]) {
+      rgba[target + 3] = 0;
+      continue;
+    }
+    const distance = distanceToBackground[i];
+    const edgePixel = distance > 0 && distance < 4;
+    const colourIndex = edgePixel
+      ? nearestInterior(i % info.width, Math.floor(i / info.width)) * 3
+      : source;
+    rgba[target] = data[colourIndex];
+    rgba[target + 1] = data[colourIndex + 1];
+    rgba[target + 2] = data[colourIndex + 2];
+    rgba[target + 3] = distance === 1 ? 72 : distance === 2 ? 160 : distance === 3 ? 224 : 255;
   }
   return sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
 }

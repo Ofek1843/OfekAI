@@ -573,7 +573,7 @@
           "file": "frame-04.webp",
           "source": "frame-04-regenerated.png",
           "sourceBytes": 1526417,
-          "normalizedBytes": 34148,
+          "normalizedBytes": 35652,
           "index": 3,
           "semantic": "bulk-female"
         }
@@ -585,7 +585,7 @@
         "height": 887
       },
       "motionSheetSourceBytes": 2135494,
-      "normalizedBytes": 137868,
+      "normalizedBytes": 139372,
       "canvas": {
         "width": 600,
         "height": 720

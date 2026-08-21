@@ -1579,8 +1579,11 @@ resultElement
         rerollButton.dataset.exercise
       );
 
+const idleLabel = isHebrew ? "החלפה" : "Replace";
 rerollButton.classList.add("is-loading");
 rerollButton.disabled = true;
+rerollButton.setAttribute("aria-busy", "true");
+rerollButton.textContent = isHebrew ? "מחליף..." : "Replacing...";
 
 try {
   // Capture current form state so the reroll respects the same
@@ -1693,7 +1696,9 @@ try {
       ${renderWeeklyVolumeSummary(data.weeklyVolume)}
     `;
   }
-}
+  }
+
+  setStatus(isHebrew ? "התרגיל הוחלף." : "Exercise replaced.");
 } catch (error) {
   console.error("Could not replace exercise:", error);
   setStatus(
@@ -1707,6 +1712,8 @@ try {
 } finally {
   rerollButton.classList.remove("is-loading");
   rerollButton.disabled = false;
+  rerollButton.removeAttribute("aria-busy");
+  rerollButton.textContent = idleLabel;
 }
     });
   });

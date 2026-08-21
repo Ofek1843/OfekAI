@@ -825,8 +825,11 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
     const mealNumber = Number(rerollButton.dataset.mealNumber);
     const optionNumber = Number(rerollButton.dataset.optionNumber);
 
+    const idleMarkup = rerollButton.innerHTML;
     rerollButton.disabled = true;
     rerollButton.classList.add("is-rerolling");
+    rerollButton.setAttribute("aria-busy", "true");
+    rerollButton.textContent = isHebrew ? "מחליף..." : "Replacing...";
 
     try {
       const response = await fetch("/api/nutrition-builder/reroll-meal", {
@@ -869,6 +872,7 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
         setStatus("");
         renderNutritionPlan(window.currentNutritionPlan, active);
       }
+      setStatus(isHebrew ? "הארוחה הוחלפה." : "Meal replaced.");
     } catch (error) {
       console.error("Meal reroll failed:", error);
       setStatus(
@@ -878,6 +882,8 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
     } finally {
       rerollButton.disabled = false;
       rerollButton.classList.remove("is-rerolling");
+      rerollButton.removeAttribute("aria-busy");
+      rerollButton.innerHTML = idleMarkup;
     }
   });
 });

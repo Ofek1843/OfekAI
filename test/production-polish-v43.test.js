@@ -21,8 +21,8 @@ test("the visible skip-link injection is removed without removing main landmarks
 test("the product hamburger is isolated above dashboard content and retains the mobile drawer layer", () => {
   const css = read("public", "css", "redesign-v1.css");
   assert.match(css, /\.fp-global-nav\s*\{[\s\S]*?isolation:\s*isolate;[\s\S]*?z-index:\s*2100;/);
-  assert.match(css, /\.fp-global-menu\s*\{[\s\S]*?z-index:\s*1;/);
-  assert.match(css, /body\.fp-route-dashboard\.drawer-open \.fp-global-nav\s*\{[\s\S]*?z-index:\s*80;/);
+  assert.match(css, /\.fp-global-menu\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?z-index:\s*2202;/);
+  assert.match(css, /\.fp-global-menu-backdrop\s*\{[\s\S]*?z-index:\s*2201;/);
   assert.match(read("public", "js", "redesign-shell.js"), /fp-global-menu-button/);
   assert.match(read("public", "dashboard.html"), /id="mobileMenuButton"/);
 });
