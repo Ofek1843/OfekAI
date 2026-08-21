@@ -1,5 +1,11 @@
 (() => {
   const route = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
+  if (!document.querySelector('link[href*="v45-deep-ocean.css"]')) {
+    const deepOceanStyles = document.createElement("link");
+    deepOceanStyles.rel = "stylesheet";
+    deepOceanStyles.href = "/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1";
+    document.head.append(deepOceanStyles);
+  }
   const protectedRoutes = new Set([
     "app.html",
     "dashboard.html",
@@ -535,7 +541,7 @@
   const boot = () => {
     const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
     const copy = translations[language];
-    document.body.classList.add("fp-redesign", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
+    document.body.classList.add("fp-redesign", "fp-v45-deep-ocean", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
     if (!protectedRoutes.has(route)) document.body.classList.add("fp-public-route");

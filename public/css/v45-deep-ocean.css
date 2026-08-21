@@ -1,0 +1,549 @@
+/* FuelPhysique V4.5 — Deep Ocean presentation layer.
+   This file intentionally sits after V4/V4.3 illustration CSS. It changes
+   presentation only: real-athlete hosts, routes, forms, and product logic stay
+   owned by their existing modules. */
+
+:root {
+  --v45-ocean-abyss: #030b17;
+  --v45-ocean-deep: #061426;
+  --v45-ocean-mid: #0a2038;
+  --v45-ocean-surface: rgba(13, 37, 62, 0.9);
+  --v45-ocean-raised: rgba(18, 48, 78, 0.94);
+  --v45-ocean-border: rgba(130, 190, 235, 0.2);
+  --v45-ocean-border-strong: rgba(130, 202, 255, 0.38);
+  --v45-ocean-text: #f4f9ff;
+  --v45-ocean-copy: #c7daec;
+  --v45-ocean-muted: #89a8c4;
+  --v45-blue: #399fff;
+  --v45-cyan: #4bd9e6;
+  --v45-indigo: #7b75ff;
+  --v45-amber: #f3aa37;
+  --v45-purple: #9b7cff;
+  --v45-green: #35c896;
+  --v45-pink: #ed6798;
+  --v45-display: "Space Grotesk", "Segoe UI Variable Display", "Segoe UI", Arial, sans-serif;
+  --v45-ui: Inter, "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+}
+
+body.fp-v45-deep-ocean {
+  --fp-bg-deep: var(--v45-ocean-abyss);
+  --fp-bg-page: var(--v45-ocean-deep);
+  --fp-bg-section: var(--v45-ocean-mid);
+  --fp-surface: var(--v45-ocean-surface);
+  --fp-surface-raised: var(--v45-ocean-raised);
+  --fp-surface-soft: rgba(31, 70, 106, 0.72);
+  --fp-surface-input: rgba(4, 18, 33, 0.94);
+  --fp-nav-surface: rgba(3, 12, 24, 0.91);
+  --fp-border: var(--v45-ocean-border);
+  --fp-border-strong: var(--v45-ocean-border-strong);
+  --fp-text-primary: var(--v45-ocean-text);
+  --fp-text-secondary: var(--v45-ocean-copy);
+  --fp-text-muted: var(--v45-ocean-muted);
+  --fp-focus-ring: var(--v45-cyan);
+  min-height: 100vh;
+  background:
+    radial-gradient(80rem 52rem at -8% -14%, rgba(57, 159, 255, 0.3), transparent 61%),
+    radial-gradient(68rem 44rem at 106% 12%, rgba(75, 217, 230, 0.14), transparent 58%),
+    radial-gradient(58rem 38rem at 64% 112%, rgba(123, 117, 255, 0.14), transparent 62%),
+    linear-gradient(155deg, #030b17 0%, #06162a 44%, #04111f 100%) !important;
+  background-attachment: fixed !important;
+  color: var(--v45-ocean-text);
+  color-scheme: dark;
+  font-family: var(--v45-ui) !important;
+}
+
+/* V4.5 is intentionally an ocean-dark product skin. A previously stored
+   light-mode preference must not reveal the pale V4 canvas underneath it. */
+html[data-theme="light"] body.fp-v45-deep-ocean,
+html[data-theme="dark"] body.fp-v45-deep-ocean {
+  background:
+    radial-gradient(80rem 52rem at -8% -14%, rgba(57, 159, 255, 0.3), transparent 61%),
+    radial-gradient(68rem 44rem at 106% 12%, rgba(75, 217, 230, 0.14), transparent 58%),
+    radial-gradient(58rem 38rem at 64% 112%, rgba(123, 117, 255, 0.14), transparent 62%),
+    linear-gradient(155deg, #030b17 0%, #06162a 44%, #04111f 100%) !important;
+  color: var(--v45-ocean-text) !important;
+}
+
+body.fp-v45-deep-ocean .ocean-depth-layer,
+body.fp-v45-deep-ocean .ocean-depth-glow {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block !important;
+  content: "" !important;
+  pointer-events: none;
+}
+
+/* Remove the legacy V4 pale canvas while retaining the existing section
+   geometry and all real-athlete scene hosts. */
+.fp-v45-deep-ocean.fp-route-index,
+.fp-v45-deep-ocean.fp-route-index main,
+.fp-v45-deep-ocean.fp-route-index .hero,
+.fp-v45-deep-ocean.fp-route-index .landing-section,
+.fp-v45-deep-ocean.fp-route-index .feature-section,
+.fp-v45-deep-ocean.fp-route-index .results-section,
+.fp-v45-deep-ocean.fp-route-index .how-section {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+body.fp-v45-deep-ocean .ocean-depth-layer {
+  opacity: 0.42;
+  background-image:
+    linear-gradient(rgba(130, 190, 235, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130, 190, 235, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 88%);
+}
+
+body.fp-v45-deep-ocean .ocean-depth-glow {
+  inset: -20%;
+  opacity: 0.48;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(57, 159, 255, 0.2), transparent 22%),
+    radial-gradient(circle at 78% 38%, rgba(75, 217, 230, 0.11), transparent 20%),
+    radial-gradient(circle at 52% 80%, rgba(123, 117, 255, 0.12), transparent 24%);
+  filter: blur(40px);
+  animation: v45-ocean-drift 20s ease-in-out 2 alternate;
+}
+
+body.fp-v45-deep-ocean > :not(.ocean-depth-layer):not(.ocean-depth-glow) {
+  position: relative;
+  z-index: 1;
+}
+
+body.fp-v45-deep-ocean :where(h1, h2, h3, h4, .fp-global-brand) {
+  font-family: var(--v45-display) !important;
+}
+
+body.fp-v45-deep-ocean .fp-global-nav,
+body.fp-v45-deep-ocean .navbar {
+  border-color: rgba(130, 190, 235, 0.16) !important;
+  background: rgba(3, 12, 24, 0.84) !important;
+  box-shadow: 0 16px 42px rgba(0, 5, 14, 0.3) !important;
+  backdrop-filter: blur(18px) saturate(130%) !important;
+}
+
+body.fp-v45-deep-ocean .fp-global-link,
+body.fp-v45-deep-ocean .nav-link {
+  color: #9db7cf !important;
+}
+
+body.fp-v45-deep-ocean .fp-global-link:hover,
+body.fp-v45-deep-ocean .fp-global-link[aria-current="page"],
+body.fp-v45-deep-ocean .nav-link:hover {
+  color: #ffffff !important;
+}
+
+/* Landing ---------------------------------------------------------------- */
+
+.fp-v45-deep-ocean.fp-route-index .hero {
+  min-height: auto !important;
+  padding: clamp(52px, 7vw, 96px) 0 clamp(64px, 8vw, 112px) !important;
+  background: transparent !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-shell {
+  width: min(1320px, calc(100% - 40px));
+  gap: clamp(28px, 5vw, 76px) !important;
+  align-items: center;
+  padding: clamp(24px, 4vw, 58px) !important;
+  border: 1px solid rgba(130, 202, 255, 0.2) !important;
+  border-radius: 34px !important;
+  background:
+    linear-gradient(135deg, rgba(14, 43, 72, 0.9), rgba(5, 20, 37, 0.86) 66%),
+    rgba(7, 25, 45, 0.9) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 42px 110px rgba(0, 5, 16, 0.46) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-content {
+  align-self: center;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-content .badge,
+.fp-v45-deep-ocean.fp-route-index .hero-meta-chip {
+  border-color: rgba(75, 217, 230, 0.28) !important;
+  background: rgba(75, 217, 230, 0.08) !important;
+  color: #b9f5fa !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-content .eyebrow,
+.fp-v45-deep-ocean.fp-route-index .section-kicker,
+.fp-v45-deep-ocean.fp-route-dashboard .capability-studio-title {
+  color: #6ed8eb !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.15em !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index #landingHeroTitle {
+  max-width: 760px;
+  margin-block: 22px 18px;
+  color: #f7fbff !important;
+  font-size: clamp(3rem, 6.1vw, 6.4rem) !important;
+  font-weight: 780 !important;
+  line-height: 0.91 !important;
+  letter-spacing: -0.065em !important;
+  text-wrap: balance;
+}
+
+.fp-v45-deep-ocean.fp-route-index #landingHeroTitle .v45-accent-phrase {
+  display: inline-block;
+  background: linear-gradient(92deg, #4bd9e6 0%, #399fff 48%, #8c80ff 100%) !important;
+  background-size: 180% 100% !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: v45-accent-shift 6s ease-in-out 2 alternate;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-lede {
+  max-width: 690px;
+  color: #d9e9f7 !important;
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem) !important;
+  line-height: 1.62 !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index :where(.hero-subcopy, .hero-support) {
+  max-width: 650px;
+  color: #94aec7 !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel {
+  min-height: 590px;
+  overflow: hidden !important;
+  border: 1px solid rgba(75, 217, 230, 0.2) !important;
+  border-radius: 28px !important;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(57, 159, 255, 0.22), transparent 42%),
+    linear-gradient(160deg, rgba(10, 38, 66, 0.94), rgba(4, 17, 31, 0.96)) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.05), 0 28px 70px rgba(0, 4, 14, 0.36) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel::before {
+  display: block !important;
+  opacity: 0.75 !important;
+  background: radial-gradient(circle, rgba(75, 217, 230, 0.2), transparent 68%) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel .system-card {
+  border: 1px solid rgba(160, 209, 247, 0.16) !important;
+  border-block-start-color: var(--system-accent, var(--v45-blue)) !important;
+  background: rgba(4, 18, 34, 0.88) !important;
+  box-shadow: 0 15px 34px rgba(0, 5, 16, 0.32) !important;
+  backdrop-filter: blur(12px);
+}
+
+.fp-v45-deep-ocean.fp-route-index .system-card-workout { --system-accent: var(--v45-blue); }
+.fp-v45-deep-ocean.fp-route-index .system-card-nutrition { --system-accent: var(--v45-amber); }
+.fp-v45-deep-ocean.fp-route-index .system-card-progress { --system-accent: var(--v45-purple); }
+
+.fp-v45-deep-ocean.fp-route-index .hero-btn.primary,
+.fp-v45-deep-ocean.fp-route-index .nav-btn {
+  border-color: rgba(75, 217, 230, 0.48) !important;
+  background: linear-gradient(135deg, #46cddb, #438dff) !important;
+  color: #03111e !important;
+  box-shadow: 0 14px 36px rgba(57, 159, 255, 0.24) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-btn.secondary {
+  border-color: rgba(150, 199, 238, 0.24) !important;
+  background: rgba(11, 38, 64, 0.72) !important;
+  color: #e8f4ff !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .landing-section {
+  width: min(1280px, calc(100% - 40px));
+  margin-block: clamp(68px, 9vw, 126px);
+  color: var(--v45-ocean-text) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .section-heading {
+  max-width: 780px;
+  margin-block-end: clamp(28px, 4vw, 52px);
+}
+
+.fp-v45-deep-ocean.fp-route-index .section-heading h2 {
+  margin-block: 12px 14px;
+  color: #f5faff !important;
+  font-size: clamp(2.25rem, 4.6vw, 4.7rem) !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.055em !important;
+  text-wrap: balance;
+}
+
+.fp-v45-deep-ocean.fp-route-index .section-heading p {
+  color: #a8bfd4 !important;
+  font-size: 1.04rem;
+  line-height: 1.65;
+}
+
+.fp-v45-deep-ocean.fp-route-index .journey-card {
+  --journey-accent: var(--v45-blue);
+  --journey-tint: rgba(57, 159, 255, 0.16);
+  min-height: 380px;
+  border: 1px solid color-mix(in srgb, var(--journey-accent) 42%, rgba(151, 196, 235, 0.12)) !important;
+  border-radius: 24px !important;
+  background:
+    radial-gradient(circle at 96% 98%, var(--journey-tint), transparent 46%),
+    linear-gradient(145deg, rgba(16, 45, 73, 0.94), rgba(6, 23, 41, 0.96)) !important;
+  box-shadow: 0 28px 68px rgba(0, 5, 15, 0.28) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .journey-card--training { --journey-accent: var(--v45-blue); --journey-tint: rgba(57, 159, 255, 0.18); }
+.fp-v45-deep-ocean.fp-route-index .journey-card--nutrition { --journey-accent: var(--v45-amber); --journey-tint: rgba(243, 170, 55, 0.15); }
+.fp-v45-deep-ocean.fp-route-index .journey-card--progress { --journey-accent: var(--v45-purple); --journey-tint: rgba(155, 124, 255, 0.16); }
+.fp-v45-deep-ocean.fp-route-index .journey-card--social { --journey-accent: var(--v45-pink); --journey-tint: rgba(237, 103, 152, 0.14); }
+.fp-v45-deep-ocean.fp-route-index .journey-card--coach { --journey-accent: var(--v45-green); --journey-tint: rgba(53, 200, 150, 0.15); }
+
+.fp-v45-deep-ocean.fp-route-index .journey-word {
+  color: var(--journey-accent) !important;
+  opacity: 0.16 !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .journey-card h3 {
+  color: #f5faff !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.035em !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .feature-section .journey-card p {
+  color: #c2d5e6 !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index :where(.results-section, .result-story, .transformation-invite) {
+  color: var(--v45-ocean-text) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .result-story,
+.fp-v45-deep-ocean.fp-route-index .transformation-invite {
+  border: 1px solid rgba(130, 190, 235, 0.2) !important;
+  background: linear-gradient(145deg, rgba(14, 39, 65, 0.94), rgba(5, 20, 37, 0.95)) !important;
+  box-shadow: 0 28px 70px rgba(0, 5, 15, 0.3) !important;
+}
+
+/* Dashboard -------------------------------------------------------------- */
+
+.fp-v45-deep-ocean.fp-route-dashboard {
+  --fp-bg-page: var(--v45-ocean-deep) !important;
+  --fp-bg-deep: var(--v45-ocean-abyss) !important;
+  background:
+    radial-gradient(60rem 36rem at 12% 0%, rgba(57, 159, 255, 0.22), transparent 62%),
+    radial-gradient(52rem 34rem at 96% 24%, rgba(75, 217, 230, 0.1), transparent 58%),
+    linear-gradient(155deg, #030b17 0%, #07182a 52%, #04111f 100%) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-shell {
+  border-color: rgba(130, 190, 235, 0.12) !important;
+  background:
+    linear-gradient(180deg, rgba(5, 19, 34, 0.92), rgba(3, 13, 25, 0.96)) !important;
+  box-shadow: 0 36px 100px rgba(0, 4, 13, 0.32);
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header {
+  border: 1px solid rgba(130, 202, 255, 0.22) !important;
+  border-block-start: 0 !important;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(75, 217, 230, 0.12), transparent 34%),
+    linear-gradient(130deg, rgba(15, 48, 80, 0.94), rgba(6, 23, 42, 0.96)) !important;
+  box-shadow: 0 28px 66px rgba(0, 5, 15, 0.3) !important;
+}
+
+html[data-theme="light"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header,
+html[data-theme="dark"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header {
+  background:
+    linear-gradient(115deg, rgba(13, 42, 70, 0.98), rgba(7, 26, 47, 0.96) 58%, rgba(10, 50, 73, 0.94)) !important;
+  color: var(--v45-ocean-text) !important;
+}
+
+html[data-theme="light"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-context-item strong,
+html[data-theme="dark"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-context-item strong {
+  color: var(--v45-ocean-text) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .theme-toggle {
+  border-color: rgba(130, 202, 255, 0.26) !important;
+  background: rgba(5, 20, 37, 0.78) !important;
+  color: var(--v45-ocean-text) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 22px 0 0 22px;
+  background: linear-gradient(180deg, var(--v45-cyan), var(--v45-indigo));
+  content: "";
+}
+
+html[dir="rtl"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header::before {
+  inset: 0 0 0 auto;
+  border-radius: 0 22px 22px 0;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header .hero-copy h1 {
+  color: #f5faff !important;
+  font-size: clamp(2rem, 3.4vw, 3.4rem) !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.055em !important;
+  text-shadow: 0 0 30px rgba(57, 159, 255, 0.2) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-context-item {
+  border-color: rgba(130, 190, 235, 0.17) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-context-item strong {
+  color: #f2f8ff !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-studio {
+  gap: 16px !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card {
+  --capability-accent: var(--v45-blue);
+  --capability-tint: rgba(57, 159, 255, 0.16);
+  border: 1px solid color-mix(in srgb, var(--capability-accent) 42%, rgba(151, 196, 235, 0.12)) !important;
+  border-radius: 24px !important;
+  background:
+    radial-gradient(circle at 96% 94%, var(--capability-tint), transparent 46%),
+    linear-gradient(145deg, rgba(16, 45, 73, 0.96), rgba(5, 22, 39, 0.97)) !important;
+  box-shadow: 0 28px 68px rgba(0, 5, 15, 0.26) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 2;
+  height: 3px;
+  background: linear-gradient(90deg, var(--capability-accent), transparent 74%);
+  content: "";
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card--training { --capability-accent: var(--v45-blue); --capability-tint: rgba(57, 159, 255, 0.18); }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card--nutrition { --capability-accent: var(--v45-amber); --capability-tint: rgba(243, 170, 55, 0.14); }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card--progress { --capability-accent: var(--v45-purple); --capability-tint: rgba(155, 124, 255, 0.15); }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card--coach { --capability-accent: var(--v45-green); --capability-tint: rgba(53, 200, 150, 0.14); }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card--social { --capability-accent: var(--v45-pink); --capability-tint: rgba(237, 103, 152, 0.13); }
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-kicker {
+  color: var(--capability-accent) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card h2 {
+  color: #f6faff !important;
+  font-weight: 760 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card p {
+  color: #bdd0e1 !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-action--primary {
+  border-color: transparent !important;
+  background: #f6faff !important;
+  color: #071426 !important;
+  box-shadow: 0 12px 30px rgba(0, 5, 14, 0.25);
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-action:not(.capability-action--primary) {
+  border-color: color-mix(in srgb, var(--capability-accent) 35%, rgba(151, 196, 235, 0.18)) !important;
+  background: rgba(5, 21, 38, 0.64) !important;
+  color: #dceaf6 !important;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .dashboard-grid > :where(article, section, details),
+.fp-v45-deep-ocean.fp-route-dashboard .stats-grid > *,
+.fp-v45-deep-ocean.fp-route-dashboard .tools-accordion {
+  border-color: rgba(130, 190, 235, 0.18) !important;
+  background: linear-gradient(145deg, rgba(14, 39, 65, 0.9), rgba(5, 20, 37, 0.94)) !important;
+  box-shadow: 0 20px 50px rgba(0, 5, 15, 0.22) !important;
+}
+
+/* Shared protected-page surfaces ---------------------------------------- */
+
+.fp-v45-deep-ocean:not(.fp-route-index) :where(.builder-card, .builder-wizard, .program-card, .plan-card, .nutrition-plan-card, .settings-card, .panel, .view-hero) {
+  border-color: rgba(130, 190, 235, 0.2) !important;
+  background-color: rgba(8, 28, 49, 0.9) !important;
+  box-shadow: 0 22px 56px rgba(0, 5, 15, 0.24);
+}
+
+@keyframes v45-ocean-drift {
+  from { transform: translate3d(-1.5%, -1%, 0) scale(0.98); }
+  to { transform: translate3d(2%, 1.5%, 0) scale(1.04); }
+}
+
+@keyframes v45-accent-shift {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+@media (max-width: 920px) {
+  .fp-v45-deep-ocean.fp-route-index .hero-shell {
+    width: min(100% - 28px, 760px);
+    padding: clamp(22px, 5vw, 38px) !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .hero-panel {
+    min-height: 520px;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .landing-section {
+    width: min(100% - 28px, 760px);
+  }
+}
+
+@media (max-width: 760px) {
+  .fp-v45-deep-ocean.fp-route-index .hero {
+    padding-block-start: 28px !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .hero-shell {
+    width: min(100% - 20px, 560px);
+    gap: 24px !important;
+    padding: 20px 16px 18px !important;
+    border-radius: 24px !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index #landingHeroTitle {
+    font-size: clamp(2.65rem, 14vw, 4.35rem) !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .hero-panel {
+    min-height: 470px;
+    border-radius: 20px !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .landing-section {
+    width: min(100% - 20px, 560px);
+    margin-block: 64px;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .journey-card {
+    min-height: 410px !important;
+    border-radius: 20px !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header,
+  .fp-v45-deep-ocean.fp-route-dashboard .capability-card {
+    border-radius: 20px !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header .hero-copy h1 {
+    font-size: clamp(1.9rem, 9vw, 2.55rem) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.fp-v45-deep-ocean .ocean-depth-glow,
+  .fp-v45-deep-ocean.fp-route-index #landingHeroTitle .v45-accent-phrase {
+    animation: none !important;
+    transform: none !important;
+    background-position: 50% 50% !important;
+  }
+}
