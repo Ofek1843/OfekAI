@@ -341,6 +341,22 @@ html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4, p, label, button, 
   letter-spacing: normal;
 }
 
+html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4) {
+  max-width: 100%;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-weight: 850;
+  line-height: 1.16;
+  text-transform: none;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  background: none;
+  color: #f7fbff;
+  text-shadow: none;
+  transform: none;
+  filter: none;
+}
+
 html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4, p, label, th, td, summary, dt, dd, small) {
   direction: rtl;
   unicode-bidi: plaintext;

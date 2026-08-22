@@ -320,7 +320,7 @@ test("the service worker never caches /__/auth/* -- OAuth helper responses alway
 
 test("the service worker's cache version was bumped so no stale pre-fix worker keeps caching auth traffic", () => {
   const sw = fs.readFileSync(path.join(ROOT, "public", "sw.js"), "utf8");
-  assert.match(sw, /CACHE_NAME = 'fuelphysique-v39-v45-rtl-hebrew-animation-fix'/);
+  assert.match(sw, /CACHE_NAME = 'fuelphysique-v40-v45-tiny-polish-plate'/);
 });
 
 // --- Existing Google popup/redirect flow regression -------------------------

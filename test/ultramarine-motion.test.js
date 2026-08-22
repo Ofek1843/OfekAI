@@ -90,7 +90,7 @@ test("all public pages and the service worker use their exact versioned shell ge
       : /redesign-shell\.js\?v=20260822-v45-rtl-hebrew-animation-fix-1/;
     assert.match(html, expectedShell);
   }
-  assert.match(SW, /fuelphysique-v39-v45-rtl-hebrew-animation-fix/);
+  assert.match(SW, /fuelphysique-v40-v45-tiny-polish-plate/);
   assert.match(SW, /redesign-shell\.js\?v=20260822-v45-rtl-hebrew-animation-fix-1/);
   assert.match(SW, /redesign-shell\.js\?v=20260821-v45-daily-nutrition-v11-4/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);

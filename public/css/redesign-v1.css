@@ -2679,6 +2679,24 @@ html[dir="rtl"] .fp-redesign :where(h1, h2, h3, h4, h5, h6, p, a, button, label,
   letter-spacing: normal;
 }
 
+html[dir="rtl"] .fp-redesign :where(h1, h2, h3, h4, h5, h6) {
+  max-width: 100%;
+  font-family: var(--fp-ui);
+  font-weight: 850;
+  line-height: 1.14;
+  text-transform: none;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  background: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
 html[dir="rtl"] .fp-redesign :where(h1, h2, h3, h4, h5, h6, p, label, li, th, td) {
   direction: rtl;
   unicode-bidi: plaintext;

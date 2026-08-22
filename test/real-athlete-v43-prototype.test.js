@@ -7,11 +7,11 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
+const VERSION = "20260822-v45-tiny-polish-plate-1";
 const INTEGRATION_VERSION = "20260815-real-athlete-v43-complete-5";
 const MOTION_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
-const PLATE_ASSET_VERSION = MOTION_ASSET_VERSION;
-const ENGINE_VERSION = MOTION_ASSET_VERSION;
+const PLATE_ASSET_VERSION = VERSION;
+const ENGINE_VERSION = VERSION;
 const CSS_VERSION = MOTION_ASSET_VERSION;
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
@@ -191,7 +191,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v39-v45-rtl-hebrew-animation-fix/);
+  assert.match(SW, /fuelphysique-v40-v45-tiny-polish-plate/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

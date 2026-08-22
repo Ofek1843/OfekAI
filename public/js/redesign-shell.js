@@ -65,7 +65,7 @@
   const translations = {
     en: {
       navigation: "Primary product navigation",
-      brand: "Fuel / Physique",
+      brand: "FuelPhysique",
       dashboard: "Dashboard",
       workouts: "Workout Plans",
       nutrition: "Nutrition",
@@ -87,7 +87,7 @@
     },
     he: {
       navigation: "ניווט ראשי במוצר",
-      brand: "Fuel / Physique",
+      brand: "FuelPhysique",
       dashboard: "לוח בקרה",
       workouts: "תוכניות אימון",
       nutrition: "תזונה",

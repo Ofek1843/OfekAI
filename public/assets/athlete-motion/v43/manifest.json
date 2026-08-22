@@ -1,10 +1,10 @@
 {
-  "version": "20260822-v45-rtl-hebrew-animation-fix-1",
+  "version": "20260822-v45-tiny-polish-plate-1",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-22T03:56:34.948Z",
+  "generatedAt": "2026-08-22T05:30:21.279Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -577,7 +577,7 @@
           "file": "frame-04.webp",
           "source": "frame-04-regenerated.png",
           "sourceBytes": 1526417,
-          "normalizedBytes": 35686,
+          "normalizedBytes": 90932,
           "index": 3,
           "semantic": "bulk-female"
         }
@@ -589,7 +589,7 @@
         "height": 887
       },
       "motionSheetSourceBytes": 2135494,
-      "normalizedBytes": 139406,
+      "normalizedBytes": 194652,
       "canvas": {
         "width": 600,
         "height": 720
