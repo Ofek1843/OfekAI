@@ -37,8 +37,8 @@ test("dashboard greeting receives the restrained Deep Ocean treatment without ch
 
 test("the polish cache generation is synchronized and preserves auth/private bypasses", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v38-daily-nutrition-v11/);
-  assert.match(sw, /image-sequence-v43\.js\?v=20260821-v45-athlete-polish-2/);
+  assert.match(sw, /fuelphysique-v39-v45-rtl-hebrew-animation-fix/);
+  assert.match(sw, /image-sequence-v43\.js\?v=20260822-v45-rtl-hebrew-animation-fix-1/);
   assert.match(sw, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(sw, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /AUTH_INFRASTRUCTURE_ORIGINS/);
@@ -52,4 +52,26 @@ test("the corrected Nutrition plate frame is transparent and remains traceable t
   const metadata = await sharp(path.join(ROOT, "public", "assets", "athlete-motion", "v43", "plate", "normalized", frame.file)).metadata();
   assert.deepEqual({ width: metadata.width, height: metadata.height }, { width: 600, height: 720 });
   assert.equal(metadata.hasAlpha, true);
+});
+
+test("Hebrew shell and Daily Nutrition typography use live RTL direction without Latin tracking", () => {
+  const shell = read("public", "js", "redesign-shell.js");
+  const shellCss = read("public", "css", "redesign-v1.css");
+  const dailyCss = read("public", "css", "daily-nutrition.css");
+  assert.match(shell, /document\.documentElement\.dir = language === "he" \? "rtl" : "ltr"/);
+  assert.match(shell, /ofekai:settings-saved/);
+  assert.match(shellCss, /html\[dir="rtl"\] \.fp-redesign :where\([\s\S]*?letter-spacing: normal/);
+  assert.match(shellCss, /html\[dir="rtl"\] \.fp-global-menu[\s\S]*?inset-inline-end: 0/);
+  assert.match(dailyCss, /html\[dir="rtl"\] \.daily-hero h1[\s\S]*?letter-spacing|html\[dir="rtl"\] \.daily-nutrition-shell[\s\S]*?letter-spacing: normal/);
+});
+
+test("clean Session frames are transparent app assets rather than studio panels", async () => {
+  const manifest = JSON.parse(read("public", "assets", "athlete-motion", "v43", "manifest.json"));
+  assert.equal(manifest.scenes.session.assetDirectory, "normalized-clean");
+  for (const frame of manifest.scenes.session.frames) {
+    const imagePath = path.join(ROOT, "public", "assets", "athlete-motion", "v43", "session", "normalized-clean", frame.file);
+    const metadata = await sharp(imagePath).metadata();
+    assert.equal(metadata.hasAlpha, true, `${frame.file} must retain alpha`);
+    assert.equal(frame.normalizedBytes, fs.statSync(imagePath).size, `${frame.file} manifest size`);
+  }
 });

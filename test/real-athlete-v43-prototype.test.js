@@ -7,8 +7,9 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260815-real-athlete-v43-complete-5";
-const MOTION_ASSET_VERSION = "20260821-v45-athlete-polish-2";
+const VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
+const INTEGRATION_VERSION = "20260815-real-athlete-v43-complete-5";
+const MOTION_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
 const PLATE_ASSET_VERSION = MOTION_ASSET_VERSION;
 const ENGINE_VERSION = MOTION_ASSET_VERSION;
 const CSS_VERSION = MOTION_ASSET_VERSION;
@@ -81,7 +82,7 @@ test("final source mapping uses exact equal-width Deadlift boundaries and correc
   assert.deepEqual(MANIFEST.scenes.training.motionSheetSourceDimensions, { width: 1774, height: 887 });
   assert.match(MANIFEST.scenes.training.motionSheetSource, /training\/final-source\/training-curl-motion-sheet-transparent\.png$/);
   assert.equal(MANIFEST.scenes.nutrition.sourceBytes, 507999);
-  assert.equal(MANIFEST.scenes.nutrition.normalizedBytes, 576812);
+  assert.equal(MANIFEST.scenes.nutrition.normalizedBytes, 467698);
   assert.deepEqual(MANIFEST.scenes.track.frames.map((frame) => frame.semantic), ["approach", "planted", "reading", "settled"]);
   assert.deepEqual(MANIFEST.scenes.connect.frames.map((frame) => frame.semantic), ["phone-review", "desktop-review", "phone-share", "desktop-receive"]);
   assert.deepEqual(MANIFEST.scenes.coach.frames.map((frame) => frame.semantic), ["review", "raise", "tap", "ready"]);
@@ -182,7 +183,7 @@ test("landing and dashboard load the engine before integration with one cache ge
   for (const file of ["index.html", "dashboard.html"]) {
     const html = read("public", file);
     const engine = `/js/image-sequence-v43.js?v=${ENGINE_VERSION}`;
-    const integration = `/js/illustrated-v4.js?v=${VERSION}`;
+    const integration = `/js/illustrated-v4.js?v=${INTEGRATION_VERSION}`;
     assert.ok(html.includes(engine));
     assert.ok(html.indexOf(engine) < html.indexOf(integration));
     assert.match(html, new RegExp(`illustrated-v4\\.css\\?v=${CSS_VERSION}`));
@@ -190,7 +191,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v38-daily-nutrition-v11/);
+  assert.match(SW, /fuelphysique-v39-v45-rtl-hebrew-animation-fix/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

@@ -2669,3 +2669,96 @@ body.fp-route-index > .fp-global-nav {
     transform: none !important;
   }
 }
+
+/* RTL and drawer hardening --------------------------------------------------
+   Hebrew copy must follow the document direction, not the Latin display
+   typography used by the English treatment. The menu is a real overlay: it
+   owns its width, spacing, and safe-area padding so it cannot compress or
+   visually merge with the page behind it. */
+html[dir="rtl"] .fp-redesign :where(h1, h2, h3, h4, h5, h6, p, a, button, label, li, th, td, input, select, textarea, .fp-global-link, .fp-global-menu-link, .fp-global-menu-title) {
+  letter-spacing: normal;
+}
+
+html[dir="rtl"] .fp-redesign :where(h1, h2, h3, h4, h5, h6, p, label, li, th, td) {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+html[dir="rtl"] .fp-global-brand {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+
+.fp-global-menu,
+.fp-global-menu * {
+  box-sizing: border-box;
+}
+
+.fp-global-menu {
+  padding-block-start: max(28px, env(safe-area-inset-top));
+  padding-inline: clamp(18px, 3vw, 28px);
+  gap: 24px;
+  isolation: isolate;
+}
+
+.fp-global-menu-header {
+  flex: 0 0 auto;
+  min-height: 52px;
+  gap: 20px;
+}
+
+.fp-global-menu-title,
+.fp-global-menu-close,
+.fp-global-menu-group-title,
+.fp-global-menu-link {
+  letter-spacing: normal;
+  direction: inherit;
+  unicode-bidi: plaintext;
+  text-align: start;
+}
+
+.fp-global-menu-group {
+  gap: 8px;
+}
+
+.fp-global-menu-group-title {
+  margin-block: 2px 6px;
+  line-height: 1.35;
+}
+
+.fp-global-menu-link {
+  min-height: 52px;
+  padding-block: 13px;
+  line-height: 1.35;
+}
+
+html[dir="rtl"] .fp-global-menu {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  border-inline-start: 1px solid rgba(92, 176, 255, 0.3);
+  border-inline-end: 0;
+  box-shadow: -28px 0 80px rgba(1, 7, 18, 0.6);
+}
+
+html[dir="ltr"] .fp-global-menu {
+  inset-inline-start: 0;
+  inset-inline-end: auto;
+}
+
+html[dir="rtl"] .fp-global-menu-link:hover,
+html[dir="rtl"] .fp-global-menu-link:focus-visible,
+html[dir="rtl"] .fp-global-menu-link[aria-current="page"] {
+  transform: translateX(-3px);
+}
+
+@media (max-width: 760px) {
+  .fp-global-menu {
+    width: min(390px, calc(100vw - 16px));
+    padding-block-end: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .fp-global-menu-link {
+    min-height: 54px;
+  }
+}

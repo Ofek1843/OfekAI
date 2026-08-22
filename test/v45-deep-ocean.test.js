@@ -13,8 +13,8 @@ test("V4.5 Deep Ocean loads on landing, dashboard, and protected routes", () => 
   const dashboard = read("public", "dashboard.html");
   const shell = read("public", "js", "redesign-shell.js");
 
-  assert.match(landing, /\/css\/v45-deep-ocean\.css\?v=20260821-v45-athlete-polish-2/);
-  assert.match(dashboard, /\/css\/v45-deep-ocean\.css\?v=20260821-v45-athlete-polish-2/);
+  assert.match(landing, /\/css\/v45-deep-ocean\.css\?v=20260822-v45-rtl-hebrew-animation-fix-1/);
+  assert.match(dashboard, /\/css\/v45-deep-ocean\.css\?v=20260822-v45-rtl-hebrew-animation-fix-1/);
   assert.match(shell, /querySelector\('link\[href\*="v45-deep-ocean\.css"\]'\)/);
   assert.match(shell, /classList\.add\("fp-redesign", "fp-v45-deep-ocean"/);
 });

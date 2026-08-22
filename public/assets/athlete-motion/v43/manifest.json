@@ -1,10 +1,10 @@
 {
-  "version": "20260815-real-athlete-v43-complete-5",
+  "version": "20260822-v45-rtl-hebrew-animation-fix-1",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-15T14:01:14.506Z",
+  "generatedAt": "2026-08-22T03:56:34.948Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -242,7 +242,7 @@
           "file": "frame-01.webp",
           "semantic": "utensil-near-meal",
           "sourceBytes": 103063,
-          "normalizedBytes": 113192,
+          "normalizedBytes": 89964,
           "sourceBounds": {
             "left": 304,
             "top": 1,
@@ -260,7 +260,7 @@
           "file": "frame-02.webp",
           "semantic": "food-lifted",
           "sourceBytes": 99964,
-          "normalizedBytes": 115518,
+          "normalizedBytes": 92826,
           "sourceBounds": {
             "left": 304,
             "top": 0,
@@ -278,7 +278,7 @@
           "file": "frame-03.webp",
           "semantic": "food-to-mouth",
           "sourceBytes": 101630,
-          "normalizedBytes": 116248,
+          "normalizedBytes": 94730,
           "sourceBounds": {
             "left": 305,
             "top": 8,
@@ -296,7 +296,7 @@
           "file": "frame-04.webp",
           "semantic": "bite",
           "sourceBytes": 100875,
-          "normalizedBytes": 114970,
+          "normalizedBytes": 94720,
           "sourceBounds": {
             "left": 304,
             "top": 8,
@@ -314,7 +314,7 @@
           "file": "frame-05.webp",
           "semantic": "utensil-return",
           "sourceBytes": 102467,
-          "normalizedBytes": 116884,
+          "normalizedBytes": 95458,
           "sourceBounds": {
             "left": 306,
             "top": 0,
@@ -330,8 +330,8 @@
         }
       ],
       "sourceBytes": 507999,
-      "normalizedBytes": 576812,
-      "contactSheet": "docs/illustration/v43/nutrition-final-contact-sheet.png"
+      "normalizedBytes": 467698,
+      "contactSheet": "docs/illustration/v43/nutrition-v45-clean-contact-sheet.png"
     },
     "training": {
       "frames": [
@@ -597,32 +597,33 @@
       "contactSheet": "docs/illustration/v43/plan-plate-final-contact-sheet.png"
     },
     "session": {
+      "assetDirectory": "normalized-clean",
       "frames": [
         {
           "file": "frame-01.webp",
           "sourceBytes": 479754,
-          "normalizedBytes": 24588,
+          "normalizedBytes": 18476,
           "index": 0,
           "semantic": "hip-thrust-setup"
         },
         {
           "file": "frame-02.webp",
           "sourceBytes": 476177,
-          "normalizedBytes": 24522,
+          "normalizedBytes": 19180,
           "index": 1,
           "semantic": "hip-thrust-top"
         },
         {
           "file": "frame-03.webp",
           "sourceBytes": 502705,
-          "normalizedBytes": 29176,
+          "normalizedBytes": 21660,
           "index": 2,
           "semantic": "shoulder-press-lower"
         },
         {
           "file": "frame-04.webp",
           "sourceBytes": 520249,
-          "normalizedBytes": 30156,
+          "normalizedBytes": 22970,
           "index": 3,
           "semantic": "shoulder-press-top"
         }
@@ -633,12 +634,12 @@
         "height": 887
       },
       "motionSheetSourceBytes": 2058384,
-      "normalizedBytes": 108442,
+      "normalizedBytes": 82286,
       "canvas": {
         "width": 760,
         "height": 720
       },
-      "contactSheet": "docs/illustration/v43/build-session-final-contact-sheet.png"
+      "contactSheet": "docs/illustration/v43/build-session-v45-clean-contact-sheet.png"
     }
   }
 }

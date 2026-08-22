@@ -330,6 +330,37 @@ html[dir="rtl"] .food-table td { text-align: right; }
 html[dir="rtl"] .entry-actions { justify-content: flex-start; }
 html[dir="rtl"] .entry-edit { direction: ltr; justify-content: flex-end; }
 
+/* Hebrew uses the same content order but not the compressed Latin display
+   tracking used by the English hero. Keep numeric amounts isolated while
+   letting headings and controls read naturally from the right. */
+html[dir="rtl"] .daily-nutrition-shell {
+  direction: rtl;
+}
+
+html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4, p, label, button, a, th, td, summary, dt, dd, small, strong, span) {
+  letter-spacing: normal;
+}
+
+html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4, p, label, th, td, summary, dt, dd, small) {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+html[dir="rtl"] .daily-hero {
+  align-items: start;
+}
+
+html[dir="rtl"] .daily-hero h1 {
+  max-width: 850px;
+  line-height: 1.16;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  text-align: right;
+}
+
+html[dir="rtl"] .daily-hero p {
+  text-align: right;
+}
+
 @media (max-width: 1020px) {
   .daily-priority-grid { grid-template-columns: 1fr 1fr; }
   .target-card { grid-column: 1 / -1; }

@@ -30,6 +30,9 @@ test("the product hamburger is a modal side drawer with focus and dismissal cont
   assert.match(css, /\.fp-global-menu\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?z-index:\s*2202;[\s\S]*?height:\s*100dvh;/);
   assert.match(css, /\.fp-global-menu-backdrop\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?z-index:\s*2201;/);
   assert.match(css, /body\.fp-global-menu-open\s*\{[\s\S]*?overflow:\s*hidden;/);
+  assert.match(css, /html\[dir="rtl"\] \.fp-global-menu\s*\{[\s\S]*?inset-inline-end:\s*0;/);
+  assert.match(css, /\.fp-global-menu-link\s*\{[\s\S]*?min-height:\s*52px;/);
+  assert.match(shell, /ofekai:settings-saved/);
 });
 
 test("workout and meal replacement controls remain visible, stateful, and scoped", () => {

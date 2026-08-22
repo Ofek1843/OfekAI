@@ -1,14 +1,15 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260821-v45-athlete-polish-2";
-  const PLATE_ASSET_VERSION = "20260821-v45-athlete-polish-2";
+  const VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
+  const PLATE_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const PRODUCTION_HOSTS = new Set(["fuelphysique.com", "www.fuelphysique.com"]);
   const ROOT = "/assets/athlete-motion/v43";
+  const FRAME_DIRECTORIES = Object.freeze({ session: "normalized-clean" });
 
   const frame = (scene, number, duration) => Object.freeze({
-    url: `${ROOT}/${scene}/normalized/frame-${String(number).padStart(2, "0")}.webp?v=${scene === "plate" ? PLATE_ASSET_VERSION : VERSION}`,
+    url: `${ROOT}/${scene}/${FRAME_DIRECTORIES[scene] || "normalized"}/frame-${String(number).padStart(2, "0")}.webp?v=${scene === "plate" ? PLATE_ASSET_VERSION : VERSION}`,
     duration
   });
 

@@ -545,6 +545,8 @@
   const boot = () => {
     const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
     const copy = translations[language];
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
     document.body.classList.add("fp-redesign", "fp-v45-deep-ocean", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
@@ -557,6 +559,13 @@
     setupPerformanceMotion();
     requestAnimationFrame(() => document.documentElement.classList.add("fp-redesign-ready"));
   };
+
+  window.addEventListener("ofekai:settings-saved", (event) => {
+    const language = event.detail?.language === "he" ? "he" : "en";
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+    updateProductLanguage(language);
+  });
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", boot, { once: true });
