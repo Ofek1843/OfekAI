@@ -111,8 +111,10 @@ function setPageStatus(message = "", error = false) {
 }
 
 function setComposerMessage(message = "", error = false) {
-  $("#composerMessage").textContent = message;
-  $("#composerMessage").classList.toggle("error", error);
+  const element = $("#composerMessage");
+  if (!element) return;
+  element.textContent = message;
+  element.classList.toggle("error", error);
 }
 
 function currentTargets() {
@@ -352,13 +354,22 @@ async function loadDate(dateKey) {
 }
 
 function addEntries(entries) {
+  if (!state.log) {
+    setComposerMessage(copy.loading, true);
+    return;
+  }
   const createdAt = new Date().toISOString();
-  const added = entries.map((entry) => ({ ...entry, id: crypto.randomUUID(), createdAt }));
+  const added = entries.map((entry) => ({ ...entry, id: createEntryId(), createdAt }));
   state.log.entries = [...state.log.entries, ...added].slice(0, 80);
   render();
   queueSave();
   $("#foodInput").value = "";
   $("#foodInput").focus();
+}
+
+function createEntryId() {
+  if (typeof crypto?.randomUUID === "function") return crypto.randomUUID();
+  return `food-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 function renderClarification(result) {
@@ -399,11 +410,6 @@ function submitFoodText(value) {
 }
 
 function bindEvents() {
-  $("#foodComposerForm").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const value = $("#foodInput").value.trim();
-    if (value) submitFoodText(value);
-  });
   document.querySelectorAll("[data-example]").forEach((button) => button.addEventListener("click", () => {
     $("#foodInput").value = button.dataset.example;
     $("#foodInput").focus();
@@ -443,7 +449,7 @@ function bindEvents() {
       queueSave();
     }
     if (action === "duplicate") {
-      state.log.entries.splice(index + 1, 0, { ...entry, id: crypto.randomUUID(), createdAt: new Date().toISOString() });
+      state.log.entries.splice(index + 1, 0, { ...entry, id: createEntryId(), createdAt: new Date().toISOString() });
       queueSave();
     }
     if (action === "save") {
@@ -528,6 +534,31 @@ function bindEvents() {
   $("#selectedDate").addEventListener("change", (event) => event.target.value && loadDate(event.target.value));
 }
 
+// Bind the primary composer before the protected-page gate finishes. This
+// keeps a click from becoming a silent no-op while Firebase is resolving or
+// when a transient profile read prevents the rest of the page from starting.
+function bindFoodComposer() {
+  const form = $("#foodComposerForm");
+  if (!form || form.dataset.bound === "true") return;
+  form.dataset.bound = "true";
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = $("#foodInput");
+    const value = input?.value.trim();
+    if (!value) return;
+    if (!state.log) {
+      setComposerMessage(copy.loading, true);
+      return;
+    }
+    try {
+      submitFoodText(value);
+    } catch (error) {
+      console.error("Daily nutrition food entry failed:", error);
+      setComposerMessage(copy.saveError, true);
+    }
+  });
+}
+
 async function init(user) {
   state.user = user;
   bindEvents();
@@ -546,3 +577,4 @@ async function init(user) {
 
 applyLanguage();
 guardProtectedPage({ onAuthenticated: init });
+bindFoodComposer();

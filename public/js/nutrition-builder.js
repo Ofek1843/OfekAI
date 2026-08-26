@@ -593,7 +593,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
                 <div class="meal-photo${option.mealImage ? "" : " no-image"}">
                   ${
                     option.mealImage
-                      ? `<img src="${option.mealImage}" alt="${escapeHtml(mealName)}" loading="lazy"
+                      ? `<img src="${option.mealImage}" alt="${escapeHtml(mealName)}" loading="lazy" decoding="async"
                            onerror="this.parentElement.classList.add('no-image');this.remove();" />`
                       : ""
                   }

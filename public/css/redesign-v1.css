@@ -2772,11 +2772,21 @@ html[dir="rtl"] .fp-global-menu-link[aria-current="page"] {
 
 @media (max-width: 760px) {
   .fp-global-menu {
-    width: min(390px, calc(100vw - 16px));
+    width: min(400px, calc(100vw - 20px));
+    max-height: 100dvh;
+    min-height: 100dvh;
     padding-block-end: max(32px, env(safe-area-inset-bottom));
   }
 
   .fp-global-menu-link {
-    min-height: 54px;
+    min-height: 56px;
+    padding-block: 14px;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .fp-global-menu-group + .fp-global-menu-group {
+    padding-block-start: 14px;
+    border-block-start: 1px solid rgba(151, 196, 235, 0.14);
   }
 }

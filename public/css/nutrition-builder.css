@@ -1511,7 +1511,9 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-photo {
   position: relative;
-  aspect-ratio: 16 / 10;
+  width: min(100%, 520px);
+  height: clamp(190px, 28vw, 300px);
+  aspect-ratio: auto;
   overflow: hidden;
   border-radius: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1527,6 +1529,8 @@ html[dir="ltr"] .nutrition-food-table td {
   height: 100%;
   object-fit: contain;
   object-position: center;
+  image-rendering: auto;
+  backface-visibility: hidden;
 }
 
 /* Placeholder shown until a real plate photo exists for this meal id. */
@@ -1685,8 +1689,13 @@ html[dir="ltr"] .nutrition-food-table td {
 
 @media (max-width: 620px) {
   .meal-practicality-options { grid-template-columns: 1fr; }
-  .nutrition-reroll-meal-button { min-width: 42px; padding: 0 10px; }
-  .nutrition-reroll-meal-button > span:last-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .meal-title-row { flex-wrap: wrap; }
+  .nutrition-reroll-meal-button {
+    min-width: 92px;
+    min-height: 44px;
+    padding: 0 11px;
+    white-space: nowrap;
+  }
 }
 
 .meal-option-macros {
@@ -1800,7 +1809,9 @@ html[dir="ltr"] .nutrition-food-table td {
   }
 
   .meal-photo {
-    aspect-ratio: 16 / 12;
+    width: min(100%, 460px);
+    height: min(230px, 58vw);
+    min-height: 170px;
   }
 
   .meal-option-macros {

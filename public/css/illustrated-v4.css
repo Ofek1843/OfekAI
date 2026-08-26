@@ -1100,7 +1100,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   .fp-route-index .journey-illustration[data-v43-motion="prototype"],
   .fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
     width: 68% !important;
-    height: 64% !important;
+    height: 40% !important;
     inset-block-end: 2%;
     opacity: .88;
   }
@@ -1125,6 +1125,12 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   .fp-route-dashboard .capability-card--training { min-height: 470px !important; }
   .fp-route-index .journey-card--training :where(h3, p) { max-width: 92% !important; }
   .fp-route-dashboard .capability-card--training .capability-copy { width: 92% !important; }
+
+  .fp-route-index .journey-card > :where(h3, p),
+  .fp-route-dashboard .capability-card .capability-copy {
+    position: relative;
+    z-index: 4;
+  }
 
   .fp-route-dashboard #v43-bench-review {
     min-height: 530px;
@@ -1173,7 +1179,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   .fp-route-dashboard .capability-card--social .capability-illustration[data-v43-motion="prototype"],
   .fp-route-dashboard .capability-card--coach .capability-illustration[data-v43-motion="prototype"] {
     width: 100% !important;
-    height: 48% !important;
+    height: 40% !important;
     inset-inline-end: 0;
     inset-block-end: 2%;
     opacity: 1;
