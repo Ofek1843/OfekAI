@@ -44,7 +44,7 @@ import {
 const locale = (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
 const strings = getAuthStrings(locale);
 const verificationStrings = getVerificationStrings(locale);
-const actionCodeSettings = buildActionCodeSettings(window.location.origin);
+const actionCodeSettings = buildActionCodeSettings(window.location.origin, { localDevelopment: Boolean(auth.emulatorConfig) });
 
 // Firebase's own emailed templates (verification, password reset) render in
 // whatever language this is set to — must be set before either is

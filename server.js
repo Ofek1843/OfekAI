@@ -271,7 +271,7 @@ app.use(express.static(path.join(__dirname, "public"), {
       res.setHeader("Cache-Control", "public, max-age=604800, stale-while-revalidate=86400");
       return;
     }
-    if (/\.(?:css|js)$/i.test(filePath)) {
+    if (/\.(?:css|m?js)$/i.test(filePath)) {
       // Code is not content-hashed, so it must still revalidate to keep a
       // deployed fix visible immediately.
       res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");

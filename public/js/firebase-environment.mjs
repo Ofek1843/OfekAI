@@ -35,6 +35,19 @@ export const PRODUCTION_AUTH_DOMAIN = "fuelphysique.com";
 // the canonical domain is the bare apex.
 export const PRODUCTION_HOSTNAMES = Object.freeze(["fuelphysique.com", "www.fuelphysique.com"]);
 
+export const PUBLIC_APP_ORIGIN = "https://fuelphysique.com";
+export const LOCAL_APP_ORIGINS = Object.freeze([
+  "http://localhost:3000", "http://127.0.0.1:3000",
+  "http://localhost:3304", "http://127.0.0.1:3304"
+]);
+
+// Local return links require the actual emulator configuration, not just a
+// loopback address. Production Firebase emails always return to HTTPS.
+export function resolvePublicAppOrigin(currentOrigin, { localDevelopment = false } = {}) {
+  return localDevelopment && LOCAL_APP_ORIGINS.includes(currentOrigin)
+    ? currentOrigin : PUBLIC_APP_ORIGIN;
+}
+
 // resolveAuthDomain(hostname) -> the authDomain Firebase should be
 // initialized with for this environment. Anything that is not an exact,
 // case-insensitive match for a production hostname (localhost, 127.0.0.1,

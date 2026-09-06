@@ -37,7 +37,7 @@ export { shouldBlockUnverifiedAccess };
 
 const locale = (localStorage.getItem("ofek-ai-language") || "en") === "he" ? "he" : "en";
 const verificationStrings = getVerificationStrings(locale);
-const actionCodeSettings = buildActionCodeSettings(window.location.origin);
+const actionCodeSettings = buildActionCodeSettings(window.location.origin, { localDevelopment: Boolean(auth.emulatorConfig) });
 
 let verificationGateInterval = null;
 let termsRedirectInProgress = false;

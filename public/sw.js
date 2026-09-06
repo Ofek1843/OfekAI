@@ -21,6 +21,12 @@ const AUTH_INFRASTRUCTURE_ORIGINS = new Set([
   'https://ofek-ai-55f1d.firebaseapp.com'
 ]);
 const NETWORK_ONLY_PREFIXES = ['/api/'];
+const AUTH_APP_PATHS = new Set([
+  '/auth.html', '/auth-action.html', '/js/auth.js', '/js/app-auth.js',
+  '/js/auth-action.js', '/js/auth-action-core.mjs', '/js/auth-google-core.mjs',
+  '/js/firebase-config.js', '/js/firebase-environment.mjs',
+  '/js/email-verification-core.mjs', '/js/verification-gate.js'
+]);
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -123,8 +129,15 @@ self.addEventListener('activate', event => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
+          return undefined;
         })
-      );
+      ).then(() => caches.open(CACHE_NAME).then(async cache => {
+        // Purge previously cached auth code and action URLs (including
+        // query strings) from the surviving cache.
+        const requests = await cache.keys();
+        await Promise.all(requests.filter(request => AUTH_APP_PATHS.has(new URL(request.url).pathname))
+          .map(request => cache.delete(request)));
+      }));
     })
   );
   self.clients.claim();
@@ -139,6 +152,12 @@ self.addEventListener('fetch', event => {
 
   const requestUrl = new URL(event.request.url);
   const requestPath = requestUrl.pathname;
+
+  // Never replay stale auth config or persist one-time email action links.
+  if (AUTH_APP_PATHS.has(requestPath)) {
+    event.respondWith(fetch(event.request, { cache: 'no-store' }));
+    return;
+  }
 
   // Voice playback URLs are private, short-lived capabilities. Never persist
   // audio responses or signed ImageKit URLs in Cache Storage.

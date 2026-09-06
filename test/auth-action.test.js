@@ -125,7 +125,9 @@ test("only fuelphysique.com and approved localhost origins are allowed", () => {
     "https://fuelphysique.com",
     "https://www.fuelphysique.com",
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://localhost:3304",
+    "http://127.0.0.1:3304"
   ]);
 });
 

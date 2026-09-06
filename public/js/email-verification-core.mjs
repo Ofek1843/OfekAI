@@ -6,32 +6,20 @@
 // and auth-action-core.mjs.
 
 // --- ActionCodeSettings ----------------------------------------------------
-// Every emailed action link (verification, password reset) must point at the
-// dedicated handler (public/auth-action.html), never at auth.html. Firebase
-// requires the destination origin to be an authorized domain; the production
-// origin is used everywhere except when the app is actually running on an
-// approved local development origin, so a developer testing signup locally
-// still receives a link that opens on their own machine instead of bouncing
-// to production.
-export const PRODUCTION_ACTION_ORIGIN = "https://fuelphysique.com";
+// Firebase's template controls the action handler. ActionCodeSettings.url
+// controls where the user continues AFTER the code is applied. Use the
+// canonical public origin, with local return links only for emulator sessions.
+import { PUBLIC_APP_ORIGIN, LOCAL_APP_ORIGINS, resolvePublicAppOrigin } from "./firebase-environment.mjs";
+export const PRODUCTION_ACTION_ORIGIN = PUBLIC_APP_ORIGIN;
+export const APPROVED_LOCAL_ACTION_ORIGINS = LOCAL_APP_ORIGINS;
+export const resolveActionOrigin = resolvePublicAppOrigin;
 
-export const APPROVED_LOCAL_ACTION_ORIGINS = Object.freeze([
-  "http://localhost:3000",
-  "http://127.0.0.1:3000"
-]);
-
-export function resolveActionOrigin(currentOrigin) {
-  if (APPROVED_LOCAL_ACTION_ORIGINS.includes(currentOrigin)) return currentOrigin;
-  return PRODUCTION_ACTION_ORIGIN;
-}
-
-// buildActionCodeSettings(currentOrigin) -> Firebase ActionCodeSettings
-// handleCodeInApp is deliberately false: the code is handled by
-// auth-action.html as a normal page load (mode/oobCode read from the query
-// string), not via a custom app-link/deep-link continuation.
-export function buildActionCodeSettings(currentOrigin) {
+// handleCodeInApp=false uses the configured web handler, not an app deep link.
+export function buildActionCodeSettings(currentOrigin, options) {
   return {
-    url: `${resolveActionOrigin(currentOrigin)}/auth-action.html`,
+    // This is the post-action continuation, NOT Firebase's email handler.
+    // The handler URL is configured separately in Firebase Templates.
+    url: `${resolveActionOrigin(currentOrigin, options)}/auth.html`,
     handleCodeInApp: false
   };
 }

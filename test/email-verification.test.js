@@ -87,17 +87,18 @@ test("the signup success message tells the user to check their email and never c
 
 // --- Correct ActionCodeSettings --------------------------------------------
 
-test("production origin points the action link at the production domain, not auth.html", () => {
+test("production continuation returns to login after the configured handler applies the code", () => {
   assert.equal(PRODUCTION_ACTION_ORIGIN, "https://fuelphysique.com");
   assert.equal(resolveActionOrigin("https://fuelphysique.com"), "https://fuelphysique.com");
-  assert.equal(buildActionCodeSettings("https://fuelphysique.com").url, "https://fuelphysique.com/auth-action.html");
+  assert.equal(buildActionCodeSettings("https://fuelphysique.com").url, "https://fuelphysique.com/auth.html");
 });
 
 test("an approved local development origin is preserved so a developer's link opens on their own machine", () => {
-  assert.deepEqual(APPROVED_LOCAL_ACTION_ORIGINS, ["http://localhost:3000", "http://127.0.0.1:3000"]);
+  assert.deepEqual(APPROVED_LOCAL_ACTION_ORIGINS, ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3304", "http://127.0.0.1:3304"]);
   for (const origin of APPROVED_LOCAL_ACTION_ORIGINS) {
-    assert.equal(resolveActionOrigin(origin), origin);
-    assert.equal(buildActionCodeSettings(origin).url, `${origin}/auth-action.html`);
+    assert.equal(resolveActionOrigin(origin, { localDevelopment: true }), origin);
+    assert.equal(buildActionCodeSettings(origin, { localDevelopment: true }).url, `${origin}/auth.html`);
+    assert.equal(buildActionCodeSettings(origin).url, "https://fuelphysique.com/auth.html");
   }
 });
 
@@ -107,16 +108,16 @@ test("any other origin (a dev server on a random port, a preview URL) falls back
   }
 });
 
-test("ActionCodeSettings never targets auth.html — only the dedicated handler", () => {
+test("ActionCodeSettings never loops back to the action handler without an action code", () => {
   const settings = buildActionCodeSettings("https://fuelphysique.com");
-  assert.match(settings.url, /auth-action\.html$/);
-  assert.doesNotMatch(settings.url, /auth\.html/);
+  assert.match(settings.url, /auth\.html$/);
+  assert.doesNotMatch(settings.url, /auth-action\.html/);
   assert.equal(settings.handleCodeInApp, false, "the code is handled by a normal page load, not an app deep link");
 });
 
 test("auth.js and the verification gate both build ActionCodeSettings from the real current origin", () => {
-  assert.match(AUTH_JS, /buildActionCodeSettings\(window\.location\.origin\)/);
-  assert.match(GATE_JS, /buildActionCodeSettings\(window\.location\.origin\)/);
+  assert.match(AUTH_JS, /buildActionCodeSettings\(window\.location\.origin, \{ localDevelopment: Boolean\(auth\.emulatorConfig\) \}\)/);
+  assert.match(GATE_JS, /buildActionCodeSettings\(window\.location\.origin, \{ localDevelopment: Boolean\(auth\.emulatorConfig\) \}\)/);
 });
 
 test("password reset requests use the same ActionCodeSettings as verification, both pointed at the dedicated handler", () => {
@@ -360,7 +361,9 @@ test("the continueUrl allowlist enforced by auth-action.html is unchanged by thi
     "https://fuelphysique.com",
     "https://www.fuelphysique.com",
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://localhost:3304",
+    "http://127.0.0.1:3304"
   ]);
   for (const hostile of ["https://evil.com/steal", "https://evil.fuelphysique.com/x", "http://localhost:9999/x", "javascript:alert(1)"]) {
     assert.equal(resolveContinueUrl(hostile), DEFAULT_CONTINUE_PATH, `${hostile} must still be rejected`);

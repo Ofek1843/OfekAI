@@ -43,12 +43,12 @@ export function validatePassword(password, confirmPassword) {
 // Subdomain matching is deliberately NOT supported: "evil.fuelphysique.com"
 // would pass a naive endsWith check, and a wildcard here would trust every
 // current and future subdomain including any that gets taken over.
+import { LOCAL_APP_ORIGINS } from "./firebase-environment.mjs";
 export const ALLOWED_CONTINUE_ORIGINS = Object.freeze([
   "https://fuelphysique.com",
   "https://www.fuelphysique.com",
   // Approved local development origins only.
-  "http://localhost:3000",
-  "http://127.0.0.1:3000"
+  ...LOCAL_APP_ORIGINS
 ]);
 
 export const DEFAULT_CONTINUE_PATH = "/dashboard.html";
@@ -78,6 +78,10 @@ export function resolveContinueUrl(rawContinueUrl, { allowedOrigins = ALLOWED_CO
   }
 
   if (!allowedOrigins.includes(parsed.origin)) {
+    return DEFAULT_CONTINUE_PATH;
+  }
+
+  if (parsed.username || parsed.password || parsed.pathname === "/auth-action.html") {
     return DEFAULT_CONTINUE_PATH;
   }
 
