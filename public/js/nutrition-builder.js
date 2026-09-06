@@ -460,17 +460,25 @@ function buildShoppingList(plan = {}) {
 
 function renderShoppingList(plan = {}) {
   const grouped = buildShoppingList(plan);
-  const planName = plan.planName || (isHebrew ? "׳×׳•׳›׳ ׳™׳× ׳×׳–׳•׳ ׳”" : "Nutrition Plan");
-  shoppingListTitle.textContent = isHebrew ? "׳¨׳©׳™׳׳× ׳§׳ ׳™׳•׳×" : "Shopping list";
+  const planName = plan.planName || (isHebrew ? "תוכנית תזונה" : "Nutrition Plan");
+  const categoryLabels = isHebrew ? {
+    Protein: "חלבון",
+    Carbs: "פחמימות",
+    Produce: "פירות וירקות",
+    Fats: "שומנים",
+    Dairy: "מוצרי חלב",
+    Other: "אחר"
+  } : {};
+  shoppingListTitle.textContent = isHebrew ? "רשימת קניות" : "Shopping list";
   shoppingListSubtitle.textContent = isHebrew
-    ? `׳׳•׳¦׳¨׳™׳ ׳׳×׳•׳ ${planName}`
+    ? `מוצרים מתוך ${planName}`
     : `Ingredients pulled from ${planName}`;
 
   const sections = [...grouped.entries()]
     .filter(([, items]) => items.length)
     .map(([category, items]) => `
       <section class="shopping-section">
-        <h3>${escapeHtml(category)}</h3>
+        <h3>${escapeHtml(categoryLabels[category] || category)}</h3>
         <ul>
           ${items
             .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#8e9d99">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
@@ -480,7 +488,7 @@ function renderShoppingList(plan = {}) {
     `)
     .join("");
 
-  shoppingListBody.innerHTML = sections || `<p class="shopping-empty">${isHebrew ? "׳׳™׳ ׳‘׳™׳׳•׳™ ׳׳–׳•׳ ׳‘׳×׳•׳›׳ ׳™׳× ׳”׳–׳•." : "No food items were found in this plan."}</p>`;
+  shoppingListBody.innerHTML = sections || `<p class="shopping-empty">${isHebrew ? "לא נמצאו פריטי מזון בתוכנית הזאת." : "No food items were found in this plan."}</p>`;
   shoppingListModal.classList.remove("hidden");
   shoppingListModal.setAttribute("aria-hidden", "false");
   trackEvent("nutrition_shopping_list", { plan: planName });
@@ -496,9 +504,9 @@ copyShoppingListButton?.addEventListener("click", async () => {
   if (!lines.length) return;
   try {
     await navigator.clipboard.writeText(lines.join("\n"));
-    copyShoppingListButton.textContent = isHebrew ? "׳—׳•׳¤׳©׳” ׳׳׳•׳—׳‘׳" : "Copied";
+    copyShoppingListButton.textContent = isHebrew ? "הועתק ללוח" : "Copied";
     window.setTimeout(() => {
-      copyShoppingListButton.textContent = isHebrew ? "׳¡׳¤׳¨ ׳׳× ׳”׳¨׳©׳™׳׳”" : "Copy list";
+      copyShoppingListButton.textContent = isHebrew ? "העתקת הרשימה" : "Copy list";
     }, 1200);
   } catch (error) {
     console.error("Could not copy shopping list:", error);

@@ -9,9 +9,9 @@ const status = document.querySelector("#plansStatus");
 const count = document.querySelector("#planCount");
 const isHebrew = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 const ui = isHebrew ? {
-  title: "תוכניות התזונה שלי", description: "בחר את תוכנית התזונה הנוכחית שלך. התוכנית הפעילה מסומנת בירוק.", back: "חזרה ל־FuelPhysique ←", create: "+ יצירת תוכנית תזונה", count: " מתוך 5 תוכניות שמורות", loading: "טוען את התוכניות שלך...", empty: "עדיין אין תוכניות תזונה שמורות.", active: "● תוכנית פעילה", use: "השתמש בתוכנית הזאת", current: "התוכנית הנוכחית", rename: "שינוי שם", remove: "מחיקה", prompt: "הזן שם חדש לתוכנית:", confirm: "למחוק את תוכנית התזונה? לא ניתן לבטל פעולה זו.", calories: "קלוריות", protein: "גרם חלבון", error: "לא ניתן היה להשלים את הפעולה. נסה שוב."
+  title: "תוכניות התזונה שלי", description: "בחרו את תוכנית התזונה הנוכחית שלכם. התוכנית הפעילה מודגשת בבירור.", back: "חזרה ל־FuelPhysique ←", create: "+ יצירת תוכנית תזונה", manual: "בנייה ידנית", count: " מתוך 5 תוכניות שמורות", loading: "טוען את התוכניות שלכם...", empty: "עדיין אין תוכניות תזונה שמורות.", active: "● תוכנית פעילה", use: "שימוש בתוכנית הזאת", current: "התוכנית הנוכחית", rename: "שינוי שם", remove: "מחיקה", edit: "עריכה", duplicate: "שכפול", prompt: "הזינו שם חדש לתוכנית:", confirm: "למחוק את תוכנית התזונה? לא ניתן לבטל פעולה זו.", calories: "קלוריות", protein: "גרם חלבון", error: "לא ניתן היה להשלים את הפעולה. נסו שוב.", earlyAccessLabel: "גישה מוקדמת:", earlyAccessText: "כל חמשת המקומות לתוכניות תזונה זמינים כרגע ללא תשלום. מקומות 2–5 מיועדים למסלול Pro בעתיד.", defaultPlan: "תוכנית תזונה"
 } : {
-  title: "My Nutrition Plans", description: "Choose your current nutrition plan. The active plan is highlighted in green.", back: "← Back to FuelPhysique", create: "+ Create nutrition plan", count: " of 5 saved plans", loading: "Loading your plans...", empty: "No saved nutrition plans yet.", active: "● Active plan", use: "Use this plan", current: "Current plan", rename: "Rename", remove: "Delete", prompt: "Enter a new name for this plan:", confirm: "Delete this nutrition plan? This cannot be undone.", calories: "calories", protein: "g protein", error: "Could not complete the action. Please try again."
+  title: "My Nutrition Plans", description: "Choose your current nutrition plan. The active plan is clearly highlighted.", back: "← Back to FuelPhysique", create: "+ Create nutrition plan", manual: "Build manually", count: " of 5 saved plans", loading: "Loading your plans...", empty: "No saved nutrition plans yet.", active: "● Active plan", use: "Use this plan", current: "Current plan", rename: "Rename", remove: "Delete", edit: "Edit", duplicate: "Duplicate", prompt: "Enter a new name for this plan:", confirm: "Delete this nutrition plan? This cannot be undone.", calories: "calories", protein: "g protein", error: "Could not complete the action. Please try again.", earlyAccessLabel: "Early Access:", earlyAccessText: "All five nutrition-plan slots are free right now. Slots 2–5 are planned for Pro later.", defaultPlan: "Nutrition Plan"
 };
 
 document.documentElement.lang = isHebrew ? "he" : "en";
@@ -21,7 +21,15 @@ document.querySelector("#pageTitle").textContent = ui.title;
 document.querySelector("#pageDescription").textContent = ui.description;
 document.querySelector("#backLink").textContent = ui.back;
 document.querySelector("#builderLink").textContent = ui.create;
-document.querySelector("#manualBuilderLink")?.setAttribute("aria-label", isHebrew ? "׳‘׳ ׳™׳™׳× ׳×׳•׳›׳ ׳™׳× ׳×׳–׳•׳ ׳” ׳‘׳™׳“׳ ׳™׳×" : "Build a nutrition plan manually");
+const manualBuilderLink = document.querySelector("#manualBuilderLink");
+if (manualBuilderLink) {
+  manualBuilderLink.textContent = ui.manual;
+  manualBuilderLink.setAttribute("aria-label", ui.manual);
+}
+const earlyAccessLabel = document.querySelector("#earlyAccessLabel");
+const earlyAccessText = document.querySelector("#earlyAccessText");
+if (earlyAccessLabel) earlyAccessLabel.textContent = ui.earlyAccessLabel;
+if (earlyAccessText) earlyAccessText.textContent = ui.earlyAccessText;
 document.querySelector("#planCountLabel").textContent = ui.count;
 status.textContent = ui.loading;
 
@@ -55,14 +63,14 @@ function render() {
     const plan = saved.plan || {};
     const active = saved.id === activeId;
     return `<article class="plan-card${active ? " active" : ""}" data-id="${esc(saved.id)}">
-      <span class="active-badge">${ui.active}</span><h2>${esc(saved.name || plan.planName || "Nutrition Plan")}</h2>
+      <span class="active-badge">${ui.active}</span><h2>${esc(saved.name || plan.planName || ui.defaultPlan)}</h2>
       <div class="plan-meta"><span>${esc(plan.dailyCalories ?? "-")} ${ui.calories}</span><span>${esc(plan.proteinGrams ?? "-")} ${ui.protein}</span></div>
       <div class="plan-actions"><button class="activate-button" type="button" ${active ? "disabled" : ""}>${active ? ui.current : ui.use}</button><a class="share-social-link" href="/social.html?share=nutrition&amp;sourceId=${encodeURIComponent(saved.id)}">${isHebrew ? "שיתוף עם חבר" : "Share with friend"}</a>
       <div class="manage-actions"><button class="rename-button" type="button">✏️ ${ui.rename}</button><button class="delete-button" type="button">🗑️ ${ui.remove}</button></div></div></article>`;
   }).join("") + lockedSlotsMarkup();
   plans.filter((saved) => saved.sourceType === "manual").forEach((saved) => {
     const actions = grid.querySelector(`[data-id="${CSS.escape(saved.id)}"] .manage-actions`);
-    actions?.insertAdjacentHTML("afterbegin", `<a class="edit-button" href="/manual-nutrition-builder.html?edit=${encodeURIComponent(saved.id)}">${isHebrew ? "׳¢׳¨׳™׳›׳”" : "Edit"}</a><a class="duplicate-button" href="/manual-nutrition-builder.html?duplicate=${encodeURIComponent(saved.id)}">${isHebrew ? "׳©׳›׳₪׳•׳" : "Duplicate"}</a>`);
+    actions?.insertAdjacentHTML("afterbegin", `<a class="edit-button" href="/manual-nutrition-builder.html?edit=${encodeURIComponent(saved.id)}">${ui.edit}</a><a class="duplicate-button" href="/manual-nutrition-builder.html?duplicate=${encodeURIComponent(saved.id)}">${ui.duplicate}</a>`);
   });
   grid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => button.addEventListener("click", () => activate(button.closest(".plan-card").dataset.id)));
   grid.querySelectorAll(".rename-button").forEach((button) => button.addEventListener("click", () => rename(button.closest(".plan-card").dataset.id)));
@@ -116,7 +124,8 @@ guardProtectedPage({
   }
 });
 
-if (isHebrew) document.querySelector("#earlyAccessNote").innerHTML = "<strong>גישה מוקדמת:</strong> כל חמשת המקומות לתוכניות תזונה פתוחים עכשיו בחינם. מקומות 2–5 מתוכננים לעבור ל־Pro בהמשך.";
+const earlyAccessNote = document.querySelector("#earlyAccessNote");
+if (isHebrew && earlyAccessNote) earlyAccessNote.innerHTML = "<strong>גישה מוקדמת:</strong> כל חמשת המקומות לתוכניות תזונה פתוחים עכשיו בחינם. מקומות 2–5 מתוכננים לעבור ל־Pro בהמשך.";
 
 document.querySelector("#builderLink")?.addEventListener("click", (event) => {
   if (false && subscription.planId !== "pro" && plans.length >= 1) {

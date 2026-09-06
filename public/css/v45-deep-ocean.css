@@ -578,3 +578,233 @@ html[dir="rtl"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header:
     background-position: 50% 50% !important;
   }
 }
+
+/* V4.5 focused Hebrew, drawer, Social, and saved-plan hardening -----------
+   This layer is intentionally last. Hebrew must not inherit the compressed
+   Latin display treatment above, and shell overlays must remain independent
+   from route-specific stacking contexts. */
+html[dir="rtl"] body.fp-v45-deep-ocean {
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+html[dir="rtl"] body.fp-v45-deep-ocean :where(h1, h2, h3, h4, h5, h6, p, a, button, label, li, th, td, input, select, textarea, summary, small, strong, .eyebrow, .capability-kicker, .section-kicker) {
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  font-stretch: normal !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+html[dir="rtl"] body.fp-v45-deep-ocean :where(h1, h2, h3, h4, h5, h6) {
+  max-width: 100%;
+  line-height: 1.16 !important;
+  white-space: normal !important;
+  overflow-wrap: normal;
+  word-break: normal;
+  background: none !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+html[dir="rtl"] body.fp-v45-deep-ocean :where(h1, h2, h3, h4, h5, h6, p, label, li, th, td, summary) {
+  direction: rtl;
+  unicode-bidi: plaintext;
+}
+
+html[dir="rtl"] body.fp-v45-deep-ocean :where(.fp-global-brand, .social-brand) {
+  direction: ltr;
+  unicode-bidi: isolate;
+  white-space: nowrap;
+  font-family: var(--v45-display) !important;
+  letter-spacing: -0.025em !important;
+}
+
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header .hero-copy h1,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-copy h1,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-copy h2,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-copy h3,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-index #landingHeroTitle,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-index .journey-card h3,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .plans-header h1,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-social .view-hero h1,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-social .chat-person h1,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-social .social-section h2 {
+  max-width: 100%;
+  font-family: "Segoe UI", Arial, sans-serif !important;
+  font-stretch: normal !important;
+  letter-spacing: normal !important;
+  line-height: 1.16 !important;
+  text-transform: none !important;
+  white-space: normal !important;
+  overflow-wrap: normal;
+  word-break: normal;
+  background: none !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+body.fp-v45-deep-ocean .fp-global-menu-backdrop {
+  z-index: 5001 !important;
+}
+
+body.fp-v45-deep-ocean.fp-global-menu-open .fp-global-nav {
+  z-index: 6000 !important;
+  isolation: isolate;
+}
+
+body.fp-v45-deep-ocean.fp-global-menu-open > :not(.fp-global-nav):not(.site-feedback-widget) {
+  pointer-events: none;
+}
+
+body.fp-v45-deep-ocean .fp-global-menu {
+  z-index: 5002 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+body.fp-v45-deep-ocean .fp-global-menu[hidden] {
+  display: none;
+}
+
+body.fp-v45-deep-ocean .fp-global-menu-group {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-content: start;
+  width: 100%;
+}
+
+body.fp-v45-deep-ocean .fp-global-menu-link {
+  width: 100%;
+  min-width: 0;
+}
+
+body.fp-global-menu-open.fp-route-social .social-shell {
+  pointer-events: none;
+}
+
+/* Social always belongs to the Deep Ocean product shell, even when an older
+   stored theme preference is "light". */
+body.fp-v45-deep-ocean.fp-route-social {
+  --social-bg: #030b17;
+  --social-panel: rgba(10, 31, 53, 0.92);
+  --social-panel-strong: rgba(8, 25, 44, 0.98);
+  --social-border: rgba(130, 190, 235, 0.2);
+  --social-border-hot: rgba(75, 217, 230, 0.42);
+  --social-text: #f4f9ff;
+  --social-muted: #9bb5cc;
+  --social-blue: #399fff;
+  --social-cyan: #4bd9e6;
+  --social-green: #57d9aa;
+  --social-danger: #ff91a1;
+  --social-shadow: 0 28px 80px rgba(0, 5, 16, 0.48);
+  color-scheme: dark;
+}
+
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-social .social-abyss,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-social .social-abyss,
+body.fp-v45-deep-ocean.fp-route-social .social-abyss {
+  background:
+    radial-gradient(circle at 12% 10%, rgba(57, 159, 255, 0.24), transparent 30%),
+    radial-gradient(circle at 88% 18%, rgba(75, 217, 230, 0.13), transparent 28%),
+    radial-gradient(circle at 50% 115%, rgba(123, 117, 255, 0.17), transparent 45%),
+    linear-gradient(155deg, #030b17 0%, #07182a 48%, #04111f 100%) !important;
+}
+
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-social :where(.social-topbar, .social-app, .conversation-rail, .social-sidebar, .social-context-panel, .chat-header, .user-search, .username-field, .social-dialog),
+body.fp-v45-deep-ocean.fp-route-social :where(.social-topbar, .social-app, .conversation-rail, .social-sidebar, .social-context-panel, .chat-header, .user-search, .username-field, .social-dialog) {
+  border-color: var(--social-border) !important;
+  background: linear-gradient(145deg, rgba(13, 39, 65, 0.96), rgba(5, 20, 37, 0.97)) !important;
+  color: var(--social-text) !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-social :where(.social-workspace, .friends-view, .messages-view) {
+  background-color: transparent !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-social :where(.social-section, .person-card, .my-identity-card, .artifact-card, .share-summary, .preview-session, .preview-meal, .preview-record) {
+  border-color: var(--social-border) !important;
+  background: rgba(8, 29, 50, 0.86) !important;
+  color: var(--social-text) !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-social :where(input, textarea, select) {
+  border-color: rgba(130, 202, 255, 0.28) !important;
+  background-color: rgba(2, 14, 27, 0.88) !important;
+  color: #f4f9ff !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-social :where(.social-mode-button, .social-tab, .back-link, .icon-button, .secondary-button) {
+  color: #d9e9f6 !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-social :where(.social-mode-button.is-active, .social-tab.is-active, .primary-button, .send-button) {
+  color: #ffffff !important;
+}
+
+/* Saved nutrition plans use the same integrated ocean surfaces and a simple
+   RTL reading order rather than the old pale/green card treatment. */
+body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .plans-page {
+  padding-block-start: 108px;
+}
+
+body.fp-v45-deep-ocean.fp-route-my-nutrition-plans :where(.plan-card, .early-access-note) {
+  border-color: rgba(130, 190, 235, 0.2) !important;
+  background: linear-gradient(145deg, rgba(14, 42, 69, 0.94), rgba(5, 20, 37, 0.97)) !important;
+  color: #f4f9ff !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .plan-card.active {
+  border-color: rgba(75, 217, 230, 0.52) !important;
+  box-shadow: 0 0 0 1px rgba(75, 217, 230, 0.13), 0 22px 70px rgba(0, 5, 15, 0.3) !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-my-nutrition-plans :where(.page-nav, .plan-meta, .plan-actions, .manage-actions) {
+  direction: inherit;
+}
+
+body.fp-v45-deep-ocean.fp-route-my-nutrition-plans :where(.page-nav a, .secondary-link, .manage-actions a, .manage-actions button) {
+  color: #e2eef8 !important;
+}
+
+@media (max-width: 760px) {
+  body.fp-v45-deep-ocean .fp-global-menu {
+    width: min(400px, calc(100vw - 16px));
+    max-height: 100dvh;
+    min-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  body.fp-v45-deep-ocean.fp-route-social .social-shell {
+    width: min(100% - 14px, 1500px);
+    padding-block-start: 76px;
+  }
+
+  body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .plans-page {
+    width: min(100% - 20px, 560px);
+    padding-block-start: 92px;
+  }
+
+  body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .page-nav {
+    align-items: stretch;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+
+  body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .plans-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.fp-v45-deep-ocean.fp-route-my-nutrition-plans .manage-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

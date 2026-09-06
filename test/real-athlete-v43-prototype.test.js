@@ -168,7 +168,7 @@ test("V4.3 athlete stages contain frames and expose the Bench review host", () =
   assert.match(dashboard, /id="v43-bench-review"\s+data-capability="progress"/);
   assert.match(CSS, /#v43-bench-review\s*\{[^}]*scroll-margin-top: 92px/s);
   assert.match(CSS, /#v43-bench-review \.capability-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*width: 44%;[^}]*height: 72%;/s);
-  assert.match(CSS, /#v43-bench-review\s*\{[^}]*min-height: 530px/s);
+  assert.match(CSS, /#v43-bench-review\s*\{[^}]*min-height: 450px/s);
   assert.match(CSS, /#v43-bench-review \.capability-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*height: 50% !important/s);
   assert.match(CSS, /journey-card--training[\s\S]*v43-motion="prototype"/s);
   assert.match(CSS, /capability-card--training[\s\S]*v43-motion="prototype"/s);
@@ -191,7 +191,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v40-v45-tiny-polish-plate/);
+  assert.match(SW, /fuelphysique-v41-v45-rtl-social-mobile/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

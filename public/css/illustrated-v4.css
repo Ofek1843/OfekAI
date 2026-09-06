@@ -1017,6 +1017,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   opacity: 1;
   overflow: hidden;
   contain: paint;
+  pointer-events: none;
 }
 
 .fp-route-dashboard .capability-illustration[data-v43-motion="prototype"] {
@@ -1028,6 +1029,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   opacity: 1;
   overflow: hidden;
   contain: paint;
+  pointer-events: none;
 }
 
 .fp-route-index .journey-illustration .v43-image-sequence--nutrition .v43-image-sequence__frame,
@@ -1116,13 +1118,13 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
 
   .fp-route-dashboard .capability-card--nutrition .capability-illustration[data-v43-motion="prototype"] {
     width: 100% !important;
-    height: 48% !important;
+    height: 44% !important;
     inset-inline-end: 0;
     inset-block-end: 2%;
   }
 
-  .fp-route-index .journey-card--training,
-  .fp-route-dashboard .capability-card--training { min-height: 470px !important; }
+  .fp-route-index .journey-card--training { min-height: 470px !important; }
+  .fp-route-dashboard .capability-card--training { min-height: 430px !important; }
   .fp-route-index .journey-card--training :where(h3, p) { max-width: 92% !important; }
   .fp-route-dashboard .capability-card--training .capability-copy { width: 92% !important; }
 
@@ -1133,7 +1135,7 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   }
 
   .fp-route-dashboard #v43-bench-review {
-    min-height: 530px;
+    min-height: 450px;
   }
 
   .fp-route-dashboard #v43-bench-review .capability-illustration[data-v43-motion="prototype"] {

@@ -18,7 +18,7 @@ body.daily-nutrition-route {
     radial-gradient(55rem 34rem at 100% 26%, rgba(80, 217, 232, 0.1), transparent 58%),
     linear-gradient(155deg, #030b17, #07182a 48%, #04111f) !important;
   color: #f4f9ff;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 body.daily-nutrition-route .site-feedback-widget {
@@ -343,7 +343,7 @@ html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4, p, label, button, 
 
 html[dir="rtl"] .daily-nutrition-shell :where(h1, h2, h3, h4) {
   max-width: 100%;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
   font-weight: 850;
   line-height: 1.16;
   text-transform: none;
@@ -369,12 +369,33 @@ html[dir="rtl"] .daily-hero {
 html[dir="rtl"] .daily-hero h1 {
   max-width: 850px;
   line-height: 1.16;
-  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
   text-align: right;
 }
 
 html[dir="rtl"] .daily-hero p {
   text-align: right;
+}
+
+html[dir="rtl"] .daily-nutrition-shell :where(.daily-kicker, .metric-eyebrow, .metric-copy > span, .calorie-ring span, .food-examples > span, .food-table th, .weekly-balance-status, .weekly-metrics span) {
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-stretch: normal;
+  letter-spacing: normal;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+html[dir="rtl"] .daily-nutrition-shell .food-table td[data-label]::before {
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-stretch: normal;
+  letter-spacing: normal;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+html[dir="rtl"] .daily-nutrition-shell {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 
 @media (max-width: 1020px) {
@@ -420,6 +441,7 @@ html[dir="rtl"] .daily-hero p {
   .food-table td:first-child,
   .food-table td:last-child { grid-column: 1 / -1; min-width: 0; }
   .food-table td[data-label]::before { display: block; margin-bottom: 3px; color: #7897b1; content: attr(data-label); font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  html[dir="rtl"] .daily-nutrition-shell .food-table td[data-label]::before { letter-spacing: normal; text-transform: none; }
   .entry-actions button { flex: 1 1 30%; }
   .daily-side-column,
   .daily-utility-grid { grid-template-columns: 1fr; }

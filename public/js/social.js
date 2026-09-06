@@ -24,7 +24,15 @@ import {
 import { VOICE_RECORDER_ERRORS, VoicePlaybackManager, VoiceRecorderController, formatVoiceDuration } from "./voice-message-client.mjs";
 
 const $ = (selector) => document.querySelector(selector);
-let language = "en";
+function localLanguage() {
+  try {
+    return localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
+  } catch {
+    return "en";
+  }
+}
+
+let language = localLanguage();
 let ui = socialStrings(language);
 const state = {
   user: null,
@@ -61,6 +69,7 @@ document.documentElement.dir = language === "he" ? "rtl" : "ltr";
 trackPageView({ page: "social" });
 
 function applyTranslations() {
+  document.title = language === "he" ? "חברים והודעות | FuelPhysique" : "Friends & Messages | FuelPhysique";
   const labels = {
     friendsTab: "friends", dashboardLink: "dashboard", identityEyebrow: "identityEyebrow",
     identityTitle: "identityTitle", identityText: "identityText", usernameLabel: "username", usernameHint: "usernameHint", profilePreviewTitle: "profile", profilePreviewEyebrow: "socialProfile",
@@ -82,9 +91,12 @@ function applyTranslations() {
   if (messagesTab && unreadBadge && messagesTab.firstChild?.nodeType === 3) {
     messagesTab.firstChild.nodeValue = `${ui.messages} `;
   }
-  $("#userSearchInput").placeholder = ui.searchPlaceholder;
-  $("#messageInput").placeholder = ui.messagePlaceholder;
-  $("#voiceRecordButton").setAttribute("aria-label", ui.recordVoice);
+  const userSearchInput = $("#userSearchInput");
+  const messageInput = $("#messageInput");
+  const voiceRecordButton = $("#voiceRecordButton");
+  if (userSearchInput) userSearchInput.placeholder = ui.searchPlaceholder;
+  if (messageInput) messageInput.placeholder = ui.messagePlaceholder;
+  if (voiceRecordButton) voiceRecordButton.setAttribute("aria-label", ui.recordVoice);
   const copy = language === "he" ? {
     messages: "הודעות", friends: "חברים", requests: "בקשות", find: "מציאת אנשים",
     privateSpace: "מרחב פרטי", circleTitle: "מעגל האימונים שלך", circleText: "רק חברים מאושרים יכולים לשלוח הודעות או לשתף איתך תוכניות.",
@@ -102,13 +114,41 @@ function applyTranslations() {
     const element = $(`#${id}`);
     if (element) element.textContent = value;
   }
+  const navigationLabels = language === "he" ? {
+    tabs: "מדורי חברים והודעות",
+    workspace: "ניווט חברתי",
+    sidebar: "ניווט חברתי",
+    conversations: "שיחות",
+    startConversation: "פתיחת שיחה",
+    details: "פרטי השיחה"
+  } : {
+    tabs: "Social sections",
+    workspace: "Social workspace",
+    sidebar: "Social navigation",
+    conversations: "Conversations",
+    startConversation: "Start conversation",
+    details: "Conversation details"
+  };
+  $(".social-tabs")?.setAttribute("aria-label", navigationLabels.tabs);
+  $(".social-mode-nav")?.setAttribute("aria-label", navigationLabels.workspace);
+  $(".social-sidebar")?.setAttribute("aria-label", navigationLabels.sidebar);
+  $(".conversation-rail")?.setAttribute("aria-label", navigationLabels.conversations);
+  $("#newConversationButton")?.setAttribute("aria-label", navigationLabels.startConversation);
+  $(".social-context-panel")?.setAttribute("aria-label", navigationLabels.details);
 }
 
 async function loadSavedLanguage() {
-  const snapshot = await getDoc(doc(db, "users", state.user.uid, "settings", "main"));
-  const saved = snapshot.data()?.language;
-  language = saved === "he" || saved === "en" ? saved : "en";
-  localStorage.setItem("ofek-ai-language", language);
+  let saved = null;
+  try {
+    const snapshot = await getDoc(doc(db, "users", state.user.uid, "settings", "main"));
+    saved = snapshot.data()?.language;
+  } catch {
+    // Keep the already selected local language if the settings read is
+    // temporarily unavailable. Social must not fall back to English merely
+    // because a profile request was offline during startup.
+  }
+  language = saved === "he" || saved === "en" ? saved : localLanguage();
+  try { localStorage.setItem("ofek-ai-language", language); } catch { /* Storage may be unavailable in private mode. */ }
   ui = socialStrings(language);
   document.documentElement.lang = language;
   document.documentElement.dir = language === "he" ? "rtl" : "ltr";
