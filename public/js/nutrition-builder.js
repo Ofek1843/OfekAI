@@ -262,7 +262,7 @@ function translateFormOptions() {
   }
 
   document.querySelectorAll("select option").forEach((option) => {
-    const translation = hebrewOptionLabels[option.value];
+    const translation = option.dataset.he || hebrewOptionLabels[option.value];
 
     if (translation) {
       option.textContent = translation;
@@ -295,6 +295,7 @@ document.documentElement.lang = isHebrew ? "he" : "en";
 document.documentElement.dir = isHebrew ? "rtl" : "ltr";
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (button.disabled) return;
 
   setLoading(true);
   setStatus(ui.generatingStatus);
@@ -367,6 +368,7 @@ if (data.plan) {
   renderNutritionPlan(data.plan);
   return;
 }
+throw new Error(isHebrew ? "לא התקבלה תוכנית. התשובות נשמרו; נסו שוב." : "No plan was returned. Your answers are kept; please retry.");
   } catch (error) {
     console.error(
       "Nutrition builder request failed:",
@@ -378,6 +380,7 @@ if (data.plan) {
     setLoading(false);
   }
 });
+form.dataset.generatorReady = "true";
 function setLoading(isLoading) {
   button.disabled = isLoading;
   button.textContent = isLoading
@@ -709,7 +712,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
       <header class="program-header">
         <div>
           <span class="program-eyebrow">
-            FuelPhysique Nutrition Plan
+            ${isHebrew ? "תוכנית תזונה של FuelPhysique" : "FuelPhysique Nutrition Plan"}
           </span>
 
           <h2>
@@ -734,7 +737,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
         <div class="program-actions">
           <button type="button" class="share-program-button" id="share-nutrition-button">↗ ${isHebrew ? "שיתוף" : "Share"}</button>
           <button type="button" class="shopping-list-button" id="shopping-list-button">
-            ${isHebrew ? "Shopping list" : "Shopping list"}
+            ${isHebrew ? "רשימת קניות" : "Shopping list"}
           </button>
           <button type="button" class="save-program-button" id="save-nutrition-button">
             💾 ${isHebrew ? "שמירת תפריט" : "Save Nutrition Plan"}

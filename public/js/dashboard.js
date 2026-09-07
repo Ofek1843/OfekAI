@@ -536,11 +536,11 @@ function showAthleteCorePromptIfNeeded(settings) {
   const later = $("#athleteCorePromptLater");
 
   if (he) {
-    if (title) title.textContent = "אנא מלא את ה־Athlete Core שלך";
+    if (title) title.textContent = "השלימו את פרופיל Athlete Core";
     if (text) {
-      text.textContent = "אנא מלא את האטלט קור שלך. חשוב לנו שתעשה את זה בשביל לשפר את היעילות שהאתר יכול להקנות לך.";
+      text.textContent = "כמה פרטים בסיסיים יעזרו ל־FuelPhysique לבנות אימונים, תזונה ותשובות מאמן שמתאימים אליך באמת.";
     }
-    if (action) action.textContent = "מילוי Athlete Core";
+    if (action) action.textContent = "השלמת הפרופיל";
     if (later) later.textContent = "מאוחר יותר";
   }
 

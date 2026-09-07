@@ -129,12 +129,16 @@ function updateWeekLog() {
 
 function queueSave() {
   updateWeekLog();
+  // Capture this day now, not when an earlier asynchronous save finishes.
+  const uid = state.user.uid;
+  const dateKey = state.dateKey;
+  const log = structuredClone(state.log);
   const status = $("#autosaveState");
   status.textContent = copy.savingStatus;
   status.className = "autosave-state saving";
   state.saveChain = state.saveChain
     .catch(() => undefined)
-    .then(() => saveDailyLog(db, state.user.uid, state.dateKey, state.log))
+    .then(() => saveDailyLog(db, uid, dateKey, log))
     .then(() => {
       status.textContent = copy.saveStatus;
       status.className = "autosave-state";
@@ -339,10 +343,10 @@ async function loadDate(dateKey) {
   $("#clarificationPanel").hidden = true;
   setComposerMessage();
   setPageStatus(copy.loading);
-  const [log, weekLogs] = await Promise.all([
-    loadDailyLog(db, state.user.uid, state.dateKey),
-    loadNutritionWeek(db, state.user.uid, state.dateKey)
-  ]);
+  // A historical read failure must not disable today's composer. Today's
+  // document remains mandatory: never replace an unread saved log with [].
+  const log = await loadDailyLog(db, state.user.uid, state.dateKey);
+  const weekLogs = await loadNutritionWeek(db, state.user.uid, state.dateKey).catch(() => [log]);
   state.log = log;
   if (!state.log.targetSnapshot && state.targets.complete) {
     state.log.targetSnapshot = { ...state.targets };
@@ -401,6 +405,13 @@ function submitFoodText(value) {
     return;
   }
   if (result.errors.length && !result.entries.length) {
+    if (/חטיף חלבון|protein bar/i.test(value)) {
+      setComposerMessage(language === "he"
+        ? "איזה חטיף חלבון? הזינו את שם המוצר וערכי התווית בטופס מזון מותאם למטה, ואז הוסיפו אותו לפי שמו. לא ננחש ערכים."
+        : "Which protein bar? Enter its product name and label values in Custom food below, then add it by name. We won't guess the values.", true);
+      $("#customFoodForm").closest("details").open = true;
+      return;
+    }
     setComposerMessage(format(copy.unknownFood, { food: result.errors.map((error) => error.segment).join(", ") }), true);
     return;
   }
@@ -474,13 +485,14 @@ function bindEvents() {
   });
   $("#customFoodForm").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const values = Object.fromEntries(new FormData(event.currentTarget).entries());
-    values.favorite = event.currentTarget.elements.favorite.checked;
+    const customForm = event.currentTarget;
+    const values = Object.fromEntries(new FormData(customForm).entries());
+    values.favorite = customForm.elements.favorite.checked;
     try {
       const food = validateCustomFood(values);
       await saveCustomFood(db, state.user.uid, food);
       state.customFoods = [...state.customFoods.filter((item) => item.id !== food.id), food];
-      event.currentTarget.reset();
+      customForm.reset();
       setComposerMessage(copy.customSaved);
       renderRecentFoods();
     } catch {
@@ -489,12 +501,13 @@ function bindEvents() {
   });
   $("#combinationForm").addEventListener("submit", async (event) => {
     event.preventDefault();
-    const name = new FormData(event.currentTarget).get("name");
+    const combinationForm = event.currentTarget;
+    const name = new FormData(combinationForm).get("name");
     if (!state.log.entries.length) return setComposerMessage(copy.emptyEntries, true);
     try {
       const combination = await saveFoodCombination(db, state.user.uid, { name, entries: state.log.entries });
       state.combinations = [...state.combinations.filter((item) => item.id !== combination.id), combination];
-      event.currentTarget.reset();
+      combinationForm.reset();
       renderCombinations();
     } catch {
       setComposerMessage(copy.saveError, true);
@@ -563,12 +576,19 @@ async function init(user) {
   state.user = user;
   bindEvents();
   try {
-    await loadTargets();
-    [state.customFoods, state.combinations] = await Promise.all([
+    const optional = await Promise.allSettled([
+      loadTargets(),
       loadCustomFoods(db, user.uid),
       loadSavedCombinations(db, user.uid)
     ]);
+    state.customFoods = optional[1].status === "fulfilled" ? optional[1].value : [];
+    state.combinations = optional[2].status === "fulfilled" ? optional[2].value : [];
     await loadDate(state.dateKey);
+    if (optional.some((result) => result.status === "rejected")) {
+      setPageStatus(language === "he"
+        ? "חלק מהיעדים או המזונות השמורים לא נטענו. ניתן לתעד מזון מהקטלוג."
+        : "Some targets or saved foods could not load. Catalog food logging is available.", true);
+    }
   } catch (error) {
     console.error("Daily nutrition initialization failed:", error);
     setPageStatus(copy.saveError, true);

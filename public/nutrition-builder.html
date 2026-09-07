@@ -26,14 +26,14 @@
   <div class="ocean-depth-glow" aria-hidden="true"></div>
   <main class="builder-page">
     <nav class="builder-navigation" aria-label="Nutrition navigation">
-      <a href="/manual-nutrition-builder.html">Build manually</a>
-      <a href="/dashboard.html">← FuelPhysique</a>
-      <a href="/my-nutrition-plans.html">📂 My Nutrition Plans</a>
+      <a href="/manual-nutrition-builder.html" data-en="Build manually" data-he="בנייה ידנית">Build manually</a>
+      <a href="/dashboard.html" data-en="← FuelPhysique" data-he="FuelPhysique ←">← FuelPhysique</a>
+      <a href="/my-nutrition-plans.html" data-en="📂 My Nutrition Plans" data-he="📂 תוכניות התזונה שלי">📂 My Nutrition Plans</a>
     </nav>
 
     <section class="builder-card">
       <div class="builder-header">
-        <span class="builder-badge">FuelPhysique</span>
+          <span class="builder-badge">FuelPhysique</span>
         <h1>Nutrition Builder</h1>
         <p class="builder-description">
           Build a personalized nutrition plan based on your goal,
@@ -57,10 +57,10 @@
 
         <!-- Hidden select#goal kept for JS compatibility -->
         <select id="goal" name="goal" class="visually-hidden-select" required aria-hidden="true" tabindex="-1">
-          <option value="">Select a goal</option>
-          <option value="loseFat">Lose fat</option>
-          <option value="buildMuscle">Build muscle</option>
-          <option value="maintainWeight">Maintain weight</option>
+          <option value="" data-en="Select a goal" data-he="בחר מטרה">Select a goal</option>
+          <option value="loseFat" data-en="Lose fat" data-he="ירידה באחוזי שומן">Lose fat</option>
+          <option value="buildMuscle" data-en="Build muscle" data-he="בניית שריר">Build muscle</option>
+          <option value="maintainWeight" data-en="Maintain weight" data-he="שמירה על המשקל">Maintain weight</option>
         </select>
 
         <!-- ── STEP 1: Primary goal ── -->
@@ -112,7 +112,7 @@
             </label>
           </div>
 
-          <div id="wizardError" class="wizard-error hidden"></div>
+
         </section>
 
         <!-- ── STEP 2: About you ── -->
@@ -137,16 +137,16 @@
             <label>
               <span data-en="Gender" data-he="מין">Gender</span>
               <select id="gender" name="gender" required>
-                <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="" data-en="Select gender" data-he="בחר מין">Select gender</option>
+                <option value="male" data-en="Male" data-he="זכר">Male</option>
+                <option value="female" data-en="Female" data-he="נקבה">Female</option>
               </select>
             </label>
           </div>
 
           <label id="youth-consent-field" class="youth-consent hidden">
             <input id="youthGuardianConsent" name="youthGuardianConsent" type="checkbox">
-            <span>I confirm that a parent or legal guardian approves use of Youth Mode. This plan supports healthy growth and is not a weight-loss treatment.</span>
+            <span data-en="I confirm that a parent or legal guardian approves use of Youth Mode. This plan supports healthy growth and is not a weight-loss treatment." data-he="אני מאשר/ת שהורה או אפוטרופוס מאשר שימוש במצב נוער. התוכנית תומכת בגדילה בריאה ואינה טיפול לירידה במשקל.">I confirm that a parent or legal guardian approves use of Youth Mode. This plan supports healthy growth and is not a weight-loss treatment.</span>
           </label>
         </section>
 
@@ -194,12 +194,12 @@
             <label>
               <span data-en="Daily activity level" data-he="רמת פעילות יומית">Daily activity level</span>
               <select id="activityLevel" name="activityLevel" required>
-                <option value="">Select activity level</option>
-                <option value="sedentary">Sedentary</option>
-                <option value="lightlyActive">Lightly active</option>
-                <option value="moderatelyActive">Moderately active</option>
-                <option value="veryActive">Very active</option>
-                <option value="extremelyActive">Extremely active</option>
+                <option value="" data-en="Select activity level" data-he="בחר רמת פעילות">Select activity level</option>
+                <option value="sedentary" data-en="Sedentary" data-he="יושבני">Sedentary</option>
+                <option value="lightlyActive" data-en="Lightly active" data-he="פעילות קלה">Lightly active</option>
+                <option value="moderatelyActive" data-en="Moderately active" data-he="פעילות בינונית">Moderately active</option>
+                <option value="veryActive" data-en="Very active" data-he="פעילות גבוהה">Very active</option>
+                <option value="extremelyActive" data-en="Extremely active" data-he="פעילות גבוהה מאוד">Extremely active</option>
               </select>
             </label>
             <label>
@@ -209,10 +209,10 @@
             <label>
               <span data-en="Meals per day" data-he="מספר ארוחות ביום">Meals per day</span>
               <select id="mealsPerDay" name="mealsPerDay" required>
-                <option value="3">3 meals</option>
-                <option value="4" selected>4 meals</option>
-                <option value="5">5 meals</option>
-                <option value="6">6 meals</option>
+                <option value="3" data-en="3 meals" data-he="3 ארוחות">3 meals</option>
+                <option value="4" selected data-en="4 meals" data-he="4 ארוחות">4 meals</option>
+                <option value="5" data-en="5 meals" data-he="5 ארוחות">5 meals</option>
+                <option value="6" data-en="6 meals" data-he="6 ארוחות">6 meals</option>
               </select>
             </label>
           </div>
@@ -236,13 +236,13 @@
             <label>
               <span data-en="Dietary preference" data-he="העדפה תזונתית">Dietary preference</span>
               <select id="dietaryPreference" name="dietaryPreference" required>
-                <option value="balanced">Balanced</option>
-                <option value="highProtein">High protein</option>
-                <option value="vegetarian">Vegetarian</option>
-                <option value="vegan">Vegan</option>
-                <option value="pescatarian">Pescatarian</option>
-                <option value="lowCarb">Low carbohydrate</option>
-                <option value="mediterranean">Mediterranean</option>
+                <option value="balanced" data-en="Balanced" data-he="תזונה מאוזנת">Balanced</option>
+                <option value="highProtein" data-en="High protein" data-he="תזונה עשירה בחלבון">High protein</option>
+                <option value="vegetarian" data-en="Vegetarian" data-he="צמחוני">Vegetarian</option>
+                <option value="vegan" data-en="Vegan" data-he="טבעוני">Vegan</option>
+                <option value="pescatarian" data-en="Pescatarian" data-he="פסקטריאני">Pescatarian</option>
+                <option value="lowCarb" data-en="Low carbohydrate" data-he="דל פחמימות">Low carbohydrate</option>
+                <option value="mediterranean" data-en="Mediterranean" data-he="תזונה ים־תיכונית">Mediterranean</option>
               </select>
             </label>
           </div>
@@ -313,13 +313,13 @@
           <div class="form-group" style="margin-top:20px">
             <label for="diagnosedConditions" data-en="Diagnosed nutrition-related conditions" data-he="מצבים רפואיים שאובחנו">Diagnosed nutrition-related conditions</label>
             <div id="diagnosedConditions" class="condition-options">
-              <label><input type="checkbox" name="diagnosedConditions" value="ironDeficiencyAnemia"><span>Iron-deficiency anemia</span></label>
-              <label><input type="checkbox" name="diagnosedConditions" value="b12Deficiency"><span>Vitamin B12 deficiency</span></label>
-              <label><input type="checkbox" name="diagnosedConditions" value="vitaminDDeficiency"><span>Vitamin D deficiency</span></label>
-              <label><input type="checkbox" name="diagnosedConditions" value="hypertension"><span>High blood pressure</span></label>
-              <label><input type="checkbox" name="diagnosedConditions" value="type2Diabetes"><span>Type 2 diabetes or prediabetes</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="ironDeficiencyAnemia"><span data-en="Iron-deficiency anemia" data-he="אנמיה מחוסר ברזל">Iron-deficiency anemia</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="b12Deficiency"><span data-en="Vitamin B12 deficiency" data-he="חוסר בוויטמין B12">Vitamin B12 deficiency</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="vitaminDDeficiency"><span data-en="Vitamin D deficiency" data-he="חוסר בוויטמין D">Vitamin D deficiency</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="hypertension"><span data-en="High blood pressure" data-he="לחץ דם גבוה">High blood pressure</span></label>
+              <label><input type="checkbox" name="diagnosedConditions" value="type2Diabetes"><span data-en="Type 2 diabetes or prediabetes" data-he="סוכרת סוג 2 או טרום־סוכרת">Type 2 diabetes or prediabetes</span></label>
             </div>
-            <small class="medical-field-note">You may select more than one. FuelPhysique adapts food choices but does not provide medical treatment.</small>
+            <small class="medical-field-note" data-en="You may select more than one. FuelPhysique adapts food choices but does not provide medical treatment." data-he="אפשר לבחור יותר מאחד. FuelPhysique מתאים בחירות מזון, אך אינו מספק טיפול רפואי.">You may select more than one. FuelPhysique adapts food choices but does not provide medical treatment.</small>
           </div>
 
           <div class="limitations-field" style="margin-top:14px">
@@ -379,6 +379,28 @@
     const errorBox = document.querySelector('#wizardError');
     const goalSelect = document.querySelector('#goal');
     let current = 0;
+    const form = document.querySelector('#nutrition-builder-form');
+    const he = localStorage.getItem('ofek-ai-language') === 'he';
+    const text = (en, heText) => he ? heText : en;
+
+    // The wizard can load before Firebase and the request module. Never let
+    // a native GET submission discard the answers when that module is delayed.
+    form.addEventListener('submit', (event) => {
+      if (form.dataset.generatorReady !== 'true') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        showErr(text('Still connecting. Your answers are kept; try again shortly.', 'עדיין מתחברים. התשובות נשמרו; נסו שוב בעוד רגע.'));
+        return;
+      }
+      const invalid = wizardSteps.findIndex((_, index) => validate(index));
+      if (invalid !== -1) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        current = invalid;
+        render();
+        showErr(validate(invalid));
+      }
+    }, true);
 
     // Sync visual goal cards → hidden select
     document.querySelectorAll('input[name="visualGoal"]').forEach(radio => {
@@ -397,21 +419,21 @@
 
     function validate(index) {
       const key = wizardSteps[index]?.dataset.wizardStep;
-      if (key === 'goal' && !goalSelect?.value) return 'Choose a primary goal to continue.';
+      if (key === 'goal' && !goalSelect?.value) return text('Choose a primary goal to continue.', 'בחרו מטרה כדי להמשיך.');
       if (key === 'about') {
         const age = Number(document.querySelector('#age')?.value);
-        if (!age || age < 15 || age > 100) return 'Enter a valid age between 15 and 100.';
-        if (!document.querySelector('#gender')?.value) return 'Select your gender.';
+        if (!age || age < 15 || age > 100) return text('Enter a valid age between 15 and 100.', 'הזינו גיל בין 15 ל־100.');
+        if (!document.querySelector('#gender')?.value) return text('Select your gender.', 'בחרו מין.');
         const isYouth = age >= 15 && age < 18;
-        if (isYouth && !document.querySelector('#youthGuardianConsent')?.checked) return 'Guardian consent is required for users under 18.';
+        if (isYouth && !document.querySelector('#youthGuardianConsent')?.checked) return text('Guardian consent is required for users under 18.', 'מתחת לגיל 18 נדרש אישור הורה.');
       }
       if (key === 'body') {
         const h = Number(document.querySelector('#height')?.value);
         const w = Number(document.querySelector('#weight')?.value);
-        if (!h || h < 120 || h > 230) return 'Enter a valid height between 120 and 230 cm.';
-        if (!w || w < 35 || w > 300) return 'Enter a valid weight between 35 and 300 kg.';
+        if (!h || h < 120 || h > 230) return text('Enter a valid height between 120 and 230 cm.', 'הזינו גובה בין 120 ל־230 ס״מ.');
+        if (!w || w < 35 || w > 300) return text('Enter a valid weight between 35 and 300 kg.', 'הזינו משקל בין 35 ל־300 ק״ג.');
       }
-      if (key === 'activity' && !document.querySelector('#activityLevel')?.value) return 'Select your daily activity level.';
+      if (key === 'activity' && !document.querySelector('#activityLevel')?.value) return text('Select your daily activity level.', 'בחרו רמת פעילות יומית.');
       return '';
     }
 
@@ -419,9 +441,9 @@
       wizardSteps.forEach((s, i) => s.classList.toggle('is-active', i === current));
       const total = wizardSteps.length;
       if (progressBar) progressBar.style.width = `${((current + 1) / total) * 100}%`;
-      if (stepLabel) stepLabel.textContent = `Step ${current + 1} of ${total}`;
+      if (stepLabel) stepLabel.textContent = he ? `שלב ${current + 1} מתוך ${total}` : `Step ${current + 1} of ${total}`;
       const step = wizardSteps[current];
-      if (stepTitle) stepTitle.textContent = step?.dataset.stepTitleEn || '';
+      if (stepTitle) stepTitle.textContent = (he ? step?.dataset.stepTitleHe : step?.dataset.stepTitleEn) || '';
       if (backBtn) backBtn.disabled = current === 0;
       const isLast = current === total - 1;
       if (nextBtn) nextBtn.classList.toggle('hidden', isLast);
@@ -442,6 +464,8 @@
       render();
     });
 
+    if (backBtn) backBtn.textContent = text('Back', 'חזרה');
+    if (nextBtn) nextBtn.textContent = text('Next', 'המשך');
     render();
   </script>
 

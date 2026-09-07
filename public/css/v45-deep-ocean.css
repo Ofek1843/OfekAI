@@ -52,6 +52,12 @@ body.fp-v45-deep-ocean {
   font-family: var(--v45-ui) !important;
 }
 
+html:has(body.fp-v45-deep-ocean),
+body.fp-v45-deep-ocean {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
 /* V4.5 is intentionally an ocean-dark product skin. A previously stored
    light-mode preference must not reveal the pale V4 canvas underneath it. */
 html[data-theme="light"] body.fp-v45-deep-ocean,
@@ -332,11 +338,45 @@ body.fp-v45-deep-ocean .nav-link:hover {
   box-shadow: 0 28px 70px rgba(0, 5, 15, 0.3) !important;
 }
 
+.fp-v45-deep-ocean.fp-route-index .product-loop-demo {
+  --loop-progress: 25%;
+}
+
+.fp-v45-deep-ocean.fp-route-index .product-loop-panel {
+  border-color: rgba(130, 202, 255, 0.22) !important;
+  background:
+    linear-gradient(90deg, rgba(75, 217, 230, 0.055) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(75, 217, 230, 0.055) 1px, transparent 1px),
+    radial-gradient(circle at 86% 12%, rgba(75, 217, 230, 0.14), transparent 36%),
+    linear-gradient(145deg, rgba(13, 38, 64, 0.94), rgba(4, 16, 30, 0.96)) !important;
+  box-shadow: 0 32px 84px rgba(0, 5, 15, 0.34) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index :where(.sample-workout-card, .sample-macro-card, .sample-coach-card, .product-loop-step) {
+  border-color: rgba(130, 190, 235, 0.18) !important;
+  background-color: rgba(3, 13, 25, 0.62) !important;
+}
+
+.fp-v45-deep-ocean.fp-route-index .sample-workout-card strong,
+.fp-v45-deep-ocean.fp-route-index .sample-macro-card strong,
+.fp-v45-deep-ocean.fp-route-index .sample-coach-card p,
+.fp-v45-deep-ocean.fp-route-index .product-loop-step strong {
+  color: #f6faff !important;
+}
+
 /* Dashboard -------------------------------------------------------------- */
 
 .fp-v45-deep-ocean.fp-route-dashboard {
   --fp-bg-page: var(--v45-ocean-deep) !important;
   --fp-bg-deep: var(--v45-ocean-abyss) !important;
+  background:
+    radial-gradient(60rem 36rem at 12% 0%, rgba(57, 159, 255, 0.22), transparent 62%),
+    radial-gradient(52rem 34rem at 96% 24%, rgba(75, 217, 230, 0.1), transparent 58%),
+    linear-gradient(155deg, #030b17 0%, #07182a 52%, #04111f 100%) !important;
+}
+
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard {
   background:
     radial-gradient(60rem 36rem at 12% 0%, rgba(57, 159, 255, 0.22), transparent 62%),
     radial-gradient(52rem 34rem at 96% 24%, rgba(75, 217, 230, 0.1), transparent 58%),
@@ -493,18 +533,28 @@ html[dir="rtl"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header:
 
 @media (max-width: 920px) {
   body.fp-v45-deep-ocean .fp-global-nav {
+    display: flex;
     padding-inline: 8px;
     gap: 4px;
+    min-height: 60px;
+    align-items: center;
+  }
+
+  body.fp-v45-deep-ocean .fp-global-menu-button {
+    position: relative;
+    inset: auto;
+    flex: 0 0 44px;
+    box-shadow: none;
   }
 
   body.fp-v45-deep-ocean .fp-global-brand {
-    display: none;
+    display: flex;
+    flex: 1;
+    min-width: 0;
   }
 
   body.fp-v45-deep-ocean .fp-global-links {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding-inline: 0;
+    display: none;
   }
 
   body.fp-v45-deep-ocean .fp-global-link {

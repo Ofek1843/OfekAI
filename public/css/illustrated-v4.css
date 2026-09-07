@@ -1207,6 +1207,38 @@ html[data-theme="light"] .v4-illustration .pr-readout rect { fill: var(--v4-canv
   }
 }
 
+/* Mobile cards reserve a real row for the visual. Content height, translated
+   copy and wrapped actions determine its position, not absolute offsets. */
+@media (max-width: 920px) {
+  body.fp-route-dashboard .capability-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 220px;
+    gap: 16px;
+    min-height: 0 !important;
+    padding: 24px !important;
+  }
+
+  body.fp-route-dashboard .capability-card .capability-copy {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  body.fp-route-dashboard .capability-card .capability-illustration,
+  body.fp-route-dashboard #v43-bench-review .capability-illustration[data-v43-motion="prototype"] {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 220px !important;
+    min-height: 220px !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: none !important;
+    overflow: hidden;
+    pointer-events: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .v43-image-sequence,
   .v43-image-sequence__frame {

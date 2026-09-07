@@ -30,7 +30,7 @@ test("Phase 3 pages load the release stylesheet and service worker cache", () =>
     assert.match(read("public", page), /product-polish-v3\.css\?v=20260811-spectrum-v3/);
   }
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v41-v45-rtl-social-mobile/);
+  assert.match(sw, /fuelphysique-v42-v46-product-polish/);
   assert.match(sw, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
 });
 
