@@ -13,7 +13,7 @@ const DASHBOARD = read("public", "dashboard.html");
 const ILLUSTRATIONS = read("public", "js", "illustrated-v4.js");
 const SW = read("public", "sw.js");
 const ASSET_VERSION = "20260815-real-athlete-v43-complete-5";
-const ENGINE_VERSION = "20260822-v45-tiny-polish-plate-1";
+const ENGINE_VERSION = "20260907-v45-plate-bulk-female-leg-repair-1";
 const CSS_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
 
 function illustrationScripts(html) {

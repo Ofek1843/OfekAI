@@ -1,10 +1,10 @@
 {
-  "version": "20260822-v45-tiny-polish-plate-1",
+  "version": "20260907-v45-plate-bulk-female-leg-repair-1",
   "canvas": {
     "width": 960,
     "height": 720
   },
-  "generatedAt": "2026-08-22T05:30:21.279Z",
+  "generatedAt": "2026-09-07T18:07:12.534Z",
   "scenes": {
     "deadlift": {
       "frames": [
@@ -467,7 +467,7 @@
         {
           "file": "frame-01.webp",
           "sourceBytes": 754922,
-          "normalizedBytes": 47046,
+          "normalizedBytes": 46018,
           "index": 0,
           "semantic": "phone-review"
         },
@@ -499,7 +499,7 @@
         "height": 793
       },
       "motionSheetSourceBytes": 3006014,
-      "normalizedBytes": 181886,
+      "normalizedBytes": 180858,
       "canvas": {
         "width": 760,
         "height": 720
@@ -576,10 +576,10 @@
         {
           "file": "frame-04.webp",
           "source": "frame-04-regenerated.png",
-          "sourceBytes": 1526417,
-          "normalizedBytes": 90932,
+          "semantic": "bulk-female",
           "index": 3,
-          "semantic": "bulk-female"
+          "sourceBytes": 1526417,
+          "normalizedBytes": 112232
         }
       ],
       "regeneratedFrameSource": "plate/final-source/frame-04-regenerated.png",
@@ -589,7 +589,7 @@
         "height": 887
       },
       "motionSheetSourceBytes": 2135494,
-      "normalizedBytes": 194652,
+      "normalizedBytes": 215952,
       "canvas": {
         "width": 600,
         "height": 720

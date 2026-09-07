@@ -1917,20 +1917,25 @@ html[dir="rtl"] .fp-route-social .conversation-rail {
   }
 
   .fp-redesign .site-feedback-trigger {
-    inset-inline-end: 10px !important;
+    inset-inline-end: max(10px, env(safe-area-inset-right)) !important;
     inset-block-end: calc(10px + env(safe-area-inset-bottom)) !important;
-    width: 44px !important;
-    min-width: 44px !important;
-    height: 44px !important;
-    padding: 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 20px) !important;
+    height: auto !important;
+    min-height: 44px !important;
+    padding: 8px 14px !important;
   }
 
   .fp-product-shell-active .site-feedback-trigger {
     inset-block-end: calc(76px + env(safe-area-inset-bottom)) !important;
   }
 
+  /* The compact viewport still shows the readable label: hiding it alongside
+     the icon (see the icon rule above) left an empty, unlabelled control. */
   .fp-redesign .site-feedback-trigger-label {
-    display: none !important;
+    display: inline !important;
+    white-space: nowrap;
   }
 
   .fp-route-app .container {

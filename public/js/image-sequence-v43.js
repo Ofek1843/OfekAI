@@ -2,7 +2,7 @@
   "use strict";
 
   const VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
-  const PLATE_ASSET_VERSION = "20260822-v45-tiny-polish-plate-1";
+  const PLATE_ASSET_VERSION = "20260907-v45-plate-bulk-female-leg-repair-1";
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
   const PRODUCTION_HOSTS = new Set(["fuelphysique.com", "www.fuelphysique.com"]);
   const ROOT = "/assets/athlete-motion/v43";

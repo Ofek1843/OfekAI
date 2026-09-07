@@ -46,13 +46,27 @@ test("daily nutrition binds Add before auth settles and reports failures", () =>
   assert.match(dailyClient, /function createEntryId\(\)/);
 });
 
-test("nutrition meal imagery is bounded, decoded asynchronously, and reroll remains exposed", () => {
-  assert.match(nutritionCss, /\.meal-photo\s*\{[\s\S]*?width:\s*min\(100%, 520px\)[\s\S]*?height:\s*clamp\(190px, 28vw, 300px\)/);
-  assert.match(nutritionCss, /@media\(max-width:700px\)[\s\S]*?\.meal-photo\s*\{[\s\S]*?width:\s*min\(100%, 460px\)[\s\S]*?height:\s*min\(230px, 58vw\)[\s\S]*?min-height:\s*170px/);
-  assert.match(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*contain[\s\S]*?image-rendering:\s*auto/);
-  assert.match(nutritionCss, /@media \(max-width: 620px\)[\s\S]*?\.meal-title-row\s*\{[\s\S]*?flex-wrap:\s*wrap[\s\S]*?\.nutrition-reroll-meal-button\s*\{[\s\S]*?min-width:\s*92px/);
-  assert.doesNotMatch(nutritionCss, /\.nutrition-reroll-meal-button > span:last-child\s*\{[^}]*clip/);
+test("nutrition meal imagery fills its media region without a letterbox strip", () => {
+  // cover + a fixed aspect box means the photo fills edge to edge — no purple
+  // gradient strip from object-fit: contain letterboxing a mismatched ratio.
+  assert.match(nutritionCss, /\.meal-photo\s*\{[\s\S]*?max-width:\s*520px[\s\S]*?aspect-ratio:\s*3 \/ 2/);
+  assert.match(nutritionCss, /@media\(max-width:700px\)[\s\S]*?\.meal-photo\s*\{[\s\S]*?max-width:\s*460px[\s\S]*?aspect-ratio:\s*3 \/ 2/);
+  assert.match(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*cover[\s\S]*?image-rendering:\s*auto/);
+  assert.doesNotMatch(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*contain/);
+  assert.match(nutritionCss, /\.meal-photo\s*\{[\s\S]*?background:\s*#0e1f31/);
   assert.match(nutritionClient, /decoding="async"/);
+});
+
+test("nutrition meal card shrinks to the viewport so the reroll control stays on-screen", () => {
+  // An `auto` implicit grid track sized to the food table's max-content blew
+  // the card past the viewport, pushing the RTL-leading Replace button out of
+  // the clipped .program-card so it read as missing.
+  assert.match(nutritionCss, /\.meal-option-body\s*\{[\s\S]*?grid-template-columns:\s*minmax\(0, 1fr\)/);
+  assert.match(nutritionCss, /\.meal-option-body > \*\s*\{\s*min-width:\s*0/);
+  assert.match(nutritionCss, /\.nutrition-food-table\s*\{\s*table-layout:\s*fixed/);
+  assert.match(nutritionCss, /@media\(max-width:700px\)\s*\{[\s\S]*?\.carousel-option\s*\{\s*grid-template-columns:\s*minmax\(0, 1fr\)/);
+  assert.match(nutritionCss, /@media \(max-width: 620px\)[\s\S]*?\.nutrition-reroll-meal-button\s*\{[\s\S]*?min-height:\s*44px/);
+  assert.doesNotMatch(nutritionCss, /\.nutrition-reroll-meal-button > span:last-child\s*\{[^}]*clip/);
   assert.match(nutritionClient, /nutrition-reroll-meal-button/);
   assert.match(nutritionClient, /api\/nutrition-builder\/reroll-meal/);
 });

@@ -34,7 +34,10 @@ function injectFeedbackStyles() {
   style.id = "siteFeedbackStyles";
   style.textContent = `
     .site-feedback-widget {
-      position: fixed;
+      /* !important: redesigned routes set position: relative on every direct
+         body child, which would drop this out of the fixed layer and strand
+         it at the foot of the page. */
+      position: fixed !important;
       right: 18px;
       bottom: 18px;
       z-index: 9998;
@@ -108,18 +111,16 @@ function injectFeedbackStyles() {
         bottom: calc(12px + env(safe-area-inset-bottom));
       }
       .site-feedback-trigger {
-        width: 46px;
-        min-width: 46px;
-        height: 46px;
-        min-height: 46px;
-        padding: 0;
-        gap: 0;
-        justify-content: center;
-        border-radius: 999px;
-        font-size: 20px;
+        /* Stay a readable, fully visible pill on mobile -- not an unlabelled
+           icon chip. Capped so it never runs past the viewport edge. */
+        max-width: calc(100vw - 20px);
+        min-height: 44px;
+        padding: 9px 13px;
+        font-size: 13px;
+        white-space: nowrap;
       }
       .site-feedback-trigger-label {
-        display: none;
+        display: inline;
       }
       .site-feedback-panel {
         right: 0;

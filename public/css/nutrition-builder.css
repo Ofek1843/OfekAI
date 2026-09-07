@@ -1498,6 +1498,24 @@ html[dir="ltr"] .nutrition-food-table td {
   transition: opacity 0.25s ease;
 }
 
+/* Keep the meal card able to shrink to its column. Without min-width: 0 the
+   food table's intrinsic width blows the card past the viewport on narrow
+   screens, pushing the (RTL-leading) Replace button outside the clipped
+   .program-card so it reads as missing. */
+.meal-card,
+.meal-options-carousel,
+.carousel-options-container,
+.carousel-option,
+.meal-option-media,
+.meal-option-body,
+.meal-option-media > *,
+.meal-option-body > * { min-width: 0; }
+
+.nutrition-food-table { table-layout: fixed; width: 100%; }
+.nutrition-food-table th,
+.nutrition-food-table td { overflow-wrap: anywhere; }
+.meal-option-name { overflow-wrap: anywhere; }
+
 .carousel-option.active {
   position: relative;
   opacity: 1;
@@ -1506,17 +1524,21 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-option-media {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
 
 .meal-photo {
   position: relative;
-  width: min(100%, 520px);
-  height: clamp(190px, 28vw, 300px);
-  aspect-ratio: auto;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 3 / 2;
+  height: auto;
   overflow: hidden;
   border-radius: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* Neutral card-tone fill: with object-fit: cover there is no letterbox, and
+     any pre-load frame reads as part of the card rather than a purple strip. */
+  background: #0e1f31;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(82, 201, 138, 0.2);
 }
@@ -1527,7 +1549,9 @@ html[dir="ltr"] .nutrition-food-table td {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  /* cover fills the media region edge to edge (no purple strip); centred so a
+     plated dish keeps its focus. */
+  object-fit: cover;
   object-position: center;
   image-rendering: auto;
   backface-visibility: hidden;
@@ -1578,6 +1602,10 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .meal-option-body {
   display: grid;
+  /* An `auto` implicit column sizes to the food table's max-content and blows
+     the card past the viewport on mobile; a bounded 1fr track keeps it inside
+     the carousel so the RTL-leading Replace button stays on-screen. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
@@ -1800,7 +1828,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 @media(max-width:700px){
   .carousel-option {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
   }
 
@@ -1809,9 +1837,11 @@ html[dir="ltr"] .nutrition-food-table td {
   }
 
   .meal-photo {
-    width: min(100%, 460px);
-    height: min(230px, 58vw);
-    min-height: 170px;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 3 / 2;
+    height: auto;
+    min-height: 0;
   }
 
   .meal-option-macros {

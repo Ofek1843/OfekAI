@@ -76,7 +76,10 @@ test("approved Workout Day navigation and Social workspace architecture remain i
 });
 
 test("mobile and Hebrew polish keeps core controls visible and localized", () => {
-  assert.match(CSS, /@media \(max-width:\s*820px\)[\s\S]*?site-feedback-widget \{ display:\s*none/);
+  // The bug-report trigger stays available on mobile — site-feedback.js
+  // repositions it clear of critical controls rather than hiding it.
+  assert.doesNotMatch(CSS, /site-feedback-widget \{[^}]*display:\s*none/);
+  assert.match(read("public", "css", "redesign-v1.css"), /site-feedback-trigger-label \{\s*display:\s*inline\s*!important/);
   assert.match(CSS, /messages-view \{ height:\s*calc\(100dvh - 154px/);
   assert.match(CSS, /messages-view \.chat-panel \{ min-height:\s*0 !important; height:\s*100% !important/);
   for (const label of ["תאריך", "רצף", "משך", "תרגילים"]) assert.match(DASHBOARD_JS, new RegExp(label));

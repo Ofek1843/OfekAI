@@ -7,7 +7,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const ROOT = path.join(__dirname, "..");
-const VERSION = "20260822-v45-tiny-polish-plate-1";
+const VERSION = "20260907-v45-plate-bulk-female-leg-repair-1";
 const INTEGRATION_VERSION = "20260815-real-athlete-v43-complete-5";
 const MOTION_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
 const PLATE_ASSET_VERSION = VERSION;

@@ -22,6 +22,7 @@ import {
   loadDailyLog,
   loadNutritionWeek,
   loadSavedCombinations,
+  normalizeLog,
   saveCustomFood,
   saveDailyLog,
   saveFoodCombination
@@ -49,6 +50,18 @@ const state = {
   pendingClarification: null,
   saveChain: Promise.resolve()
 };
+
+// A loopback/offline Firestore stream can leave getDoc() pending forever. The
+// daily log read must never hang the whole page: if today's document does not
+// resolve quickly, fall back to a local working log so the composer stays
+// usable, then recover-and-merge on the next successful save.
+const LOG_LOAD_TIMEOUT_MS = 12000;
+function withTimeout(promise, ms) {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise((_, reject) => setTimeout(() => reject(new Error("TIMEOUT")), ms))
+  ]);
+}
 
 const esc = (value) => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const format = (template, values = {}) => Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), String(template || ""));
@@ -105,9 +118,23 @@ function dateLabel(dateKey) {
   return new Intl.DateTimeFormat(language === "he" ? "he-IL" : "en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(dateFromKey(dateKey));
 }
 
-function setPageStatus(message = "", error = false) {
-  $("#pageStatus").textContent = message;
-  $("#pageStatus").classList.toggle("error", error);
+function setPageStatus(message = "", error = false, { retry = null } = {}) {
+  const element = $("#pageStatus");
+  element.textContent = message;
+  element.classList.toggle("error", error);
+  document.getElementById("retryLoadButton")?.remove();
+  if (typeof retry === "function") {
+    const button = document.createElement("button");
+    button.id = "retryLoadButton";
+    button.type = "button";
+    button.className = "daily-retry-button";
+    button.textContent = copy.retry;
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      retry();
+    });
+    element.after(button);
+  }
 }
 
 function setComposerMessage(message = "", error = false) {
@@ -138,6 +165,27 @@ function queueSave() {
   status.className = "autosave-state saving";
   state.saveChain = state.saveChain
     .catch(() => undefined)
+    .then(async () => {
+      // The saved day could not be read earlier. Try once more now and merge
+      // the user's new entries onto whatever was already stored, so a
+      // transient read failure never drops an existing log.
+      if (log.readFailed) {
+        try {
+          const fresh = await loadDailyLog(db, uid, dateKey);
+          const localOnly = log.entries.filter((entry) => !fresh.entries.some((saved) => saved.id === entry.id));
+          log.entries = [...fresh.entries, ...localOnly].slice(0, 80);
+          delete log.readFailed;
+          if (state.dateKey === dateKey && state.log?.readFailed) {
+            state.log.entries = structuredClone(log.entries);
+            state.log.readFailed = false;
+            render();
+            setPageStatus(state.log.completed ? copy.dayFinished : "");
+          }
+        } catch {
+          // Still unreachable: save the local log so the explicit action is kept.
+        }
+      }
+    })
     .then(() => saveDailyLog(db, uid, dateKey, log))
     .then(() => {
       status.textContent = copy.saveStatus;
@@ -343,9 +391,18 @@ async function loadDate(dateKey) {
   $("#clarificationPanel").hidden = true;
   setComposerMessage();
   setPageStatus(copy.loading);
-  // A historical read failure must not disable today's composer. Today's
-  // document remains mandatory: never replace an unread saved log with [].
-  const log = await loadDailyLog(db, state.user.uid, state.dateKey);
+  // A read failure (or an offline stream that never resolves) must not disable
+  // the composer. Fall back to a local working log so logging keeps working;
+  // queueSave() then re-reads and merges the saved day before the next write,
+  // so an unread saved log is never silently overwritten with new-only entries.
+  let log;
+  try {
+    log = await withTimeout(loadDailyLog(db, state.user.uid, state.dateKey), LOG_LOAD_TIMEOUT_MS);
+  } catch (error) {
+    console.error("Daily nutrition: today's log did not load; starting a local working log.", error);
+    log = normalizeLog(state.dateKey);
+    log.readFailed = true;
+  }
   const weekLogs = await loadNutritionWeek(db, state.user.uid, state.dateKey).catch(() => [log]);
   state.log = log;
   if (!state.log.targetSnapshot && state.targets.complete) {
@@ -354,7 +411,8 @@ async function loadDate(dateKey) {
   }
   state.weekLogs = weekLogs;
   render();
-  setPageStatus(state.log.completed ? copy.dayFinished : "");
+  if (state.log.readFailed) setPageStatus(copy.logLoadFailed, true, { retry: () => loadDate(state.dateKey) });
+  else setPageStatus(state.log.completed ? copy.dayFinished : "");
 }
 
 function addEntries(entries) {
@@ -591,7 +649,13 @@ async function init(user) {
     }
   } catch (error) {
     console.error("Daily nutrition initialization failed:", error);
-    setPageStatus(copy.saveError, true);
+    if (!state.log) {
+      state.log = normalizeLog(state.dateKey);
+      state.log.readFailed = true;
+      state.weekLogs = [state.log];
+      render();
+    }
+    setPageStatus(copy.logLoadFailed, true, { retry: () => loadDate(state.dateKey) });
   }
 }
 

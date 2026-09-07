@@ -137,6 +137,21 @@ body.daily-nutrition-route .site-feedback-widget {
 .daily-page-status.error,
 .composer-message.error { color: #ff9daa; }
 
+.daily-retry-button {
+  margin: 0 4px 14px;
+  padding: 8px 16px;
+  min-height: 40px;
+  border: 1px solid rgba(131, 194, 239, 0.34);
+  border-radius: 10px;
+  background: rgba(131, 194, 239, 0.12);
+  color: #d7e8f6;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.daily-retry-button:hover { background: rgba(131, 194, 239, 0.2); }
+.daily-retry-button:disabled { opacity: 0.6; cursor: progress; }
+
 .daily-priority-grid {
   display: grid;
   grid-template-columns: 1.35fr 0.8fr 1fr;

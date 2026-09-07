@@ -67,7 +67,7 @@ const urlsToCache = [
   '/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/progress.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/coachsocial.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/image-sequence-v43.js?v=20260822-v45-tiny-polish-plate-1',
+  '/js/image-sequence-v43.js?v=20260907-v45-plate-bulk-female-leg-repair-1',
   '/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',

@@ -60,29 +60,73 @@ test("Save Workout has an explicit high-contrast and keyboard-visible state", ()
   assert.match(css, /\.save-program-button:disabled\s*\{[\s\S]*?background:\s*#8392a8;[\s\S]*?color:\s*#101827;/);
 });
 
-test("the regenerated FUEL athlete matte has alpha and no large neutral edge fringe", async () => {
+test("the FUEL bulk-female athlete has continuous legs, alpha, and no coloured matte fringe", async () => {
   const manifest = JSON.parse(read("public", "assets", "athlete-motion", "v43", "manifest.json"));
   const frame = manifest.scenes.plate.frames[3];
   const imagePath = path.join(ROOT, "public", "assets", "athlete-motion", "v43", "plate", "normalized", frame.file);
   const { data, info } = await sharp(imagePath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  let neutralEdgePixels = 0;
-  for (let y = 1; y < Math.min(600, info.height - 1); y += 1) {
+  assert.equal(info.channels, 4);
+
+  const alphaAt = (x, y) => data[(y * info.width + x) * 4 + 3];
+  const opaque = (x, y) => alphaAt(x, y) > 40;
+
+  // Regression: the previous pass punched a transparent rectangle through the
+  // thighs/knees. Walk each row of the leg band and require that, between the
+  // outer edges of the silhouette, there is no wide transparent gap other than
+  // the natural single split between the two legs.
+  // The old hole punched a rectangle through the upper legs, leaving the
+  // thighs as thin outlines. Just below the shorts the thighs are the widest
+  // solid part of the silhouette, so each such row must be mostly filled and
+  // must not be split into more than the one natural gap between the legs.
+  const legBands = [];
+  for (let y = Math.round(info.height * 0.56); y < Math.round(info.height * 0.66); y += 3) {
+    let left = -1;
+    let right = -1;
+    let filled = 0;
+    for (let x = 0; x < info.width; x += 1) {
+      if (!opaque(x, y)) continue;
+      if (left < 0) left = x;
+      right = x;
+      filled += 1;
+    }
+    if (left < 0 || right - left < 20) continue;
+    let gaps = 0;
+    let run = 0;
+    for (let x = left; x <= right; x += 1) {
+      if (opaque(x, y)) {
+        if (run > 6) gaps += 1;
+        run = 0;
+      } else {
+        run += 1;
+      }
+    }
+    legBands.push({ y, span: right - left, gaps, fillRatio: filled / (right - left) });
+  }
+  assert.ok(legBands.length > 5, "leg band sampling found no silhouette");
+  for (const band of legBands) {
+    assert.ok(band.gaps <= 1, `row ${band.y} is split into ${band.gaps + 1} pieces through the legs (leg hole)`);
+    assert.ok(band.fillRatio > 0.62, `row ${band.y} thigh fill ${band.fillRatio.toFixed(2)} is too low — legs are hollow (leg hole)`);
+  }
+
+  // No green/olive studio spill left on the silhouette edge.
+  let colouredFringe = 0;
+  for (let y = 1; y < info.height - 1; y += 1) {
     for (let x = 1; x < info.width - 1; x += 1) {
       const offset = (y * info.width + x) * 4;
-      if (!data[offset + 3]) continue;
+      if (data[offset + 3] < 40) continue;
       let touchesTransparent = false;
-      for (let dy = -1; dy <= 1; dy += 1) {
+      for (let dy = -1; dy <= 1 && !touchesTransparent; dy += 1) {
         for (let dx = -1; dx <= 1; dx += 1) {
-          if (data[((y + dy) * info.width + x + dx) * 4 + 3] === 0) touchesTransparent = true;
+          if (!alphaAt(x + dx, y + dy)) { touchesTransparent = true; break; }
         }
       }
       if (!touchesTransparent) continue;
-      const channels = [data[offset], data[offset + 1], data[offset + 2]];
-      if (Math.min(...channels) > 220 && Math.max(...channels) - Math.min(...channels) < 24) neutralEdgePixels += 1;
+      const [r, g, b] = [data[offset], data[offset + 1], data[offset + 2]];
+      if (g > r + 24 && g > b + 24) colouredFringe += 1;
     }
   }
-  assert.equal(info.channels, 4);
-  assert.ok(neutralEdgePixels < 180, `expected fewer than 180 neutral edge pixels, saw ${neutralEdgePixels}`);
+  assert.ok(colouredFringe < 60, `expected almost no green fringe, saw ${colouredFringe}`);
+
   assert.equal(frame.source, "frame-04-regenerated.png");
   assert.equal(frame.normalizedBytes, fs.statSync(imagePath).size);
 });

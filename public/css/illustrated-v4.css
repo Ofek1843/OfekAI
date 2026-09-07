@@ -437,7 +437,10 @@ html[data-theme="light"] .fp-route-dashboard .card-icon img { filter: none; }
 }
 
 @media (max-width: 820px) {
-  .fp-redesign .site-feedback-widget { display: none !important; }
+  /* The widget stays available on mobile. site-feedback.js already repositions
+     the trigger to the first viewport edge that clears every visible critical
+     control, so it does not need to be hidden to avoid covering a CTA. */
+  .fp-redesign .site-feedback-widget { z-index: 9998; }
 }
 
 @media (max-width: 760px) {
