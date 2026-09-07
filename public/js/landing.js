@@ -61,6 +61,28 @@ const LANDING_FALLBACKS = {
     landingCardCoachTitle: "Turn context into action",
     landingCardCoachText:
       "Ask about the plan you are following and leave with a practical next step.",
+    landingLoopKicker: "PRODUCT IN ACTION",
+    landingLoopTitle: "One day with FuelPhysique",
+    landingLoopDescription:
+      "A sample loop showing how planning, food, training and coaching stay connected without writing anything to your account.",
+    landingLoopMorning: "Morning",
+    landingLoopMorningTitle: "Open today’s workout",
+    landingLoopMeal: "Meal",
+    landingLoopMealTitle: "Log food naturally",
+    landingLoopTraining: "Training",
+    landingLoopTrainingTitle: "Track sets and effort",
+    landingLoopCoach: "Coach",
+    landingLoopCoachTitle: "Get the next step",
+    landingLoopSampleLabel: "Sample preview — no account changes",
+    landingLoopWorkoutLabel: "Today’s session",
+    landingLoopWorkoutTitle: "Upper body strength",
+    landingLoopWorkoutText: "Bench Press · Row · Shoulder Press",
+    landingLoopMacroLabel: "Nutrition balance",
+    landingLoopMacroTitle: "Protein on track",
+    landingLoopMacroText: "Chicken bowl added from natural language.",
+    landingLoopCoachLabel: "AI Coach",
+    landingLoopCoachText:
+      "“Keep the load stable today and add one rep before increasing weight.”",
     landingResultsKicker: "REAL PROGRESS",
     landingResultsTitle: "Join users who are already building measurable progress",
     landingResultsDescription:
@@ -152,6 +174,28 @@ const LANDING_FALLBACKS = {
     landingCardCoachTitle: "הופכים הקשר לפעולה",
     landingCardCoachText:
       "שאלו על התוכנית הפעילה וקבלו צעד הבא ברור ומעשי.",
+    landingLoopKicker: "המוצר בפעולה",
+    landingLoopTitle: "יום אחד עם FuelPhysique",
+    landingLoopDescription:
+      "דוגמה שמראה איך אימון, אוכל, מעקב ומאמן נשארים מחוברים — בלי לשמור שום דבר בחשבון שלכם.",
+    landingLoopMorning: "בוקר",
+    landingLoopMorningTitle: "פותחים את אימון היום",
+    landingLoopMeal: "ארוחה",
+    landingLoopMealTitle: "מתעדים אוכל בשפה רגילה",
+    landingLoopTraining: "אימון",
+    landingLoopTrainingTitle: "עוקבים אחרי סטים ומאמץ",
+    landingLoopCoach: "מאמן",
+    landingLoopCoachTitle: "מקבלים צעד הבא",
+    landingLoopSampleLabel: "תצוגת דוגמה — ללא שינוי בחשבון",
+    landingLoopWorkoutLabel: "האימון של היום",
+    landingLoopWorkoutTitle: "כוח פלג גוף עליון",
+    landingLoopWorkoutText: "לחיצת חזה · חתירה · לחיצת כתפיים",
+    landingLoopMacroLabel: "איזון תזונתי",
+    landingLoopMacroTitle: "החלבון בכיוון",
+    landingLoopMacroText: "קערת עוף נוספה מתיאור בשפה טבעית.",
+    landingLoopCoachLabel: "מאמן AI",
+    landingLoopCoachText:
+      "״שמרו היום על אותו משקל והוסיפו חזרה אחת לפני שמעלים עומס.״",
     landingResultsKicker: "התקדמות אמיתית",
     landingResultsTitle: "הצטרפו למשתמשים שכבר בונים התקדמות מדידה",
     landingResultsDescription:
@@ -377,6 +421,52 @@ function wireComparisonSliders() {
   });
 }
 
+function wireProductLoopDemo() {
+  const section = document.querySelector(".product-loop-section");
+  if (!section || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const steps = [...section.querySelectorAll(".product-loop-step")];
+  if (!steps.length) return;
+
+  let index = 0;
+  let interval = null;
+  const setActive = (nextIndex) => {
+    index = nextIndex % steps.length;
+    steps.forEach((step, stepIndex) => {
+      step.classList.toggle("is-active", stepIndex === index);
+    });
+    section.style.setProperty("--loop-progress", `${((index + 1) / steps.length) * 100}%`);
+  };
+
+  const start = () => {
+    if (interval) return;
+    interval = window.setInterval(() => setActive(index + 1), 1800);
+  };
+  const stop = () => {
+    if (!interval) return;
+    window.clearInterval(interval);
+    interval = null;
+  };
+
+  steps.forEach((step, stepIndex) => {
+    step.addEventListener("pointerenter", () => setActive(stepIndex));
+    step.addEventListener("focusin", () => setActive(stepIndex));
+  });
+
+  if (!("IntersectionObserver" in window)) {
+    start();
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) start();
+      else stop();
+    });
+  }, { threshold: 0.28 });
+  observer.observe(section);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   translateLandingPage();
   wireBuilderChooser();
@@ -384,6 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
   trackReferralParams();
   wireRevealAnimations();
   wireComparisonSliders();
+  wireProductLoopDemo();
   loadPublicStats();
 
   if (statsPollHandle) clearInterval(statsPollHandle);

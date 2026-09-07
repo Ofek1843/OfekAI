@@ -901,6 +901,241 @@ html[dir="rtl"] .comparison-after figcaption { right: auto; left: 18px; }
     margin-top: 4px;
 }
 
+.product-loop-section {
+    position: relative;
+}
+
+.product-loop-heading {
+    max-width: 860px;
+}
+
+.product-loop-demo {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(18px, 3vw, 34px);
+    align-items: stretch;
+}
+
+.product-loop-timeline {
+    position: relative;
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.product-loop-timeline::before {
+    content: "";
+    position: absolute;
+    inset: 16px auto 16px 22px;
+    width: 2px;
+    border-radius: 999px;
+    background: rgba(125, 211, 252, 0.16);
+}
+
+html[dir="rtl"] .product-loop-timeline::before {
+    inset-inline: auto 22px;
+}
+
+.product-loop-timeline::after {
+    content: "";
+    position: absolute;
+    inset: 16px auto auto 22px;
+    width: 2px;
+    height: var(--loop-progress, 25%);
+    max-height: calc(100% - 32px);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #4bd9e6, #399fff, #9b7cff);
+    transition: height 420ms ease;
+}
+
+html[dir="rtl"] .product-loop-timeline::after {
+    inset-inline: auto 22px;
+}
+
+.product-loop-step {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 5px;
+    padding: 16px 18px 16px 54px;
+    border: 1px solid rgba(125, 211, 252, 0.14);
+    border-radius: 20px;
+    background: rgba(8, 28, 49, 0.62);
+    color: var(--text-secondary);
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+}
+
+html[dir="rtl"] .product-loop-step {
+    padding: 16px 54px 16px 18px;
+}
+
+.product-loop-step::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 18px;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(125, 211, 252, 0.34);
+    border-radius: 999px;
+    background: #061426;
+    box-shadow: 0 0 0 6px rgba(6, 20, 38, 0.9);
+}
+
+html[dir="rtl"] .product-loop-step::before {
+    left: auto;
+    right: 14px;
+}
+
+.product-loop-step span,
+.sample-label,
+.sample-workout-card span,
+.sample-macro-card span,
+.sample-coach-card span {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.product-loop-step strong {
+    color: var(--text-primary);
+    font-size: clamp(1rem, 1.5vw, 1.22rem);
+}
+
+.product-loop-step.is-active {
+    transform: translateX(4px);
+    border-color: rgba(75, 217, 230, 0.44);
+    background: linear-gradient(135deg, rgba(75, 217, 230, 0.12), rgba(57, 159, 255, 0.08));
+}
+
+html[dir="rtl"] .product-loop-step.is-active {
+    transform: translateX(-4px);
+}
+
+.product-loop-step.is-active::before {
+    border-color: #4bd9e6;
+    background: #4bd9e6;
+    box-shadow: 0 0 0 6px rgba(75, 217, 230, 0.12), 0 0 24px rgba(75, 217, 230, 0.48);
+}
+
+.product-loop-panel {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+    gap: 16px;
+    align-content: stretch;
+    padding: clamp(18px, 3.5vw, 34px);
+    overflow: hidden;
+    border: 1px solid rgba(125, 211, 252, 0.18);
+    border-radius: 32px;
+    background:
+        linear-gradient(90deg, rgba(125, 211, 252, 0.06) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(125, 211, 252, 0.06) 1px, transparent 1px),
+        linear-gradient(145deg, rgba(13, 37, 62, 0.9), rgba(4, 16, 30, 0.94));
+    background-size: 42px 42px, 42px 42px, auto;
+    box-shadow: 0 32px 80px rgba(0, 5, 15, 0.3);
+}
+
+.sample-label {
+    grid-column: 1 / -1;
+    justify-self: start;
+    padding: 8px 12px;
+    border: 1px solid rgba(125, 211, 252, 0.18);
+    border-radius: 999px;
+    background: rgba(3, 12, 24, 0.54);
+}
+
+.sample-workout-card,
+.sample-macro-card,
+.sample-coach-card {
+    border: 1px solid rgba(125, 211, 252, 0.16);
+    border-radius: 24px;
+    background: rgba(3, 12, 24, 0.62);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.sample-workout-card {
+    display: grid;
+    align-content: center;
+    gap: 12px;
+    min-height: 230px;
+    padding: 24px;
+}
+
+.sample-workout-card strong {
+    color: var(--text-primary);
+    font-size: clamp(1.55rem, 3vw, 2.45rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+}
+
+.sample-progress-line {
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(125, 211, 252, 0.14);
+}
+
+.sample-progress-line span {
+    display: block;
+    width: 76%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #4bd9e6, #399fff, #9b7cff);
+    transform-origin: left;
+}
+
+.sample-macro-card {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 22px;
+}
+
+.sample-macro-ring {
+    display: grid;
+    flex: 0 0 104px;
+    place-items: center;
+    width: 104px;
+    height: 104px;
+    border-radius: 999px;
+    background:
+        conic-gradient(#f3aa37 0 245deg, rgba(243, 170, 55, 0.18) 245deg 360deg);
+}
+
+.sample-macro-ring span {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    color: var(--text-primary);
+    background: #061426;
+    font-weight: 900;
+}
+
+.sample-macro-card strong,
+.sample-coach-card p {
+    color: var(--text-primary);
+    font-size: 1.12rem;
+}
+
+.sample-macro-card p,
+.sample-workout-card p {
+    color: var(--text-secondary);
+}
+
+.sample-coach-card {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 10px;
+    padding: 22px 24px;
+}
+
 .platform-steps {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -983,14 +1218,18 @@ html[dir="rtl"] .comparison-after figcaption { right: auto; left: 18px; }
 
 .feature-card-grid .premium-card,
 .results-grid .result-story,
-.platform-steps .platform-step {
+.platform-steps .platform-step,
+.product-loop-step,
+.product-loop-panel {
     opacity: 0;
     transform: translateY(18px);
 }
 
 .is-visible .premium-card,
 .is-visible .result-story,
-.is-visible .platform-step {
+.is-visible .platform-step,
+.is-visible .product-loop-step,
+.is-visible .product-loop-panel {
     opacity: 1;
     transform: translateY(0);
     transition: opacity 640ms ease, transform 640ms ease;
@@ -1001,6 +1240,9 @@ html[dir="rtl"] .comparison-after figcaption { right: auto; left: 18px; }
 .is-visible .premium-card:nth-child(3),
 .is-visible .platform-step:nth-child(3) { transition-delay: 180ms; }
 .is-visible .premium-card:nth-child(4) { transition-delay: 270ms; }
+.is-visible .product-loop-step:nth-child(2) { transition-delay: 70ms; }
+.is-visible .product-loop-step:nth-child(3) { transition-delay: 140ms; }
+.is-visible .product-loop-step:nth-child(4) { transition-delay: 210ms; }
 
 @keyframes spectrum-spin {
     to { transform: translateX(-50%) rotate(360deg); }
@@ -1201,6 +1443,28 @@ html[data-theme="light"] .transformation-invite {
         scroll-snap-align: start;
     }
 
+    .product-loop-demo,
+    .product-loop-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .product-loop-step {
+        padding-inline-start: 50px;
+    }
+
+    .product-loop-panel {
+        border-radius: 24px;
+        background-size: 34px 34px, 34px 34px, auto;
+    }
+
+    .sample-workout-card {
+        min-height: 190px;
+    }
+
+    .sample-macro-card {
+        align-items: flex-start;
+    }
+
     .result-story {
         border-radius: 26px;
     }
@@ -1268,9 +1532,12 @@ html[data-theme="light"] .transformation-invite {
     .reveal-on-scroll,
     .feature-card-grid .premium-card,
     .results-grid .result-story,
-    .platform-steps .platform-step {
+    .platform-steps .platform-step,
+    .product-loop-step,
+    .sample-progress-line span {
         opacity: 1 !important;
         transform: none !important;
+        transition-duration: 0.01ms !important;
     }
 
     .premium-card:hover,
