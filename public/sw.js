@@ -58,6 +58,8 @@ const urlsToCache = [
   '/js/redesign-shell.js?v=20260822-v45-rtl-hebrew-animation-fix-1',
   '/js/redesign-shell.js?v=20260821-v45-daily-nutrition-v11-4',
   '/js/daily-nutrition.js?v=20260821-v45-daily-nutrition-v11-4',
+  '/js/daily-food-visuals.mjs',
+  '/images/common/meal.svg',
   '/js/daily-nutrition-domain.mjs?v=20260821-v45-daily-nutrition-v11-4',
   '/js/daily-nutrition-store.mjs?v=20260821-v45-daily-nutrition-v11-4',
   '/js/daily-nutrition-i18n.mjs?v=20260821-v45-daily-nutrition-v11-4',

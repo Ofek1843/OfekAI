@@ -4,6 +4,7 @@ import { guardProtectedPage } from "./verification-gate.js";
 
 const $ = selector => document.querySelector(selector);
 const CATEGORY_OPTIONS = [
+  ["supermarket", "Everyday / supermarket", "יומיומי / מהסופר"],
   ["high-protein", "High Protein", "חלבון גבוה"], ["low-calorie", "Low Calorie", "דל קלוריות"], ["balanced", "Balanced", "מאוזן"],
   ["vegan", "Vegan", "טבעוני"], ["vegetarian", "Vegetarian", "צמחוני"], ["pescatarian", "Pescatarian", "פסקטריאני"],
   ["breakfast", "Breakfast", "ארוחת בוקר"], ["lunch", "Lunch", "צהריים"], ["dinner", "Dinner", "ערב"], ["snack", "Snack", "נשנוש"],

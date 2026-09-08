@@ -1,3 +1,7 @@
+.food-identity { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.food-identity .food-name { min-width: 0; overflow-wrap: anywhere; }
+.food-identity .food-thumbnail { width: 56px; height: 56px; flex: 0 0 56px; object-fit: cover; border-radius: 12px; background: #16354b; }
+
 :root {
   --daily-blue: #4ba9ff;
   --daily-cyan: #50d9e8;

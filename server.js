@@ -3809,7 +3809,7 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
     const prepTimePreference = ["zero", "five", "fifteen", "any"].includes(plan.prepTimePreference)
       ? plan.prepTimePreference
       : "any";
-    const foodStylePreference = ["mediterranean", "mix"].includes(plan.foodStylePreference)
+    const foodStylePreference = ["mediterranean", "mix", "supermarket"].includes(plan.foodStylePreference)
       ? plan.foodStylePreference
       : "mix";
     const avoidTerms = Array.isArray(plan.avoidTerms)
@@ -3825,6 +3825,7 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       slot,
       mealFormatPreference,
       prepTimePreference,
+      foodStylePreference,
       avoidTerms
     });
 
@@ -4115,7 +4116,7 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
     const practicalPrepTime = ["zero", "five", "fifteen", "any"].includes(prepTimePreference)
       ? prepTimePreference
       : "any";
-    const practicalFoodStyle = ["mediterranean", "mix"].includes(foodStylePreference)
+    const practicalFoodStyle = ["mediterranean", "mix", "supermarket"].includes(foodStylePreference)
       ? foodStylePreference
       : "mix";
     const avoidTerms = parseFoodPreferenceTerms(foodsToAvoid);
@@ -4137,6 +4138,7 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
             slot: slot.slot,
             mealFormatPreference: practicalMealFormat,
             prepTimePreference: practicalPrepTime,
+            foodStylePreference: practicalFoodStyle,
             avoidTerms
           })
         );
@@ -4426,6 +4428,7 @@ ${slots
             slot: meal.slot,
             mealFormatPreference: practicalMealFormat,
             prepTimePreference: practicalPrepTime,
+            foodStylePreference: practicalFoodStyle,
             avoidTerms
           }),
         buildOption: (mealId, meal) =>
