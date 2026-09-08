@@ -28,6 +28,8 @@
 .fp-v47-food-thumb { transition: transform var(--fp-motion-fast) var(--fp-motion-settle); }
 .food-identity:hover .fp-v47-food-thumb, .food-identity:focus-within .fp-v47-food-thumb { transform: scale(1.06); }
 .fp-v47-success { animation: fp-v47-success var(--fp-motion-standard) var(--fp-motion-settle) 1; }
+.fp-v47-number-update { animation: fp-v47-number-update 420ms var(--fp-motion-settle) 1; }
+.fp-v47-chart-reveal .chart-line { stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: fp-v47-chart-draw 760ms var(--fp-motion-ease) forwards; }
 .fp-v47-gender-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
 .fp-v47-gender-card { position: relative; display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 12px; min-height: 92px; padding: 12px; overflow: hidden; border: 1px solid var(--fp-border, rgba(131,194,239,.25)); border-radius: 16px; background: var(--fp-surface-raised, rgba(15,45,73,.72)); color: inherit; cursor: pointer; text-align: start; }
 .fp-v47-gender-card::before { content: ""; width: 64px; height: 68px; border-radius: 50% 50% 42% 42%; background: radial-gradient(circle at 50% 18%, #f2c6a5 0 12%, transparent 13%), linear-gradient(160deg, #3c81b8 0 35%, #173b61 36% 100%); box-shadow: inset 0 -12px rgba(0,0,0,.16); }
@@ -44,9 +46,12 @@
 @keyframes fp-v47-selection { 0%,100% { transform: scale(1); } 45% { transform: scale(1.018); } }
 @keyframes fp-v47-row-in { from { opacity: 0; transform: translate3d(0, 12px, 0); } to { opacity: 1; transform: none; } }
 @keyframes fp-v47-success { 0% { transform: translateY(5px); opacity: .45; } 100% { transform: none; opacity: 1; } }
+@keyframes fp-v47-number-update { 0% { opacity: .55; transform: translateY(3px); } 100% { opacity: 1; transform: none; } }
+@keyframes fp-v47-chart-draw { to { stroke-dashoffset: 0; } }
 @media (max-width: 560px) { .fp-v47-gender-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
   .fp-v47-motion-enabled .fp-v47-reveal { opacity: 1; transform: none; transition: none; }
-  .fp-v47-choice, .fp-v47-choice.fp-v47-selected, .fp-v47-dynamic-row, .fp-v47-success { animation: none !important; transition: none !important; }
+  .fp-v47-choice, .fp-v47-choice.fp-v47-selected, .fp-v47-dynamic-row, .fp-v47-success, .fp-v47-number-update { animation: none !important; transition: none !important; }
+  .fp-v47-chart-reveal .chart-line { animation: none !important; stroke-dasharray: none; stroke-dashoffset: 0; }
   .fp-v47-select-card, .exercise-suggest { animation: none !important; transition: none !important; }
 }

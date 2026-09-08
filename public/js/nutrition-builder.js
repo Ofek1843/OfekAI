@@ -366,6 +366,7 @@ setStatus("");
 if (data.plan) {
   window.currentNutritionPlan = data.plan;
   renderNutritionPlan(data.plan);
+  window.fpV47Success?.(button);
   return;
 }
 throw new Error(isHebrew ? "לא התקבלה תוכנית. התשובות נשמרו; נסו שוב." : "No plan was returned. Your answers are kept; please retry.");
@@ -806,6 +807,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
       trackEvent("plan_saved", { type: "nutrition" });
       saveButton.textContent = isHebrew ? "✓ התפריט נשמר" : "✓ Nutrition Plan Saved";
       setStatus(isHebrew ? "תוכנית התזונה נשמרה בהצלחה." : "Nutrition plan saved successfully.");
+      window.fpV47Success?.(saveButton);
     } catch (error) {
       console.error("Could not save nutrition plan:", error);
       saveButton.disabled = false;

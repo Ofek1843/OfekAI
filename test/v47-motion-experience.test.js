@@ -28,6 +28,30 @@ test("nutrition rows animate only after real DOM entries and use existing thumbn
   assert.match(js, /food-thumbnail/);
   assert.match(css, /\.fp-v47-dynamic-row/);
 });
+test("high-value V4.7 primitives animate real values and remain reduced-motion safe", () => {
+  assert.match(js, /fpV47AnimateNumber/);
+  assert.match(js, /fpV47AnimateMacroRing/);
+  assert.match(js, /requestAnimationFrame/);
+  assert.match(css, /fp-v47-chart-reveal/);
+  assert.match(css, /fp-v47-number-update/);
+  assert.match(read("public/js/landing.js"), /const duration = 480/);
+  assert.match(read("public/js/landing.js"), /prefers-reduced-motion/);
+});
+test("success feedback is wired to real product actions without replacing their behavior", () => {
+  for (const file of [
+    "public/js/daily-nutrition.js",
+    "public/js/nutrition-builder.js",
+    "public/js/workout-builder.js",
+    "public/js/workout-tracker.js",
+    "public/js/settings.js"
+  ]) assert.match(read(file), /fpV47Success/);
+  assert.match(css, /fp-v47-success/);
+});
+test("progress chart uses a one-time reveal class and does not invent data", () => {
+  const progress = read("public/js/progress.js");
+  assert.match(progress, /fp-v47-chart-reveal/);
+  assert.doesNotMatch(progress, /setInterval/);
+});
 test("motion assets load through the shared shell and stale cache identity is replaced", () => {
   assert.match(shell, /product-motion-v47\.css/);
   assert.match(shell, /product-motion-v47\.js/);

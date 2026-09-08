@@ -1542,6 +1542,7 @@ function renderProgram(program, weeklyVolume) {
           ? "תוכנית האימון נשמרה בהצלחה."
           : "Workout plan saved successfully."
       );
+      window.fpV47Success?.(saveWorkoutButton);
     } catch (error) {
       console.error("Could not save workout plan:", error);
 

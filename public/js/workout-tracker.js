@@ -1432,6 +1432,7 @@ async function finishWorkout() {
     clearInterval(focusTimerId);
     clearDraft();
     $("#successSummary").textContent = ui.completed(workingSets.filter(set => set.completed).length, workingSets.length, Math.max(1, Math.round(durationSeconds / 60)));
+    window.fpV47Success?.($("#finishWorkoutButton"));
     show("#successPanel");
 
     // Fire-and-forget: checks for new personal records and pushes a

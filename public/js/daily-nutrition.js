@@ -208,6 +208,12 @@ function renderTargets(totals) {
   const calorieProgress = calorieTarget ? Math.min(360, (totals.calories / calorieTarget) * 360) : 0;
   $("#calorieRing").style.setProperty("--calorie-progress", `${calorieProgress}deg`);
   $("#calorieConsumed").textContent = number(totals.calories);
+  [$("#calorieConsumed"), $("#proteinConsumed")].forEach((element) => {
+    if (!element) return;
+    element.classList.remove("fp-v47-number-update");
+    void element.offsetWidth;
+    element.classList.add("fp-v47-number-update");
+  });
   if (calorieTarget) setAmount($("#calorieTarget"), calorieTarget, "kcal", 0);
   else $("#calorieTarget").textContent = "—";
   if (calorieTarget) {
@@ -234,11 +240,14 @@ function renderMacroDistribution(totals) {
   $("#proteinPercent").textContent = `${number(macro.protein, 1)}%`;
   $("#carbsPercent").textContent = `${number(macro.carbs, 1)}%`;
   $("#fatPercent").textContent = `${number(macro.fat, 1)}%`;
-  const proteinEnd = macro.protein;
-  const carbEnd = macro.protein + macro.carbs;
-  $("#macroRing").style.background = macro.macroCalories
-    ? `conic-gradient(var(--daily-blue) 0 ${proteinEnd}%, var(--daily-amber) ${proteinEnd}% ${carbEnd}%, var(--daily-purple) ${carbEnd}% 100%)`
-    : "conic-gradient(rgba(131, 194, 239, 0.14) 0 100%)";
+  if (window.fpV47AnimateMacroRing) window.fpV47AnimateMacroRing($("#macroRing"), macro);
+  else {
+    const proteinEnd = macro.protein;
+    const carbEnd = macro.protein + macro.carbs;
+    $("#macroRing").style.background = macro.macroCalories
+      ? `conic-gradient(var(--daily-blue) 0 ${proteinEnd}%, var(--daily-amber) ${proteinEnd}% ${carbEnd}%, var(--daily-purple) ${carbEnd}% 100%)`
+      : "conic-gradient(rgba(131, 194, 239, 0.14) 0 100%)";
+  }
   $("#macroRing").setAttribute("aria-label", `${copy.protein} ${number(macro.protein, 1)}%, ${copy.carbs} ${number(macro.carbs, 1)}%, ${copy.fat} ${number(macro.fat, 1)}%`);
 }
 
@@ -430,6 +439,7 @@ function addEntries(entries) {
   const added = entries.map((entry) => ({ ...entry, id: createEntryId(), createdAt }));
   state.log.entries = [...state.log.entries, ...added].slice(0, 80);
   render();
+  window.fpV47Success?.($("#autosaveState"));
   queueSave();
   $("#foodInput").value = "";
   $("#foodInput").focus();
@@ -664,6 +674,7 @@ function bindEvents() {
     state.log.completedAt = new Date().toISOString();
     setPageStatus(copy.dayFinished);
     render();
+    window.fpV47Success?.($("#finishDayButton"));
     queueSave();
   });
   $("#previousDay").addEventListener("click", () => loadDate(shiftDateKey(state.dateKey, -1)));

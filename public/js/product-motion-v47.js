@@ -1,6 +1,58 @@
 (() => {
   "use strict";
   const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches === true;
+  const raf = (callback) => window.requestAnimationFrame ? window.requestAnimationFrame(callback) : window.setTimeout(() => callback(performance.now()), 16);
+
+  function animateNumber(element, value, { duration = 480, format = null } = {}) {
+    if (!element) return;
+    const target = Number(value);
+    if (!Number.isFinite(target)) return;
+    const previous = Number(element.dataset.fpV47Number);
+    const start = Number.isFinite(previous) ? previous : target;
+    element.dataset.fpV47Number = String(target);
+    const render = (current) => { element.textContent = format ? format(current) : String(Math.round(current)); };
+    if (reduced() || start === target) { render(target); return; }
+    const started = performance.now();
+    const tick = (now) => {
+      const progress = Math.min(1, (now - started) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      render(start + ((target - start) * eased));
+      if (progress < 1) raf(tick);
+    };
+    raf(tick);
+  }
+
+  function animateMacroRing(element, macro) {
+    if (!element) return;
+    const target = [Number(macro?.protein) || 0, Number(macro?.carbs) || 0, Number(macro?.fat) || 0];
+    const previous = (element.dataset.fpV47Macro || "").split(",").map(Number);
+    const start = previous.length === 3 && previous.every(Number.isFinite) ? previous : target;
+    element.dataset.fpV47Macro = target.join(",");
+    const paint = (values) => {
+      const proteinEnd = values[0];
+      const carbEnd = values[0] + values[1];
+      element.style.background = values.some(Boolean)
+        ? `conic-gradient(var(--daily-blue) 0 ${proteinEnd}%, var(--daily-amber) ${proteinEnd}% ${carbEnd}%, var(--daily-purple) ${carbEnd}% 100%)`
+        : "conic-gradient(rgba(131, 194, 239, 0.14) 0 100%)";
+    };
+    if (reduced()) { paint(target); return; }
+    const started = performance.now();
+    const tick = (now) => {
+      const progress = Math.min(1, (now - started) / 420);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      paint(start.map((value, index) => value + ((target[index] - value) * eased)));
+      if (progress < 1) raf(tick);
+    };
+    raf(tick);
+  }
+
+  function success(element) {
+    if (!element) return;
+    element.classList.remove("fp-v47-success");
+    void element.offsetWidth;
+    element.classList.add("fp-v47-success");
+    if (!reduced()) window.setTimeout(() => element.classList.remove("fp-v47-success"), 950);
+  }
   const revealTargets = () => [...document.querySelectorAll(
     ".dashboard-shell > *, .capability-card, .dashboard-card, .stats-grid > *, .visual-choice-card, .product-loop-section > *, #foodEntries tr, .exercise-row, .meal-card"
   )];
@@ -104,6 +156,9 @@
         card.classList.remove("fp-v47-selected"); requestAnimationFrame(() => card.classList.add("fp-v47-selected"));
       }
     });
+    window.fpV47AnimateNumber = animateNumber;
+    window.fpV47AnimateMacroRing = animateMacroRing;
+    window.fpV47Success = success;
     const rows = document.querySelector("#foodEntries");
     if (rows) {
       const rowObserver = new MutationObserver(() => rows.querySelectorAll("tr:not(.fp-v47-dynamic-row)").forEach((row, index) => { row.classList.add("fp-v47-dynamic-row"); row.style.setProperty("--fp-v47-delay", `${Math.min(index * 50, 250)}ms`); row.querySelector(".food-thumbnail")?.classList.add("fp-v47-food-thumb"); }));

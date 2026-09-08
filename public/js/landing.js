@@ -249,7 +249,13 @@ function animateNumber(element, nextValue, language) {
   }
 
   const startedAt = performance.now();
-  const duration = 900;
+  const duration = 480;
+
+  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    element.dataset.countValue = String(target);
+    element.textContent = formatCount(target, language);
+    return;
+  }
 
   element.dataset.countValue = String(target);
   element.closest(".landing-stat")?.classList.remove("count-bump");

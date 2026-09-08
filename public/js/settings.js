@@ -1147,6 +1147,7 @@ async function saveSettings() {
             "Settings saved successfully.",
             "success"
         );
+        window.fpV47Success?.(elements.saveBtn);
     } catch (error) {
         console.error(
             "Failed to save settings:",
