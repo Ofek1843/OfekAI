@@ -6,6 +6,17 @@
     deepOceanStyles.href = "/css/v45-deep-ocean.css?v=20260821-v45-deep-ocean-1";
     document.head.append(deepOceanStyles);
   }
+  if (!document.querySelector('link[href*="product-motion-v47.css"]')) {
+    const motionStyles = document.createElement("link");
+    motionStyles.rel = "stylesheet";
+    motionStyles.href = "/css/product-motion-v47.css?v=20260908-v47-motion-1";
+    document.head.append(motionStyles);
+  }
+  if (!document.querySelector('script[src*="product-motion-v47.js"]')) {
+    const motionScript = document.createElement("script");
+    motionScript.src = "/js/product-motion-v47.js?v=20260908-v47-motion-1";
+    document.head.append(motionScript);
+  }
   const protectedRoutes = new Set([
     "app.html",
     "daily-nutrition.html",
