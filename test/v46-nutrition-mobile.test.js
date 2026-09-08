@@ -99,10 +99,19 @@ test("Hebrew/English food input feeds matching real catalog totals", async () =>
   assert.ok(he.entries.length);
   assert.deepEqual(totalsForEntries(he.entries), totalsForEntries(en.entries));
   assert.ok(totalsForEntries(he.entries).calories > 0);
+  const { resolveFoodChoice } = await import("../public/js/daily-nutrition-domain.mjs");
   const bar = parseFoodText("חטיף חלבון");
-  assert.ok(bar.errors.length, "No invented protein-bar nutrition");
-  assert.match(read("public/js/daily-nutrition.js"), /Which protein bar\?/);
-  assert.match(read("public/js/daily-nutrition.js"), /closest\("details"\).open = true/);
+  // Not a dead end: a compact brand question with an explicit estimate path.
+  assert.equal(bar.status, "needs-clarification");
+  assert.equal(bar.ambiguities[0].kind, "brand");
+  assert.ok(bar.ambiguities[0].allowBrandInput);
+  const unknown = bar.ambiguities[0].choices.find((choice) => choice.isEstimateFallback);
+  assert.ok(unknown, "brand clarification offers an I-don't-know path");
+  const estimated = resolveFoodChoice(unknown.foodId, { amount: unknown.amount, unit: unknown.unit, estimate: unknown.estimate, rawText: "חטיף חלבון" });
+  assert.equal(estimated.estimated, true);
+  assert.equal(estimated.estimateConfidence, "low");
+  assert.ok(estimated.calories > 0 && estimated.proteinGrams > 0);
+  assert.equal(estimated.foodId, "protein-bar");
 });
 
 test("mobile navigation and athlete composition use reserved layout", () => {

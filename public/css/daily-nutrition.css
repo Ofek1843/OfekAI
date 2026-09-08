@@ -244,7 +244,39 @@ body.daily-nutrition-route .site-feedback-widget {
 .clarification-panel h3 { margin: 0 0 5px; font: 700 1rem "Space Grotesk", sans-serif; }
 .clarification-panel p { margin: 0 0 12px; color: #dbcaa9; }
 .clarification-choices { display: flex; flex-wrap: wrap; gap: 8px; }
-.clarification-choices button { min-height: 42px; padding: 0 14px; border: 1px solid rgba(242, 170, 58, 0.4); border-radius: 10px; background: #55370c; color: #fff0cf; cursor: pointer; }
+.clarification-choices button { min-height: 44px; padding: 0 14px; border: 1px solid rgba(242, 170, 58, 0.4); border-radius: 10px; background: #55370c; color: #fff0cf; font: inherit; font-weight: 700; cursor: pointer; }
+.clarification-choice--estimate {
+  flex-basis: 100%;
+  border-style: dashed !important;
+  border-color: rgba(131, 194, 239, 0.45) !important;
+  background: rgba(131, 194, 239, 0.12) !important;
+  color: #dcecfa !important;
+}
+.clarification-brand { display: flex; gap: 8px; margin-bottom: 12px; }
+.clarification-brand input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(242, 170, 58, 0.4);
+  border-radius: 10px;
+  color: #fff0cf;
+  background: rgba(20, 32, 43, 0.6);
+  font: inherit;
+}
+.clarification-brand button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(242, 170, 58, 0.5);
+  border-radius: 10px;
+  background: #55370c;
+  color: #fff0cf;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.clarification-advanced { margin: 10px 0 0 !important; color: #b7c6d8 !important; font-size: 12px; }
 .composer-message { min-height: 20px; margin: 10px 0 0; color: #9db7ce; }
 .composer-actions { display: flex; justify-content: end; gap: 10px; margin-top: 16px; }
 .secondary-button { padding: 0 16px; cursor: pointer; }

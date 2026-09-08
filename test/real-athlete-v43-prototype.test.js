@@ -11,6 +11,7 @@ const VERSION = "20260907-v45-plate-bulk-female-leg-repair-1";
 const INTEGRATION_VERSION = "20260815-real-athlete-v43-complete-5";
 const MOTION_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
 const PLATE_ASSET_VERSION = VERSION;
+const CONNECT_ASSET_VERSION = "20260908-v46-connect-phone-review-fix-1";
 const ENGINE_VERSION = VERSION;
 const CSS_VERSION = MOTION_ASSET_VERSION;
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
@@ -105,6 +106,10 @@ test("V4.3 is default on production and local review while localhost retains an 
 test("semantic frame order and reviewed timings are encoded without inventing poses", () => {
   const scenes = loadEngine("localhost", "?athleteMotion=v43").scenes;
   assert.ok(scenes.plate.frames.every((item) => new URL(item.url, "http://local").searchParams.get("v") === PLATE_ASSET_VERSION));
+  // The Social/Connect frames carry their own repaired-asset token so a stale
+  // phone-review frame cannot survive in a long-lived image cache after deploy.
+  assert.ok(scenes.social.frames.every((item) => new URL(item.url, "http://local").searchParams.get("v") === CONNECT_ASSET_VERSION));
+  assert.match(ENGINE, /connect:\s*"20260908-v46-connect-phone-review-fix-1"/);
   assert.ok(scenes.deadlift.frames.every((item) => new URL(item.url, "http://local").searchParams.get("v") === MOTION_ASSET_VERSION));
   assert.deepEqual(Array.from(scenes.deadlift.frames, (item) => item.duration), [380, 240, 470, 320, 340, 360]);
   assert.deepEqual(Array.from(scenes.training.frames, (item) => item.duration), [360, 230, 440, 300, 340, 360]);

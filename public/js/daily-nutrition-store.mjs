@@ -44,6 +44,7 @@ function normalizeEntry(entry, index = 0) {
     estimated: entry.estimated === true,
     approximate: entry.approximate === true,
     estimateConfidence: confidence,
+    estimateReason: String(entry.estimateReason || "").slice(0, 30) || null,
     estimatedGrams: Number.isFinite(estimatedGrams) && estimatedGrams > 0 ? estimatedGrams : null,
     portionCount: Number.isFinite(portionCount) && portionCount > 0 ? portionCount : null,
     portionSize: String(entry.portionSize || "").slice(0, 20) || null,

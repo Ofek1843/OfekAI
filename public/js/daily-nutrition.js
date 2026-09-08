@@ -265,7 +265,9 @@ function renderEntries() {
       ? `<button type="button" data-entry-action="save" data-entry-id="${esc(entry.id)}">${esc(copy.save)}</button><button type="button" data-entry-action="cancel" data-entry-id="${esc(entry.id)}">${esc(copy.cancel)}</button>`
       : `<button type="button" data-entry-action="edit" data-entry-id="${esc(entry.id)}">${esc(copy.edit)}</button><button type="button" data-entry-action="duplicate" data-entry-id="${esc(entry.id)}">${esc(copy.duplicate)}</button><button type="button" data-entry-action="delete" data-entry-id="${esc(entry.id)}">${esc(copy.delete)}</button>`;
     const estimateText = entry.estimated
-      ? format(entry.compositeEstimate ? copy.estimatedComposite : copy.estimatedPortion, { amount: formatNutritionAmount(entry.estimatedGrams || entry.amount, "g", language, 1) })
+      ? (entry.estimatedGrams
+        ? format(entry.compositeEstimate ? copy.estimatedComposite : copy.estimatedPortion, { amount: formatNutritionAmount(entry.estimatedGrams, "g", language, 1) })
+        : copy.estimatedGeneric)
       : "";
     return `<tr data-entry-row="${esc(entry.id)}"><td><div class="food-name"><strong>${esc(entryName(entry))}</strong><small dir="auto">${esc(entry.rawText || entry.source || "")}</small>${estimateText ? `<small class="estimate-note">${esc(estimateText)}</small>` : ""}</div></td><td data-label="${esc(copy.amount)}">${amountCell}</td><td data-label="${esc(copy.calories)}">${amountMarkup(entry.calories, "kcal", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.protein)}">${amountMarkup(entry.proteinGrams, "g", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.carbs)}">${amountMarkup(entry.carbsGrams, "g", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.fat)}">${amountMarkup(entry.fatGrams, "g", 1, { approximate: entry.approximate === true })}</td><td><div class="entry-actions">${actions}</div></td></tr>`;
   }).join("");
@@ -434,12 +436,59 @@ function createEntryId() {
   return `food-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+function clarificationChoiceLabel(ambiguity, choice) {
+  if (choice.isEstimateFallback) {
+    if (ambiguity.kind === "brand") {
+      return ambiguity.foodId === "protein-drink" ? copy.estimateUnknownDrink
+        : ambiguity.foodId === "protein-bar" ? copy.estimateUnknownBar
+        : copy.estimateUnknown;
+    }
+    if (ambiguity.kind === "size") return copy.estimateUnknownMedium;
+    if (ambiguity.kind === "portion") {
+      return ambiguity.choices.some((item) => String(item.choiceId).startsWith("slice")) ? copy.estimateUnknown : copy.estimateUnknownTray;
+    }
+    return copy.estimateUnknown;
+  }
+  if (ambiguity.kind === "size") {
+    const sizeLabels = { small: copy.sizeSmall, medium: copy.sizeMedium, large: copy.sizeLarge };
+    if (sizeLabels[choice.choiceId]) return sizeLabels[choice.choiceId];
+  }
+  return choice.label?.[language] || choice.label?.en || choice.name?.[language] || choice.name?.en || String(choice.choiceId || "");
+}
+
 function renderClarification(result) {
   state.pendingClarification = result;
   const ambiguity = result.ambiguities[0];
   const panel = $("#clarificationPanel");
   panel.hidden = false;
-  panel.innerHTML = `<h3>${esc(copy.clarificationTitle)}</h3><p>${esc(ambiguity.kind === "portion" ? copy.portionClarificationHint : copy.clarificationHint)}</p><div class="clarification-choices">${ambiguity.choices.map((choice, index) => `<button type="button" data-food-choice-index="${index}">${esc(choice.name?.[language] || choice.name?.en)}</button>`).join("")}</div>`;
+  const title = ambiguity.kind === "brand" ? copy.brandClarificationTitle
+    : ambiguity.kind === "size" ? copy.sizeClarificationTitle
+    : copy.clarificationTitle;
+  const hint = ambiguity.kind === "brand" ? copy.brandClarificationHint
+    : ambiguity.kind === "size" ? copy.sizeClarificationHint
+    : ambiguity.kind === "portion" ? copy.portionClarificationHint
+    : copy.clarificationHint;
+  const brandForm = ambiguity.allowBrandInput
+    ? `<form class="clarification-brand" data-brand-form><input type="text" data-brand-input autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${esc(copy.brandInputPlaceholder)}" aria-label="${esc(copy.brandInputPlaceholder)}"><button type="submit">${esc(copy.brandSearch)}</button></form>`
+    : "";
+  const advanced = ambiguity.kind === "brand" ? `<p class="clarification-advanced">${esc(copy.customFoodAdvancedHint)}</p>` : "";
+  const choices = ambiguity.choices.map((choice, index) =>
+    `<button type="button" class="clarification-choice${choice.isEstimateFallback ? " clarification-choice--estimate" : ""}" data-food-choice-index="${index}">${esc(clarificationChoiceLabel(ambiguity, choice))}</button>`
+  ).join("");
+  panel.innerHTML = `<h3>${esc(title)}</h3><p>${esc(hint)}</p>${brandForm}<div class="clarification-choices">${choices}</div>${advanced}`;
+  panel.querySelector("[data-brand-input]")?.focus();
+}
+
+function finishClarification(resolvedEntries, note = "") {
+  const pending = state.pendingClarification;
+  const unresolved = pending?.errors || [];
+  const message = unresolved.length
+    ? format(copy.partialAdded, { food: unresolved.map((error) => error.segment).join(", ") })
+    : note;
+  setComposerMessage(message, unresolved.length > 0);
+  addEntries([...(pending?.entries || []), ...resolvedEntries]);
+  state.pendingClarification = null;
+  $("#clarificationPanel").hidden = true;
 }
 
 function submitFoodText(value) {
@@ -463,13 +512,6 @@ function submitFoodText(value) {
     return;
   }
   if (result.errors.length && !result.entries.length) {
-    if (/חטיף חלבון|protein bar/i.test(value)) {
-      setComposerMessage(language === "he"
-        ? "איזה חטיף חלבון? הזינו את שם המוצר וערכי התווית בטופס מזון מותאם למטה, ואז הוסיפו אותו לפי שמו. לא ננחש ערכים."
-        : "Which protein bar? Enter its product name and label values in Custom food below, then add it by name. We won't guess the values.", true);
-      $("#customFoodForm").closest("details").open = true;
-      return;
-    }
     setComposerMessage(format(copy.unknownFood, { food: result.errors.map((error) => error.segment).join(", ") }), true);
     return;
   }
@@ -497,11 +539,32 @@ function bindEvents() {
       customFoods: state.customFoods
     });
     localStorage.setItem(`fp-daily-choice-${ambiguity.segment.replace(/\d+/g, "").trim()}`, choice.choiceId || choice.foodId);
-    const unresolved = state.pendingClarification.errors || [];
-    setComposerMessage(unresolved.length ? format(copy.partialAdded, { food: unresolved.map((error) => error.segment).join(", ") }) : "", unresolved.length > 0);
-    addEntries([...state.pendingClarification.entries, resolved]);
-    state.pendingClarification = null;
-    $("#clarificationPanel").hidden = true;
+    finishClarification([resolved], resolved.estimated ? copy.estimateAddedNote : "");
+  });
+  $("#clarificationPanel").addEventListener("submit", (event) => {
+    const form = event.target.closest("[data-brand-form]");
+    if (!form || !state.pendingClarification) return;
+    event.preventDefault();
+    const ambiguity = state.pendingClarification.ambiguities[0];
+    const brand = form.querySelector("[data-brand-input]")?.value.trim();
+    if (!brand) return;
+    // Re-run the parser with the product/brand the user just supplied. If it
+    // resolves to a known food, use it; otherwise fall back to the
+    // representative average so this is never a dead end.
+    const branded = parseFoodText(brand, { customFoods: state.customFoods });
+    if (branded.entries.length && !branded.ambiguities.length) {
+      finishClarification(branded.entries, "");
+      return;
+    }
+    const fallback = ambiguity.choices.find((choice) => choice.isEstimateFallback) || ambiguity.choices[0];
+    const resolved = resolveFoodChoice(fallback.foodId, {
+      amount: fallback.amount ?? ambiguity.amount,
+      unit: fallback.unit || ambiguity.unit,
+      estimate: fallback.estimate || null,
+      rawText: brand || ambiguity.segment,
+      customFoods: state.customFoods
+    });
+    finishClarification([resolved], copy.brandNotFoundNote);
   });
   $("#foodEntries").addEventListener("click", (event) => {
     const button = event.target.closest("[data-entry-action]");

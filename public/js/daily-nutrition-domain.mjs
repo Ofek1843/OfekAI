@@ -14,10 +14,13 @@ const FOOD_CATALOG = Object.freeze([
   { id: "cottage-3", name: { en: "Cottage cheese 3%", he: "קוטג׳ 3%" }, aliases: ["cottage cheese 3%", "cottage 3%", "3% cottage", "קוטג 3%", "קוטג׳ 3%", "קוטג", "קוטג׳", "cottage", "cottage cheese"], baseAmount: 100, baseUnit: "g", macros: { calories: 84, protein: 11.5, carbs: 3, fat: 3 } },
   { id: "cottage-5", name: { en: "Cottage cheese 5%", he: "קוטג׳ 5%" }, aliases: ["cottage cheese 5%", "cottage 5%", "5% cottage", "קוטג 5%", "קוטג׳ 5%", "קוטג", "קוטג׳", "cottage", "cottage cheese"], baseAmount: 100, baseUnit: "g", macros: { calories: 100, protein: 11.5, carbs: 3, fat: 5 } },
   { id: "rice-cake", name: { en: "Rice cake", he: "פריכית אורז" }, aliases: ["rice cake", "rice cakes", "פריכית", "פריכיות", "פריכית אורז", "פריכיות אורז"], baseAmount: 1, baseUnit: "item", macros: { calories: 35, protein: 0.7, carbs: 7.3, fat: 0.3 }, reference: { source: "generic plain rice cake", ediblePortion: true, state: "ready-to-eat" } },
-  { id: "protein-drink", name: { en: "Protein drink", he: "משקה חלבון" }, aliases: ["protein drink", "protein shake", "protein bottle", "משקה חלבון", "שייק חלבון"], baseAmount: 1, baseUnit: "item", macros: { calories: 160, protein: 25, carbs: 8, fat: 3 } },
+  { id: "protein-drink", name: { en: "Protein drink", he: "משקה חלבון" }, aliases: ["protein drink", "protein shake", "protein bottle", "משקה חלבון", "שייק חלבון"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 160, protein: 25, carbs: 8, fat: 3 }, reference: { source: "internal representative generic protein drink (~330 ml)", ediblePortion: true, state: "ready-to-drink", policy: "representative-not-brand" } },
+  { id: "protein-bar", name: { en: "Protein bar (average)", he: "חטיף חלבון (ממוצע)" }, aliases: ["protein bar", "protein bars", "protein snack bar", "חטיף חלבון", "חטיפי חלבון", "חטיף חלבונים", "חטיף פרוטאין"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 220, protein: 20, carbs: 22, fat: 8 }, reference: { source: "internal representative generic protein bar (~60 g)", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
   { id: "high-protein-yogurt", name: { en: "High-protein yogurt", he: "יוגורט חלבון" }, aliases: ["high protein yogurt", "protein yogurt", "greek yogurt", "יוגורט חלבון", "יוגורט פרו", "יוגורט יווני"], baseAmount: 1, baseUnit: "item", macros: { calories: 150, protein: 20, carbs: 12, fat: 2 } },
   { id: "banana", name: { en: "Banana", he: "בננה" }, aliases: ["banana", "bananas", "בננה", "בננות"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
   { id: "apple", name: { en: "Apple", he: "תפוח" }, aliases: ["apple", "apples", "תפוח", "תפוחים"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 52, protein: 0.3, carbs: 13.8, fat: 0.2 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
+  { id: "cucumber", name: { en: "Cucumber", he: "מלפפון" }, aliases: ["cucumber", "cucumbers", "מלפפון", "מלפפונים"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 15, protein: 0.7, carbs: 3.6, fat: 0.1 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
+  { id: "avocado", name: { en: "Avocado", he: "אבוקדו" }, aliases: ["avocado", "avocados", "אבוקדו"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 160, protein: 2, carbs: 8.5, fat: 14.7 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
   { id: "sweet-potato", name: { en: "Cooked sweet potato", he: "בטטה מבושלת" }, aliases: ["sweet potato", "sweet potatoes", "cooked sweet potato", "בטטה", "בטטות", "בטטה מבושלת"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 90, protein: 2, carbs: 20.7, fat: 0.2 }, reference: { source: "generic cooked edible portion", ediblePortion: true, state: "cooked", defaultState: "cooked when logged as eaten" } },
   { id: "tuna-water", name: { en: "Tuna in water", he: "טונה במים" }, aliases: ["tuna in water", "tuna", "טונה במים", "טונה"], baseAmount: 100, baseUnit: "g", macros: { calories: 116, protein: 26, carbs: 0, fat: 1 }, reference: { source: "generic canned tuna in water", ediblePortion: true, state: "drained" } },
   { id: "pita", name: { en: "Pita", he: "פיתה" }, aliases: ["pita", "pitta", "pitas", "פיתה", "פיתות"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 275, protein: 9.1, carbs: 55.7, fat: 1.2 }, reference: { source: "generic white pita", ediblePortion: true, state: "ready-to-eat" } },
@@ -48,6 +51,8 @@ const PORTION_REFERENCES = Object.freeze({
   "ready-rice": Object.freeze({ unit: "g", default: 200, portions: Object.freeze({ serving: 180, plate: 200, bowl: 220, cup: 160 }), confidence: "medium", ediblePortion: true }),
   "pasta-cooked": Object.freeze({ unit: "g", default: 220, portions: Object.freeze({ serving: 200, plate: 220, bowl: 240, cup: 140 }), confidence: "medium", ediblePortion: true }),
   potato: Object.freeze({ unit: "g", default: 170, sizes: Object.freeze({ small: 120, medium: 170, large: 280 }), confidence: "medium", ediblePortion: true }),
+  cucumber: Object.freeze({ unit: "g", default: 200, sizes: Object.freeze({ small: 120, medium: 200, large: 300 }), confidence: "medium", ediblePortion: true }),
+  avocado: Object.freeze({ unit: "g", default: 150, sizes: Object.freeze({ small: 120, medium: 150, large: 200 }), confidence: "medium", ediblePortion: true }),
   cornflakes: Object.freeze({ unit: "g", default: 40, portions: Object.freeze({ bowl: 40, cup: 30 }), confidence: "low", ediblePortion: true }),
   pizza: Object.freeze({ unit: "g", portions: Object.freeze({ slice: 120 }), confidence: "low", ediblePortion: true, composite: true }),
   "shawarma-laffa": Object.freeze({ unit: "g", default: 500, sizes: Object.freeze({ small: 380, medium: 500, large: 650 }), confidence: "low", ediblePortion: true, composite: true }),
@@ -205,14 +210,15 @@ function scaleFood(food, amount = null, requestedUnit = "") {
   };
 }
 
-function estimatedEntry(food, amount, { count = 1, size = "", portionKind = "", confidence = "medium", composite = false, rawText = "" } = {}) {
-  const entry = scaleFood(food, amount, "g");
+function estimatedEntry(food, amount, { count = 1, size = "", portionKind = "", confidence = "medium", composite = false, rawText = "", unit = "g", reason = "" } = {}) {
+  const entry = scaleFood(food, amount, unit);
   return {
     ...entry,
     estimated: true,
     approximate: true,
     estimateConfidence: confidence,
-    estimatedGrams: entry.amount,
+    estimateReason: reason || null,
+    estimatedGrams: unit === "g" ? entry.amount : null,
     portionCount: count,
     portionSize: size || null,
     portionKind: portionKind || null,
@@ -221,53 +227,169 @@ function estimatedEntry(food, amount, { count = 1, size = "", portionKind = "", 
   };
 }
 
+// Foods whose macros vary enough by brand that a single compact "which
+// product?" question is worth asking before defaulting to a representative
+// average -- and where "I don't know" always continues with that average.
+const BRAND_CLARIFY_FOODS = new Set(["protein-bar"]);
+
+function estimateFromReference(food, reference, chosenGrams, { count = 1, size = "", portionKind = "", reason = "portion-size", rawText = "" }) {
+  return estimatedEntry(food, chosenGrams * count, {
+    count,
+    size,
+    portionKind,
+    confidence: reference?.confidence || "low",
+    composite: reference?.composite === true,
+    reason,
+    rawText,
+    unit: "g"
+  });
+}
+
+// A clarification always offers an explicit "I don't know -- estimate it"
+// path. `fallback` is the choice that path resolves to.
+function buildAmbiguity({ segment, kind, foodId, choices, fallback, allowBrandInput = false }) {
+  return Object.freeze({
+    segment,
+    kind,
+    foodId,
+    allowBrandInput,
+    choices: [...choices, { ...fallback, choiceId: "estimate", isEstimateFallback: true }]
+  });
+}
+
+function brandAmbiguity(food, parsed, segment) {
+  const fallbackEstimate = { confidence: "low", portionKind: "item", reason: "generic-product", unit: "item", count: parsed.amount && parsed.unit ? 1 : parsed.amount || 1 };
+  return buildAmbiguity({
+    segment,
+    kind: "brand",
+    foodId: food.id,
+    allowBrandInput: true,
+    choices: [],
+    fallback: { foodId: food.id, label: { ...food.name }, amount: fallbackEstimate.count, unit: "item", estimate: fallbackEstimate }
+  });
+}
+
+function sizeAmbiguity(food, reference, segment, count) {
+  const sizes = reference.sizes || {};
+  const order = ["small", "medium", "large"].filter((key) => sizes[key]);
+  const choices = order.map((key) => ({
+    choiceId: key,
+    foodId: food.id,
+    label: { en: key, he: key },
+    amount: sizes[key] * count,
+    unit: "g",
+    estimate: { confidence: reference.confidence || "medium", portionSize: key, portionKind: "size", reason: "portion-size", count, composite: reference.composite === true }
+  }));
+  const mediumGrams = sizes.medium || reference.default || sizes.large || sizes.small;
+  return buildAmbiguity({
+    segment,
+    kind: "size",
+    foodId: food.id,
+    choices,
+    fallback: {
+      foodId: food.id,
+      label: { en: "medium", he: "medium" },
+      amount: mediumGrams * count,
+      unit: "g",
+      estimate: { confidence: "low", portionSize: "medium", portionKind: "size", reason: "portion-default", count, composite: reference.composite === true }
+    }
+  });
+}
+
+function portionKindAmbiguity(food, reference, segment) {
+  const perSlice = reference.portions?.slice || 120;
+  const choices = [1, 2].map((n) => ({
+    choiceId: `slice-${n}`,
+    foodId: food.id,
+    label: { en: n === 1 ? "1 slice" : `${n} slices`, he: n === 1 ? "משולש אחד" : `${n} משולשים` },
+    amount: perSlice * n,
+    unit: "g",
+    estimate: { confidence: "low", portionKind: "slice", portionCount: n, reason: "composite", count: n, composite: reference.composite === true }
+  }));
+  return buildAmbiguity({
+    segment,
+    kind: "portion",
+    foodId: food.id,
+    choices,
+    fallback: {
+      foodId: food.id,
+      label: { en: "1 slice", he: "משולש אחד" },
+      amount: perSlice,
+      unit: "g",
+      estimate: { confidence: "low", portionKind: "slice", reason: "composite", count: 1, composite: reference.composite === true }
+    }
+  });
+}
+
 function estimateNaturalPortion(food, parsed, segment) {
   const explicitUnit = normalizeUnit(parsed.unit);
   const size = detectSize(parsed.foodText);
   const portionKind = explicitUnit && !["g", "kg", "ml"].includes(explicitUnit) ? explicitUnit : detectPortionKind(parsed.foodText);
-  const count = parsed.amount && !["g", "kg", "ml"].includes(explicitUnit)
+  const explicitWeight = ["g", "kg", "ml"].includes(explicitUnit);
+  const trailing = trailingCount(parsed.foodText);
+  const hasCount = (parsed.amount !== null && !explicitWeight) || trailing !== null;
+  const count = parsed.amount && !explicitWeight
     ? parsed.amount
-    : trailingCount(parsed.foodText) || 1;
-  if (["g", "kg", "ml"].includes(explicitUnit)) return { entry: { ...scaleFood(food, parsed.amount, explicitUnit), rawText: segment, estimated: false, approximate: false } };
+    : trailing || 1;
+
+  // 1. Explicit weight always wins -- no clarification, no estimate flag.
+  if (explicitWeight) return { entry: { ...scaleFood(food, parsed.amount, explicitUnit), rawText: segment, estimated: false, approximate: false } };
+
+  // 2. Brand matters and none was given -> ask once, "I don't know" -> average.
+  if (BRAND_CLARIFY_FOODS.has(food.id) && food.source !== "custom" && food.specificity !== "brand") {
+    return { ambiguity: brandAmbiguity(food, parsed, segment) };
+  }
+
+  // 3. Counted items (egg, rice cake, yogurt cup...) resolve by count.
   if (food.baseUnit === "item") return { entry: { ...scaleFood(food, parsed.amount ?? count, "item"), rawText: segment, estimated: false, approximate: false } };
 
   const reference = PORTION_REFERENCES[food.id];
+
+  // 4. Whole pizza / tray -> size of the tray.
   if (food.id === "pizza" && portionKind === "whole") {
     return {
-      ambiguity: {
+      ambiguity: buildAmbiguity({
         segment,
         kind: "portion",
+        foodId: food.id,
         choices: PIZZA_WHOLE_CHOICES.map((choice) => ({
           choiceId: choice.id,
           foodId: food.id,
-          name: { ...choice.label },
+          label: { ...choice.label },
           amount: choice.amount,
           unit: "g",
-          estimate: { confidence: "low", composite: true, portionKind: "whole", portionSize: choice.id }
-        }))
-      }
+          estimate: { confidence: "low", composite: true, portionKind: "whole", portionSize: choice.id, reason: "composite" }
+        })),
+        fallback: { foodId: food.id, label: { en: "I don't know — medium tray", he: "לא יודע — מגש בינוני" }, amount: 800, unit: "g", estimate: { confidence: "low", composite: true, portionKind: "whole", portionSize: "medium", reason: "composite" } }
+      })
     };
   }
+
   if (!reference) {
     if (parsed.amount !== null) return { entry: { ...scaleFood(food, parsed.amount, parsed.unit), rawText: segment, estimated: false, approximate: false } };
     return { entry: { ...scaleFood(food), rawText: segment, estimated: false, approximate: false } };
   }
-  const gramsPerPortion = size && reference.sizes?.[size]
-    ? reference.sizes[size]
-    : portionKind && reference.portions?.[portionKind]
-      ? reference.portions[portionKind]
-      : reference.default;
-  if (!gramsPerPortion) return { error: "PORTION_CLARIFICATION_REQUIRED" };
-  return {
-    entry: estimatedEntry(food, gramsPerPortion * count, {
-      count,
-      size,
-      portionKind,
-      confidence: reference.confidence,
-      composite: reference.composite === true,
-      rawText: segment
-    })
-  };
+
+  // 5. Explicit size word -> resolve directly (e.g. "בטטה בינונית").
+  if (size && reference.sizes?.[size]) {
+    return { entry: estimateFromReference(food, reference, reference.sizes[size], { count, size, reason: "portion-size", rawText: segment }) };
+  }
+  // 6. Explicit portion word ("bowl", "plate", "slice") -> resolve directly.
+  if (portionKind && reference.portions?.[portionKind]) {
+    return { entry: estimateFromReference(food, reference, reference.portions[portionKind], { count, portionKind, reason: "portion-size", rawText: segment }) };
+  }
+  // 7. Size actually matters and nothing told us which -> compact size question.
+  //    A bare count ("half a pita", "2 potatoes") is a quantity signal, not a
+  //    size, so fall through to the representative default instead of asking.
+  if (reference.sizes && !size && !portionKind && !hasCount) {
+    return { ambiguity: sizeAmbiguity(food, reference, segment, count) };
+  }
+  // 8. Composite with no default and no signal -> "how much?" question.
+  if (!reference.default && !reference.sizes) {
+    return { ambiguity: portionKindAmbiguity(food, reference, segment) };
+  }
+  // 9. A sensible representative default exists -> use it as an estimate.
+  return { entry: estimateFromReference(food, reference, reference.default, { count, reason: "portion-default", rawText: segment }) };
 }
 
 function parseFoodText(value, { customFoods = [] } = {}) {
@@ -292,12 +414,18 @@ function parseFoodText(value, { customFoods = [] } = {}) {
     const bestPriority = foodPriority(matches[0].food);
     const best = matches.filter((candidate) => candidate.match.score === bestScore && foodPriority(candidate.food) === bestPriority);
     if (best.length > 1) {
+      const options = best.map(({ food }) => ({ choiceId: food.id, foodId: food.id, label: { ...food.name }, amount: parsed.amount, unit: parsed.unit }));
       ambiguities.push({
-        segment,
+        ...buildAmbiguity({
+          segment,
+          kind: "match",
+          foodId: options[0].foodId,
+          choices: options,
+          fallback: { foodId: options[0].foodId, label: { ...best[0].food.name }, amount: parsed.amount, unit: parsed.unit }
+        }),
         segmentIndex,
         amount: parsed.amount,
-        unit: parsed.unit,
-        choices: best.map(({ food }) => ({ foodId: food.id, name: { ...food.name } }))
+        unit: parsed.unit
       });
       return;
     }
@@ -334,6 +462,8 @@ function resolveFoodChoice(foodId, { amount = null, unit = "", customFoods = [],
     portionKind: estimate.portionKind || "",
     confidence: estimate.confidence || "low",
     composite: estimate.composite === true,
+    reason: estimate.reason || "",
+    unit: estimate.unit || "g",
     rawText
   });
   return { ...scaleFood(food, amount, unit), rawText, estimated: false, approximate: false };

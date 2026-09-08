@@ -19,6 +19,7 @@ import {
 
 import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
 import { directImageKitUpload } from "./imagekit-upload.js";
+import { buildProgressReport } from "./progress-report.mjs";
 
 /*
  * FuelPhysique AI — Settings Controller
@@ -75,6 +76,7 @@ const elements = {
     language: document.getElementById("settingsLanguage"),
     theme: document.getElementById("settingsTheme"),
     exportAccount: document.getElementById("exportAccountBtn"),
+    progressReport: document.getElementById("progressReportBtn"),
     deleteAccount: document.getElementById("deleteAccountBtn"),
     accountTitle: document.getElementById("accountTitle"),
     accountDescription: document.getElementById("accountDescription"),
@@ -215,8 +217,11 @@ function setAccountStatus(message, type = "info") {
 function accountCopy() {
     return settingsLanguage() === "he" ? {
         title: "חשבון ופרטיות",
-        description: "אפשר להוריד את הנתונים שנשמרו עבור החשבון או למחוק את החשבון לצמיתות. המחיקה מסירה נתונים פרטיים, פרופיל חברתי, שיתופים, התקנות התראות וגישה לחשבון. לא ניתן לבטל אותה.",
-        export: "הורדת הנתונים שלי",
+        description: "אפשר להוריד דוח התקדמות קריא, את הנתונים הגולמיים לניוד, או למחוק את החשבון לצמיתות. המחיקה מסירה נתונים פרטיים, פרופיל חברתי, שיתופים, התקנות התראות וגישה לחשבון. לא ניתן לבטל אותה.",
+        progressReport: "הורדת דוח ההתקדמות שלי",
+        export: "הורדת הנתונים הגולמיים (JSON)",
+        buildingReport: "בונים את דוח ההתקדמות…",
+        reportDownloaded: "דוח ההתקדמות הורד.",
         deleteTitle: "מחיקת חשבון",
         deleteHint: "להגנתך תתבקשו להזדהות מחדש ולהקליד DELETE לפני שהחשבון יימחק לצמיתות.",
         delete: "מחיקת החשבון לצמיתות",
@@ -227,8 +232,11 @@ function accountCopy() {
         deletionFailed: "לא ניתן למחוק את החשבון."
     } : {
         title: "Account & Privacy",
-        description: "Download the data held for your account, or permanently delete it. Deletion removes your private records, social profile, shares, notification installations and account access. It cannot be undone.",
-        export: "Download my data",
+        description: "Download a readable progress report, the raw data for portability, or permanently delete your account. Deletion removes your private records, social profile, shares, notification installations and account access. It cannot be undone.",
+        progressReport: "Download my progress report",
+        export: "Download raw data (JSON)",
+        buildingReport: "Building your progress report…",
+        reportDownloaded: "Your progress report has downloaded.",
         deleteTitle: "Delete account",
         deleteHint: "For your protection, you will reauthenticate and type DELETE before the account is permanently removed.",
         delete: "Delete my account permanently",
@@ -245,6 +253,7 @@ function localizeAccountSettings() {
     if (elements.accountTitle) elements.accountTitle.textContent = copy.title;
     if (elements.accountDescription) elements.accountDescription.textContent = copy.description;
     if (elements.exportAccount) elements.exportAccount.textContent = copy.export;
+    if (elements.progressReport) elements.progressReport.textContent = copy.progressReport;
     if (elements.deleteAccountTitle) elements.deleteAccountTitle.textContent = copy.deleteTitle;
     if (elements.deleteAccountHint) elements.deleteAccountHint.textContent = copy.deleteHint;
     if (elements.deleteAccount) elements.deleteAccount.textContent = copy.delete;
@@ -270,19 +279,40 @@ async function accountApi(path, options = {}) {
     return response;
 }
 
+function downloadBlob(blob, filename) {
+    const href = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(href);
+}
+
 async function exportAccount() {
     const copy = accountCopy();
     try {
         setAccountStatus(copy.preparing);
         const response = await accountApi("/export");
         const blob = await response.blob();
-        const href = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = href;
-        link.download = "fuelphysique-account-export.json";
-        link.click();
-        URL.revokeObjectURL(href);
+        downloadBlob(blob, "fuelphysique-account-export.json");
         setAccountStatus(copy.downloaded, "success");
+    } catch (error) {
+        setAccountStatus(error.message || copy.exportFailed, "error");
+    }
+}
+
+async function downloadProgressReport() {
+    const copy = accountCopy();
+    try {
+        setAccountStatus(copy.buildingReport);
+        // Uses the same export payload as the raw JSON download -- no new
+        // server route, no data-model change. The human report is rendered
+        // entirely on this device.
+        const response = await accountApi("/export");
+        const data = await response.json();
+        const { filename, html } = buildProgressReport(data, { locale: settingsLanguage() === "he" ? "he" : "en" });
+        downloadBlob(new Blob([html], { type: "text/html;charset=utf-8" }), filename);
+        setAccountStatus(copy.reportDownloaded, "success");
     } catch (error) {
         setAccountStatus(error.message || copy.exportFailed, "error");
     }
@@ -1160,6 +1190,7 @@ function bindEvents() {
     );
 
     elements.exportAccount?.addEventListener("click", exportAccount);
+    elements.progressReport?.addEventListener("click", downloadProgressReport);
     elements.deleteAccount?.addEventListener("click", openDeleteAccountDialog);
     elements.deleteDialogCancel?.addEventListener("click", () => elements.deleteDialog.close());
     elements.deleteForm?.addEventListener("submit", (event) => { event.preventDefault(); deleteAccount(); });

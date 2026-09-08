@@ -39,7 +39,12 @@ test("ambiguous cottage input requests a compact choice instead of inventing fat
   const result = parseFoodText("250g cottage cheese");
   assert.equal(result.status, "needs-clarification");
   assert.equal(result.entries.length, 0);
-  assert.deepEqual(result.ambiguities[0].choices.map((choice) => choice.foodId).sort(), ["cottage-3", "cottage-5"]);
+  assert.deepEqual(
+    result.ambiguities[0].choices.filter((choice) => !choice.isEstimateFallback).map((choice) => choice.foodId).sort(),
+    ["cottage-3", "cottage-5"]
+  );
+  // Every clarification still offers an explicit "I don't know" path.
+  assert.ok(result.ambiguities[0].choices.some((choice) => choice.isEstimateFallback));
 });
 
 test("resolves a clarification using the original amount", async () => {
@@ -60,7 +65,7 @@ test("portion scaling is centralized for counted and weighted foods", async () =
 
 test("daily totals and remaining targets update across every macro", async () => {
   const { parseFoodText, remainingAgainstTargets, totalsForEntries } = await domainPromise;
-  const entries = parseFoodText("50g oats, 1 protein drink, banana").entries;
+  const entries = parseFoodText("50g oats, 1 protein drink, 118g banana").entries;
   const totals = totalsForEntries(entries);
   const remaining = remainingAgainstTargets(totals, { dailyCalories: 500, proteinGrams: 50, carbsGrams: 80, fatGrams: 20 });
   assert.equal(totals.calories, 452.5);
@@ -138,16 +143,25 @@ test("whole pizza requests a compact size choice instead of inventing one", asyn
   const result = parseFoodText("מגש פיצה");
   assert.equal(result.status, "needs-clarification");
   assert.equal(result.ambiguities[0].kind, "portion");
-  assert.deepEqual(result.ambiguities[0].choices.map((choice) => choice.choiceId), ["personal", "medium", "large"]);
+  assert.deepEqual(
+    result.ambiguities[0].choices.filter((choice) => !choice.isEstimateFallback).map((choice) => choice.choiceId),
+    ["personal", "medium", "large"]
+  );
+  assert.ok(result.ambiguities[0].choices.some((choice) => choice.isEstimateFallback));
   const medium = result.ambiguities[0].choices[1];
   const resolved = resolveFoodChoice(medium.foodId, { amount: medium.amount, unit: medium.unit, estimate: medium.estimate, rawText: "מגש פיצה" });
   assert.equal(resolved.amount, 800);
   assert.equal(resolved.compositeEstimate, true);
 });
 
-test("composite meals remain low-confidence estimates", async () => {
-  const { parseFoodText } = await domainPromise;
-  const entry = parseFoodText("לאפה שווארמה").entries[0];
+test("composite meals ask one compact size question and stay low-confidence estimates", async () => {
+  const { parseFoodText, resolveFoodChoice } = await domainPromise;
+  const result = parseFoodText("לאפה שווארמה");
+  assert.equal(result.status, "needs-clarification");
+  assert.equal(result.ambiguities[0].kind, "size");
+  const unknown = result.ambiguities[0].choices.find((choice) => choice.isEstimateFallback);
+  assert.ok(unknown, "composite size clarification offers an I-don't-know path");
+  const entry = resolveFoodChoice(unknown.foodId, { amount: unknown.amount, unit: unknown.unit, estimate: unknown.estimate, rawText: "לאפה שווארמה" });
   assert.equal(entry.amount, 500);
   assert.equal(entry.estimateConfidence, "low");
   assert.equal(entry.compositeEstimate, true);
