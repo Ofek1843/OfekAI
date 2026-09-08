@@ -196,7 +196,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v42-v46-product-polish/);
+  assert.match(SW, /fuelphysique-v43-v47-motion-experience/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

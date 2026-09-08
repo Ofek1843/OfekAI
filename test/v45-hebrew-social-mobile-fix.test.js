@@ -62,7 +62,7 @@ test("daily and saved nutrition Hebrew copy is readable and no longer mojibake",
 
 test("the service worker uses a fresh cache while keeping private routes network-only", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /CACHE_NAME = 'fuelphysique-v42-v46-product-polish'/);
+  assert.match(sw, /CACHE_NAME = 'fuelphysique-v43-v47-motion-experience'/);
   assert.match(sw, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(sw, /event\.request\.destination === 'audio'/);
