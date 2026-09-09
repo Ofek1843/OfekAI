@@ -85,7 +85,7 @@
     select.dataset.fpV47Choices = "true";
     select.classList.add("visually-hidden-select");
     const grid = document.createElement("div");
-    grid.className = "fp-v47-select-grid fp-v47-reveal";
+    grid.className = "fp-v47-select-grid";
     grid.setAttribute("role", "radiogroup");
     grid.setAttribute("aria-label", select.closest("label")?.querySelector("span")?.textContent?.trim() || "Choose an option");
     grid.innerHTML = options.map((option, index) => {
@@ -97,7 +97,7 @@
       const selected = card.dataset.value === select.value;
       card.setAttribute("aria-checked", String(selected));
       card.classList.toggle("fp-v47-selected", selected);
-      card.tabIndex = selected ? 0 : -1;
+      card.tabIndex = 0;
     });
     grid.addEventListener("click", (event) => {
       const card = event.target.closest("[data-value]");
@@ -115,20 +115,34 @@
     if (!select || document.querySelector(".fp-v47-gender-grid")) return;
     select.classList.add("visually-hidden-select");
     const grid = document.createElement("div");
-    grid.className = "fp-v47-gender-grid fp-v47-reveal";
+    // Essential form controls must not depend on an entrance observer.
+    grid.className = "fp-v47-gender-grid";
     grid.setAttribute("role", "radiogroup");
     grid.setAttribute("aria-label", document.documentElement.lang === "he" ? "בחירת מין" : "Gender selection");
     const copy = document.documentElement.lang === "he"
-      ? [["male", "זכר", "חיתוך חישוב לפי זכר"], ["female", "נקבה", "חיתוך חישוב לפי נקבה"]]
+      ? [["male", "זכר", "לחישוב הצרכים התזונתיים"], ["female", "נקבה", "לחישוב הצרכים התזונתיים"]]
       : [["male", "Male", "Use the male calculation profile"], ["female", "Female", "Use the female calculation profile"]];
-    grid.innerHTML = copy.map(([value, title, detail]) => `<label class="fp-v47-gender-card" data-gender="${value}" role="radio" aria-checked="${select.value === value}"><input type="radio" name="visualGender" value="${value}"${select.value === value ? " checked" : ""}><span><strong>${title}</strong><small>${detail}</small></span></label>`).join("");
-    select.closest("label")?.append(grid) || select.parentElement?.append(grid);
+    grid.innerHTML = copy.map(([value, title, detail], index) => `<label class="fp-v47-gender-card" data-gender="${value}" aria-checked="${select.value === value}"><input type="radio" name="visualGender" value="${value}"${select.value === value ? " checked" : ""}><img class="fp-v47-gender-image" src="/assets/athlete-motion/v43/plate/normalized/frame-0${index + 1}.webp" alt="" width="96" height="120"><span><strong>${title}</strong><small>${detail}</small></span></label>`).join("");
+    // Avoid nested labels: each radio owns its own visible label.
+    const host = select.closest("label") || select;
+    host.after(grid);
+    grid.querySelectorAll("img").forEach((img) => img.addEventListener("error", () => {
+      if (img.dataset.fallback) { img.hidden = true; return; }
+      img.dataset.fallback = "true";
+      img.src = "/images/common/athlete-profile.svg";
+    }));
     grid.querySelectorAll("input").forEach((input) => input.addEventListener("change", () => {
       select.value = input.value;
       grid.querySelectorAll(".fp-v47-gender-card").forEach((card) => card.setAttribute("aria-checked", String(card.dataset.gender === input.value)));
       grid.querySelectorAll(".fp-v47-gender-card").forEach((card) => card.classList.toggle("fp-v47-selected", card.dataset.gender === input.value));
       select.dispatchEvent(new Event("change", { bubbles: true }));
     }));
+    select.addEventListener("change", () => {
+      grid.querySelectorAll("input").forEach((input) => {
+        input.checked = input.value === select.value;
+        input.closest("label").setAttribute("aria-checked", String(input.checked));
+      });
+    });
   }
 
   function start() {

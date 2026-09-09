@@ -9,12 +9,12 @@
   if (!document.querySelector('link[href*="product-motion-v47.css"]')) {
     const motionStyles = document.createElement("link");
     motionStyles.rel = "stylesheet";
-    motionStyles.href = "/css/product-motion-v47.css?v=20260908-v47-motion-1";
+    motionStyles.href = "/css/product-motion-v47.css?v=20260908-v47-choice-polish-2";
     document.head.append(motionStyles);
   }
   if (!document.querySelector('script[src*="product-motion-v47.js"]')) {
     const motionScript = document.createElement("script");
-    motionScript.src = "/js/product-motion-v47.js?v=20260908-v47-motion-1";
+    motionScript.src = "/js/product-motion-v47.js?v=20260908-v47-choice-polish-2";
     document.head.append(motionScript);
   }
   const protectedRoutes = new Set([

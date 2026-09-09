@@ -4553,8 +4553,6 @@ ${slots
         error.message ||
         "Could not generate nutrition plan"
     });
-  } finally {
-    if (dedupeKey) inFlight.finish(dedupeKey);
   }
 });
 

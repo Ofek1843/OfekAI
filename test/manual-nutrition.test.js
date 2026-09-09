@@ -129,8 +129,8 @@ test("selection state and serving controls remain client-side across discovery c
 });
 
 test("catalog expansion has 50 unique slugs, derived nutrition and imported images", () => {
-  assert.equal(CATALOG.length, 125);
-  assert.equal(new Set(CATALOG.map(meal => meal.id)).size, 125);
+  assert.equal(CATALOG.length, 135);
+  assert.equal(new Set(CATALOG.map(meal => meal.id)).size, 135);
   assert.equal(MANIFEST.newMeals.length, 50);
   assert.equal(new Set(MANIFEST.newMeals.map(meal => meal.slug)).size, 50);
   for (const entry of MANIFEST.newMeals) {
