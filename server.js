@@ -3663,126 +3663,14 @@ Required JSON format:
 });
 
 app.post("/api/nutrition-builder/reroll-food", async (req, res) => {
-  let dedupeKey = null;
-  try {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
-  rateLimiters.ai(req, user.uid);
-  dedupeKey = rejectIfDuplicateAi(req, res, user, "nutrition-builder-reroll");
-  if (!dedupeKey) return;
-  const {
-    mealNumber,
-    optionNumber,
-    foodIndex,
-    plan
-  } = req.body;
-
-  const meal = plan.meals.find(
-      (meal) => meal.mealNumber === mealNumber
-);
-
-if (!meal) {
-  return res.status(404).json({
-    error: "Meal not found."
+  res.status(410).json({
+    error: req.body?.language === "he"
+      ? "החלפה של פריט בודד הוצאה משימוש. יש להחליף את הארוחה השלמה כדי לשמור על ערכים תזונתיים ומגבלות תזונה."
+      : "Single-food reroll is retired. Reroll the complete meal to preserve nutrition totals and dietary constraints.",
+    replacementEndpoint: "/api/nutrition-builder/reroll-meal"
   });
-}
-
-const option = meal.options.find(
-  (option) => option && option.optionNumber === optionNumber
-);
-
-if (!option) {
-  return res.status(404).json({
-    error: "Meal option not found."
-  });
-}
-const currentFood = option.foods[foodIndex];
-
-if (!currentFood) {
-  return res.status(404).json({
-    error: "Food not found."
-  });
-}
-console.log(option);
-
-const rerollPrompt = `
-You are a professional nutrition planner.
-
-Replace only ONE food item.
-
-Meal:
-${JSON.stringify(meal)}
-
-Current option:
-${JSON.stringify(option)}
-
-Food to replace:
-${JSON.stringify(currentFood)}
-
-Requirements:
-- Keep approximately the same calories and macros.
-- Respect the language of the existing plan.
-- Do not repeat the same foods.
-- Return only valid JSON.
-- Do not include markdown.
-- Use exactly this structure:
-
-Required JSON format:
-{
-  "name": "food name",
-  "imageKey": "one allowed image key",
-  "amount": "food amount"
-}
-  `;
-
-const aiResponse = await createChatCompletion({
-  temperature: 0.8,
-  maxTokens: 500,
-  messages: [
-    {
-      role: "system",
-      content: "You are a professional nutrition planner."
-    },
-    {
-      role: "user",
-      content: rerollPrompt
-    }
-  ]
-});
-
-const newFood = JSON.parse(aiResponse);
-if (newFood.name === "באננה") {
-  newFood.name = "בננה";
-}
-
-const imageKey = String(newFood.imageKey || "")
-  .trim()
-  .toLowerCase();
-
-newFood.imageUrl =
-  localFoodImages[imageKey] ||
-  "/images/food-placeholder.png";
-
-option.foods[foodIndex] = newFood;
-
-res.json({
-  success: true,
-  food: newFood
-});
-
-console.log({
-  mealNumber,
-  optionNumber
-});
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to reroll food."
-    });
-  } finally {
-    if (dedupeKey) inFlight.finish(dedupeKey);
-  }
 });
 
 // Swaps one whole meal option for a different catalog meal in the same

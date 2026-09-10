@@ -1,0 +1,537 @@
+{
+  "exerciseCatalog": {
+    "total": 126,
+    "canonicalRecords": 126,
+    "aliases": 240
+  },
+  "mealCatalog": {
+    "total": 157,
+    "foods": 131
+  },
+  "trainingMatrix": [
+    {
+      "scenario": "beginner/gym",
+      "exercises": 14,
+      "sample": [
+        "dumbbell-fly",
+        "dumbbell-calf-raise",
+        "assisted-pull-up",
+        "leg-extension",
+        "cable-glute-kickback",
+        "barbell-bicep-curl",
+        "cable-lateral-raise",
+        "cable-crunch"
+      ],
+      "reroll": "dumbbell-floor-press",
+      "violations": []
+    },
+    {
+      "scenario": "beginner/calisthenics",
+      "exercises": 13,
+      "sample": [
+        "push-up",
+        "ab-wheel-rollout",
+        "chin-up",
+        "bench-dip",
+        "pull-up",
+        "forward-lunge",
+        "pike-push-up",
+        "bodyweight-glute-bridge"
+      ],
+      "reroll": "wide-grip-push-up",
+      "violations": []
+    },
+    {
+      "scenario": "beginner/home",
+      "exercises": 13,
+      "sample": [
+        "dumbbell-fly",
+        "ab-wheel-rollout",
+        "concentration-curl",
+        "overhead-tricep-extension",
+        "australian-row",
+        "dumbbell-goblet-squat",
+        "dumbbell-front-raise",
+        "dumbbell-hip-thrust"
+      ],
+      "reroll": "dumbbell-floor-press",
+      "violations": []
+    },
+    {
+      "scenario": "intermediate/gym",
+      "exercises": 21,
+      "sample": [
+        "dumbbell-fly",
+        "leg-extension",
+        "lying-leg-curl",
+        "cable-glute-kickback",
+        "cable-lateral-raise",
+        "barbell-bicep-curl",
+        "cable-crunch",
+        "assisted-pull-up"
+      ],
+      "reroll": "dumbbell-floor-press",
+      "violations": []
+    },
+    {
+      "scenario": "intermediate/calisthenics",
+      "exercises": 21,
+      "sample": [
+        "archer-push-up",
+        "sissy-squat",
+        "nordic-hamstring-curl",
+        "bodyweight-glute-bridge",
+        "pike-push-up",
+        "chin-up",
+        "ab-wheel-rollout",
+        "pull-up"
+      ],
+      "reroll": "push-up",
+      "violations": []
+    },
+    {
+      "scenario": "intermediate/home",
+      "exercises": 21,
+      "sample": [
+        "dumbbell-fly",
+        "sissy-squat",
+        "nordic-hamstring-curl",
+        "dumbbell-hip-thrust",
+        "dumbbell-front-raise",
+        "concentration-curl",
+        "ab-wheel-rollout",
+        "australian-row"
+      ],
+      "reroll": "dumbbell-floor-press",
+      "violations": []
+    },
+    {
+      "scenario": "advanced/gym",
+      "exercises": 21,
+      "sample": [
+        "barbell-bench-press",
+        "barbell-squat",
+        "romanian-deadlift",
+        "barbell-hip-thrust",
+        "barbell-shoulder-press",
+        "barbell-bicep-curl",
+        "cable-crunch",
+        "barbell-row"
+      ],
+      "reroll": "incline-bench-press",
+      "violations": []
+    },
+    {
+      "scenario": "advanced/calisthenics",
+      "exercises": 21,
+      "sample": [
+        "archer-push-up",
+        "pistol-squat",
+        "nordic-hamstring-curl",
+        "bodyweight-glute-bridge",
+        "handstand-push-up",
+        "chin-up",
+        "l-sit",
+        "front-lever"
+      ],
+      "reroll": "push-up",
+      "violations": []
+    },
+    {
+      "scenario": "advanced/home",
+      "exercises": 21,
+      "sample": [
+        "dumbbell-fly",
+        "sissy-squat",
+        "nordic-hamstring-curl",
+        "dumbbell-hip-thrust",
+        "dumbbell-front-raise",
+        "concentration-curl",
+        "ab-wheel-rollout",
+        "dumbbell-row"
+      ],
+      "reroll": "dumbbell-floor-press",
+      "violations": []
+    }
+  ],
+  "nutritionMatrix": [
+    {
+      "profile": "female-light",
+      "diet": "omnivore",
+      "mode": "mix",
+      "tdee": 1800,
+      "goal": "loseFat",
+      "target": 1400,
+      "generated": 1400,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 116,
+      "proteinGenerated": 119,
+      "result": "PASS"
+    },
+    {
+      "profile": "female-light",
+      "diet": "omnivore",
+      "mode": "supermarket",
+      "tdee": 1800,
+      "goal": "loseFat",
+      "target": 1400,
+      "generated": 1400,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 116,
+      "proteinGenerated": 116,
+      "result": "PASS"
+    },
+    {
+      "profile": "female-light",
+      "diet": "omnivore",
+      "mode": "mix",
+      "tdee": 1800,
+      "goal": "maintainWeight",
+      "target": 1800,
+      "generated": 1800,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 116,
+      "proteinGenerated": 117,
+      "result": "PASS"
+    },
+    {
+      "profile": "female-light",
+      "diet": "omnivore",
+      "mode": "supermarket",
+      "tdee": 1800,
+      "goal": "maintainWeight",
+      "target": 1800,
+      "generated": 1800,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 116,
+      "proteinGenerated": 121,
+      "result": "PASS"
+    },
+    {
+      "profile": "female-light",
+      "diet": "omnivore",
+      "mode": "mix",
+      "tdee": 1800,
+      "goal": "buildMuscle",
+      "target": 2050,
+      "generated": 2027,
+      "difference": -23,
+      "differencePercent": 1.12,
+      "proteinTarget": 116,
+      "proteinGenerated": 115,
+      "result": "PASS"
+    },
+    {
+      "profile": "female-light",
+      "diet": "omnivore",
+      "mode": "supermarket",
+      "tdee": 1800,
+      "goal": "buildMuscle",
+      "target": 2050,
+      "generated": 2046,
+      "difference": -4,
+      "differencePercent": 0.2,
+      "proteinTarget": 116,
+      "proteinGenerated": 116,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-moderate",
+      "diet": "vegetarian",
+      "mode": "mix",
+      "tdee": 2759,
+      "goal": "loseFat",
+      "target": 2350,
+      "generated": 2350,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 164,
+      "proteinGenerated": 164,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-moderate",
+      "diet": "vegetarian",
+      "mode": "supermarket",
+      "tdee": 2759,
+      "goal": "loseFat",
+      "target": 2350,
+      "generated": 2350,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 164,
+      "proteinGenerated": 164,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-moderate",
+      "diet": "vegetarian",
+      "mode": "mix",
+      "tdee": 2759,
+      "goal": "maintainWeight",
+      "target": 2750,
+      "generated": 2717,
+      "difference": -33,
+      "differencePercent": 1.2,
+      "proteinTarget": 164,
+      "proteinGenerated": 164,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-moderate",
+      "diet": "vegetarian",
+      "mode": "supermarket",
+      "tdee": 2759,
+      "goal": "maintainWeight",
+      "target": 2750,
+      "generated": 2750,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 164,
+      "proteinGenerated": 164,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-moderate",
+      "diet": "vegetarian",
+      "mode": "mix",
+      "tdee": 2759,
+      "goal": "buildMuscle",
+      "target": 3000,
+      "generated": 2959,
+      "difference": -41,
+      "differencePercent": 1.37,
+      "proteinTarget": 164,
+      "proteinGenerated": 161,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-moderate",
+      "diet": "vegetarian",
+      "mode": "supermarket",
+      "tdee": 2759,
+      "goal": "buildMuscle",
+      "target": 3000,
+      "generated": 3000,
+      "difference": 0,
+      "differencePercent": 0,
+      "proteinTarget": 164,
+      "proteinGenerated": 167,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-heavy",
+      "diet": "vegan",
+      "mode": "mix",
+      "tdee": 3433,
+      "goal": "loseFat",
+      "target": 3050,
+      "generated": 3007,
+      "difference": -43,
+      "differencePercent": 1.41,
+      "proteinTarget": 204,
+      "proteinGenerated": 201,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-heavy",
+      "diet": "vegan",
+      "mode": "supermarket",
+      "tdee": 3433,
+      "goal": "loseFat",
+      "target": 3050,
+      "generated": 3007,
+      "difference": -43,
+      "differencePercent": 1.41,
+      "proteinTarget": 204,
+      "proteinGenerated": 185,
+      "result": "SAFE_REJECTION"
+    },
+    {
+      "profile": "male-heavy",
+      "diet": "vegan",
+      "mode": "mix",
+      "tdee": 3433,
+      "goal": "maintainWeight",
+      "target": 3450,
+      "generated": 3409,
+      "difference": -41,
+      "differencePercent": 1.19,
+      "proteinTarget": 204,
+      "proteinGenerated": 204,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-heavy",
+      "diet": "vegan",
+      "mode": "supermarket",
+      "tdee": 3433,
+      "goal": "maintainWeight",
+      "target": 3450,
+      "generated": 3275,
+      "difference": -175,
+      "differencePercent": 5.07,
+      "proteinTarget": 204,
+      "proteinGenerated": 173,
+      "result": "SAFE_REJECTION"
+    },
+    {
+      "profile": "male-heavy",
+      "diet": "vegan",
+      "mode": "mix",
+      "tdee": 3433,
+      "goal": "buildMuscle",
+      "target": 3700,
+      "generated": 3650,
+      "difference": -50,
+      "differencePercent": 1.35,
+      "proteinTarget": 204,
+      "proteinGenerated": 204,
+      "result": "PASS"
+    },
+    {
+      "profile": "male-heavy",
+      "diet": "vegan",
+      "mode": "supermarket",
+      "tdee": 3433,
+      "goal": "buildMuscle",
+      "target": 3700,
+      "generated": 3349,
+      "difference": -351,
+      "differencePercent": 9.49,
+      "proteinTarget": 204,
+      "proteinGenerated": 176,
+      "result": "SAFE_REJECTION"
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "warnings": 15,
+    "info": 2
+  },
+  "issues": [
+    {
+      "severity": "WARNING",
+      "code": "exercise.duplicate-name",
+      "id": "dumbbell-bulgarian-split-squat",
+      "otherId": "bulgarian-split-squat"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.shared-image",
+      "id": "dumbbell-bulgarian-split-squat",
+      "otherId": "bulgarian-split-squat",
+      "image": "dumbbell-bulgarian-split-squat.png"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.shared-image",
+      "id": "dumbbell-curl",
+      "otherId": "dumbbell-bicep-curl",
+      "image": "dumbbell-bicep-curl.png"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.duplicate-name",
+      "id": "lying-leg-curl",
+      "otherId": "leg-curl"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.shared-image",
+      "id": "lying-leg-curl",
+      "otherId": "leg-curl",
+      "image": "lying-leg-curl.png"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.duplicate-name",
+      "id": "overhead-press",
+      "otherId": "barbell-shoulder-press"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.shared-image",
+      "id": "overhead-press",
+      "otherId": "barbell-shoulder-press",
+      "image": "barbell-shoulder-press.png"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.shared-image",
+      "id": "pec-deck",
+      "otherId": "machine-chest-fly",
+      "image": "machine-chest-fly.png"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.shared-image",
+      "id": "standing-calf-raise-machine",
+      "otherId": "standing-calf-raise",
+      "image": "standing-calf-raise.png"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.alias-collides-with-canonical",
+      "alias": "bulgarian-split-squat",
+      "target": "dumbbell-bulgarian-split-squat"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.alias-collides-with-canonical",
+      "alias": "leg-curl",
+      "target": "lying-leg-curl"
+    },
+    {
+      "severity": "WARNING",
+      "code": "exercise.alias-collides-with-canonical",
+      "alias": "overhead-press",
+      "target": "barbell-shoulder-press"
+    },
+    {
+      "severity": "WARNING",
+      "code": "nutrition.safe-rejection",
+      "scenario": "male-heavy/loseFat/supermarket",
+      "failures": [
+        "protein off target by -19g (limit 5g)",
+        "fat off target by 18g (limit 3g)"
+      ],
+      "detail": "Canonical server gate returns 422 instead of publishing this out-of-tolerance plan."
+    },
+    {
+      "severity": "WARNING",
+      "code": "nutrition.safe-rejection",
+      "scenario": "male-heavy/maintainWeight/supermarket",
+      "failures": [
+        "calories off target by -175 kcal (5.07%, limit 1.5%)",
+        "protein off target by -31g (limit 5g)"
+      ],
+      "detail": "Canonical server gate returns 422 instead of publishing this out-of-tolerance plan."
+    },
+    {
+      "severity": "WARNING",
+      "code": "nutrition.safe-rejection",
+      "scenario": "male-heavy/buildMuscle/supermarket",
+      "failures": [
+        "calories off target by -351 kcal (9.49%, limit 1.5%)",
+        "protein off target by -28g (limit 5g)",
+        "carbs off target by -25g (limit 5g)"
+      ],
+      "detail": "Canonical server gate returns 422 instead of publishing this out-of-tolerance plan."
+    },
+    {
+      "severity": "INFO",
+      "code": "exercise.level-semantics",
+      "detail": "Minimum prerequisite model; foundational exercises remain eligible for advanced users."
+    },
+    {
+      "severity": "INFO",
+      "code": "exercise.movement-pattern",
+      "detail": "The current canonical catalog does not use a separate movement-pattern field."
+    }
+  ]
+}
