@@ -1273,6 +1273,8 @@ textarea:focus {
 .visual-choice-card--dumbbells .visual-choice-image{background-image:linear-gradient(135deg,rgba(214, 164, 93,.16),rgba(8, 13, 13,.25)),url('/images/workout-builder/equipment/dumbbells.webp');background-position:center 40%}
 .visual-choice-card--barbell .visual-choice-image{background-image:linear-gradient(135deg,rgba(217, 111, 112,.16),rgba(8, 13, 13,.25)),url('/images/workout-builder/equipment/barbell.webp');background-position:center 48%}
 .visual-choice-card--machines .visual-choice-image{background-image:linear-gradient(135deg,rgba(100,116,139,.18),rgba(8, 13, 13,.25)),url('/images/workout-builder/equipment/machines.webp');background-position:center 38%}
+.visual-choice-card--kettlebells .visual-choice-image{background-image:linear-gradient(135deg,rgba(56,189,248,.16),rgba(8,13,13,.28)),url('/images/exercises/kettlebell-swing.webp');background-position:center}
+.visual-choice-card--parallel-bars .visual-choice-image{background-image:linear-gradient(135deg,rgba(45,212,191,.14),rgba(8,13,13,.28)),url('/images/exercises/dip.webp');background-position:center}
 
 /* Training priority */
 .visual-choice-card--hypertrophy .visual-choice-image{background-image:linear-gradient(135deg,rgba(53, 207, 223,.22),rgba(8, 13, 13,.2)),url('/images/workout-builder/priorities/hypertrophy.webp');background-position:center 12%}

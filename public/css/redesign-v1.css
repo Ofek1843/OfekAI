@@ -1253,6 +1253,8 @@ body.fp-redesign::after,
 .fp-route-workout-builder .visual-choice-card--dumbbells .visual-choice-image { background-image: url("/images/workout-builder/equipment/dumbbells.webp") !important; }
 .fp-route-workout-builder .visual-choice-card--barbell .visual-choice-image { background-image: url("/images/workout-builder/equipment/barbell.webp") !important; }
 .fp-route-workout-builder .visual-choice-card--machines .visual-choice-image { background-image: url("/images/workout-builder/equipment/machines.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--kettlebells .visual-choice-image { background-image: url("/images/exercises/kettlebell-swing.webp") !important; }
+.fp-route-workout-builder .visual-choice-card--parallel-bars .visual-choice-image { background-image: url("/images/exercises/dip.webp") !important; }
 .fp-route-workout-builder .visual-choice-card--hypertrophy .visual-choice-image { background-image: url("/images/workout-builder/priorities/hypertrophy.webp") !important; }
 .fp-route-workout-builder .visual-choice-card--priority-strength .visual-choice-image { background-image: url("/images/workout-builder/priorities/strength.webp") !important; }
 .fp-route-workout-builder .visual-choice-card--priority-skills .visual-choice-image { background-image: url("/images/workout-builder/priorities/skills.webp") !important; }

@@ -15,7 +15,9 @@ export const CANONICAL_EQUIPMENT_IDS = [
   "dumbbell",
   "barbell",
   "machine",
-  "cable"
+  "cable",
+  "kettlebell",
+  "parallelbar"
 ];
 
 export const EQUIPMENT_LABELS = {
@@ -26,7 +28,9 @@ export const EQUIPMENT_LABELS = {
     dumbbell: "Dumbbells",
     barbell: "Barbell",
     machine: "Machines",
-    cable: "Cable"
+    cable: "Cable",
+    kettlebell: "Kettlebells",
+    parallelbar: "Parallel bars"
   },
   he: {
     bodyweight: "משקל גוף",
@@ -35,7 +39,9 @@ export const EQUIPMENT_LABELS = {
     dumbbell: "משקולות יד",
     barbell: "מוט",
     machine: "מכונות",
-    cable: "כבלים"
+    cable: "כבלים",
+    kettlebell: "קטלבלים",
+    parallelbar: "מקבילים"
   }
 };
 

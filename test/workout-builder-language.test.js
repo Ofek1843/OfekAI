@@ -63,7 +63,7 @@ test("English locale ignores any non-locale environment signal (no browser/syste
   try {
     const summary = buildEquipmentSummaryText("en", CANONICAL_EQUIPMENT_IDS);
     assert.equal(hasHebrewCharacters(summary), false, "English locale must render English regardless of system LANG");
-    assert.equal(summary, "Bodyweight, Pull-up bar, Gymnastic rings, Dumbbells, Barbell, Machines, Cable");
+    assert.equal(summary, "Bodyweight, Pull-up bar, Gymnastic rings, Dumbbells, Barbell, Machines, Cable, Kettlebells, Parallel bars");
   } finally {
     process.env.LANG = originalLang;
   }
@@ -113,8 +113,8 @@ test("Request payload never contains translated equipment labels (canonical ids 
 
 test("getEquipmentLabel falls back to the raw id for an unrecognized id (never guesses a translation)", () => {
   const { getEquipmentLabel } = i18n;
-  assert.equal(getEquipmentLabel("en", "kettlebell"), "kettlebell");
-  assert.equal(getEquipmentLabel("he", "kettlebell"), "kettlebell");
+  assert.equal(getEquipmentLabel("en", "slam-board"), "slam-board");
+  assert.equal(getEquipmentLabel("he", "slam-board"), "slam-board");
 });
 
 // --- Static regression check on the actual shipped fix ---
