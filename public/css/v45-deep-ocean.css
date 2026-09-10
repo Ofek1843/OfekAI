@@ -618,6 +618,86 @@ html[dir="rtl"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header:
   }
 }
 
+/* V4.5 living-surface polish ---------------------------------------------
+   Keep the motion atmospheric and useful: light moves through the surface,
+   while the athlete frames remain discrete and readable. */
+@keyframes fp-ocean-drift {
+  0%, 100% { transform: translate3d(-2%, -1%, 0) scale(1); opacity: .36; }
+  50% { transform: translate3d(2%, 1.5%, 0) scale(1.04); opacity: .58; }
+}
+
+@keyframes fp-ocean-sheen {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 180% 50%; }
+}
+
+@keyframes fp-card-breathe {
+  0%, 100% { box-shadow: 0 8px 24px rgba(0, 5, 15, 0.18), 0 0 0 rgba(75, 217, 230, 0); }
+  50% { box-shadow: 0 14px 34px rgba(0, 5, 15, 0.26), 0 0 28px color-mix(in srgb, var(--capability-accent) 13%, transparent); }
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel::after {
+  content: "";
+  position: absolute;
+  inset: -24%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(75, 217, 230, .16), transparent 60%);
+  filter: blur(20px);
+  animation: fp-ocean-drift 12s ease-in-out 2 alternate;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel .system-card {
+  background-image: linear-gradient(115deg, rgba(255,255,255,0.025), rgba(255,255,255,0.08), rgba(255,255,255,0.025)) !important;
+  background-size: 220% 100%;
+  animation: fp-ocean-sheen 9s ease-in-out 2 alternate;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel .system-card-nutrition { animation-delay: -3s; }
+.fp-v45-deep-ocean.fp-route-index .hero-panel .system-card-progress { animation-delay: -6s; }
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-studio {
+  position: relative;
+  isolation: isolate;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-studio::before {
+  content: "";
+  position: absolute;
+  inset: -8% -3%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(57,159,255,.11), transparent 32%),
+    radial-gradient(circle at 88% 82%, rgba(53,200,150,.08), transparent 30%);
+  filter: blur(16px);
+  animation: fp-ocean-drift 16s ease-in-out 2 alternate-reverse;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card {
+  animation: fp-card-breathe 8s ease-in-out 2 alternate;
+}
+
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card:nth-child(2) { animation-delay: -1.6s; }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card:nth-child(3) { animation-delay: -3.2s; }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card:nth-child(4) { animation-delay: -4.8s; }
+.fp-v45-deep-ocean.fp-route-dashboard .capability-card:nth-child(5) { animation-delay: -6.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-v45-deep-ocean.fp-route-index .hero-panel::after,
+  .fp-v45-deep-ocean.fp-route-index .hero-panel .system-card,
+  .fp-v45-deep-ocean.fp-route-dashboard .capability-studio::before,
+  .fp-v45-deep-ocean.fp-route-dashboard .capability-card {
+    animation: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body.fp-v45-deep-ocean .ocean-depth-glow,
   .fp-v45-deep-ocean.fp-route-index #landingHeroTitle .v45-accent-phrase {

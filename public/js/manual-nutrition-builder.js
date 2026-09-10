@@ -139,9 +139,25 @@ function planPayload() {
   const meals = state.selected.map((item, index) => { const meal = scaledMeal(item); return { mealNumber: index + 1, name: item.title, options: [{ optionNumber: 1, name: item.title, servings: item.servings, baseFoods: item.foods, foods: meal.foods, optionCalories: meal.calories, optionProteinGrams: meal.proteinGrams, optionCarbsGrams: meal.carbsGrams, optionFatGrams: meal.fatGrams, optionFiberGrams: meal.fiberGrams, image: item.image }] }; });
   return { name: $("#planTitle").value.trim() || "Manual nutrition plan", sourceType: "manual", calculationSnapshot: { bmr: state.targets?.bmr || null, tdee: state.targets?.tdee || null, goal: state.targets?.goal || null }, targetSummary: { dailyCalories: state.targets?.dailyCalories || 0, proteinGrams: state.targets?.proteinGrams || 0, carbsGrams: state.targets?.carbsGrams || 0, fatGrams: state.targets?.fatGrams || 0 }, plan: { planName: $("#planTitle").value.trim() || "Manual nutrition plan", dietaryStyle: $("#diet").value, meals, dailyCalories: state.targets?.dailyCalories || 0, proteinGrams: state.targets?.proteinGrams || 0, carbsGrams: state.targets?.carbsGrams || 0, fatGrams: state.targets?.fatGrams || 0, actualTotals: totals } };
 }
+let targetRequestId = 0;
 async function calculateTargets(event) {
-  event.preventDefault();
-  try { const data = await api("/api/nutrition/manual/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(targetInput()) }); state.targets = data.targets; $("#targetSummary").hidden = false; $("#targetSummary").innerHTML = targetsMarkup(state.targets); renderDiscoveryPrompt(); status(data.estimateNotice); } catch (error) { status(error.message, true); }
+  event?.preventDefault();
+  const requestId = ++targetRequestId;
+  state.targets = null;
+  $("#targetSummary").hidden = true;
+  renderSelected();
+  if (!state.user || !$("#targetForm").checkValidity()) return;
+  try {
+    const data = await api("/api/nutrition/manual/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(targetInput()) });
+    if (requestId !== targetRequestId) return;
+    state.targets = data.targets;
+    $("#targetSummary").hidden = false;
+    $("#targetSummary").innerHTML = targetsMarkup(state.targets);
+    renderSelected();
+    status(data.estimateNotice);
+  } catch (error) {
+    if (requestId === targetRequestId) status(error.message, true);
+  }
 }
 async function savePlan() {
   if (!state.targets || !state.selected.length) return status("Calculate targets and add at least one meal before saving.", true, $("#saveStatus"));
@@ -157,6 +173,9 @@ async function savePlan() {
 function toggleMenu(open = !state.menuOpen) { state.menuOpen = open; $("#dailyMenuPanel").classList.toggle("open", open); $("#dailyMenuPanel").setAttribute("aria-hidden", String(!open)); $("#mobileMenuToggle").setAttribute("aria-expanded", String(open)); }
 
 $("#targetForm").addEventListener("submit", calculateTargets);
+for (const id of ["goal", "age", "gender", "height", "weight", "activityLevel"]) {
+  $("#" + id).addEventListener("input", calculateTargets);
+}
 $("#mealSearchForm").addEventListener("submit", event => { event.preventDefault(); clearTimeout(state.discovery.timer); searchMeals({ immediate: true }); });
 $("#mealQuery").addEventListener("input", queueSearch);
 $("#mealSlot").addEventListener("change", () => searchMeals({ immediate: true }));

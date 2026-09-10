@@ -16,6 +16,22 @@ const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#nutrition-result");
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
+const foodStyleSelect = document.querySelector("#foodStylePreference");
+const localFoodPreferenceHint = document.querySelector("#localFoodPreferenceHint");
+const likelyIsraeliVisitor = (() => {
+  const language = String(navigator.language || "").toLowerCase();
+  const timezone = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { return ""; } })();
+  return language === "he-il" || language.startsWith("he-") || timezone === "Asia/Jerusalem";
+})();
+if (likelyIsraeliVisitor && foodStyleSelect) {
+  foodStyleSelect.value = "supermarket";
+  if (localFoodPreferenceHint) {
+    localFoodPreferenceHint.hidden = false;
+    localFoodPreferenceHint.textContent = currentLanguage === "he"
+      ? "זיהינו שפה או אזור ישראלי — נציע כברירת מחדל ארוחות מוכרות וזמינות בסופר בישראל. אפשר לשנות בכל עת."
+      : "We detected an Israeli language or timezone — familiar supermarket meals are selected by default. You can change this anytime.";
+  }
+}
 async function authHeaders(contentType = "application/json") {
   const user = auth.currentUser;
   if (!user) throw new Error("Authentication required.");

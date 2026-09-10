@@ -15,6 +15,14 @@ export const EXERCISE_FALLBACK_IMAGE_URL =
   "/images/exercises/fuelphysique-demo-fallback.svg";
 
 export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
+  "dumbbell-floor-press",
+  "dumbbell-reverse-lunge",
+  "cable-overhead-triceps-extension",
+  "single-arm-cable-row",
+  "bodyweight-glute-bridge",
+  "dead-bug",
+  "standing-bodyweight-calf-raise",
+  "ring-row",
   "ab-wheel-rollout",
   "abductors",
   "adductors",
@@ -69,6 +77,8 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "incline-dumbbell-curl",
   "kettlebell-swing",
   "l-sit",
+  "planche",
+  "front-lever",
   "lat-pulldown",
   "leg-extension",
   "leg-press",
@@ -116,6 +126,18 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "conventional-deadlift",
   "wide-grip-pull-up",
   "forward-lunge"
+  ,"nordic-hamstring-curl"
+  ,"dragon-flag"
+  ,"ring-muscle-up"
+  ,"landmine-press"
+  ,"sissy-squat"
+  ,"cable-glute-kickback"
+  ,"bayesian-cable-curl"
+  ,"pallof-press"
+  ,"ring-dip"
+  ,"pseudo-planche-push-up"
+  ,"toes-to-bar"
+  ,"tibialis-raise"
 ]);
 
 const missingExerciseImageWarnings = new Set();
@@ -129,6 +151,8 @@ export function slugifyExerciseName(name = "") {
 }
 
 const ALIASES = {
+  "straddle-planche": "planche",
+  "front-lever-raise": "front-lever",
   // --- Squat / leg patterns ---
   "back-squat": "barbell-squat",
   "barbell-back-squat": "barbell-squat",
@@ -248,7 +272,7 @@ const ALIASES = {
   // --- Back ---
   "australian-pull-up": "australian-row",
   "inverted-row": "australian-row",
-  "ring-row": "australian-row",
+  "ring-row": "ring-row",
   "bodyweight-row": "australian-row",
   "suspension-row": "australian-row",
   "pull-ups": "pull-up",
@@ -386,7 +410,25 @@ const ALIASES = {
   "woodchopper": "cable-woodchopper",
   "wood-chopper": "cable-woodchopper",
   "cable-wood-chopper": "cable-woodchopper",
-  "cable-woodchop": "cable-woodchopper"
+  "cable-woodchop": "cable-woodchopper",
+  "nordic-curl": "nordic-hamstring-curl",
+  "nordic-hamstring-curls": "nordic-hamstring-curl",
+  "natural-leg-curl": "nordic-hamstring-curl",
+  "dragon-flags": "dragon-flag",
+  "ring-muscle-ups": "ring-muscle-up",
+  "landmine-shoulder-press": "landmine-press",
+  "landmine-presses": "landmine-press",
+  "sissy-squats": "sissy-squat",
+  "cable-kickback": "cable-glute-kickback",
+  "glute-cable-kickback": "cable-glute-kickback",
+  "bayesian-curls": "bayesian-cable-curl",
+  "cable-bayesian-curl": "bayesian-cable-curl",
+  "anti-rotation-press": "pallof-press",
+  "pallof-presses": "pallof-press",
+  "ring-dips": "ring-dip",
+  "pseudo-planche-pushups": "pseudo-planche-push-up",
+  "toes-to-bar-exercise": "toes-to-bar",
+  "tibialis-raises": "tibialis-raise"
 };
 
 // Deterministic rewrites applied only when a slug matches nothing, so a

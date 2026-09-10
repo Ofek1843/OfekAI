@@ -132,10 +132,10 @@ test("a skills-priority profile makes every muscle optional (not-targeted) — s
   }
 });
 
-test("hamstrings/calves downgrade to secondary when the allowed equipment has no compatible exercise at all (bodyweight-only)", () => {
+test("bodyweight catalog coverage keeps Nordic hamstrings and tibialis raises available", () => {
   const bodyweightOnly = { priority: "hypertrophy", equipment: ["bodyweight"] };
-  assert.equal(classifyMuscleRequirement("hamstrings", bodyweightOnly), "secondary");
-  assert.equal(classifyMuscleRequirement("calves", bodyweightOnly), "secondary");
+  assert.equal(classifyMuscleRequirement("hamstrings", bodyweightOnly), "required");
+  assert.equal(classifyMuscleRequirement("calves", bodyweightOnly), "required");
 
   const withMachines = { priority: "hypertrophy", equipment: ["dumbbell", "machine"] };
   assert.equal(classifyMuscleRequirement("hamstrings", withMachines), "required");

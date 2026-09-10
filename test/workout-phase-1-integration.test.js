@@ -141,7 +141,7 @@ test("POST /api/workout-builder: fewer available days than daysPerWeek returns 4
 });
 
 test("POST /api/workout-builder: an oversized program is repaired (accessory exercises trimmed) instead of rejected", async () => {
-  // A tight sessionDuration relative to the mock generator's 6 fixed
+  // A tight sessionDuration relative to the mock generator's fixed
   // exercises overruns the session-cap rule. Before the repair-before-
   // validate fix this was a deterministic 422; now lib/workout-repair.js
   // trims lowest-priority accessory exercises from the end of each session

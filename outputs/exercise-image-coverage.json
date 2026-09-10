@@ -1,31 +1,31 @@
 {
-  "generatedAt": "2026-07-31T09:56:15.204Z",
+  "generatedAt": "2026-09-10T02:58:17.505Z",
   "fallbackImage": "/images/exercises/fuelphysique-demo-fallback.svg",
   "note": "The workout model may still produce arbitrary free-text exercise names. This audit covers the canonical resolver inventory plus set-credit aliases; unsupported free text intentionally falls back to the branded image.",
   "totals": {
-    "physicalFiles": 101,
-    "dedicatedExerciseImagesExcludingFallback": 100,
-    "canonicalSupportedExercises": 100,
-    "canonicalExercisesWithDedicatedImages": 100,
+    "physicalFiles": 121,
+    "dedicatedExerciseImagesExcludingFallback": 120,
+    "canonicalSupportedExercises": 120,
+    "canonicalExercisesWithDedicatedImages": 120,
     "canonicalExercisesMissingImages": 0,
-    "aliasesCovered": 241,
+    "aliasesCovered": 261,
     "orphanFiles": 0,
     "brokenMappings": 0,
     "invalidFiles": 0,
     "caseMismatches": 0,
     "fallbackOnlyAliases": 0,
-    "generatorSupportedCanonicalExercises": 103,
-    "generatorKnownNameVariants": 309,
-    "generatorVariantsWithDedicatedOrSurrogateImage": 309,
+    "generatorSupportedCanonicalExercises": 123,
+    "generatorKnownNameVariants": 350,
+    "generatorVariantsWithDedicatedOrSurrogateImage": 350,
     "generatorVariantsReachingFallback": 0,
     "generatorExistingFilesWithBrokenRouting": 0,
     "generatorGenuinelyMissingImages": 0,
-    "generatorSurrogateImageRoutes": 188,
+    "generatorSurrogateImageRoutes": 209,
     "generatorCanonicalMismatches": 0,
-    "publicEnabledExercises": 106,
+    "publicEnabledExercises": 126,
     "publicReleaseImageFailures": 0,
     "disabledUntilDedicatedImages": 1,
-    "optimizedWebpDerivatives": 100,
+    "optimizedWebpDerivatives": 120,
     "sourcesMissingWebpDerivative": 0,
     "mobilityStretchVariantsChecked": 9,
     "mobilityStretchCorrectlyRemoved": 9,
@@ -153,7 +153,6 @@
         "australian-pull-up",
         "bodyweight-row",
         "inverted-row",
-        "ring-row",
         "suspension-row"
       ]
     },
@@ -288,6 +287,21 @@
       ]
     },
     {
+      "canonicalExerciseId": "bayesian-cable-curl",
+      "englishName": "Bayesian Cable Curl",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "bayesian-cable-curl",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
+      "physicalFile": "bayesian-cable-curl.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "bayesian-curls",
+        "cable-bayesian-curl"
+      ]
+    },
+    {
       "canonicalExerciseId": "bench-dip",
       "englishName": "Bench Dip",
       "muscleGroup": "unknown",
@@ -316,6 +330,18 @@
         "flat-barbell-bench-press",
         "flat-bench-press"
       ]
+    },
+    {
+      "canonicalExerciseId": "bodyweight-glute-bridge",
+      "englishName": "Bodyweight Glute Bridge",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "bodyweight-glute-bridge",
+      "resolvedImageUrl": "/images/exercises/bodyweight-glute-bridge.png",
+      "physicalFile": "bodyweight-glute-bridge.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
     },
     {
       "canonicalExerciseId": "cable-bicep-curl",
@@ -361,6 +387,21 @@
       "aliases": [
         "cable-crunch",
         "kneeling-cable-crunch"
+      ]
+    },
+    {
+      "canonicalExerciseId": "cable-glute-kickback",
+      "englishName": "Cable Glute Kickback",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "cable-glute-kickback",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
+      "physicalFile": "cable-glute-kickback.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "cable-kickback",
+        "glute-cable-kickback"
       ]
     },
     {
@@ -525,6 +566,18 @@
       ]
     },
     {
+      "canonicalExerciseId": "dead-bug",
+      "englishName": "Dead Bug",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "dead-bug",
+      "resolvedImageUrl": "/images/exercises/dead-bug.png",
+      "physicalFile": "dead-bug.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
+    },
+    {
       "canonicalExerciseId": "diamond-push-up",
       "englishName": "Diamond Push Up",
       "muscleGroup": "chest",
@@ -551,6 +604,20 @@
       "aliases": [
         "chest-dip",
         "parallel-bar-dip"
+      ]
+    },
+    {
+      "canonicalExerciseId": "dragon-flag",
+      "englishName": "Dragon Flag",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "dragon-flag",
+      "resolvedImageUrl": "/images/exercises/dragon-flag.png",
+      "physicalFile": "dragon-flag.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "dragon-flags"
       ]
     },
     {
@@ -620,6 +687,18 @@
         "standing-dumbbell-calf-raise",
         "standing-dumbbell-calf-raises"
       ]
+    },
+    {
+      "canonicalExerciseId": "dumbbell-floor-press",
+      "englishName": "Dumbbell Floor Press",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "dumbbell-floor-press",
+      "resolvedImageUrl": "/images/exercises/dumbbell-floor-press.png",
+      "physicalFile": "dumbbell-floor-press.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
     },
     {
       "canonicalExerciseId": "dumbbell-fly",
@@ -712,6 +791,18 @@
       ]
     },
     {
+      "canonicalExerciseId": "dumbbell-reverse-lunge",
+      "englishName": "Dumbbell Reverse Lunge",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "dumbbell-reverse-lunge",
+      "resolvedImageUrl": "/images/exercises/dumbbell-reverse-lunge.png",
+      "physicalFile": "dumbbell-reverse-lunge.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
+    },
+    {
       "canonicalExerciseId": "dumbbell-row",
       "englishName": "Dumbbell Row",
       "muscleGroup": "back",
@@ -800,6 +891,20 @@
       "classification": "COVERED",
       "aliases": [
         "forward-lunge"
+      ]
+    },
+    {
+      "canonicalExerciseId": "front-lever",
+      "englishName": "Front Lever",
+      "muscleGroup": "calisthenics",
+      "equipment": "pull-up bar",
+      "expectedSlug": "front-lever",
+      "resolvedImageUrl": "/images/exercises/front-lever.png",
+      "physicalFile": "front-lever.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "front-lever-raise"
       ]
     },
     {
@@ -992,6 +1097,21 @@
       "aliases": []
     },
     {
+      "canonicalExerciseId": "landmine-press",
+      "englishName": "Landmine Press",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "landmine-press",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "physicalFile": "landmine-press.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "landmine-presses",
+        "landmine-shoulder-press"
+      ]
+    },
+    {
       "canonicalExerciseId": "lat-pulldown",
       "englishName": "Lat Pulldown",
       "muscleGroup": "back",
@@ -1127,6 +1247,22 @@
       ]
     },
     {
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "englishName": "Nordic Hamstring Curl",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "physicalFile": "nordic-hamstring-curl.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "natural-leg-curl",
+        "nordic-curl",
+        "nordic-hamstring-curls"
+      ]
+    },
+    {
       "canonicalExerciseId": "one-arm-pull-up",
       "englishName": "One Arm Pull Up",
       "muscleGroup": "calisthenics",
@@ -1163,6 +1299,21 @@
       ]
     },
     {
+      "canonicalExerciseId": "pallof-press",
+      "englishName": "Pallof Press",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "pallof-press",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "physicalFile": "pallof-press.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "anti-rotation-press",
+        "pallof-presses"
+      ]
+    },
+    {
       "canonicalExerciseId": "pike-push-up",
       "englishName": "Pike Push Up",
       "muscleGroup": "shoulders",
@@ -1185,6 +1336,20 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": []
+    },
+    {
+      "canonicalExerciseId": "planche",
+      "englishName": "Planche",
+      "muscleGroup": "calisthenics",
+      "equipment": "bodyweight",
+      "expectedSlug": "planche",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "physicalFile": "planche.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "straddle-planche"
+      ]
     },
     {
       "canonicalExerciseId": "plank",
@@ -1214,6 +1379,20 @@
         "cable-preacher-curl",
         "ez-bar-preacher-curl",
         "machine-preacher-curl"
+      ]
+    },
+    {
+      "canonicalExerciseId": "pseudo-planche-push-up",
+      "englishName": "Pseudo Planche Push Up",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "pseudo-planche-push-up",
+      "resolvedImageUrl": "/images/exercises/pseudo-planche-push-up.png",
+      "physicalFile": "pseudo-planche-push-up.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "pseudo-planche-pushups"
       ]
     },
     {
@@ -1295,6 +1474,48 @@
         "reverse-pec-deck",
         "reverse-pec-deck-fly",
         "reverse-pec-deck-machine"
+      ]
+    },
+    {
+      "canonicalExerciseId": "ring-dip",
+      "englishName": "Ring Dip",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "ring-dip",
+      "resolvedImageUrl": "/images/exercises/ring-dip.png",
+      "physicalFile": "ring-dip.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "ring-dips"
+      ]
+    },
+    {
+      "canonicalExerciseId": "ring-muscle-up",
+      "englishName": "Ring Muscle Up",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "ring-muscle-up",
+      "resolvedImageUrl": "/images/exercises/ring-muscle-up.png",
+      "physicalFile": "ring-muscle-up.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "ring-muscle-ups"
+      ]
+    },
+    {
+      "canonicalExerciseId": "ring-row",
+      "englishName": "Ring Row",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "ring-row",
+      "resolvedImageUrl": "/images/exercises/ring-row.png",
+      "physicalFile": "ring-row.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "ring-row"
       ]
     },
     {
@@ -1408,6 +1629,20 @@
       "aliases": []
     },
     {
+      "canonicalExerciseId": "sissy-squat",
+      "englishName": "Sissy Squat",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "sissy-squat",
+      "resolvedImageUrl": "/images/exercises/sissy-squat.png",
+      "physicalFile": "sissy-squat.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "sissy-squats"
+      ]
+    },
+    {
       "canonicalExerciseId": "skull-crusher",
       "englishName": "Skull Crusher",
       "muscleGroup": "arms",
@@ -1421,6 +1656,18 @@
         "lying-triceps-extension",
         "skull-crushers"
       ]
+    },
+    {
+      "canonicalExerciseId": "standing-bodyweight-calf-raise",
+      "englishName": "Standing Bodyweight Calf Raise",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "standing-bodyweight-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-bodyweight-calf-raise.png",
+      "physicalFile": "standing-bodyweight-calf-raise.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": []
     },
     {
       "canonicalExerciseId": "standing-calf-raise",
@@ -1479,6 +1726,34 @@
       "dedicatedImage": true,
       "classification": "COVERED",
       "aliases": []
+    },
+    {
+      "canonicalExerciseId": "tibialis-raise",
+      "englishName": "Tibialis Raise",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "tibialis-raise",
+      "resolvedImageUrl": "/images/exercises/tibialis-raise.png",
+      "physicalFile": "tibialis-raise.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "tibialis-raises"
+      ]
+    },
+    {
+      "canonicalExerciseId": "toes-to-bar",
+      "englishName": "Toes To Bar",
+      "muscleGroup": "unknown",
+      "equipment": "unknown",
+      "expectedSlug": "toes-to-bar",
+      "resolvedImageUrl": "/images/exercises/toes-to-bar.png",
+      "physicalFile": "toes-to-bar.png",
+      "dedicatedImage": true,
+      "classification": "COVERED",
+      "aliases": [
+        "toes-to-bar-exercise"
+      ]
     },
     {
       "canonicalExerciseId": "tricep-dip",
@@ -2027,6 +2302,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Anti Rotation Press",
+      "demoName": "Anti Rotation Press",
+      "providedExerciseId": "anti-rotation-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "pallof-press",
+      "canonicalExerciseId": "pallof-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pallof-press",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Archer Push Up",
       "demoName": "Archer Push Up",
       "providedExerciseId": "archer-push-up",
@@ -2278,6 +2578,31 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Barbell Bent Over Row",
+      "demoName": "Barbell Bent Over Row",
+      "providedExerciseId": "barbell-bent-over-row",
+      "equipment": "barbell",
+      "muscleGroup": "back",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "barbell-row",
+      "canonicalExerciseId": "barbell-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "barbell-row",
+      "resolvedImageUrl": "/images/exercises/barbell-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Barbell Bicep Curl",
@@ -2605,6 +2930,56 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Bayesian Cable Curl",
+      "demoName": "Bayesian Cable Curl",
+      "providedExerciseId": "bayesian-cable-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "bayesian-cable-curl",
+      "canonicalExerciseId": "bayesian-cable-curl",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bayesian-cable-curl",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "bayesian-cable-curl.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Bayesian Curls",
+      "demoName": "Bayesian Curls",
+      "providedExerciseId": "bayesian-curls",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "bayesian-cable-curl",
+      "canonicalExerciseId": "bayesian-cable-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bayesian-cable-curl",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Bench Dip",
       "demoName": "Bench Dip",
       "providedExerciseId": "bench-dip",
@@ -2754,6 +3129,31 @@
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
       "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Bodyweight Glute Bridge",
+      "demoName": "Bodyweight Glute Bridge",
+      "providedExerciseId": "bodyweight-glute-bridge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "bodyweight-glute-bridge",
+      "canonicalExerciseId": "bodyweight-glute-bridge",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bodyweight-glute-bridge",
+      "resolvedImageUrl": "/images/exercises/bodyweight-glute-bridge.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "bodyweight-glute-bridge.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Bodyweight Row",
@@ -2921,6 +3321,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "dumbbell-bulgarian-split-squat",
       "resolvedImageUrl": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Cable Bayesian Curl",
+      "demoName": "Cable Bayesian Curl",
+      "providedExerciseId": "cable-bayesian-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "bayesian-cable-curl",
+      "canonicalExerciseId": "bayesian-cable-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bayesian-cable-curl",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -3171,6 +3596,56 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "cable-crossover",
       "resolvedImageUrl": "/images/exercises/cable-crossover.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Cable Glute Kickback",
+      "demoName": "Cable Glute Kickback",
+      "providedExerciseId": "cable-glute-kickback",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "cable-glute-kickback",
+      "canonicalExerciseId": "cable-glute-kickback",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "cable-glute-kickback",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "cable-glute-kickback.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Cable Kickback",
+      "demoName": "Cable Kickback",
+      "providedExerciseId": "cable-kickback",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "cable-glute-kickback",
+      "canonicalExerciseId": "cable-glute-kickback",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "cable-glute-kickback",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -3835,6 +4310,31 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Dead Bug",
+      "demoName": "Dead Bug",
+      "providedExerciseId": "dead-bug",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "dead-bug",
+      "canonicalExerciseId": "dead-bug",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dead-bug",
+      "resolvedImageUrl": "/images/exercises/dead-bug.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "dead-bug.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Diamond Push Up",
       "demoName": "Diamond Push Up",
       "providedExerciseId": "diamond-push-up",
@@ -3883,6 +4383,56 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Dragon Flag",
+      "demoName": "Dragon Flag",
+      "providedExerciseId": "dragon-flag",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "dragon-flag",
+      "canonicalExerciseId": "dragon-flag",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dragon-flag",
+      "resolvedImageUrl": "/images/exercises/dragon-flag.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "dragon-flag.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Dragon Flags",
+      "demoName": "Dragon Flags",
+      "providedExerciseId": "dragon-flags",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dragon-flag",
+      "canonicalExerciseId": "dragon-flag",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dragon-flag",
+      "resolvedImageUrl": "/images/exercises/dragon-flag.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Dumbbell Bench Press",
@@ -4106,6 +4656,31 @@
       "directPhysicalFile": "",
       "directPhysicalExists": false,
       "exactDedicatedFile": false,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Dumbbell Floor Press",
+      "demoName": "Dumbbell Floor Press",
+      "providedExerciseId": "dumbbell-floor-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "dumbbell-floor-press",
+      "canonicalExerciseId": "dumbbell-floor-press",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-floor-press",
+      "resolvedImageUrl": "/images/exercises/dumbbell-floor-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "dumbbell-floor-press.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
@@ -4454,6 +5029,31 @@
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "dumbbell-reverse-fly.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Dumbbell Reverse Lunge",
+      "demoName": "Dumbbell Reverse Lunge",
+      "providedExerciseId": "dumbbell-reverse-lunge",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "dumbbell-reverse-lunge",
+      "canonicalExerciseId": "dumbbell-reverse-lunge",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dumbbell-reverse-lunge",
+      "resolvedImageUrl": "/images/exercises/dumbbell-reverse-lunge.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "dumbbell-reverse-lunge.png",
       "directPhysicalExists": true,
       "exactDedicatedFile": true,
       "usesSurrogateImage": false,
@@ -5012,6 +5612,57 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Front Lever",
+      "demoName": "Front Lever",
+      "providedExerciseId": "front-lever",
+      "equipment": "pull-up bar",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "front-lever",
+      "canonicalExerciseId": "front-lever",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "front-lever",
+      "resolvedImageUrl": "/images/exercises/front-lever.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "front-lever.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Front Lever Raise",
+      "demoName": "Front Lever Raise",
+      "providedExerciseId": "front-lever-raise",
+      "equipment": "pull-up bar",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "front-lever",
+      "canonicalExerciseId": "front-lever",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "front-lever",
+      "resolvedImageUrl": "/images/exercises/front-lever.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Front Raise",
       "demoName": "Front Raise",
       "providedExerciseId": "front-raise",
@@ -5052,6 +5703,56 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-front-squat",
       "resolvedImageUrl": "/images/exercises/barbell-front-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Full Planche",
+      "demoName": "Full Planche",
+      "providedExerciseId": "full-planche",
+      "equipment": "bodyweight",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "planche",
+      "canonicalExerciseId": "planche",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "planche",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Glute Cable Kickback",
+      "demoName": "Glute Cable Kickback",
+      "providedExerciseId": "glute-cable-kickback",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "cable-glute-kickback",
+      "canonicalExerciseId": "cable-glute-kickback",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "cable-glute-kickback",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -6115,6 +6816,81 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Landmine Press",
+      "demoName": "Landmine Press",
+      "providedExerciseId": "landmine-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "landmine-press",
+      "canonicalExerciseId": "landmine-press",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "landmine-press",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "landmine-press.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Landmine Presses",
+      "demoName": "Landmine Presses",
+      "providedExerciseId": "landmine-presses",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "landmine-press",
+      "canonicalExerciseId": "landmine-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "landmine-press",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Landmine Shoulder Press",
+      "demoName": "Landmine Shoulder Press",
+      "providedExerciseId": "landmine-shoulder-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "landmine-press",
+      "canonicalExerciseId": "landmine-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "landmine-press",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Lat Pulldown",
       "demoName": "Lat Pulldown",
       "providedExerciseId": "lat-pulldown",
@@ -6865,6 +7641,31 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Natural Leg Curl",
+      "demoName": "Natural Leg Curl",
+      "providedExerciseId": "natural-leg-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Neutral Grip Lat Pulldown",
       "demoName": "Neutral Grip Lat Pulldown",
       "providedExerciseId": "neutral-grip-lat-pulldown",
@@ -6931,6 +7732,81 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "neutral-grip-pull-up",
       "resolvedImageUrl": "/images/exercises/neutral-grip-pull-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Nordic Curl",
+      "demoName": "Nordic Curl",
+      "providedExerciseId": "nordic-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Nordic Hamstring Curl",
+      "demoName": "Nordic Hamstring Curl",
+      "providedExerciseId": "nordic-hamstring-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "nordic-hamstring-curl.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Nordic Hamstring Curls",
+      "demoName": "Nordic Hamstring Curls",
+      "providedExerciseId": "nordic-hamstring-curls",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -7091,6 +7967,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Pallof Press",
+      "demoName": "Pallof Press",
+      "providedExerciseId": "pallof-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "pallof-press",
+      "canonicalExerciseId": "pallof-press",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pallof-press",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "pallof-press.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Pallof Presses",
+      "demoName": "Pallof Presses",
+      "providedExerciseId": "pallof-presses",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "pallof-press",
+      "canonicalExerciseId": "pallof-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pallof-press",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Parallel Bar Dip",
       "demoName": "Parallel Bar Dip",
       "providedExerciseId": "parallel-bar-dip",
@@ -7217,6 +8143,32 @@
       "classification": "GENERATOR_COVERED"
     },
     {
+      "originalName": "Planche",
+      "demoName": "Planche",
+      "providedExerciseId": "planche",
+      "equipment": "bodyweight",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "planche",
+      "canonicalExerciseId": "planche",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "planche",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "planche.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
       "originalName": "Plank",
       "demoName": "Plank",
       "providedExerciseId": "plank",
@@ -7290,6 +8242,56 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Pseudo Planche Push Up",
+      "demoName": "Pseudo Planche Push Up",
+      "providedExerciseId": "pseudo-planche-push-up",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "pseudo-planche-push-up",
+      "canonicalExerciseId": "pseudo-planche-push-up",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pseudo-planche-push-up",
+      "resolvedImageUrl": "/images/exercises/pseudo-planche-push-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "pseudo-planche-push-up.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Pseudo Planche Pushups",
+      "demoName": "Pseudo Planche Pushups",
+      "providedExerciseId": "pseudo-planche-pushups",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "pseudo-planche-push-up",
+      "canonicalExerciseId": "pseudo-planche-push-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pseudo-planche-push-up",
+      "resolvedImageUrl": "/images/exercises/pseudo-planche-push-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Pull Up",
@@ -7843,21 +8845,46 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
-      "originalName": "Ring Row",
-      "demoName": "Ring Row",
-      "providedExerciseId": "ring-row",
-      "equipment": "bar/rings",
-      "muscleGroup": "back",
+      "originalName": "Ring Dip",
+      "demoName": "Ring Dip",
+      "providedExerciseId": "ring-dip",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "ring-dip",
+      "canonicalExerciseId": "ring-dip",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "ring-dip",
+      "resolvedImageUrl": "/images/exercises/ring-dip.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "ring-dip.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Ring Dips",
+      "demoName": "Ring Dips",
+      "providedExerciseId": "ring-dips",
+      "equipment": "",
+      "muscleGroup": "",
       "sources": [
         "backend-alias"
       ],
-      "expectedCanonical": "australian-row",
-      "canonicalExerciseId": "australian-row",
+      "expectedCanonical": "ring-dip",
+      "canonicalExerciseId": "ring-dip",
       "canonicalizationSource": "existing-alias",
       "expectedCanonicalMatches": true,
       "resolverSourceField": "exerciseId",
-      "attemptedSlug": "australian-row",
-      "resolvedImageUrl": "/images/exercises/australian-row.png",
+      "attemptedSlug": "ring-dip",
+      "resolvedImageUrl": "/images/exercises/ring-dip.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -7866,6 +8893,83 @@
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
       "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Ring Muscle Up",
+      "demoName": "Ring Muscle Up",
+      "providedExerciseId": "ring-muscle-up",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "ring-muscle-up",
+      "canonicalExerciseId": "ring-muscle-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "ring-muscle-up",
+      "resolvedImageUrl": "/images/exercises/ring-muscle-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "ring-muscle-up.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Ring Muscle Ups",
+      "demoName": "Ring Muscle Ups",
+      "providedExerciseId": "ring-muscle-ups",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "ring-muscle-up",
+      "canonicalExerciseId": "ring-muscle-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "ring-muscle-up",
+      "resolvedImageUrl": "/images/exercises/ring-muscle-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Ring Row",
+      "demoName": "Ring Row",
+      "providedExerciseId": "ring-row",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias",
+        "setcredits"
+      ],
+      "expectedCanonical": "ring-row",
+      "canonicalExerciseId": "ring-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "ring-row",
+      "resolvedImageUrl": "/images/exercises/ring-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "ring-row.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Romanian Deadlift",
@@ -8570,6 +9674,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Sissy Squat",
+      "demoName": "Sissy Squat",
+      "providedExerciseId": "sissy-squat",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "sissy-squat",
+      "canonicalExerciseId": "sissy-squat",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "sissy-squat",
+      "resolvedImageUrl": "/images/exercises/sissy-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "sissy-squat.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Sissy Squats",
+      "demoName": "Sissy Squats",
+      "providedExerciseId": "sissy-squats",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "sissy-squat",
+      "canonicalExerciseId": "sissy-squat",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "sissy-squat",
+      "resolvedImageUrl": "/images/exercises/sissy-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Skull Crusher",
       "demoName": "Skull Crusher",
       "providedExerciseId": "skull-crusher",
@@ -8693,6 +9847,31 @@
       "usesSurrogateImage": true,
       "dedicatedExactImageExpected": false,
       "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Standing Bodyweight Calf Raise",
+      "demoName": "Standing Bodyweight Calf Raise",
+      "providedExerciseId": "standing-bodyweight-calf-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "standing-bodyweight-calf-raise",
+      "canonicalExerciseId": "standing-bodyweight-calf-raise",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "standing-bodyweight-calf-raise",
+      "resolvedImageUrl": "/images/exercises/standing-bodyweight-calf-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "standing-bodyweight-calf-raise.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
     },
     {
       "originalName": "Standing Calf Raise",
@@ -8896,6 +10075,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Straddle Planche",
+      "demoName": "Straddle Planche",
+      "providedExerciseId": "straddle-planche",
+      "equipment": "bodyweight",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "planche",
+      "canonicalExerciseId": "planche",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "planche",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Straight Arm Pulldown",
       "demoName": "Straight Arm Pulldown",
       "providedExerciseId": "straight-arm-pulldown",
@@ -8994,6 +10198,106 @@
       "usesSurrogateImage": false,
       "dedicatedExactImageExpected": true,
       "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Tibialis Raise",
+      "demoName": "Tibialis Raise",
+      "providedExerciseId": "tibialis-raise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "tibialis-raise",
+      "canonicalExerciseId": "tibialis-raise",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "tibialis-raise",
+      "resolvedImageUrl": "/images/exercises/tibialis-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "tibialis-raise.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Tibialis Raises",
+      "demoName": "Tibialis Raises",
+      "providedExerciseId": "tibialis-raises",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "tibialis-raise",
+      "canonicalExerciseId": "tibialis-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "tibialis-raise",
+      "resolvedImageUrl": "/images/exercises/tibialis-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Toes To Bar",
+      "demoName": "Toes To Bar",
+      "providedExerciseId": "toes-to-bar",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "setcredits"
+      ],
+      "expectedCanonical": "toes-to-bar",
+      "canonicalExerciseId": "toes-to-bar",
+      "canonicalizationSource": "existing-canonical",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "toes-to-bar",
+      "resolvedImageUrl": "/images/exercises/toes-to-bar.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "toes-to-bar.png",
+      "directPhysicalExists": true,
+      "exactDedicatedFile": true,
+      "usesSurrogateImage": false,
+      "dedicatedExactImageExpected": true,
+      "classification": "GENERATOR_COVERED"
+    },
+    {
+      "originalName": "Toes To Bar Exercise",
+      "demoName": "Toes To Bar Exercise",
+      "providedExerciseId": "toes-to-bar-exercise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "toes-to-bar",
+      "canonicalExerciseId": "toes-to-bar",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "toes-to-bar",
+      "resolvedImageUrl": "/images/exercises/toes-to-bar.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
       "originalName": "Tricep Dip",
@@ -9627,6 +10931,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Anti Rotation Press",
+      "demoName": "Anti Rotation Press",
+      "providedExerciseId": "anti-rotation-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "pallof-press",
+      "canonicalExerciseId": "pallof-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pallof-press",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Australian Pull Up",
       "demoName": "Australian Pull Up",
       "providedExerciseId": "australian-pull-up",
@@ -9717,6 +11046,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-squat",
       "resolvedImageUrl": "/images/exercises/barbell-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Barbell Bent Over Row",
+      "demoName": "Barbell Bent Over Row",
+      "providedExerciseId": "barbell-bent-over-row",
+      "equipment": "barbell",
+      "muscleGroup": "back",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "barbell-row",
+      "canonicalExerciseId": "barbell-row",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "barbell-row",
+      "resolvedImageUrl": "/images/exercises/barbell-row.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -9842,6 +11196,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-shrug",
       "resolvedImageUrl": "/images/exercises/barbell-shrug.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Bayesian Curls",
+      "demoName": "Bayesian Curls",
+      "providedExerciseId": "bayesian-curls",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "bayesian-cable-curl",
+      "canonicalExerciseId": "bayesian-cable-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bayesian-cable-curl",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -10102,6 +11481,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Cable Bayesian Curl",
+      "demoName": "Cable Bayesian Curl",
+      "providedExerciseId": "cable-bayesian-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "bayesian-cable-curl",
+      "canonicalExerciseId": "bayesian-cable-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "bayesian-cable-curl",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Cable Biceps Curl",
       "demoName": "Cable Biceps Curl",
       "providedExerciseId": "cable-biceps-curl",
@@ -10242,6 +11646,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "cable-crossover",
       "resolvedImageUrl": "/images/exercises/cable-crossover.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Cable Kickback",
+      "demoName": "Cable Kickback",
+      "providedExerciseId": "cable-kickback",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "cable-glute-kickback",
+      "canonicalExerciseId": "cable-glute-kickback",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "cable-glute-kickback",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -10592,6 +12021,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "diamond-push-up",
       "resolvedImageUrl": "/images/exercises/diamond-push-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Dragon Flags",
+      "demoName": "Dragon Flags",
+      "providedExerciseId": "dragon-flags",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "dragon-flag",
+      "canonicalExerciseId": "dragon-flag",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "dragon-flag",
+      "resolvedImageUrl": "/images/exercises/dragon-flag.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -11252,6 +12706,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Front Lever Raise",
+      "demoName": "Front Lever Raise",
+      "providedExerciseId": "front-lever-raise",
+      "equipment": "pull-up bar",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "front-lever",
+      "canonicalExerciseId": "front-lever",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "front-lever",
+      "resolvedImageUrl": "/images/exercises/front-lever.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Front Raise",
       "demoName": "Front Raise",
       "providedExerciseId": "front-raise",
@@ -11292,6 +12771,56 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "barbell-front-squat",
       "resolvedImageUrl": "/images/exercises/barbell-front-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Full Planche",
+      "demoName": "Full Planche",
+      "providedExerciseId": "full-planche",
+      "equipment": "bodyweight",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "planche",
+      "canonicalExerciseId": "planche",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "planche",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Glute Cable Kickback",
+      "demoName": "Glute Cable Kickback",
+      "providedExerciseId": "glute-cable-kickback",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "cable-glute-kickback",
+      "canonicalExerciseId": "cable-glute-kickback",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "cable-glute-kickback",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -11952,6 +13481,56 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Landmine Presses",
+      "demoName": "Landmine Presses",
+      "providedExerciseId": "landmine-presses",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "landmine-press",
+      "canonicalExerciseId": "landmine-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "landmine-press",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Landmine Shoulder Press",
+      "demoName": "Landmine Shoulder Press",
+      "providedExerciseId": "landmine-shoulder-press",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "landmine-press",
+      "canonicalExerciseId": "landmine-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "landmine-press",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Lat Pulldowns",
       "demoName": "Lat Pulldowns",
       "providedExerciseId": "lat-pulldowns",
@@ -12477,6 +14056,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Natural Leg Curl",
+      "demoName": "Natural Leg Curl",
+      "providedExerciseId": "natural-leg-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Neutral Grip Lat Pulldown",
       "demoName": "Neutral Grip Lat Pulldown",
       "providedExerciseId": "neutral-grip-lat-pulldown",
@@ -12517,6 +14121,56 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "neutral-grip-pull-up",
       "resolvedImageUrl": "/images/exercises/neutral-grip-pull-up.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Nordic Curl",
+      "demoName": "Nordic Curl",
+      "providedExerciseId": "nordic-curl",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Nordic Hamstring Curls",
+      "demoName": "Nordic Hamstring Curls",
+      "providedExerciseId": "nordic-hamstring-curls",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "nordic-hamstring-curl",
+      "canonicalExerciseId": "nordic-hamstring-curl",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "nordic-hamstring-curl",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -12602,6 +14256,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Pallof Presses",
+      "demoName": "Pallof Presses",
+      "providedExerciseId": "pallof-presses",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "pallof-press",
+      "canonicalExerciseId": "pallof-press",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pallof-press",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Parallel Bar Dip",
       "demoName": "Parallel Bar Dip",
       "providedExerciseId": "parallel-bar-dip",
@@ -12667,6 +14346,31 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "plank",
       "resolvedImageUrl": "/images/exercises/plank.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Pseudo Planche Pushups",
+      "demoName": "Pseudo Planche Pushups",
+      "providedExerciseId": "pseudo-planche-pushups",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "pseudo-planche-push-up",
+      "canonicalExerciseId": "pseudo-planche-push-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "pseudo-planche-push-up",
+      "resolvedImageUrl": "/images/exercises/pseudo-planche-push-up.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -13052,21 +14756,46 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
-      "originalName": "Ring Row",
-      "demoName": "Ring Row",
-      "providedExerciseId": "ring-row",
-      "equipment": "bar/rings",
-      "muscleGroup": "back",
+      "originalName": "Ring Dips",
+      "demoName": "Ring Dips",
+      "providedExerciseId": "ring-dips",
+      "equipment": "",
+      "muscleGroup": "",
       "sources": [
         "backend-alias"
       ],
-      "expectedCanonical": "australian-row",
-      "canonicalExerciseId": "australian-row",
+      "expectedCanonical": "ring-dip",
+      "canonicalExerciseId": "ring-dip",
       "canonicalizationSource": "existing-alias",
       "expectedCanonicalMatches": true,
       "resolverSourceField": "exerciseId",
-      "attemptedSlug": "australian-row",
-      "resolvedImageUrl": "/images/exercises/australian-row.png",
+      "attemptedSlug": "ring-dip",
+      "resolvedImageUrl": "/images/exercises/ring-dip.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Ring Muscle Ups",
+      "demoName": "Ring Muscle Ups",
+      "providedExerciseId": "ring-muscle-ups",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "ring-muscle-up",
+      "canonicalExerciseId": "ring-muscle-up",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "ring-muscle-up",
+      "resolvedImageUrl": "/images/exercises/ring-muscle-up.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -13552,6 +15281,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Sissy Squats",
+      "demoName": "Sissy Squats",
+      "providedExerciseId": "sissy-squats",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "sissy-squat",
+      "canonicalExerciseId": "sissy-squat",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "sissy-squat",
+      "resolvedImageUrl": "/images/exercises/sissy-squat.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Skull Crushers",
       "demoName": "Skull Crushers",
       "providedExerciseId": "skull-crushers",
@@ -13777,6 +15531,31 @@
       "classification": "COVERED_BY_SURROGATE_IMAGE"
     },
     {
+      "originalName": "Straddle Planche",
+      "demoName": "Straddle Planche",
+      "providedExerciseId": "straddle-planche",
+      "equipment": "bodyweight",
+      "muscleGroup": "calisthenics",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "planche",
+      "canonicalExerciseId": "planche",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "planche",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
       "originalName": "Straight Arm Pulldown",
       "demoName": "Straight Arm Pulldown",
       "providedExerciseId": "straight-arm-pulldown",
@@ -13817,6 +15596,56 @@
       "resolverSourceField": "exerciseId",
       "attemptedSlug": "australian-row",
       "resolvedImageUrl": "/images/exercises/australian-row.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Tibialis Raises",
+      "demoName": "Tibialis Raises",
+      "providedExerciseId": "tibialis-raises",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "tibialis-raise",
+      "canonicalExerciseId": "tibialis-raise",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "tibialis-raise",
+      "resolvedImageUrl": "/images/exercises/tibialis-raise.png",
+      "usedFallback": false,
+      "fallbackReason": "",
+      "directPhysicalFile": "",
+      "directPhysicalExists": false,
+      "exactDedicatedFile": false,
+      "usesSurrogateImage": true,
+      "dedicatedExactImageExpected": false,
+      "classification": "COVERED_BY_SURROGATE_IMAGE"
+    },
+    {
+      "originalName": "Toes To Bar Exercise",
+      "demoName": "Toes To Bar Exercise",
+      "providedExerciseId": "toes-to-bar-exercise",
+      "equipment": "",
+      "muscleGroup": "",
+      "sources": [
+        "backend-alias"
+      ],
+      "expectedCanonical": "toes-to-bar",
+      "canonicalExerciseId": "toes-to-bar",
+      "canonicalizationSource": "existing-alias",
+      "expectedCanonicalMatches": true,
+      "resolverSourceField": "exerciseId",
+      "attemptedSlug": "toes-to-bar",
+      "resolvedImageUrl": "/images/exercises/toes-to-bar.png",
       "usedFallback": false,
       "fallbackReason": "",
       "directPhysicalFile": "",
@@ -14267,10 +16096,32 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "bayesian-cable-curl",
+      "expectedImageFile": "bayesian-cable-curl.png",
+      "resolvedImageUrl": "/images/exercises/bayesian-cable-curl.png",
+      "resolvedImageFile": "bayesian-cable-curl.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "bench-dip",
       "expectedImageFile": "bench-dip.png",
       "resolvedImageUrl": "/images/exercises/bench-dip.png",
       "resolvedImageFile": "bench-dip.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "bodyweight-glute-bridge",
+      "expectedImageFile": "bodyweight-glute-bridge.png",
+      "resolvedImageUrl": "/images/exercises/bodyweight-glute-bridge.png",
+      "resolvedImageFile": "bodyweight-glute-bridge.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -14315,6 +16166,17 @@
       "expectedImageFile": "cable-crunch.png",
       "resolvedImageUrl": "/images/exercises/cable-crunch.png",
       "resolvedImageFile": "cable-crunch.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "cable-glute-kickback",
+      "expectedImageFile": "cable-glute-kickback.png",
+      "resolvedImageUrl": "/images/exercises/cable-glute-kickback.png",
+      "resolvedImageFile": "cable-glute-kickback.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -14443,6 +16305,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "dead-bug",
+      "expectedImageFile": "dead-bug.png",
+      "resolvedImageUrl": "/images/exercises/dead-bug.png",
+      "resolvedImageFile": "dead-bug.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "diamond-push-up",
       "expectedImageFile": "diamond-push-up.png",
       "resolvedImageUrl": "/images/exercises/diamond-push-up.png",
@@ -14458,6 +16331,17 @@
       "expectedImageFile": "dip.png",
       "resolvedImageUrl": "/images/exercises/dip.png",
       "resolvedImageFile": "dip.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "dragon-flag",
+      "expectedImageFile": "dragon-flag.png",
+      "resolvedImageUrl": "/images/exercises/dragon-flag.png",
+      "resolvedImageFile": "dragon-flag.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -14513,6 +16397,17 @@
       "expectedImageFile": "dumbbell-bicep-curl.png",
       "resolvedImageUrl": "/images/exercises/dumbbell-bicep-curl.png",
       "resolvedImageFile": "dumbbell-bicep-curl.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "dumbbell-floor-press",
+      "expectedImageFile": "dumbbell-floor-press.png",
+      "resolvedImageUrl": "/images/exercises/dumbbell-floor-press.png",
+      "resolvedImageFile": "dumbbell-floor-press.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -14586,6 +16481,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "dumbbell-reverse-lunge",
+      "expectedImageFile": "dumbbell-reverse-lunge.png",
+      "resolvedImageUrl": "/images/exercises/dumbbell-reverse-lunge.png",
+      "resolvedImageFile": "dumbbell-reverse-lunge.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "dumbbell-row",
       "expectedImageFile": "dumbbell-row.png",
       "resolvedImageUrl": "/images/exercises/dumbbell-row.png",
@@ -14645,6 +16551,17 @@
       "expectedImageFile": "forward-lunge.png",
       "resolvedImageUrl": "/images/exercises/forward-lunge.png",
       "resolvedImageFile": "forward-lunge.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "front-lever",
+      "expectedImageFile": "front-lever.png",
+      "resolvedImageUrl": "/images/exercises/front-lever.png",
+      "resolvedImageFile": "front-lever.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -14795,6 +16712,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "landmine-press",
+      "expectedImageFile": "landmine-press.png",
+      "resolvedImageUrl": "/images/exercises/landmine-press.png",
+      "resolvedImageFile": "landmine-press.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "lat-pulldown",
       "expectedImageFile": "lat-pulldown.png",
       "resolvedImageUrl": "/images/exercises/lat-pulldown.png",
@@ -14905,6 +16833,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "nordic-hamstring-curl",
+      "expectedImageFile": "nordic-hamstring-curl.png",
+      "resolvedImageUrl": "/images/exercises/nordic-hamstring-curl.png",
+      "resolvedImageFile": "nordic-hamstring-curl.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "one-arm-pull-up",
       "expectedImageFile": "one-arm-pull-up.png",
       "resolvedImageUrl": "/images/exercises/one-arm-pull-up.png",
@@ -14931,6 +16870,17 @@
       "expectedImageFile": "overhead-tricep-extension.png",
       "resolvedImageUrl": "/images/exercises/overhead-tricep-extension.png",
       "resolvedImageFile": "overhead-tricep-extension.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "pallof-press",
+      "expectedImageFile": "pallof-press.png",
+      "resolvedImageUrl": "/images/exercises/pallof-press.png",
+      "resolvedImageFile": "pallof-press.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -14971,6 +16921,17 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "planche",
+      "expectedImageFile": "planche.png",
+      "resolvedImageUrl": "/images/exercises/planche.png",
+      "resolvedImageFile": "planche.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "plank",
       "expectedImageFile": "plank.png",
       "resolvedImageUrl": "/images/exercises/plank.png",
@@ -14986,6 +16947,17 @@
       "expectedImageFile": "preacher-curl.png",
       "resolvedImageUrl": "/images/exercises/preacher-curl.png",
       "resolvedImageFile": "preacher-curl.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "pseudo-planche-push-up",
+      "expectedImageFile": "pseudo-planche-push-up.png",
+      "resolvedImageUrl": "/images/exercises/pseudo-planche-push-up.png",
+      "resolvedImageFile": "pseudo-planche-push-up.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -15041,6 +17013,39 @@
       "expectedImageFile": "reverse-pec-deck.png",
       "resolvedImageUrl": "/images/exercises/reverse-pec-deck.png",
       "resolvedImageFile": "reverse-pec-deck.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "ring-dip",
+      "expectedImageFile": "ring-dip.png",
+      "resolvedImageUrl": "/images/exercises/ring-dip.png",
+      "resolvedImageFile": "ring-dip.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "ring-muscle-up",
+      "expectedImageFile": "ring-muscle-up.png",
+      "resolvedImageUrl": "/images/exercises/ring-muscle-up.png",
+      "resolvedImageFile": "ring-muscle-up.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "ring-row",
+      "expectedImageFile": "ring-row.png",
+      "resolvedImageUrl": "/images/exercises/ring-row.png",
+      "resolvedImageFile": "ring-row.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -15136,10 +17141,32 @@
       "classification": "PUBLIC_READY"
     },
     {
+      "exerciseId": "sissy-squat",
+      "expectedImageFile": "sissy-squat.png",
+      "resolvedImageUrl": "/images/exercises/sissy-squat.png",
+      "resolvedImageFile": "sissy-squat.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
       "exerciseId": "skull-crusher",
       "expectedImageFile": "skull-crusher.png",
       "resolvedImageUrl": "/images/exercises/skull-crusher.png",
       "resolvedImageFile": "skull-crusher.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "standing-bodyweight-calf-raise",
+      "expectedImageFile": "standing-bodyweight-calf-raise.png",
+      "resolvedImageUrl": "/images/exercises/standing-bodyweight-calf-raise.png",
+      "resolvedImageFile": "standing-bodyweight-calf-raise.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -15195,6 +17222,28 @@
       "expectedImageFile": "t-bar-row.png",
       "resolvedImageUrl": "/images/exercises/t-bar-row.png",
       "resolvedImageFile": "t-bar-row.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "tibialis-raise",
+      "expectedImageFile": "tibialis-raise.png",
+      "resolvedImageUrl": "/images/exercises/tibialis-raise.png",
+      "resolvedImageFile": "tibialis-raise.png",
+      "usedFallback": false,
+      "physicalExists": true,
+      "httpOk": true,
+      "exactFileMatch": true,
+      "classification": "PUBLIC_READY"
+    },
+    {
+      "exerciseId": "toes-to-bar",
+      "expectedImageFile": "toes-to-bar.png",
+      "resolvedImageUrl": "/images/exercises/toes-to-bar.png",
+      "resolvedImageFile": "toes-to-bar.png",
       "usedFallback": false,
       "physicalExists": true,
       "httpOk": true,
@@ -15432,7 +17481,6 @@
         "australian-pull-up",
         "bodyweight-row",
         "inverted-row",
-        "ring-row",
         "suspension-row"
       ],
       "genericFallback": false,
@@ -15587,6 +17635,23 @@
       "classification": "COVERED"
     },
     {
+      "filename": "bayesian-cable-curl.png",
+      "extension": ".png",
+      "exactCase": "bayesian-cable-curl.png",
+      "size": 1007600,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "bayesian-cable-curl",
+      "aliases": [
+        "bayesian-curls",
+        "cable-bayesian-curl"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "bench-dip.png",
       "extension": ".png",
       "exactCase": "bench-dip.png",
@@ -15615,6 +17680,20 @@
         "flat-barbell-bench-press",
         "flat-bench-press"
       ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "bodyweight-glute-bridge.png",
+      "extension": ".png",
+      "exactCase": "bodyweight-glute-bridge.png",
+      "size": 693914,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "bodyweight-glute-bridge",
+      "aliases": [],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -15673,6 +17752,23 @@
       "classification": "COVERED"
     },
     {
+      "filename": "cable-glute-kickback.png",
+      "extension": ".png",
+      "exactCase": "cable-glute-kickback.png",
+      "size": 1001810,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "cable-glute-kickback",
+      "aliases": [
+        "cable-kickback",
+        "glute-cable-kickback"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "cable-lateral-raise.png",
       "extension": ".png",
       "exactCase": "cable-lateral-raise.png",
@@ -15690,8 +17786,8 @@
       "filename": "cable-overhead-triceps-extension.png",
       "extension": ".png",
       "exactCase": "cable-overhead-triceps-extension.png",
-      "size": 1156406,
-      "gitStatus": "tracked",
+      "size": 950605,
+      "gitStatus": "M",
       "referencedByResolver": true,
       "canonicalExercise": "cable-overhead-triceps-extension",
       "aliases": [
@@ -15856,6 +17952,20 @@
       "classification": "COVERED"
     },
     {
+      "filename": "dead-bug.png",
+      "extension": ".png",
+      "exactCase": "dead-bug.png",
+      "size": 652874,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "dead-bug",
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "diamond-push-up.png",
       "extension": ".png",
       "exactCase": "diamond-push-up.png",
@@ -15882,6 +17992,22 @@
       "aliases": [
         "chest-dip",
         "parallel-bar-dip"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "dragon-flag.png",
+      "extension": ".png",
+      "exactCase": "dragon-flag.png",
+      "size": 813657,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "dragon-flag",
+      "aliases": [
+        "dragon-flags"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -15959,6 +18085,20 @@
         "standing-dumbbell-calf-raise",
         "standing-dumbbell-calf-raises"
       ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "dumbbell-floor-press.png",
+      "extension": ".png",
+      "exactCase": "dumbbell-floor-press.png",
+      "size": 970783,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "dumbbell-floor-press",
+      "aliases": [],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -16067,6 +18207,20 @@
       "classification": "COVERED"
     },
     {
+      "filename": "dumbbell-reverse-lunge.png",
+      "extension": ".png",
+      "exactCase": "dumbbell-reverse-lunge.png",
+      "size": 956813,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "dumbbell-reverse-lunge",
+      "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "dumbbell-row.png",
       "extension": ".png",
       "exactCase": "dumbbell-row.png",
@@ -16163,6 +18317,22 @@
       "canonicalExercise": "forward-lunge",
       "aliases": [
         "forward-lunge"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "front-lever.png",
+      "extension": ".png",
+      "exactCase": "front-lever.png",
+      "size": 1561061,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "front-lever",
+      "aliases": [
+        "front-lever-raise"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -16399,6 +18569,23 @@
       "classification": "COVERED"
     },
     {
+      "filename": "landmine-press.png",
+      "extension": ".png",
+      "exactCase": "landmine-press.png",
+      "size": 910344,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "landmine-press",
+      "aliases": [
+        "landmine-presses",
+        "landmine-shoulder-press"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "lat-pulldown.png",
       "extension": ".png",
       "exactCase": "lat-pulldown.png",
@@ -16552,6 +18739,24 @@
       "classification": "COVERED"
     },
     {
+      "filename": "nordic-hamstring-curl.png",
+      "extension": ".png",
+      "exactCase": "nordic-hamstring-curl.png",
+      "size": 886429,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "nordic-hamstring-curl",
+      "aliases": [
+        "natural-leg-curl",
+        "nordic-curl",
+        "nordic-hamstring-curls"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "one-arm-pull-up.png",
       "extension": ".png",
       "exactCase": "one-arm-pull-up.png",
@@ -16592,6 +18797,23 @@
       "classification": "COVERED"
     },
     {
+      "filename": "pallof-press.png",
+      "extension": ".png",
+      "exactCase": "pallof-press.png",
+      "size": 984150,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "pallof-press",
+      "aliases": [
+        "anti-rotation-press",
+        "pallof-presses"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
       "filename": "pike-push-up.png",
       "extension": ".png",
       "exactCase": "pike-push-up.png",
@@ -16614,6 +18836,22 @@
       "referencedByResolver": true,
       "canonicalExercise": "pistol-squat",
       "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "planche.png",
+      "extension": ".png",
+      "exactCase": "planche.png",
+      "size": 1730791,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "planche",
+      "aliases": [
+        "straddle-planche"
+      ],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -16647,6 +18885,22 @@
         "cable-preacher-curl",
         "ez-bar-preacher-curl",
         "machine-preacher-curl"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "pseudo-planche-push-up.png",
+      "extension": ".png",
+      "exactCase": "pseudo-planche-push-up.png",
+      "size": 895409,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "pseudo-planche-push-up",
+      "aliases": [
+        "pseudo-planche-pushups"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -16738,6 +18992,54 @@
         "reverse-pec-deck",
         "reverse-pec-deck-fly",
         "reverse-pec-deck-machine"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "ring-dip.png",
+      "extension": ".png",
+      "exactCase": "ring-dip.png",
+      "size": 968988,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "ring-dip",
+      "aliases": [
+        "ring-dips"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "ring-muscle-up.png",
+      "extension": ".png",
+      "exactCase": "ring-muscle-up.png",
+      "size": 853675,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "ring-muscle-up",
+      "aliases": [
+        "ring-muscle-ups"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "ring-row.png",
+      "extension": ".png",
+      "exactCase": "ring-row.png",
+      "size": 712153,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "ring-row",
+      "aliases": [
+        "ring-row"
       ],
       "genericFallback": false,
       "validImage": true,
@@ -16860,11 +19162,27 @@
       "filename": "single-arm-cable-row.png",
       "extension": ".png",
       "exactCase": "single-arm-cable-row.png",
-      "size": 1475588,
-      "gitStatus": "tracked",
+      "size": 1040405,
+      "gitStatus": "M",
       "referencedByResolver": true,
       "canonicalExercise": "single-arm-cable-row",
       "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "sissy-squat.png",
+      "extension": ".png",
+      "exactCase": "sissy-squat.png",
+      "size": 996635,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "sissy-squat",
+      "aliases": [
+        "sissy-squats"
+      ],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -16882,6 +19200,20 @@
         "lying-triceps-extension",
         "skull-crushers"
       ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "standing-bodyweight-calf-raise.png",
+      "extension": ".png",
+      "exactCase": "standing-bodyweight-calf-raise.png",
+      "size": 749038,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "standing-bodyweight-calf-raise",
+      "aliases": [],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",
@@ -16948,6 +19280,38 @@
       "referencedByResolver": true,
       "canonicalExercise": "t-bar-row",
       "aliases": [],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "tibialis-raise.png",
+      "extension": ".png",
+      "exactCase": "tibialis-raise.png",
+      "size": 1128452,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "tibialis-raise",
+      "aliases": [
+        "tibialis-raises"
+      ],
+      "genericFallback": false,
+      "validImage": true,
+      "invalidReason": "",
+      "classification": "COVERED"
+    },
+    {
+      "filename": "toes-to-bar.png",
+      "extension": ".png",
+      "exactCase": "toes-to-bar.png",
+      "size": 979783,
+      "gitStatus": "??",
+      "referencedByResolver": true,
+      "canonicalExercise": "toes-to-bar",
+      "aliases": [
+        "toes-to-bar-exercise"
+      ],
       "genericFallback": false,
       "validImage": true,
       "invalidReason": "",

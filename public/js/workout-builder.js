@@ -118,7 +118,11 @@ const ui = isHebrew
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} ישירים + ${fractional} עקיפים`,
       weeklyVolumeUnmapped: "כמה תרגילים לא נכללו בחישוב (אין מיפוי שריר ידוע).",
-      weeklyVolumeStartingWeek: "נפח תחילת התוכנית (לא כולל התקדמות)"
+      weeklyVolumeStartingWeek: "נפח תחילת התוכנית (לא כולל התקדמות)",
+      weeklyVolumeAdd: "הוסף נפח",
+      weeklyVolumeLower: "הפחת נפח",
+      weeklyVolumeAdjustHint: "שינוי של סט אחד בתרגיל קשור",
+      weeklyVolumeCapReached: "לא ניתן להוסיף יותר נפח: הגעת לתקרה הבטוחה לקבוצה זו."
     }
   : {
       pageTitle: "Workout Builder",
@@ -197,7 +201,11 @@ const ui = isHebrew
       weeklyVolumeDetails: (direct, fractional) =>
         `${direct} direct + ${fractional} indirect`,
       weeklyVolumeUnmapped: "A few exercises were not included in this calculation (no known muscle mapping).",
-      weeklyVolumeStartingWeek: "Starting-week volume (progression not shown)"
+      weeklyVolumeStartingWeek: "Starting-week volume (progression not shown)",
+      weeklyVolumeAdd: "Add volume",
+      weeklyVolumeLower: "Lower volume",
+      weeklyVolumeAdjustHint: "Adjust one set on a related exercise",
+      weeklyVolumeCapReached: "Volume cannot be increased: this muscle is already at its safe ceiling."
     };
     function setText(selector, text) {
   const element = document.querySelector(selector);
@@ -262,6 +270,7 @@ const hebrewOptionLabels = {
   beginner: "מתחיל",
   intermediate: "בינוני",
   advanced: "מתקדם",
+  professional: "אתלט מקצועי",
 
   gym: "חדר כושר",
   calisthenics: "קליסטניקס",
@@ -1052,6 +1061,21 @@ const MUSCLE_DISPLAY_NAMES = {
   traps: "Traps"
 };
 
+const MUSCLE_VOLUME_IMAGES = {
+  chest: "bench-press.webp",
+  back: "pull-up.webp",
+  delts: "dumbbell-shoulder-press.webp",
+  rear_delts: "face-pull.webp",
+  biceps: "dumbbell-bicep-curl.webp",
+  triceps: "cable-tricep-pushdown.webp",
+  quads: "barbell-squat.webp",
+  hamstrings: "romanian-deadlift.webp",
+  glutes: "barbell-hip-thrust.webp",
+  calves: "dumbbell-calf-raise.webp",
+  core: "hanging-knee-raise.webp",
+  traps: "barbell-shrug.webp"
+};
+
 // Whole numbers render without a decimal; a value only carrying fractional
 // (indirect) credit renders with exactly one decimal place, never more.
 function formatVolumeNumber(value) {
@@ -1126,9 +1150,12 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
         : (range ? ui.weeklyVolumeRecommendedRange(range.min, range.max) : "");
 
       return `
-        <div class="muscle-volume-row" data-status="${statusClass}">
+        <div class="muscle-volume-row" data-muscle="${escapeHtml(muscleKey)}" data-status="${statusClass}">
           <div class="muscle-volume-row-header">
-            <span class="muscle-volume-name">${escapeHtml(translateWorkoutValue(MUSCLE_DISPLAY_NAMES[muscleKey]))}</span>
+            <div class="muscle-volume-heading">
+              <span class="muscle-volume-visual" aria-hidden="true"><img src="/images/exercises/${escapeHtml(MUSCLE_VOLUME_IMAGES[muscleKey] || "fuelphysique-demo-fallback.svg")}" alt=""></span>
+              <span class="muscle-volume-name">${escapeHtml(translateWorkoutValue(MUSCLE_DISPLAY_NAMES[muscleKey]))}</span>
+            </div>
             <span class="muscle-volume-status muscle-volume-status--${statusClass}"${secondaryNote ? ` title="${escapeHtml(secondaryNote)}"` : ""}>${escapeHtml(statusLabel)}</span>
           </div>
           <div class="muscle-volume-numbers">
@@ -1142,6 +1169,10 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
           <details class="muscle-volume-detail">
             <summary>${escapeHtml(ui.weeklyVolumeDetails(formatVolumeNumber(direct), formatVolumeNumber(fractional)))}</summary>
           </details>
+          <div class="muscle-volume-actions">
+            <button type="button" class="muscle-volume-adjust" data-volume-adjust="${escapeHtml(muscleKey)}" data-volume-delta="1" title="${escapeHtml(ui.weeklyVolumeAdjustHint)}">+ ${escapeHtml(ui.weeklyVolumeAdd)}</button>
+            <button type="button" class="muscle-volume-adjust muscle-volume-adjust--lower" data-volume-adjust="${escapeHtml(muscleKey)}" data-volume-delta="-1" title="${escapeHtml(ui.weeklyVolumeAdjustHint)}">− ${escapeHtml(ui.weeklyVolumeLower)}</button>
+          </div>
         </div>
       `;
     })
@@ -1178,6 +1209,88 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
       ${unmappedNotice}
     </section>
   `;
+}
+
+function volumeStatusForAdjustment(entry) {
+  const total = Number(entry?.total) || 0;
+  const min = Number(entry?.minimumEffective);
+  const max = Number(entry?.hardMaximum);
+  const preferredMin = Number(entry?.preferredMin);
+  const preferredMax = Number(entry?.preferredMax);
+  if (Number.isFinite(min) && total < min) return "below";
+  if (Number.isFinite(max) && total > max) return "above";
+  if (Number.isFinite(preferredMin) && total < preferredMin) return "valid-below-preferred";
+  if (Number.isFinite(preferredMax) && total > preferredMax) return "valid-above-preferred";
+  return "in-preferred-zone";
+}
+
+function bindVolumeAdjusters(root) {
+  root?.querySelectorAll("[data-volume-adjust]").forEach((button) => {
+    if (button.dataset.volumeBound === "true") return;
+    button.dataset.volumeBound = "true";
+    button.addEventListener("click", () => {
+      adjustWeeklyVolume(
+        root,
+        button.dataset.volumeAdjust,
+        Number(button.dataset.volumeDelta) || 0
+      );
+    });
+  });
+}
+
+function adjustWeeklyVolume(root, muscle, delta) {
+  const program = window.currentWorkoutProgram;
+  const weeklyVolume = window.currentWeeklyVolume;
+  if (!program || !weeklyVolume?.perMuscle?.[muscle] || !delta) return;
+
+  const matches = [];
+  program.sessions?.forEach((session, sessionIndex) => {
+    session.exercises?.forEach((exercise, exerciseIndex) => {
+      if (String(exercise.muscleGroup || "").toLowerCase() === String(muscle).toLowerCase()) {
+        matches.push({ exercise, sessionIndex, exerciseIndex });
+      }
+    });
+  });
+  if (!matches.length) return;
+
+  const target = delta > 0
+    ? matches.slice().sort((left, right) => Number(left.exercise.sets) - Number(right.exercise.sets))[0]
+    : matches.slice().sort((left, right) => Number(right.exercise.sets) - Number(left.exercise.sets))[0];
+  const currentSets = Math.max(1, Number(target.exercise.sets) || 1);
+  if (delta < 0 && currentSets <= 1) return;
+  target.exercise.sets = currentSets + delta;
+
+  const entry = weeklyVolume.perMuscle[muscle];
+  const hardMaximum = Number(entry.hardMaximum);
+  if (delta > 0 && Number.isFinite(hardMaximum) && Number(entry.total) + delta > hardMaximum) {
+    setStatus(isHebrew ? ui.weeklyVolumeCapReached : ui.weeklyVolumeCapReached);
+    return;
+  }
+  entry.direct = Math.max(0, (Number(entry.direct) || 0) + delta);
+  entry.total = Math.max(0, (Number(entry.total) || 0) + delta);
+  entry.status = volumeStatusForAdjustment(entry);
+
+  const card = root.querySelector(`.exercise-card[data-session="${target.sessionIndex}"][data-exercise="${target.exerciseIndex}"]`);
+  const setsValue = card?.querySelector(".exercise-stat-value");
+  if (setsValue) {
+    setsValue.textContent = String(target.exercise.sets);
+    card.classList.remove("is-volume-updated");
+    requestAnimationFrame(() => card.classList.add("is-volume-updated"));
+  }
+
+  const disclosure = root.querySelector("#weekly-volume-container");
+  const open = Boolean(disclosure?.open);
+  if (disclosure) {
+    disclosure.innerHTML = `
+      <summary>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</summary>
+      ${renderWeeklyVolumeSummary(weeklyVolume)}
+    `;
+    disclosure.open = open;
+  }
+  const focusPanel = root.querySelector("#weekly-volume-focus-panel");
+  if (focusPanel && open) focusPanel.innerHTML = renderWeeklyVolumeSummary(weeklyVolume);
+  bindVolumeAdjusters(root);
+  setStatus(isHebrew ? "נפח השריר עודכן." : "Muscle volume updated.");
 }
 
 // Shown only when a focus mode is active. Balanced plans render nothing, so
@@ -1239,6 +1352,7 @@ function renderProgram(program, weeklyVolume) {
   const initialDayIndex = Number.isInteger(requestedDay) && requestedDay >= 1 && requestedDay <= sessions.length
     ? requestedDay - 1
     : 0;
+  let activeDayIndex = initialDayIndex;
 
   const sessionsHtml = sessions
     .map((session, sessionIndex) => {
@@ -1479,6 +1593,9 @@ function renderProgram(program, weeklyVolume) {
           </details>
         </aside>
         <div class="program-days" aria-live="polite">
+          <section class="weekly-volume-focus-panel" id="weekly-volume-focus-panel" hidden aria-live="polite">
+            ${renderWeeklyVolumeSummary(weeklyVolume)}
+          </section>
           ${sessionsHtml}
         </div>
       </div>
@@ -1487,6 +1604,8 @@ function renderProgram(program, weeklyVolume) {
 
   const activateDay = (dayIndex, { updateUrl = true, focus = false } = {}) => {
     const safeIndex = Math.max(0, Math.min(sessions.length - 1, Number(dayIndex) || 0));
+    activeDayIndex = safeIndex;
+    if (volumeDisclosure?.open) volumeDisclosure.open = false;
     resultElement.querySelectorAll("[data-program-day]").forEach((day) => {
       day.hidden = Number(day.dataset.programDay) !== safeIndex;
     });
@@ -1505,10 +1624,26 @@ function renderProgram(program, weeklyVolume) {
     if (focus) resultElement.querySelector(`[data-program-day="${safeIndex}"] h3`)?.focus?.({ preventScroll: true });
   };
 
+  const volumeDisclosure = resultElement.querySelector("#weekly-volume-container");
+  const volumeFocusPanel = resultElement.querySelector("#weekly-volume-focus-panel");
+  const syncVolumeFocusPanel = () => {
+    if (!volumeDisclosure || !volumeFocusPanel) return;
+    volumeFocusPanel.hidden = !volumeDisclosure.open;
+    resultElement.querySelectorAll("[data-program-day]").forEach((day) => {
+      day.hidden = volumeDisclosure.open || Number(day.dataset.programDay) !== activeDayIndex;
+    });
+    volumeFocusPanel.innerHTML = volumeDisclosure.open
+      ? renderWeeklyVolumeSummary(window.currentWeeklyVolume || weeklyVolume)
+      : volumeFocusPanel.innerHTML;
+    bindVolumeAdjusters(resultElement);
+  };
+  volumeDisclosure?.addEventListener("toggle", syncVolumeFocusPanel);
+
   resultElement.querySelectorAll("[data-program-day-target]").forEach((button) => {
     button.addEventListener("click", () => activateDay(button.dataset.programDayTarget));
   });
   resultElement.querySelector("#planDaySelect")?.addEventListener("change", (event) => activateDay(event.currentTarget.value));
+  bindVolumeAdjusters(resultElement);
 
   const saveWorkoutButton = resultElement.querySelector(
     "#save-workout-button"

@@ -40,6 +40,7 @@ const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
+const { eligibleExerciseCatalog } = require("./lib/exercise-suitability");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { normalizeMuscleFocusContract, primaryMuscleForExerciseId } = require("./lib/workout-focus");
@@ -1281,9 +1282,7 @@ async function createChatCompletion({
       process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS = String(mockAttempt);
       // A well-rounded single-day bodyweight session (not just push-up +
       // squat): every REQUIRED muscle for a 1-day/week bodyweight profile
-      // (see lib/workout-volume-targets.js's classifyMuscleRequirement,
-      // which downgrades hamstrings/calves to secondary when the allowed
-      // equipment has no compatible exercise for them at all) needs enough
+      // needs enough
       // credited volume to clear its target range, or the new
       // validationSummary.volumePassed gate in POST /api/workout-builder
       // correctly turns this into a controlled 422 rather than a "successful"
@@ -1304,6 +1303,8 @@ async function createChatCompletion({
               { exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 2, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "diamond-push-up", name: "Diamond Push-up", demoName: "Diamond Push-up", muscleGroup: "Triceps", equipment: "Bodyweight", sets: 1, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "pistol-squat", name: "Pistol Squat", demoName: "Pistol Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "nordic-hamstring-curl", name: "Nordic Hamstring Curl", demoName: "Nordic Hamstring Curl", muscleGroup: "Hamstrings", equipment: "Bodyweight", sets: 3, reps: "6-10", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "tibialis-raise", name: "Tibialis Raise", demoName: "Tibialis Raise", muscleGroup: "Calves", equipment: "Bodyweight", sets: 5, reps: "12-20", restSeconds: 60, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 1, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
             ]
           }
@@ -1441,11 +1442,12 @@ async function createChatCompletion({
       };
       // Well-rounded bodyweight full-body session (not just push-up +
       // squat): tuned against the real repair+volume pipeline so every
-      // REQUIRED muscle (see classifyMuscleRequirement -- hamstrings/calves
-      // downgrade to secondary for an all-bodyweight allowed set, since the
-      // catalog has no bodyweight exercise for either) clears its target
-      // range at daysPerWeek 1, 3 and 4. Same shape repeated per session,
-      // same as before; only the exercise mix changed.
+      // REQUIRED muscle clears its target range at daysPerWeek 1, 3 and 4.
+      // The catalog now includes direct bodyweight hamstring and calf work,
+      // so this fixture explicitly includes Nordic curls and tibialis raises;
+      // otherwise the mock would no longer represent a valid bodyweight plan.
+      // Same shape repeated per session, same as before; only the exercise
+      // mix changed.
       const sessions = Array.from({ length: daysPerWeek }, (_, index) => ({
         day: index + 1,
         name: `Mock Session ${index + 1}`,
@@ -1455,6 +1457,8 @@ async function createChatCompletion({
           stripId({ exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 2, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
           stripId({ exerciseId: "diamond-push-up", name: "Diamond Push-up", demoName: "Diamond Push-up", muscleGroup: "Triceps", equipment: "Bodyweight", sets: 1, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
           stripId({ exerciseId: "pistol-squat", name: "Pistol Squat", demoName: "Pistol Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "nordic-hamstring-curl", name: "Nordic Hamstring Curl", demoName: "Nordic Hamstring Curl", muscleGroup: "Hamstrings", equipment: "Bodyweight", sets: 3, reps: "6-10", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
+          stripId({ exerciseId: "tibialis-raise", name: "Tibialis Raise", demoName: "Tibialis Raise", muscleGroup: "Calves", equipment: "Bodyweight", sets: 5, reps: "12-20", restSeconds: 60, rir: "1-3", notes: "Mock mode." }),
           stripId({ exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 1, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }),
           ...(forceOversizedSession ? [
             stripId({ exerciseId: "wide-grip-push-up", name: "Wide Grip Push-up", demoName: "Wide Grip Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
@@ -2811,12 +2815,15 @@ const outputLanguage =
     const workoutResponse = localDemoMode
       ? JSON.stringify(buildLocalWorkoutProgram({
         goal,
+        experience,
         daysPerWeek: parsedDays,
         sessionDuration: parsedDuration,
         equipment: equipmentForGeneration,
         trainingStyle,
         limitations,
-        language
+        language,
+        muscleFocusMode: muscleFocus.muscleFocusMode,
+        selectedMuscles: muscleFocus.selectedMuscles
       }))
       : await createChatCompletion({
       temperature: 0.3,
@@ -2879,6 +2886,7 @@ Programming rules:
 - Avoid excessive volume.
 - Use realistic sets, repetitions, rest periods and RIR.
 - Treat experience level as programming context, not a reason to add arbitrary complexity. For beginners, prefer understandable, stable movements, manageable complexity and recoverable volume. For advanced athletes, use the existing advanced target ranges and add exercise variety or specialization only when the stated constraints justify it; do not automatically make the plan longer or more complex.
+- When experience is professional and training style is calisthenics, this is an elite skill athlete request: prioritize appropriately difficult, well-scaled skill practice such as planche, front lever, one-arm pull-up, muscle-up, handstand push-up and typewriter pull-ups when the required equipment is available. Do not fill an advanced calisthenics plan with beginner substitutions such as Australian rows unless the user explicitly requests regressions or lacks the needed equipment. Skill work must still include safe progressions, realistic holds/reps and fatigue-aware volume.
 - Hypertrophy work is not restricted to 8-12 reps. Choose a practical load for each prescribed rep range, and make RIR meaningful: the athlete should finish each working set at the prescribed proximity to failure. Momentary muscular failure is not required on every set.
 - Exact deterministic programming constraints for this request: ${JSON.stringify(buildProgrammingConstraintSummary(volumeProfile))}
 - These ranges are effective-volume ranges: direct primary work contributes fully while approved secondary compound contributions contribute fractionally. Do not count every compound set as a full direct set for every involved muscle.
@@ -2977,6 +2985,8 @@ ${parsedAge ? `Age: ${parsedAge}\n` : ""}Training days per week: ${parsedDays}
 Session duration: ${parsedDuration} minutes
 Training style: ${String(trainingStyle)}
 Available equipment: ${equipmentForGeneration.join(", ")}
+Choose exerciseId values from this level-and-equipment-compatible catalog:
+${eligibleExerciseCatalog(equipmentForGeneration, experience).map(entry => `${entry.exerciseId}: ${entry.title} (${entry.equipment})`).join("\n")}
 Priority: ${String(canonicalPriority)}
 Muscle focus mode: ${muscleFocus.muscleFocusMode}
 Selected muscles: ${muscleFocus.selectedMuscles.join(", ") || "none"}
@@ -2996,6 +3006,7 @@ Injuries, limitations or special requests: ${String(limitations)}
 
     try {
       program = JSON.parse(cleanedResponse);
+      program.experience = experience;
     } catch (parseError) {
       console.error("Workout JSON parsing failed:", {
         message: parseError.message,
@@ -3076,6 +3087,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     let validation = validateWorkoutProgram(program, {
+      experience,
       daysPerWeek: parsedDays,
       sessionDuration: parsedDuration,
       equipment: equipmentForGeneration,
@@ -3118,6 +3130,7 @@ Injuries, limitations or special requests: ${String(limitations)}
         });
         if (correctedProgram) {
           program = correctedProgram;
+          program.experience = experience;
           program.daysPerWeek = parsedDays;
           program.muscleFocusMode = muscleFocus.muscleFocusMode;
           program.selectedMuscles = muscleFocus.selectedMuscles;
@@ -3137,6 +3150,7 @@ Injuries, limitations or special requests: ${String(limitations)}
           );
 
           validation = validateWorkoutProgram(program, {
+            experience,
             daysPerWeek: parsedDays,
             sessionDuration: parsedDuration,
             equipment: equipmentForGeneration,
@@ -3425,6 +3439,7 @@ Required JSON format:
     const localReplacement = localDemoMode
       ? buildLocalExerciseReplacement({
         currentExercise,
+        experience: program.experience || experience,
         equipment: selectedEquipment,
         reservedExerciseIds: reservedSiblingExerciseIds,
         limitations,
@@ -3495,6 +3510,7 @@ Required JSON format:
         sessionDuration: program.sessionDuration || 60,
         equipment: selectedEquipment,
         muscleFocusMode: muscleFocus.muscleFocusMode,
+        experience: program.experience || experience,
         selectedMuscles: muscleFocus.selectedMuscles,
         // Repairing the replacement in isolation hides the rest of the
         // session from the substitution passes, which could then swap in an
@@ -3556,6 +3572,7 @@ Required JSON format:
     program.muscleFocusMode = muscleFocus.muscleFocusMode;
     program.selectedMuscles = muscleFocus.selectedMuscles;
     const programValidation = validateWorkoutProgram(program, {
+      experience: program.experience || experience,
       daysPerWeek: program.daysPerWeek || program.sessions.length,
       sessionDuration: program.sessionDuration || 60,
       equipment: selectedEquipment,

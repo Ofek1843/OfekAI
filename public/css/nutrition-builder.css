@@ -1853,3 +1853,5 @@ html[dir="ltr"] .nutrition-food-table td {
     justify-content: center;
   }
 }
+/* Localized recommendation hint under the food-style selector. */
+.builder-field-hint{display:block;margin-top:8px;color:#77dce7;font-size:12px;line-height:1.45}
