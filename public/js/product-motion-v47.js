@@ -119,9 +119,14 @@
     grid.className = "fp-v47-gender-grid";
     grid.setAttribute("role", "radiogroup");
     grid.setAttribute("aria-label", document.documentElement.lang === "he" ? "בחירת מין" : "Gender selection");
+    const isTrainingContext = select.dataset?.genderContext === "training";
     const copy = document.documentElement.lang === "he"
-      ? [["male", "זכר", "לחישוב הצרכים התזונתיים"], ["female", "נקבה", "לחישוב הצרכים התזונתיים"]]
-      : [["male", "Male", "Use the male calculation profile"], ["female", "Female", "Use the female calculation profile"]];
+      ? (isTrainingContext
+        ? [["male", "זכר", "הקשר אופציונלי לתוכנית"], ["female", "נקבה", "הקשר אופציונלי לתוכנית"]]
+        : [["male", "זכר", "לחישוב הצרכים התזונתיים"], ["female", "נקבה", "לחישוב הצרכים התזונתיים"]])
+      : (isTrainingContext
+        ? [["male", "Male", "Optional plan context"], ["female", "Female", "Optional plan context"]]
+        : [["male", "Male", "Use the male calculation profile"], ["female", "Female", "Use the female calculation profile"]]);
     grid.innerHTML = copy.map(([value, title, detail], index) => `<label class="fp-v47-gender-card" data-gender="${value}" aria-checked="${select.value === value}"><input type="radio" name="visualGender" value="${value}"${select.value === value ? " checked" : ""}><img class="fp-v47-gender-image" src="/assets/athlete-motion/v43/plate/normalized/frame-0${index + 1}.webp" alt="" width="96" height="120"><span><strong>${title}</strong><small>${detail}</small></span></label>`).join("");
     // Avoid nested labels: each radio owns its own visible label.
     const host = select.closest("label") || select;
@@ -148,7 +153,7 @@
   function start() {
     document.body.classList.add("fp-v47-motion-enabled");
     addGenderChoices();
-    ["#activityLevel", "#dietaryPreference", "#prepTimePreference", "#foodStylePreference"].forEach(addSelectChoices);
+    ["#activityLevel", "#dietaryPreference"].forEach(addSelectChoices);
     markChoices();
     const targets = revealTargets();
     targets.forEach((target, index) => {

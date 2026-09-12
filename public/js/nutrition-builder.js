@@ -16,22 +16,6 @@ const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#nutrition-result");
 const currentLanguage =
   localStorage.getItem("ofek-ai-language") || "en";
-const foodStyleSelect = document.querySelector("#foodStylePreference");
-const localFoodPreferenceHint = document.querySelector("#localFoodPreferenceHint");
-const likelyIsraeliVisitor = (() => {
-  const language = String(navigator.language || "").toLowerCase();
-  const timezone = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { return ""; } })();
-  return language === "he-il" || language.startsWith("he-") || timezone === "Asia/Jerusalem";
-})();
-if (likelyIsraeliVisitor && foodStyleSelect) {
-  foodStyleSelect.value = "supermarket";
-  if (localFoodPreferenceHint) {
-    localFoodPreferenceHint.hidden = false;
-    localFoodPreferenceHint.textContent = currentLanguage === "he"
-      ? "זיהינו שפה או אזור ישראלי — נציע כברירת מחדל ארוחות מוכרות וזמינות בסופר בישראל. אפשר לשנות בכל עת."
-      : "We detected an Israeli language or timezone — familiar supermarket meals are selected by default. You can change this anytime.";
-  }
-}
 async function authHeaders(contentType = "application/json") {
   const user = auth.currentUser;
   if (!user) throw new Error("Authentication required.");
@@ -330,8 +314,14 @@ form.addEventListener("submit", async (event) => {
     mealsPerDay: Number(formData.get("mealsPerDay")),
     dietaryPreference: formData.get("dietaryPreference"),
     mealFormatPreference: formData.get("mealFormatPreference") || "mix",
-    prepTimePreference: formData.get("prepTimePreference") || "any",
-    foodStylePreference: formData.get("foodStylePreference") || "mix",
+    // One preparation answer is enough. Keep the legacy server contract so
+    // saved plans/rerolls remain compatible, but derive it from the single
+    // visible question rather than presenting duplicate time controls.
+    prepTimePreference: ({ ready: "zero", quick: "five", cook: "fifteen", mix: "any" })[formData.get("mealFormatPreference")] || "any",
+    // Food style is intentionally not inferred from location/language. The
+    // catalog remains broad; favorites and dietary preference are the user's
+    // explicit controls over meal selection.
+    foodStylePreference: "mix",
     diagnosedConditions: formData.getAll("diagnosedConditions"),
     youthGuardianConsent: formData.get("youthGuardianConsent") === "on",
 

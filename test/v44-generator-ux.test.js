@@ -6,14 +6,16 @@ const path = require("node:path");
 const PUBLIC = path.join(__dirname, "..", "public");
 const read = (file) => fs.readFileSync(path.join(PUBLIC, file), "utf8");
 
-test("V4.4 nutrition practicality controls are first-class, localized form inputs", () => {
+test("nutrition builder keeps one practical meal-format choice and derives the removed detail fields", () => {
   const markup = read("nutrition-builder.html");
   const client = read("js/nutrition-builder.js");
   assert.match(markup, /name="mealFormatPreference"/);
-  assert.match(markup, /name="prepTimePreference"/);
-  assert.match(markup, /name="foodStylePreference"/);
+  assert.doesNotMatch(markup, /name="prepTimePreference"/);
+  assert.doesNotMatch(markup, /name="foodStylePreference"/);
   assert.match(markup, /data-he="איך נוח לך לאכול ביום־יום\?"/);
   assert.match(client, /mealFormatPreference: formData\.get/);
+  assert.match(client, /foodStylePreference: "mix"/);
+  assert.doesNotMatch(client, /navigator\.language/);
   assert.match(client, /meal-format-badge/);
   assert.match(client, /\[data-en\]\[data-he\]/);
 });

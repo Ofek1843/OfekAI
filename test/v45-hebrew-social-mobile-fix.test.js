@@ -24,7 +24,7 @@ test("Social loads the ocean layer and keeps Hebrew when the settings read is un
   const html = read("public", "social.html");
   const client = read("public", "js", "social.js");
   const css = read("public", "css", "v45-deep-ocean.css");
-  assert.ok(html.includes('/css/v45-deep-ocean.css?v=20260822-v45-rtl-hebrew-animation-fix-1'));
+  assert.ok(html.includes('/css/v45-deep-ocean.css?v=20260912-targeted-theme-volume-1'));
   assert.match(client, /let language = localLanguage\(\)/);
   assert.match(client, /async function loadSavedLanguage\(\)[\s\S]*?catch\s*\{[\s\S]*?language = saved === "he" \|\| saved === "en" \? saved : localLanguage\(\)/);
   assert.match(client, /privateSpace:\s*"מרחב פרטי"/);
@@ -50,7 +50,7 @@ test("daily and saved nutrition Hebrew copy is readable and no longer mojibake",
   const nutritionClient = read("public", "js", "nutrition-builder.js");
   assert.match(dailyCss, /html\[dir="rtl"\] \.daily-nutrition-shell :where\(\.daily-kicker,[\s\S]*?text-transform:\s*none/);
   assert.match(dailyCss, /html\[dir="rtl"\] \.daily-nutrition-shell \.food-table td\[data-label\]::before\s*\{[^}]*letter-spacing:\s*normal/s);
-  assert.ok(plansHtml.includes('/css/v45-deep-ocean.css?v=20260822-v45-rtl-hebrew-animation-fix-1'));
+  assert.ok(plansHtml.includes('/css/v45-deep-ocean.css?v=20260912-targeted-theme-volume-1'));
   for (const copy of ["בנייה ידנית", "עריכה", "שכפול", "גישה מוקדמת:"]) assert.ok(plansClient.includes(copy), copy);
   assert.match(plansClient, /const earlyAccessLabel = document\.querySelector\("#earlyAccessLabel"\)/);
   assert.match(plansClient, /if \(earlyAccessLabel\) earlyAccessLabel\.textContent = ui\.earlyAccessLabel/);
@@ -62,7 +62,7 @@ test("daily and saved nutrition Hebrew copy is readable and no longer mojibake",
 
 test("the service worker uses a fresh cache while keeping private routes network-only", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /CACHE_NAME = 'fuelphysique-v43-v47-motion-experience-polish-2'/);
+  assert.match(sw, /CACHE_NAME = 'fuelphysique-v45-targeted-theme-volume-1'/);
   assert.match(sw, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(sw, /event\.request\.destination === 'audio'/);

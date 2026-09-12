@@ -557,33 +557,32 @@ textarea:focus {
 .muscle-volume-visual {
   position: relative;
   display: grid;
-  width: 42px;
-  height: 42px;
-  flex: 0 0 42px;
+  width: 46px;
+  height: 54px;
+  flex: 0 0 46px;
   place-items: center;
-  overflow: hidden;
-  border: 1px solid rgba(75, 217, 230, .24);
-  border-radius: 13px;
-  background: radial-gradient(circle at 50% 35%, rgba(239, 111, 127, .42), rgba(31, 55, 78, .9));
+  overflow: visible;
 }
-.muscle-volume-visual::after {
-  content: "";
-  position: absolute;
-  inset: 7px;
-  border: 2px solid rgba(239, 111, 127, .62);
-  border-radius: 50% 50% 42% 42%;
-  transform: rotate(-8deg);
-  opacity: .8;
-}
-.muscle-volume-visual img {
-  position: relative;
-  z-index: 1;
+.muscle-anatomy-svg {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  opacity: .62;
-  mix-blend-mode: screen;
-  filter: saturate(.45) contrast(1.18);
+  overflow: visible;
+}
+.muscle-anatomy-svg .anatomy-body {
+  fill: rgba(147, 177, 205, .26);
+  stroke: rgba(174, 219, 239, .34);
+  stroke-width: 1.4;
+}
+.muscle-anatomy-svg .anatomy-region {
+  fill: rgba(119, 161, 190, .45);
+  stroke: rgba(207, 235, 247, .18);
+  stroke-width: .8;
+}
+.muscle-anatomy-svg .anatomy-region.is-targeted {
+  fill: #f26f78;
+  stroke: #ffe3e5;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 3px rgba(242, 111, 120, .52));
 }
 .muscle-volume-status {
   padding: 3px 9px;

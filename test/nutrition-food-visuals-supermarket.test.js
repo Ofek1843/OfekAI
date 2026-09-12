@@ -79,11 +79,12 @@ test("manual Hebrew supermarket discovery uses the same category and survives pa
   assert.ok(!next.meals.some(m => first.meals.some(n => m.id === n.id)));
 });
 
-test("thumbnail row preserves RTL flow and wrapping while supermarket option is bilingual", () => {
+test("thumbnail row preserves RTL flow and wrapping without a regional food-style prompt", () => {
   const css = fs.readFileSync(path.join(root, "public/css/daily-nutrition.css"), "utf8");
   assert.match(css, /\.food-identity \{[^}]*display: flex/);
   assert.match(css, /\.food-identity \.food-name \{[^}]*min-width: 0; overflow-wrap: anywhere/);
   assert.doesNotMatch(css.match(/\.food-identity[^}]*\}/g).join(""), /direction: ltr|float: left/);
   const html = fs.readFileSync(path.join(root, "public/nutrition-builder.html"), "utf8");
-  assert.match(html, /value="supermarket" data-en="[^"]+" data-he="[^"]+"/);
+  assert.match(html, /name="mealFormatPreference"/);
+  assert.doesNotMatch(html, /id="foodStylePreference"/);
 });

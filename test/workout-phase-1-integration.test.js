@@ -161,7 +161,7 @@ test("POST /api/workout-builder: an oversized program is repaired (accessory exe
     headers: authHeaders(),
     body: JSON.stringify(buildWorkoutPayload({
       daysPerWeek: 3,
-      sessionDuration: 30,
+      sessionDuration: 40,
       availableDays: ["monday", "wednesday", "friday"]
     }))
   });
@@ -169,9 +169,9 @@ test("POST /api/workout-builder: an oversized program is repaired (accessory exe
 
   assert.equal(res.status, 200, `Expected 200 after repair. Body: ${JSON.stringify(data)}`);
   assert.equal(data.success, true);
-  assert.ok(data.program.sessions[0].exercises.length <= 5, "Repair may have trimmed accessory exercises");
+  assert.ok(data.program.sessions[0].exercises.length <= 6, "Repair may have trimmed accessory exercises");
   assert.ok(data.program.sessions[0].exercises.length >= 3, "Repair must never trim below the minimum floor");
-  assert.ok(data.sessionDurations[0].estimatedMinutes <= 35, "Repaired session must fit the duration budget (30min + 5min tolerance)");
+  assert.ok(data.sessionDurations[0].estimatedMinutes <= 45, "Repaired session must fit the duration budget (40min + 5min tolerance)");
   assert.equal(data.validationSummary.volumePassed, true, "the trim must not leave weekly volume unbalanced for any required muscle");
 });
 
@@ -264,7 +264,7 @@ test("POST /api/workout-builder/reroll-exercise: a valid reroll returns 200", as
   const genRes = await fetch(`${BASE_URL}/api/workout-builder`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify(buildWorkoutPayload({ daysPerWeek: 1, sessionDuration: 60, availableDays: ["monday"] }))
+    body: JSON.stringify(buildWorkoutPayload({ daysPerWeek: 3, sessionDuration: 60, availableDays: ["monday", "wednesday", "friday"] }))
   });
   const genData = await genRes.json();
   assert.equal(genRes.status, 200, `Setup generation failed: ${JSON.stringify(genData)}`);

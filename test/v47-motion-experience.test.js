@@ -55,18 +55,18 @@ test("progress chart uses a one-time reveal class and does not invent data", () 
 test("motion assets load through the shared shell and stale cache identity is replaced", () => {
   assert.match(shell, /product-motion-v47\.css/);
   assert.match(shell, /product-motion-v47\.js/);
-  assert.match(sw, /fuelphysique-v43-v47-motion-experience/);
+  assert.match(sw, /fuelphysique-v45-targeted-theme-volume-1/);
 });
 test("gender visual cards preserve the existing male/female calculation values", () => {
   assert.match(js, /\[\"male\"/);
   assert.match(js, /\[\"female\"/);
   assert.match(js, /select\.dispatchEvent/);
 });
-test("important nutrition selects get visual choices without changing form values", () => {
+test("remaining nutrition selects get visual choices without reintroducing removed detail questions", () => {
   assert.match(js, /#activityLevel/);
   assert.match(js, /#dietaryPreference/);
-  assert.match(js, /#prepTimePreference/);
-  assert.match(js, /#foodStylePreference/);
+  assert.doesNotMatch(js, /#prepTimePreference/);
+  assert.doesNotMatch(js, /#foodStylePreference/);
   assert.match(js, /dataset\.fpV47Choices/);
   assert.match(js, /select\.value = card\.dataset\.value/);
 });

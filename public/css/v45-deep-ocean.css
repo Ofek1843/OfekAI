@@ -60,7 +60,6 @@ body.fp-v45-deep-ocean {
 
 /* V4.5 is intentionally an ocean-dark product skin. A previously stored
    light-mode preference must not reveal the pale V4 canvas underneath it. */
-html[data-theme="light"] body.fp-v45-deep-ocean,
 html[data-theme="dark"] body.fp-v45-deep-ocean {
   background:
     radial-gradient(80rem 52rem at -8% -14%, rgba(57, 159, 255, 0.3), transparent 61%),
@@ -374,7 +373,6 @@ body.fp-v45-deep-ocean .nav-link:hover {
     linear-gradient(155deg, #030b17 0%, #07182a 52%, #04111f 100%) !important;
 }
 
-html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard,
 html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard {
   background:
     radial-gradient(60rem 36rem at 12% 0%, rgba(57, 159, 255, 0.22), transparent 62%),
@@ -399,14 +397,12 @@ html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard {
   box-shadow: 0 28px 66px rgba(0, 5, 15, 0.3) !important;
 }
 
-html[data-theme="light"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header,
 html[data-theme="dark"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header {
   background:
     linear-gradient(115deg, rgba(13, 42, 70, 0.98), rgba(7, 26, 47, 0.96) 58%, rgba(10, 50, 73, 0.94)) !important;
   color: var(--v45-ocean-text) !important;
 }
 
-html[data-theme="light"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-context-item strong,
 html[data-theme="dark"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-context-item strong {
   color: var(--v45-ocean-text) !important;
 }
@@ -902,6 +898,117 @@ body.fp-v45-deep-ocean.fp-route-my-nutrition-plans :where(.page-nav, .plan-meta,
 
 body.fp-v45-deep-ocean.fp-route-my-nutrition-plans :where(.page-nav a, .secondary-link, .manage-actions a, .manage-actions button) {
   color: #e2eef8 !important;
+}
+
+/* Light theme -------------------------------------------------------------
+   V4.5 used to explicitly paint the dark ocean palette for both values of
+   data-theme, making the theme switch a storage-only control.  These tokens
+   and route surfaces are deliberately late in the cascade so `light` is a
+   real readable product appearance while the dark ocean direction remains
+   untouched for `dark` and system-dark users. */
+html[data-theme="light"] body.fp-v45-deep-ocean {
+  --v45-ocean-abyss: #edf6fc;
+  --v45-ocean-deep: #f7fbff;
+  --v45-ocean-mid: #e8f3fb;
+  --v45-ocean-surface: rgba(255, 255, 255, .92);
+  --v45-ocean-raised: rgba(255, 255, 255, .98);
+  --v45-ocean-border: rgba(28, 94, 142, .18);
+  --v45-ocean-border-strong: rgba(20, 119, 184, .38);
+  --v45-ocean-text: #10243a;
+  --v45-ocean-copy: #304e68;
+  --v45-ocean-muted: #58738d;
+  --fp-bg-deep: #edf6fc;
+  --fp-bg-page: #f7fbff;
+  --fp-bg-section: #e8f3fb;
+  --fp-surface: rgba(255, 255, 255, .92);
+  --fp-surface-raised: rgba(255, 255, 255, .98);
+  --fp-surface-soft: rgba(223, 241, 251, .84);
+  --fp-surface-input: #ffffff;
+  --fp-nav-surface: rgba(250, 253, 255, .93);
+  --fp-border: rgba(28, 94, 142, .18);
+  --fp-border-strong: rgba(20, 119, 184, .38);
+  --fp-text-primary: #10243a;
+  --fp-text-secondary: #304e68;
+  --fp-text-muted: #58738d;
+  background:
+    radial-gradient(68rem 42rem at -4% -8%, rgba(71, 190, 234, .24), transparent 60%),
+    radial-gradient(60rem 38rem at 105% 8%, rgba(95, 126, 255, .14), transparent 58%),
+    linear-gradient(155deg, #f8fcff 0%, #eaf5fc 52%, #f7fbff 100%) !important;
+  color: #10243a !important;
+  color-scheme: light;
+}
+
+html[data-theme="light"] body.fp-v45-deep-ocean .ocean-depth-layer { opacity: .13; }
+html[data-theme="light"] body.fp-v45-deep-ocean .ocean-depth-glow { opacity: .22; filter: blur(34px); }
+html[data-theme="light"] body.fp-v45-deep-ocean :where(.fp-global-nav, .navbar) {
+  border-color: rgba(28, 94, 142, .15) !important;
+  background: rgba(252, 254, 255, .9) !important;
+  box-shadow: 0 14px 34px rgba(34, 83, 121, .12) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean :where(.fp-global-brand, .fp-global-link, .nav-link) { color: #29455f !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean :where(.fp-global-link:hover, .fp-global-link[aria-current="page"], .nav-link:hover) { color: #0d5f98 !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-index .hero-shell {
+  border-color: rgba(25, 112, 171, .2) !important;
+  background: linear-gradient(120deg, rgba(255,255,255,.96), rgba(234,246,253,.94)) !important;
+  box-shadow: 0 30px 80px rgba(39, 94, 132, .14) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-index :where(#landingHeroTitle, .section-heading h2, .journey-card h3) { color: #10243a !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-index :where(.hero-lede, .hero-subcopy, .hero-support, .section-heading p, .feature-section .journey-card p) { color: #466078 !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-index :where(.hero-panel, .journey-card, .result-story, .transformation-invite, .product-loop-demo, .product-loop-panel, .sample-workout-card, .sample-macro-card, .sample-coach-card, .product-loop-step) {
+  border-color: rgba(28, 101, 151, .18) !important;
+  background-color: rgba(255,255,255,.9) !important;
+  color: #10243a !important;
+  box-shadow: 0 18px 42px rgba(41, 96, 135, .11) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard {
+  background: radial-gradient(60rem 36rem at 10% 0%, rgba(64, 173, 228, .19), transparent 62%), linear-gradient(155deg, #f8fcff 0%, #eaf5fc 52%, #f7fbff 100%) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .dashboard-shell {
+  border-color: rgba(28, 94, 142, .12) !important;
+  background: linear-gradient(180deg, rgba(252,254,255,.94), rgba(236,247,253,.96)) !important;
+  box-shadow: 0 30px 76px rgba(34,83,121,.13) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.dashboard-compact-header, .capability-card, .dashboard-grid > article, .dashboard-grid > section, .dashboard-grid > details, .stats-grid > *, .tools-accordion) {
+  color: #10243a !important;
+  border-color: rgba(28, 94, 142, .2) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(235,246,253,.94)) !important;
+  box-shadow: 0 16px 38px rgba(34,83,121,.11) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.dashboard-compact-header .hero-copy h1, .capability-card h2, .dashboard-context-item strong) { color: #10243a !important; text-shadow: none !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-card p { color: #47627a !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.theme-toggle, .capability-action:not(.capability-action--primary)) { color: #244864 !important; background: rgba(255,255,255,.84) !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean:not(.fp-route-index) :where(.builder-card, .builder-wizard, .program-card, .plan-card, .nutrition-plan-card, .settings-card, .panel, .view-hero) {
+  border-color: rgba(28, 94, 142, .18) !important;
+  background-color: rgba(255,255,255,.94) !important;
+  color: #10243a !important;
+  box-shadow: 0 18px 46px rgba(34,83,121,.11) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean :where(input, select, textarea) { background-color: #fff !important; color: #10243a !important; border-color: rgba(28,94,142,.28) !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean :where(p, label, small, summary, .muted, .text-muted) { color: #4d687f; }
+
+/* The social workspace used to opt out of a saved light preference. Keep its
+   information density, but let the global theme control apply there too. */
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-social {
+  --social-bg: #eef7fc;
+  --social-panel: rgba(255, 255, 255, .95);
+  --social-panel-strong: #ffffff;
+  --social-border: rgba(28, 94, 142, .18);
+  --social-text: #10243a;
+  --social-muted: #49677e;
+  --social-shadow: 0 20px 48px rgba(34, 83, 121, .12);
+  color-scheme: light;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-social .social-abyss {
+  background: linear-gradient(150deg, #f8fcff 0%, #e5f3fb 55%, #f7fbff 100%) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-social :where(.social-topbar, .social-app, .conversation-rail, .social-sidebar, .social-context-panel, .chat-header, .user-search, .username-field, .social-dialog, .social-section, .person-card, .my-identity-card, .artifact-card, .share-summary, .preview-session, .preview-meal, .preview-record) {
+  background: rgba(255, 255, 255, .95) !important;
+  border-color: rgba(28, 94, 142, .18) !important;
+  color: #10243a !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-social :where(input, textarea, select, .social-mode-button, .social-tab, .back-link, .icon-button, .secondary-button) {
+  background-color: #fff !important;
+  color: #244864 !important;
 }
 
 @media (max-width: 760px) {

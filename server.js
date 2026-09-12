@@ -52,6 +52,7 @@ const {
 } = require("./lib/workout-volume-ledger");
 const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
 const { buildLocalWorkoutProgram, buildLocalExerciseReplacement } = require("./lib/local-demo-generators");
+const { adjustWorkoutVolume } = require("./lib/workout-volume-adjustment");
 const { calculateNutritionTargets } = require("./lib/nutrition-targets");
 const { mealById, searchManualMeals } = require("./lib/manual-nutrition");
 const socialTyping = require("./lib/social-typing");
@@ -1280,17 +1281,13 @@ async function createChatCompletion({
     if (mockResponseMode) {
       const mockAttempt = Number(process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS || 0) + 1;
       process.env.MOCK_OPENAI_CHAT_RESPONSE_ATTEMPTS = String(mockAttempt);
-      // A well-rounded single-day bodyweight session (not just push-up +
-      // squat): every REQUIRED muscle for a 1-day/week bodyweight profile
-      // needs enough
-      // credited volume to clear its target range, or the new
-      // validationSummary.volumePassed gate in POST /api/workout-builder
-      // correctly turns this into a controlled 422 rather than a "successful"
-      // mock response — set counts here were tuned against the real
-      // repair+volume pipeline, not guessed.
+      // A bounded, three-day bodyweight fixture. It deliberately observes the
+      // same four-working-set ceiling as production so retry tests never rely
+      // on a response the real validator would reject.
       const validWorkout = JSON.stringify({
         programName: "Mock Workout Program",
-        daysPerWeek: 1,
+        daysPerWeek: 3,
+        weeklyScheduleDays: [1, 3, 5],
         durationWeeks: 8,
         goal: "Mock Goal",
         sessions: [
@@ -1298,14 +1295,30 @@ async function createChatCompletion({
             day: 1,
             name: "Mock Session 1",
             exercises: [
-              { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "diamond-push-up", name: "Diamond Push-up", demoName: "Diamond Push-up", muscleGroup: "Triceps", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
+            ]
+          },
+          {
+            day: 3,
+            name: "Mock Session 2",
+            exercises: [
               { exerciseId: "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-              { exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 2, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-              { exerciseId: "diamond-push-up", name: "Diamond Push-up", demoName: "Diamond Push-up", muscleGroup: "Triceps", equipment: "Bodyweight", sets: 1, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "pistol-squat", name: "Pistol Squat", demoName: "Pistol Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-              { exerciseId: "nordic-hamstring-curl", name: "Nordic Hamstring Curl", demoName: "Nordic Hamstring Curl", muscleGroup: "Hamstrings", equipment: "Bodyweight", sets: 3, reps: "6-10", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
-              { exerciseId: "tibialis-raise", name: "Tibialis Raise", demoName: "Tibialis Raise", muscleGroup: "Calves", equipment: "Bodyweight", sets: 5, reps: "12-20", restSeconds: 60, rir: "1-3", notes: "Mock mode." },
-              { exerciseId: "plank", name: "Plank", demoName: "Plank", muscleGroup: "Core", equipment: "Bodyweight", sets: 1, reps: "30-45 sec", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
+              { exerciseId: "nordic-hamstring-curl", name: "Nordic Hamstring Curl", demoName: "Nordic Hamstring Curl", muscleGroup: "Hamstrings", equipment: "Bodyweight", sets: 4, reps: "6-10", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "standing-bodyweight-calf-raise", name: "Standing Bodyweight Calf Raise", demoName: "Standing Bodyweight Calf Raise", muscleGroup: "Calves", equipment: "Bodyweight", sets: 4, reps: "12-20", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
+            ]
+          },
+          {
+            day: 5,
+            name: "Mock Session 3",
+            exercises: [
+              { exerciseId: "pseudo-planche-push-up", name: "Pseudo Planche Push-up", demoName: "Pseudo Planche Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 4, reps: "6-10", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "bodyweight-glute-bridge", name: "Bodyweight Glute Bridge", demoName: "Bodyweight Glute Bridge", muscleGroup: "Glutes", equipment: "Bodyweight", sets: 4, reps: "10-15", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
+              { exerciseId: "dead-bug", name: "Dead Bug", demoName: "Dead Bug", muscleGroup: "Core", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 60, rir: "1-3", notes: "Mock mode." }
             ]
           }
         ]
@@ -2698,6 +2711,7 @@ app.post("/api/workout-builder", async (req, res) => {
     const {
       goal,
       experience,
+      gender = "",
       age,
       daysPerWeek,
       sessionDuration,
@@ -2885,6 +2899,7 @@ Programming rules:
 - Use evidence-based hypertrophy and strength principles.
 - Avoid excessive volume.
 - Use realistic sets, repetitions, rest periods and RIR.
+- Prescribe no more than 4 working sets for any one exercise in a session. If more volume is needed, use another compatible movement or distribute it across training days rather than assigning 5 or more sets to one exercise.
 - Treat experience level as programming context, not a reason to add arbitrary complexity. For beginners, prefer understandable, stable movements, manageable complexity and recoverable volume. For advanced athletes, use the existing advanced target ranges and add exercise variety or specialization only when the stated constraints justify it; do not automatically make the plan longer or more complex.
 - When experience is professional and training style is calisthenics, this is an elite skill athlete request: prioritize appropriately difficult, well-scaled skill practice such as planche, front lever, one-arm pull-up, muscle-up, handstand push-up and typewriter pull-ups when the required equipment is available. Do not fill an advanced calisthenics plan with beginner substitutions such as Australian rows unless the user explicitly requests regressions or lacks the needed equipment. Skill work must still include safe progressions, realistic holds/reps and fatigue-aware volume.
 - Hypertrophy work is not restricted to 8-12 reps. Choose a practical load for each prescribed rep range, and make RIR meaningful: the athlete should finish each working set at the prescribed proximity to failure. Momentary muscular failure is not required on every set.
@@ -3031,6 +3046,11 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     program.daysPerWeek = parsedDays;
+    // Workout sex is optional contextual metadata only. Do not use it for
+    // volume, exercise, progression or any physiological inference.
+    program.gender = ["male", "female"].includes(String(gender).toLowerCase())
+      ? String(gender).toLowerCase()
+      : "";
     program.muscleFocusMode = muscleFocus.muscleFocusMode;
     program.selectedMuscles = muscleFocus.selectedMuscles;
 
@@ -3325,6 +3345,115 @@ Injuries, limitations or special requests: ${String(limitations)}
     });
   } finally {
     if (dedupeKey) inFlight.finish(dedupeKey);
+  }
+});
+
+// The Weekly Muscle Volume controls mutate the actual generated program on
+// the server rather than changing a number only in the browser.  Keeping this
+// deterministic means an adjusted program can be saved, shared and reopened
+// without a second hidden recalculation.
+app.post("/api/workout-builder/adjust-volume", async (req, res) => {
+  try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    const {
+      program,
+      muscle,
+      delta,
+      goal,
+      priority,
+      experience,
+      trainingStyle,
+      equipment = [],
+      limitations = "None",
+      language = "en",
+      muscleFocusMode,
+      selectedMuscles,
+      sessionDuration
+    } = req.body || {};
+    if (!program || !Array.isArray(program.sessions)) {
+      return res.status(400).json({ error: language === "he" ? "נדרשת תוכנית אימונים תקינה." : "A valid workout program is required." });
+    }
+    const requestedDelta = Number(delta);
+    if (!Number.isInteger(requestedDelta) || ![-1, 1].includes(requestedDelta)) {
+      return res.status(400).json({ error: language === "he" ? "שינוי הנפח אינו תקין." : "The volume adjustment is invalid." });
+    }
+    const allowedEquipment = deriveAllowedEquipment({ trainingStyle, selectedEquipment: equipment }).allowed;
+    const muscleFocus = normalizeMuscleFocusContract({
+      muscleFocusMode: muscleFocusMode ?? program.muscleFocusMode,
+      selectedMuscles: selectedMuscles ?? program.selectedMuscles
+    });
+    if (!muscleFocus.ok) return res.status(400).json({ error: "Invalid muscle focus preferences." });
+
+    const profile = {
+      priority: priority || derivePriorityFromGoal(goal || program.goal),
+      experience: String(experience || program.experience || "beginner").toLowerCase(),
+      daysPerWeek: program.sessions.length,
+      sessionDuration: Number(sessionDuration) || 60,
+      equipment: allowedEquipment,
+      muscleFocusMode: muscleFocus.muscleFocusMode,
+      selectedMuscles: muscleFocus.selectedMuscles
+    };
+    const adjustment = adjustWorkoutVolume({
+      program,
+      muscle,
+      delta: requestedDelta,
+      profile,
+      language,
+      limitations
+    });
+    if (!adjustment.changed) {
+      const message = adjustment.reason === "hard-maximum"
+        ? (language === "he" ? "לא ניתן להוסיף יותר נפח: הגעתם לתקרת הנפח הבטוחה לקבוצת השריר הזו." : "Volume cannot be increased: this muscle is already at its safe programming ceiling.")
+        : adjustment.reason === "minimum-program"
+          ? (language === "he" ? "לא ניתן להפחית עוד בלי להסיר עבודה חיונית מהתוכנית." : "Volume cannot be reduced further without removing essential work from the program.")
+          : (language === "he" ? "לא נמצאה התאמת נפח בטוחה עבור התוכנית הזו." : "No safe volume adjustment is available for this program.");
+      return res.status(409).json({ error: message, reason: adjustment.reason });
+    }
+
+    const validation = validateWorkoutProgram(adjustment.program, {
+      experience: profile.experience,
+      daysPerWeek: program.sessions.length,
+      sessionDuration: profile.sessionDuration,
+      equipment: allowedEquipment,
+      availableDayIndexes: Array.isArray(program.weeklyScheduleDays) ? program.weeklyScheduleDays : [],
+      goalProfile: String(profile.priority).toLowerCase() === "strength" ? "strength" : "hypertrophy"
+    });
+    if (!validation.ok) {
+      return res.status(422).json({ error: workoutValidationFailureMessage(validation, language) });
+    }
+
+    const weekly = adjustment.volume;
+    const change = adjustment.change;
+    const actionText = {
+      "added-set": language === "he" ? "נוסף סט" : "Added a set",
+      "added-exercise": language === "he" ? "נוסף תרגיל" : "Added an exercise",
+      "removed-set": language === "he" ? "הוסר סט" : "Removed a set",
+      "removed-exercise": language === "he" ? "הוסר תרגיל" : "Removed an exercise"
+    }[change.action] || (language === "he" ? "התוכנית עודכנה" : "Program updated");
+    const message = language === "he"
+      ? `${actionText} ביום ${change.day}: ${change.exerciseName}.`
+      : `${actionText} on Day ${change.day}: ${change.exerciseName}.`;
+
+    return res.json({
+      success: true,
+      program: adjustment.program,
+      weeklyVolume: {
+        perMuscle: buildPerMuscleWithTargets(weekly.perMuscle, profile),
+        totalHardSets: weekly.totalHardSets,
+        mappedExercises: weekly.mappedExercises,
+        unknownExercises: weekly.unknownExercises,
+        mappingCoveragePercent: weekly.mappingCoveragePercent,
+        volumeRepresents: "starting-week",
+        qualityScore: buildQualityDiagnostic(adjustment.program, profile).score
+      },
+      change,
+      message
+    });
+  } catch (error) {
+    console.error("Workout volume adjustment error:", error);
+    return res.status(error.status || 500).json({ error: error.message || "Could not adjust workout volume." });
   }
 });
 

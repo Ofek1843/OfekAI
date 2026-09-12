@@ -402,7 +402,7 @@ test("Validator: schema validation catches missing/invalid fields", () => {
 
   assert.equal(result.ok, false, "Should catch invalid sets");
   assert.ok(
-    result.errors.some((e) => e.includes("sets must be 1-20")),
+    result.errors.some((e) => e.includes("between 1 and 4")),
     "Should report sets out of range"
   );
 });

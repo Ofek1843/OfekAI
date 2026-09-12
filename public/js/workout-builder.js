@@ -793,6 +793,9 @@ form.addEventListener("submit", async (event) => {
     goal: formData.get("goal"),
     priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
+    // Optional plan context. It is stored with the generated plan but does
+    // not alter exercise selection, volume policy or dosage.
+    gender: formData.get("gender") || "",
     age: Number(formData.get("age")),
     daysPerWeek: Number(formData.get("daysPerWeek")),
     sessionDuration: Number(
@@ -1061,20 +1064,40 @@ const MUSCLE_DISPLAY_NAMES = {
   traps: "Traps"
 };
 
-const MUSCLE_VOLUME_IMAGES = {
-  chest: "bench-press.webp",
-  back: "pull-up.webp",
-  delts: "dumbbell-shoulder-press.webp",
-  rear_delts: "face-pull.webp",
-  biceps: "dumbbell-bicep-curl.webp",
-  triceps: "cable-tricep-pushdown.webp",
-  quads: "barbell-squat.webp",
-  hamstrings: "romanian-deadlift.webp",
-  glutes: "barbell-hip-thrust.webp",
-  calves: "dumbbell-calf-raise.webp",
-  core: "hanging-knee-raise.webp",
-  traps: "barbell-shrug.webp"
+// Weekly volume needs to answer "which body part?", not show a tiny
+// exercise screenshot. These small, original SVG anatomy figures use the
+// same abstract front/back silhouette as the muscle-focus picker and mark
+// the relevant region in a high-contrast coral tone.
+const MUSCLE_ANATOMY_VIEW = {
+  chest: "front", delts: "front", biceps: "front", core: "front", quads: "front", calves: "front",
+  back: "back", rear_delts: "back", triceps: "back", traps: "back", glutes: "back", hamstrings: "back"
 };
+
+function muscleAnatomySvg(targetMuscle) {
+  const view = MUSCLE_ANATOMY_VIEW[targetMuscle] || "front";
+  const regions = {
+    front: [
+      ["delts", '<ellipse cx="34" cy="52" rx="12" ry="9"/><ellipse cx="86" cy="52" rx="12" ry="9"/>'],
+      ["chest", '<rect x="42" y="46" width="36" height="24" rx="8"/>'],
+      ["biceps", '<rect x="20" y="64" width="13" height="30" rx="6"/><rect x="87" y="64" width="13" height="30" rx="6"/>'],
+      ["core", '<rect x="47" y="74" width="26" height="34" rx="7"/>'],
+      ["quads", '<rect x="42" y="118" width="16" height="44" rx="8"/><rect x="62" y="118" width="16" height="44" rx="8"/>'],
+      ["calves", '<rect x="44" y="168" width="13" height="30" rx="6"/><rect x="63" y="168" width="13" height="30" rx="6"/>']
+    ],
+    back: [
+      ["traps", '<path d="M44 40 L76 40 L68 60 L52 60 Z"/>'],
+      ["rear_delts", '<ellipse cx="34" cy="54" rx="12" ry="9"/><ellipse cx="86" cy="54" rx="12" ry="9"/>'],
+      ["back", '<rect x="42" y="62" width="36" height="42" rx="8"/>'],
+      ["triceps", '<rect x="20" y="66" width="13" height="30" rx="6"/><rect x="87" y="66" width="13" height="30" rx="6"/>'],
+      ["glutes", '<rect x="42" y="110" width="36" height="22" rx="10"/>'],
+      ["hamstrings", '<rect x="42" y="136" width="16" height="40" rx="8"/><rect x="62" y="136" width="16" height="40" rx="8"/>'],
+      ["calves", '<rect x="44" y="178" width="13" height="22" rx="6"/><rect x="63" y="178" width="13" height="22" rx="6"/>']
+    ]
+  }[view];
+  const body = '<ellipse class="anatomy-body" cx="60" cy="24" rx="14" ry="16"/><rect class="anatomy-body" x="38" y="42" width="44" height="70" rx="14"/><rect class="anatomy-body" x="18" y="50" width="16" height="52" rx="8"/><rect class="anatomy-body" x="86" y="50" width="16" height="52" rx="8"/><rect class="anatomy-body" x="40" y="110" width="18" height="90" rx="9"/><rect class="anatomy-body" x="62" y="110" width="18" height="90" rx="9"/>';
+  const overlays = regions.map(([id, shape]) => `<g class="anatomy-region${id === targetMuscle ? " is-targeted" : ""}">${shape}</g>`).join("");
+  return `<svg class="muscle-anatomy-svg" viewBox="0 0 120 210" role="presentation" focusable="false" data-anatomy-view="${view}">${body}${overlays}</svg>`;
+}
 
 // Whole numbers render without a decimal; a value only carrying fractional
 // (indirect) credit renders with exactly one decimal place, never more.
@@ -1153,7 +1176,7 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
         <div class="muscle-volume-row" data-muscle="${escapeHtml(muscleKey)}" data-status="${statusClass}">
           <div class="muscle-volume-row-header">
             <div class="muscle-volume-heading">
-              <span class="muscle-volume-visual" aria-hidden="true"><img src="/images/exercises/${escapeHtml(MUSCLE_VOLUME_IMAGES[muscleKey] || "fuelphysique-demo-fallback.svg")}" alt=""></span>
+              <span class="muscle-volume-visual" aria-hidden="true">${muscleAnatomySvg(muscleKey)}</span>
               <span class="muscle-volume-name">${escapeHtml(translateWorkoutValue(MUSCLE_DISPLAY_NAMES[muscleKey]))}</span>
             </div>
             <span class="muscle-volume-status muscle-volume-status--${statusClass}"${secondaryNote ? ` title="${escapeHtml(secondaryNote)}"` : ""}>${escapeHtml(statusLabel)}</span>
@@ -1238,59 +1261,47 @@ function bindVolumeAdjusters(root) {
   });
 }
 
-function adjustWeeklyVolume(root, muscle, delta) {
+async function adjustWeeklyVolume(root, muscle, delta) {
   const program = window.currentWorkoutProgram;
-  const weeklyVolume = window.currentWeeklyVolume;
-  if (!program || !weeklyVolume?.perMuscle?.[muscle] || !delta) return;
-
-  const matches = [];
-  program.sessions?.forEach((session, sessionIndex) => {
-    session.exercises?.forEach((exercise, exerciseIndex) => {
-      if (String(exercise.muscleGroup || "").toLowerCase() === String(muscle).toLowerCase()) {
-        matches.push({ exercise, sessionIndex, exerciseIndex });
-      }
+  if (!program || !window.currentWeeklyVolume?.perMuscle?.[muscle] || !delta) return;
+  const controls = [...root.querySelectorAll("[data-volume-adjust]")];
+  controls.forEach((control) => { control.disabled = true; control.setAttribute("aria-busy", "true"); });
+  try {
+    const formData = new FormData(form);
+    const response = await fetch("/api/workout-builder/adjust-volume", {
+      method: "POST",
+      headers: await authHeaders(),
+      body: JSON.stringify({
+        program,
+        muscle,
+        delta,
+        goal: formData.get("goal"),
+        priority: derivePriorityFromGoal(formData.get("goal")),
+        experience: formData.get("experience"),
+        trainingStyle: formData.get("trainingStyle"),
+        equipment: formData.getAll("equipment"),
+        limitations: formData.get("limitations"),
+        sessionDuration: Number(formData.get("sessionDuration")),
+        language: currentLanguage,
+        muscleFocusMode: program.muscleFocusMode,
+        selectedMuscles: program.selectedMuscles
+      })
     });
-  });
-  if (!matches.length) return;
-
-  const target = delta > 0
-    ? matches.slice().sort((left, right) => Number(left.exercise.sets) - Number(right.exercise.sets))[0]
-    : matches.slice().sort((left, right) => Number(right.exercise.sets) - Number(left.exercise.sets))[0];
-  const currentSets = Math.max(1, Number(target.exercise.sets) || 1);
-  if (delta < 0 && currentSets <= 1) return;
-  target.exercise.sets = currentSets + delta;
-
-  const entry = weeklyVolume.perMuscle[muscle];
-  const hardMaximum = Number(entry.hardMaximum);
-  if (delta > 0 && Number.isFinite(hardMaximum) && Number(entry.total) + delta > hardMaximum) {
-    setStatus(isHebrew ? ui.weeklyVolumeCapReached : ui.weeklyVolumeCapReached);
-    return;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.program) throw new Error(data.error || (isHebrew ? "לא ניתן לעדכן את נפח האימון." : "Could not update training volume."));
+    window.currentWorkoutProgram = data.program;
+    window.currentWeeklyVolume = data.weeklyVolume;
+    const url = new URL(window.location.href);
+    url.searchParams.set("day", String((Number(data.change?.sessionIndex) || 0) + 1));
+    history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    renderProgram(data.program, data.weeklyVolume);
+    setStatus(data.message || (isHebrew ? "התוכנית עודכנה." : "Program updated."));
+    requestAnimationFrame(() => resultElement.querySelector(`[data-program-day="${Number(data.change?.sessionIndex) || 0}"]`)?.classList.add("is-volume-updated"));
+  } catch (error) {
+    setStatus(error instanceof Error && error.message ? error.message : (isHebrew ? "לא ניתן לעדכן את נפח האימון." : "Could not update training volume."), true);
+  } finally {
+    controls.forEach((control) => { control.disabled = false; control.removeAttribute("aria-busy"); });
   }
-  entry.direct = Math.max(0, (Number(entry.direct) || 0) + delta);
-  entry.total = Math.max(0, (Number(entry.total) || 0) + delta);
-  entry.status = volumeStatusForAdjustment(entry);
-
-  const card = root.querySelector(`.exercise-card[data-session="${target.sessionIndex}"][data-exercise="${target.exerciseIndex}"]`);
-  const setsValue = card?.querySelector(".exercise-stat-value");
-  if (setsValue) {
-    setsValue.textContent = String(target.exercise.sets);
-    card.classList.remove("is-volume-updated");
-    requestAnimationFrame(() => card.classList.add("is-volume-updated"));
-  }
-
-  const disclosure = root.querySelector("#weekly-volume-container");
-  const open = Boolean(disclosure?.open);
-  if (disclosure) {
-    disclosure.innerHTML = `
-      <summary>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</summary>
-      ${renderWeeklyVolumeSummary(weeklyVolume)}
-    `;
-    disclosure.open = open;
-  }
-  const focusPanel = root.querySelector("#weekly-volume-focus-panel");
-  if (focusPanel && open) focusPanel.innerHTML = renderWeeklyVolumeSummary(weeklyVolume);
-  bindVolumeAdjusters(root);
-  setStatus(isHebrew ? "נפח השריר עודכן." : "Muscle volume updated.");
 }
 
 // Shown only when a focus mode is active. Balanced plans render nothing, so
@@ -1732,6 +1743,7 @@ try {
     goal: formData.get("goal"),
     priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
+    gender: formData.get("gender") || "",
     trainingStyle: formData.get("trainingStyle"),
     equipment: formData.getAll("equipment"),
     limitations: formData.get("limitations"),
