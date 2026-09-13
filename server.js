@@ -86,6 +86,12 @@ const {
   isGpt5ChatModel,
   incompleteResponseMessage
 } = require("./lib/openai-diagnostics");
+const {
+  FOOD_INTERPRETATION_MODEL,
+  MAX_FOOD_TEXT_LENGTH,
+  foodInterpretationMessages,
+  sanitizeFoodInterpretation
+} = require("./lib/food-interpretation");
 
 const WORKOUT_DISABLED_EXERCISE_PROMPT_LIST = MISSING_DEDICATED_IMAGE_EXERCISES
   .map((exercise) => exercise.title)
@@ -1516,6 +1522,20 @@ async function createChatCompletion({
         confidence: "medium"
       });
     }
+    if (/classify ONE unknown food/i.test(systemPrompt)) {
+      return JSON.stringify({
+        recognized: true,
+        food: { name: { en: "Mock food", he: "מזון לדוגמה" }, aliases: ["mock food"] },
+        nutritionPer100g: { calories: 120, proteinGrams: 5, carbsGrams: 18, fatGrams: 3 },
+        portion: {
+          kind: "serving",
+          defaultGrams: 150,
+          choices: [{ id: "small", label: { en: "Small serving", he: "מנה קטנה" }, grams: 100 }]
+        },
+        confidence: "medium",
+        reason: "Mock food interpretation"
+      });
+    }
     if (/Return ONLY valid JSON/i.test(systemPrompt)) {
       return JSON.stringify({ ok: true, mock: true });
     }
@@ -1752,6 +1772,46 @@ function applyQuickFoodRealityFloor(foodText, totals) {
     adjusted: Object.values(floors).some((value) => value > 0)
   };
 }
+
+app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
+  let dedupeKey = null;
+  try {
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    rateLimiters.ai(req, user.uid);
+    dedupeKey = rejectIfDuplicateAi(req, res, user, "daily-food-interpretation");
+    if (!dedupeKey) return;
+
+    const text = String(req.body?.text || "").replace(/\s+/g, " ").trim().slice(0, MAX_FOOD_TEXT_LENGTH);
+    const language = String(req.body?.language || "en").toLowerCase() === "he" ? "he" : "en";
+    if (text.length < 2) return res.status(400).json({ error: "Food text is required." });
+    // A missing key is an expected local-development configuration, not a
+    // broken food log. The browser keeps the deterministic catalog path and
+    // simply tells the user to choose a clearer known food for this entry.
+    if (!process.env.OPENAI_API_KEY && !mockExternalServices) {
+      return res.status(503).json({ error: "Smart food lookup is not configured on this server.", code: "SMART_FOOD_UNAVAILABLE" });
+    }
+
+    const reply = await createChatCompletion({
+      taskName: "daily-food-interpretation",
+      model: String(process.env.OPENAI_FOOD_MODEL || FOOD_INTERPRETATION_MODEL).trim() || FOOD_INTERPRETATION_MODEL,
+      temperature: 0,
+      maxTokens: 420,
+      messages: foodInterpretationMessages({ text, language })
+    });
+    const interpretation = sanitizeFoodInterpretation(extractJsonObject(reply), { fallbackName: text });
+    if (!interpretation) return res.status(422).json({ error: "Could not identify that food confidently.", code: "UNKNOWN_FOOD" });
+    res.json({ interpretation });
+  } catch (error) {
+    console.error("Daily food interpretation failed:", error.message);
+    res.status(error.status || (error.name === "AbortError" ? 504 : 502)).json({
+      error: error.status === 429 ? "Too many food lookups. Please try again shortly." : "Could not identify that food right now.",
+      code: error.status === 429 ? "RATE_LIMITED" : "SMART_FOOD_UNAVAILABLE"
+    });
+  } finally {
+    if (dedupeKey) inFlight.finish(dedupeKey);
+  }
+});
 
 app.post("/api/quick-food-estimate", async (req, res) => {
   let dedupeKey = null;

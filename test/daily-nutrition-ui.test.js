@@ -17,13 +17,13 @@ const shell = read("public/js/redesign-shell.js");
 const dashboard = read("public/dashboard.html");
 const server = read("server.js");
 
-test("daily logging action precedes entries and weekly analytics", () => {
+test("daily logging action precedes entries and the day history", () => {
   const composer = html.indexOf('id="foodComposerForm"');
   const entries = html.indexOf('id="foodEntries"');
-  const weekly = html.indexOf('id="weeklyChart"');
+  const calendar = html.indexOf('id="calendarGrid"');
   assert.ok(composer > 0);
   assert.ok(composer < entries);
-  assert.ok(entries < weekly);
+  assert.ok(entries < calendar);
 });
 
 test("daily nutrition uses semantic, accessible controls and live summaries", () => {
@@ -32,7 +32,7 @@ test("daily nutrition uses semantic, accessible controls and live summaries", ()
   assert.match(html, /<table class="food-table">/);
   assert.match(html, /role="progressbar"/);
   assert.match(html, /role="status" aria-live="polite"/);
-  assert.match(html, /role="img" aria-label="Seven-day calorie intake trend"/);
+  assert.match(html, /id="macroRing" class="macro-ring" role="img"/);
 });
 
 test("client protects the route and keeps target history plan-first", () => {
@@ -52,18 +52,24 @@ test("every daily mutation reaches autosave and a failed save does not poison th
   assert.match(client, /finishDayButton[\s\S]*queueSave\(\)/);
 });
 
-test("daily workflow exposes history, copy, recents, favorites, custom foods and combinations", () => {
+test("daily workflow keeps a compact day history and saved combinations", () => {
   for (const control of [
     "previousDay",
     "nextDay",
     "selectedDate",
     "copyYesterdayButton",
-    "recentFoods",
-    "customFoodForm",
     "combinationForm",
-    "finishDayButton"
+    "finishDayButton",
+    "nearbyDays",
+    "calendarGrid",
+    "calendarPreviousMonth",
+    "calendarNextMonth"
   ]) assert.match(html, new RegExp(`id="${control}"`));
-  assert.match(client, /filter\(\(food\) => food\.favorite\)/);
+  assert.doesNotMatch(html, /id="recentFoods"/);
+  assert.doesNotMatch(html, /id="customFoodForm"/);
+  assert.match(client, /function renderDayHistory\(/);
+  assert.match(client, /data-history-date/);
+  assert.match(client, /data-calendar-date/);
   assert.match(client, /copyPreviousDay/);
 });
 
@@ -107,7 +113,7 @@ test("natural portions, estimates, partial success and editable corrections are 
 });
 
 test("Daily Nutrition localizes structural accessibility labels in Hebrew", () => {
-  for (const key of ["nutritionTools", "nutritionLogDate", "dailyOverview", "caloriesConsumed", "foodExamples", "chartReferenceLines"]) {
+  for (const key of ["nutritionTools", "nutritionLogDate", "dailyOverview", "dayHistory", "foodExamples"]) {
     assert.match(html, new RegExp(`data-copy-aria="${key}"`));
     assert.equal((copy.match(new RegExp(`\\b${key}:`, "g")) || []).length, 2);
   }

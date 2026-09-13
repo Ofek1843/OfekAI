@@ -19,6 +19,8 @@ const FOOD_CATALOG = Object.freeze([
   { id: "high-protein-yogurt", name: { en: "High-protein yogurt", he: "יוגורט חלבון" }, aliases: ["high protein yogurt", "protein yogurt", "greek yogurt", "יוגורט חלבון", "יוגורט פרו", "יוגורט יווני"], baseAmount: 1, baseUnit: "item", macros: { calories: 150, protein: 20, carbs: 12, fat: 2 } },
   { id: "banana", name: { en: "Banana", he: "בננה" }, aliases: ["banana", "bananas", "בננה", "בננות"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 89, protein: 1.1, carbs: 22.8, fat: 0.3 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
   { id: "apple", name: { en: "Apple", he: "תפוח" }, aliases: ["apple", "apples", "תפוח", "תפוחים"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 52, protein: 0.3, carbs: 13.8, fat: 0.2 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
+  { id: "pomegranate", name: { en: "Pomegranate", he: "רימון" }, aliases: ["pomegranate", "pomegranates", "pomegranate arils", "pomegranate seeds", "רימון", "רימונים", "גרגרי רימון", "זרעי רימון"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 83, protein: 1.7, carbs: 18.7, fat: 1.2 }, reference: { source: "generic raw pomegranate arils, edible portion", ediblePortion: true, state: "raw" } },
+  { id: "lemon", name: { en: "Lemon", he: "לימון" }, aliases: ["lemon", "lemons", "לימון", "לימונים"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 29, protein: 1.1, carbs: 9.3, fat: 0.3 }, reference: { source: "generic raw lemon, edible portion", ediblePortion: true, state: "raw" } },
   { id: "cucumber", name: { en: "Cucumber", he: "מלפפון" }, aliases: ["cucumber", "cucumbers", "מלפפון", "מלפפונים"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 15, protein: 0.7, carbs: 3.6, fat: 0.1 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
   { id: "avocado", name: { en: "Avocado", he: "אבוקדו" }, aliases: ["avocado", "avocados", "אבוקדו"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 160, protein: 2, carbs: 8.5, fat: 14.7 }, reference: { source: "generic raw edible portion", ediblePortion: true, state: "raw" } },
   { id: "sweet-potato", name: { en: "Cooked sweet potato", he: "בטטה מבושלת" }, aliases: ["sweet potato", "sweet potatoes", "cooked sweet potato", "בטטה", "בטטות", "בטטה מבושלת"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 90, protein: 2, carbs: 20.7, fat: 0.2 }, reference: { source: "generic cooked edible portion", ediblePortion: true, state: "cooked", defaultState: "cooked when logged as eaten" } },
@@ -27,7 +29,18 @@ const FOOD_CATALOG = Object.freeze([
   { id: "bread-slice", name: { en: "Bread", he: "לחם" }, aliases: ["bread slice", "slice of bread", "bread", "פרוסת לחם", "פרוסות לחם", "לחם"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 250, protein: 9, carbs: 49, fat: 3.2 }, reference: { source: "generic commercial bread", ediblePortion: true, state: "ready-to-eat" } },
   { id: "white-cheese-5", name: { en: "White cheese 5%", he: "גבינה לבנה 5%" }, aliases: ["white cheese 5%", "white cheese", "גבינה לבנה 5%", "גבינה לבנה"], baseAmount: 100, baseUnit: "g", macros: { calories: 100, protein: 9, carbs: 3, fat: 5 } },
   { id: "egg", name: { en: "Egg", he: "ביצה" }, aliases: ["egg", "eggs", "ביצה", "ביצים"], baseAmount: 1, baseUnit: "item", macros: { calories: 72, protein: 6.3, carbs: 0.4, fat: 4.8 }, reference: { source: "generic large egg", ediblePortion: true, state: "edible item" } },
-  { id: "hummus", name: { en: "Hummus", he: "חומוס" }, aliases: ["hummus", "humus", "חומוס"], baseAmount: 100, baseUnit: "g", macros: { calories: 166, protein: 7.9, carbs: 14.3, fat: 9.6 } },
+  { id: "hummus", name: { en: "Hummus", he: "חומוס" }, aliases: ["hummus", "humus", "חומוס"], baseAmount: 100, baseUnit: "g", macros: { calories: 166, protein: 7.9, carbs: 14.3, fat: 9.6 }, reference: { source: "generic prepared hummus", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
+  { id: "tahini", name: { en: "Tahini", he: "טחינה" }, aliases: ["tahini", "sesame tahini", "טחינה", "טחינה גולמית", "טחינה מלאה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 595, protein: 17, carbs: 21, fat: 53.8 }, reference: { source: "generic sesame tahini", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
+  { id: "labneh", name: { en: "Labneh", he: "לבנה" }, aliases: ["labneh", "labaneh", "לבנה", "לאבנה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 135, protein: 8, carbs: 5, fat: 9 }, reference: { source: "generic labneh", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
+  { id: "falafel-ball", name: { en: "Falafel ball", he: "כדור פלאפל" }, aliases: ["falafel", "falafel ball", "falafel balls", "כדור פלאפל", "כדורי פלאפל", "פלאפל"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 60, protein: 2.2, carbs: 5.5, fat: 3.5 }, reference: { source: "generic fried falafel ball (~18 g)", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
+  { id: "malabi", name: { en: "Malabi", he: "מלבי" }, aliases: ["malabi", "malabi dessert", "מלבי", "מלבי קינוח"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 220, protein: 4, carbs: 35, fat: 7 }, reference: { source: "generic individual malabi with usual syrup and topping", ediblePortion: true, state: "ready-to-eat", policy: "variable-dessert-average" } },
+  { id: "chocolate-ball", name: { en: "Chocolate ball", he: "כדור שוקולד" }, aliases: ["chocolate ball", "chocolate balls", "coconut chocolate ball", "כדור שוקולד", "כדורי שוקולד"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 115, protein: 1.5, carbs: 16, fat: 5 }, reference: { source: "generic coconut-coated chocolate biscuit ball (~25 g)", ediblePortion: true, state: "ready-to-eat", policy: "variable-dessert-average" } },
+  { id: "alfajores", name: { en: "Alfajores cookie", he: "אלפחורס" }, aliases: ["alfajores", "alfajor", "alfajore", "alfajores cookie", "אלפחורס", "אלפחור", "אלפחורסים", "עוגיית אלפחורס"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 165, protein: 2, carbs: 22, fat: 8 }, reference: { source: "generic dulce-de-leche alfajores cookie (~35 g)", ediblePortion: true, state: "ready-to-eat", policy: "variable-dessert-average" } },
+  { id: "bamba", name: { en: "Peanut snack", he: "במבה" }, aliases: ["bamba", "peanut snack", "במבה", "שקית במבה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 544, protein: 14, carbs: 53, fat: 34 }, reference: { source: "generic peanut puff snack", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
+  { id: "bissli", name: { en: "Wheat snack", he: "ביסלי" }, aliases: ["bissli", "wheat snack", "ביסלי", "שקית ביסלי"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 500, protein: 9, carbs: 63, fat: 22 }, reference: { source: "generic savory wheat snack", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
+  { id: "cheese-bourekas", name: { en: "Cheese bourekas", he: "בורקס גבינה" }, aliases: ["cheese bourekas", "bourekas", "burekas", "בורקס", "בורקס גבינה", "בורקסים"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 210, protein: 5, carbs: 24, fat: 10 }, reference: { source: "generic medium cheese bourekas (~65 g)", ediblePortion: true, state: "ready-to-eat", policy: "variable-composite" } },
+  { id: "malawach", name: { en: "Malawach", he: "מלאווח" }, aliases: ["malawach", "malawach pastry", "מלאווח", "מלווח"], baseAmount: 1, baseUnit: "item", specificity: "generic", macros: { calories: 420, protein: 8, carbs: 48, fat: 22 }, reference: { source: "generic plain malawach pastry", ediblePortion: true, state: "ready-to-eat", policy: "variable-composite" } },
+  { id: "schnitzel", name: { en: "Chicken schnitzel", he: "שניצל עוף" }, aliases: ["chicken schnitzel", "schnitzel", "שניצל", "שניצל עוף"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 250, protein: 21, carbs: 18, fat: 11 }, reference: { source: "generic breaded cooked chicken schnitzel", ediblePortion: true, state: "cooked", policy: "representative-not-brand" } },
   { id: "turkey-pastrami", name: { en: "Turkey pastrami", he: "פסטרמה הודו" }, aliases: ["turkey pastrami", "turkey slices", "pastrami", "פסטרמה הודו", "פסטרמה"], baseAmount: 100, baseUnit: "g", macros: { calories: 120, protein: 21, carbs: 3, fat: 3 } },
   { id: "ready-rice", name: { en: "Cooked rice", he: "אורז מבושל" }, aliases: ["ready rice", "cooked rice", "rice", "אורז מוכן", "אורז מבושל", "אורז"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 130, protein: 2.7, carbs: 28, fat: 0.3 }, reference: { source: "generic cooked white rice", ediblePortion: true, state: "cooked", defaultState: "cooked when logged as eaten" } },
   { id: "pasta-cooked", name: { en: "Cooked pasta", he: "פסטה מבושלת" }, aliases: ["cooked pasta", "pasta", "פסטה מבושלת", "פסטה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 157, protein: 5.8, carbs: 30.9, fat: 0.9 }, reference: { source: "generic cooked pasta", ediblePortion: true, state: "cooked", defaultState: "cooked when logged as eaten" } },
@@ -46,6 +59,8 @@ const PORTION_REFERENCES = Object.freeze({
   "sweet-potato": Object.freeze({ unit: "g", default: 180, sizes: Object.freeze({ small: 130, medium: 180, large: 250 }), portions: Object.freeze({ serving: 180, plate: 250 }), confidence: "medium", ediblePortion: true }),
   banana: Object.freeze({ unit: "g", default: 118, sizes: Object.freeze({ small: 80, medium: 118, large: 136 }), confidence: "high", ediblePortion: true }),
   apple: Object.freeze({ unit: "g", default: 182, sizes: Object.freeze({ small: 150, medium: 182, large: 223 }), confidence: "high", ediblePortion: true }),
+  pomegranate: Object.freeze({ unit: "g", default: 174, confidence: "medium", ediblePortion: true }),
+  lemon: Object.freeze({ unit: "g", default: 58, confidence: "medium", ediblePortion: true }),
   pita: Object.freeze({ unit: "g", default: 60, sizes: Object.freeze({ small: 50, medium: 60, large: 80 }), portions: Object.freeze({ item: 60 }), confidence: "medium", ediblePortion: true }),
   "bread-slice": Object.freeze({ unit: "g", default: 32, portions: Object.freeze({ slice: 32 }), confidence: "medium", ediblePortion: true }),
   "ready-rice": Object.freeze({ unit: "g", default: 200, portions: Object.freeze({ serving: 180, plate: 200, bowl: 220, cup: 160 }), confidence: "medium", ediblePortion: true }),
@@ -53,6 +68,12 @@ const PORTION_REFERENCES = Object.freeze({
   potato: Object.freeze({ unit: "g", default: 170, sizes: Object.freeze({ small: 120, medium: 170, large: 280 }), confidence: "medium", ediblePortion: true }),
   cucumber: Object.freeze({ unit: "g", default: 200, sizes: Object.freeze({ small: 120, medium: 200, large: 300 }), confidence: "medium", ediblePortion: true }),
   avocado: Object.freeze({ unit: "g", default: 150, sizes: Object.freeze({ small: 120, medium: 150, large: 200 }), confidence: "medium", ediblePortion: true }),
+  hummus: Object.freeze({ unit: "g", default: 60, portions: Object.freeze({ tablespoon: 15, bowl: 120, plate: 100 }), confidence: "medium", ediblePortion: true }),
+  tahini: Object.freeze({ unit: "g", default: 15, portions: Object.freeze({ tablespoon: 15 }), confidence: "medium", ediblePortion: true }),
+  labneh: Object.freeze({ unit: "g", default: 60, portions: Object.freeze({ tablespoon: 20, bowl: 120 }), confidence: "medium", ediblePortion: true }),
+  bamba: Object.freeze({ unit: "g", default: 25, portions: Object.freeze({ serving: 25, bowl: 35 }), confidence: "low", ediblePortion: true }),
+  bissli: Object.freeze({ unit: "g", default: 25, portions: Object.freeze({ serving: 25, bowl: 35 }), confidence: "low", ediblePortion: true }),
+  schnitzel: Object.freeze({ unit: "g", default: 150, portions: Object.freeze({ serving: 150, plate: 200 }), confidence: "medium", ediblePortion: true }),
   cornflakes: Object.freeze({ unit: "g", default: 40, portions: Object.freeze({ bowl: 40, cup: 30 }), confidence: "low", ediblePortion: true }),
   pizza: Object.freeze({ unit: "g", portions: Object.freeze({ slice: 120 }), confidence: "low", ediblePortion: true, composite: true }),
   "shawarma-laffa": Object.freeze({ unit: "g", default: 500, sizes: Object.freeze({ small: 380, medium: 500, large: 650 }), confidence: "low", ediblePortion: true, composite: true }),
@@ -75,7 +96,8 @@ const UNIT_ALIASES = new Map([
   ["slice", "slice"], ["slices", "slice"], ["פרוסה", "slice"], ["פרוסות", "slice"], ["משולש", "slice"], ["משולשים", "slice"], ["משולשי", "slice"],
   ["cup", "cup"], ["cups", "cup"], ["כוס", "cup"], ["כוסות", "cup"],
   ["bowl", "bowl"], ["bowls", "bowl"], ["קערה", "bowl"], ["קערת", "bowl"],
-  ["plate", "plate"], ["plates", "plate"], ["צלחת", "plate"]
+  ["plate", "plate"], ["plates", "plate"], ["צלחת", "plate"],
+  ["tbsp", "tablespoon"], ["tablespoon", "tablespoon"], ["tablespoons", "tablespoon"], ["כף", "tablespoon"], ["כפות", "tablespoon"]
 ]);
 
 function normalizeText(value) {
@@ -101,8 +123,66 @@ const SIZE_WORDS = Object.freeze({
 
 const COUNT_WORDS = Object.freeze(new Map([
   ["one", 1], ["a", 1], ["an", 1], ["אחד", 1], ["אחת", 1], ["שלם", 1], ["שלמה", 1],
-  ["two", 2], ["שניים", 2], ["שתיים", 2], ["half", 0.5], ["חצי", 0.5]
+  ["two", 2], ["שניים", 2], ["שני", 2], ["שתיים", 2], ["שתי", 2], ["half", 0.5], ["חצי", 0.5]
 ]));
+
+// Natural food logging should not require a user to switch keyboard layouts
+// merely to write an amount. These are deliberately bounded number words for
+// portion/weight prefixes (not free-form numeric NLP), covering ordinary
+// Hebrew and English quantities up to one hundred.
+const SPELLED_NUMBER_WORDS = Object.freeze(new Map([
+  ["half", 0.5], ["חצי", 0.5],
+  ["one", 1], ["a", 1], ["an", 1], ["אחד", 1], ["אחת", 1],
+  ["two", 2], ["שניים", 2], ["שני", 2], ["שתיים", 2], ["שתי", 2],
+  ["three", 3], ["שלוש", 3], ["שלושה", 3],
+  ["four", 4], ["ארבע", 4], ["ארבעה", 4],
+  ["five", 5], ["חמש", 5], ["חמישה", 5],
+  ["six", 6], ["שש", 6], ["שישה", 6],
+  ["seven", 7], ["שבע", 7], ["שבעה", 7],
+  ["eight", 8], ["שמונה", 8], ["שמונת", 8],
+  ["nine", 9], ["תשע", 9], ["תשעה", 9],
+  ["ten", 10], ["עשר", 10], ["עשרה", 10],
+  ["eleven", 11], ["אחת עשרה", 11], ["אחד עשר", 11],
+  ["twelve", 12], ["שתים עשרה", 12], ["שנים עשר", 12],
+  ["thirteen", 13], ["שלוש עשרה", 13], ["שלושה עשר", 13],
+  ["fourteen", 14], ["ארבע עשרה", 14], ["ארבעה עשר", 14],
+  ["fifteen", 15], ["חמש עשרה", 15], ["חמישה עשר", 15],
+  ["sixteen", 16], ["שש עשרה", 16], ["שישה עשר", 16],
+  ["seventeen", 17], ["שבע עשרה", 17], ["שבעה עשר", 17],
+  ["eighteen", 18], ["שמונה עשרה", 18], ["שמונה עשר", 18],
+  ["nineteen", 19], ["תשע עשרה", 19], ["תשעה עשר", 19],
+  ["twenty", 20], ["עשרים", 20], ["thirty", 30], ["שלושים", 30],
+  ["forty", 40], ["ארבעים", 40], ["fifty", 50], ["חמישים", 50],
+  ["sixty", 60], ["שישים", 60], ["seventy", 70], ["שבעים", 70],
+  ["eighty", 80], ["שמונים", 80], ["ninety", 90], ["תשעים", 90],
+  ["one hundred", 100], ["מאה", 100]
+]));
+
+function spelledNumberValue(word) {
+  const normalized = normalizeText(word);
+  if (SPELLED_NUMBER_WORDS.has(normalized)) return SPELLED_NUMBER_WORDS.get(normalized);
+  // Hebrew commonly joins "and" to the next number: "עשרים וחמש".
+  if (normalized.startsWith("ו") && SPELLED_NUMBER_WORDS.has(normalized.slice(1))) return SPELLED_NUMBER_WORDS.get(normalized.slice(1));
+  return null;
+}
+
+function spelledAmountPrefix(normalized) {
+  const words = normalized.split(" ").filter(Boolean);
+  // A bounded prefix keeps food names from being interpreted as a number.
+  for (let wordCount = Math.min(3, words.length - 1); wordCount >= 1; wordCount -= 1) {
+    const numberWords = words.slice(0, wordCount);
+    const values = numberWords.map(spelledNumberValue);
+    if (values.some((value) => value === null)) continue;
+    const amount = values.reduce((total, value) => total + value, 0);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1000) continue;
+    const possibleUnit = normalizeUnit(words[wordCount]);
+    if (possibleUnit && words.length > wordCount + 1) {
+      return { amount, unit: possibleUnit, foodText: words.slice(wordCount + 1).join(" ") };
+    }
+    return { amount, unit: "", foodText: words.slice(wordCount).join(" ") };
+  }
+  return null;
+}
 
 function detectSize(value) {
   const words = new Set(normalizeText(value).split(" "));
@@ -117,6 +197,7 @@ function detectPortionKind(value) {
     ["bowl", /(?:bowl|bowls|קערה|קערת)/u],
     ["plate", /(?:plate|plates|צלחת)/u],
     ["cup", /(?:cup|cups|כוס|כוסות)/u],
+    ["tablespoon", /(?:tbsp|tablespoons?|כף|כפות)/u],
     ["serving", /(?:serving|servings|מנה|מנות)/u],
     ["item", /(?:item|items|unit|units|יחידה|יחידות)/u]
   ];
@@ -147,7 +228,7 @@ function parseAmountPrefix(segment) {
     if (suffixUnit) return { amount: Number(suffix[2].replace(",", ".")), unit: suffixUnit, foodText: normalizeText(suffix[1]) };
   }
   const match = normalized.match(/^(\d+(?:[.,]\d+)?)\s*([a-z\u0590-\u05ff.'״׳]*)\s+(.+)$/iu);
-  if (!match) return { amount: null, unit: "", foodText: normalized };
+  if (!match) return spelledAmountPrefix(normalized) || { amount: null, unit: "", foodText: normalized };
   const amount = Number(match[1].replace(",", "."));
   const unit = normalizeUnit(match[2]);
   if (match[2] && !unit) return { amount, unit: "", foodText: normalizeText(`${match[2]} ${match[3]}`) };
@@ -163,7 +244,10 @@ function catalogWithCustom(customFoods = []) {
     baseAmount: Number(food.baseAmount) || 1,
     baseUnit: normalizeUnit(food.baseUnit) || "item",
     specificity: "custom",
-    source: "custom"
+    // AI-assisted food records are intentionally marked as estimates all the
+    // way through to the saved entry. They are cached locally for editing,
+    // but never promoted into the canonical food catalog automatically.
+    source: food.source === "ai-estimate" ? "ai-estimate" : "custom"
   }));
   return [...custom, ...FOOD_CATALOG];
 }

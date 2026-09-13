@@ -11,30 +11,23 @@ const html = read("public/daily-nutrition.html");
 const css = read("public/css/daily-nutrition.css");
 const client = read("public/js/daily-nutrition.js");
 
-test("weekly panel reports all requested averages and explicit denominators", () => {
-  for (const id of [
-    "weeklyCalories",
-    "weeklyProtein",
-    "weeklyCarbs",
-    "weeklyFat",
-    "weeklyMaintenance",
-    "weeklyBalance",
-    "weeklyLogged",
-    "weeklyCompleted",
-    "weeklyDenominator"
-  ]) assert.match(html, new RegExp(`id="${id}"`));
-  assert.match(client, /summary\.loggedDays/);
-  assert.match(client, /summary\.completedDays/);
-  assert.match(client, /copy\.notLogged/);
+test("daily history keeps a compact recent-day rail and an expandable calendar", () => {
+  for (const id of ["nearbyDays", "calendarPanel", "calendarGrid", "calendarMonthLabel", "calendarPreviousMonth", "calendarNextMonth"]) {
+    assert.match(html, new RegExp(`id="${id}"`));
+  }
+  assert.match(client, /function renderDayHistory\(/);
+  assert.match(client, /Array\.from\(\{ length: 5 \}/);
+  assert.match(client, /Array\.from\(\{ length: leadingCells \+ lastDay \}/);
+  assert.match(css, /\.calendar-weekdays,\s*\.calendar-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(7/);
 });
 
-test("trend includes goal and maintenance references with text evidence", () => {
-  assert.match(html, /data-copy="goalReference"/);
-  assert.match(html, /data-copy="maintenanceReference"/);
-  assert.match(client, /trend-reference--goal/);
-  assert.match(client, /trend-reference--maintenance/);
-  assert.match(client, /weeklyTextAlternative/);
-  assert.match(css, /\.trend-reference--maintenance/);
+test("day history opens the selected date and only shows known calories", () => {
+  assert.match(client, /caloriesForDate\(/);
+  assert.match(client, /data-history-date/);
+  assert.match(client, /data-calendar-date/);
+  assert.match(client, /loadDate\(button\.dataset\.historyDate\)/);
+  assert.match(client, /loadDate\(button\.dataset\.calendarDate\)/);
+  assert.match(css, /\.nearby-day\.is-selected/);
 });
 
 test("finish day marks completion without locking later food edits", () => {

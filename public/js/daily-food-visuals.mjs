@@ -1,4 +1,4 @@
-import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260821-v45-daily-nutrition-v11-4";
+import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260913-smart-food-1";
 
 // Presentation only: canonical IDs come from the nutrition domain. Never infer
 // amounts or nutrition from an image, and never reinterpret a multi-item meal.
@@ -12,7 +12,7 @@ export const FOOD_THUMBNAILS = Object.freeze({
   "tuna-water": "foods/tuna.webp", egg: "foods/eggs.webp", milk: "foods/milk.webp",
   "bread-slice": "foods/bread.webp", pita: "foods/pita.webp", "rice-cake": "foods/rice-cakes.webp",
   "pasta-cooked": "foods/pasta.webp", potato: "foods/potato.webp", "sweet-potato": "foods/sweet-potato.webp",
-  banana: "foods/banana.webp", apple: "foods/apple.webp", cucumber: "foods/cucumber.webp",
+  banana: "foods/banana.webp", apple: "foods/apple.webp", pomegranate: "foods/pomegranate.webp", cucumber: "foods/cucumber.webp",
   avocado: "foods/avocado.webp", "peanut-butter": "foods/peanut-butter.webp", nuts: "foods/almonds.webp",
   pizza: "common/pizza.svg", "shawarma-laffa": "meals/chicken-shawarma-pita.webp",
   cornflakes: "foods/cornflakes.webp", granola: "foods/granola.webp", "chocolate-snack": "foods/dark-chocolate.webp",

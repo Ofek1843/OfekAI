@@ -62,7 +62,7 @@ test("missing plan responses are errors; duplicate submissions are ignored", () 
   assert.equal((read("public/nutrition-builder.html").match(/id="wizardError"/g) || []).length, 1);
 });
 
-test("optional daily data failure still loads the mandatory saved day", async () => {
+test("optional daily data failure still loads the mandatory saved day without an alarming warning", async () => {
   const js = read("public/js/daily-nutrition.js");
   const init = js.slice(js.indexOf("async function init(user)"), js.lastIndexOf("applyLanguage();"));
   const state = {};
@@ -75,7 +75,7 @@ test("optional daily data failure still loads the mandatory saved day", async ()
     setPageStatus: msg => { warning = msg; }, copy: {}
   });
   assert.ok(loaded);
-  assert.match(warning, /Catalog food logging is available/);
+  assert.equal(warning, "");
 });
 
 test("queued daily save captures its day and immutable entries", async () => {

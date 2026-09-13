@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260822-v45-rtl-hebrew-animation-fix-1">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260912-targeted-theme-volume-1">
-  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260821-v45-daily-nutrition-v11-4">
+  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260912-daily-log-focus-2">
   <script defer src="/js/redesign-shell.js?v=20260821-v45-daily-nutrition-v11-4"></script>
 </head>
 <body class="daily-nutrition-route">
@@ -20,7 +20,7 @@
       <div>
         <span class="daily-kicker" data-copy="kicker">ATHLETE CORE · DAILY NUTRITION</span>
         <h1 data-copy="title">Log food. See the day clearly.</h1>
-        <p data-copy="intro">Fast daily logging with your plan targets, estimated balance, and a weekly view.</p>
+        <p data-copy="intro">A focused daily view for logging food, checking macros, and keeping your plan on track.</p>
       </div>
       <nav class="daily-context-links" aria-label="Nutrition tools" data-copy-aria="nutritionTools">
         <a href="/dashboard.html" data-copy="dashboard">Dashboard</a>
@@ -42,28 +42,38 @@
 
     <p id="pageStatus" class="daily-page-status" role="status" aria-live="polite" data-copy="loading">Loading your nutrition log…</p>
 
-    <section class="daily-priority-grid" aria-label="Daily nutrition overview" data-copy-aria="dailyOverview">
-      <article class="daily-surface primary-metric-card" id="calorieCard">
-        <div class="calorie-ring" id="calorieRing" role="img" aria-label="Calories consumed" data-copy-aria="caloriesConsumed">
-          <div><strong id="calorieConsumed">0</strong><span data-copy="calories">Calories</span></div>
+    <section class="daily-overview-grid" aria-label="Daily nutrition overview" data-copy-aria="dailyOverview">
+      <article class="daily-surface macro-card macro-card--primary" aria-labelledby="macroTitle">
+        <div class="macro-heading">
+          <span class="daily-kicker" data-copy="macroDistribution">Macro energy distribution</span>
+          <h2 id="macroTitle" data-copy="dailyMetrics">Today’s macro split</h2>
         </div>
-        <div class="metric-copy">
-          <span data-copy="goalTarget">Goal calorie target</span>
-          <strong id="calorieTarget">—</strong>
-          <p><span data-copy="remaining">Remaining</span> <b id="calorieRemaining">—</b></p>
+        <div class="macro-visual-row">
+          <div id="macroRing" class="macro-ring" role="img" aria-label="Macro energy distribution"></div>
+          <dl class="macro-breakdown">
+            <div><dt><i class="macro-key macro-key--protein"></i><span data-copy="protein">Protein</span></dt><dd id="proteinPercent">0%</dd></div>
+            <div><dt><i class="macro-key macro-key--carbs"></i><span data-copy="carbs">Carbohydrates</span></dt><dd id="carbsPercent">0%</dd></div>
+            <div><dt><i class="macro-key macro-key--fat"></i><span data-copy="fat">Fat</span></dt><dd id="fatPercent">0%</dd></div>
+          </dl>
         </div>
+        <p class="metric-note" data-copy="macroNote">The split updates from the food you log today.</p>
       </article>
-      <article class="daily-surface protein-card">
-        <span class="metric-eyebrow" data-copy="protein">Protein</span>
-        <strong class="nutrition-amount" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
-        <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
-        <p><span data-copy="remaining">Remaining</span> <b id="proteinRemaining">—</b></p>
-      </article>
-      <article class="daily-surface target-card">
-        <span class="metric-eyebrow" data-copy="maintenance">Estimated maintenance / TDEE</span>
-        <strong id="maintenanceValue">—</strong>
-        <p id="targetMessage" data-copy="targetMissing">Connect an active nutrition plan to show goal and protein targets.</p>
-        <a href="/nutrition-builder.html" data-copy="setupTargets">Set up nutrition targets</a>
+
+      <article class="daily-surface daily-goals-card" id="calorieCard">
+        <div class="goal-stat goal-stat--calories">
+          <span class="metric-eyebrow" data-copy="calories">Calories</span>
+          <strong class="goal-stat-value" id="calorieConsumed">0</strong>
+          <p><span data-copy="goalTarget">Goal calorie target</span> <b id="calorieTarget">—</b></p>
+          <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
+        </div>
+        <div class="goal-stat goal-stat--protein">
+          <span class="metric-eyebrow" data-copy="protein">Protein</span>
+          <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
+          <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
+          <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
+        </div>
+        <p id="targetMessage" class="target-inline-message" data-copy="targetMissing">Connect an active nutrition plan to show goal and protein targets.</p>
+        <a class="target-inline-link" href="/nutrition-builder.html" data-copy="setupTargets">Set up nutrition targets</a>
       </article>
     </section>
 
@@ -108,80 +118,33 @@
         </div>
       </section>
 
-      <aside class="daily-side-column">
-        <section class="daily-surface macro-card" aria-labelledby="macroTitle">
-          <span class="daily-kicker" data-copy="macroDistribution">Macro energy distribution</span>
-          <h2 id="macroTitle" data-copy="dailyMetrics">Daily totals</h2>
-          <div class="macro-visual-row">
-            <div id="macroRing" class="macro-ring" role="img" aria-label="Macro energy distribution"></div>
-            <dl class="macro-breakdown">
-              <div><dt data-copy="protein">Protein</dt><dd id="proteinPercent">0%</dd></div>
-              <div><dt data-copy="carbs">Carbohydrates</dt><dd id="carbsPercent">0%</dd></div>
-              <div><dt data-copy="fat">Fat</dt><dd id="fatPercent">0%</dd></div>
-            </dl>
-          </div>
-          <p class="metric-note" data-copy="macroNote">Calculated from protein/carbohydrates at 4 kcal/g and fat at 9 kcal/g; label calories can differ slightly.</p>
+      <aside class="day-history-rail" aria-label="Nutrition day history" data-copy-aria="dayHistory">
+        <section class="daily-surface day-history-card" aria-labelledby="nearbyDaysTitle">
+          <span class="daily-kicker" data-copy="nearbyDaysTitle">Recent days</span>
+          <h2 id="nearbyDaysTitle" data-copy="nearbyDaysHint">Open a day to see its food and totals.</h2>
+          <div id="nearbyDays" class="nearby-days" role="list"></div>
         </section>
 
-        <section class="daily-surface balance-card" id="balanceCard" aria-labelledby="balanceTitle">
-          <span class="daily-kicker" data-copy="balanceTitle">Estimated energy balance</span>
-          <h2 id="balanceTitle"><span id="balanceStatus">Needs setup</span></h2>
-          <strong id="balanceValue">—</strong>
-          <p data-copy="balanceDisclaimer">Estimate only — daily energy needs vary.</p>
-        </section>
+        <details class="daily-surface calendar-panel" id="calendarPanel">
+          <summary><span><b data-copy="calendarTitle">Calendar</b><small data-copy="calendarHint">Choose any day to review it.</small></span><img class="details-icon" src="/icons/tabler/plus.svg" alt=""></summary>
+          <div class="calendar-controls">
+            <button id="calendarPreviousMonth" type="button" class="calendar-nav" data-copy-aria="previousMonth"><img src="/icons/tabler/chevron-right.svg" alt=""></button>
+            <strong id="calendarMonthLabel"></strong>
+            <button id="calendarNextMonth" type="button" class="calendar-nav" data-copy-aria="nextMonth"><img src="/icons/tabler/chevron-right.svg" alt=""></button>
+          </div>
+          <div id="calendarWeekdays" class="calendar-weekdays" aria-hidden="true"></div>
+          <div id="calendarGrid" class="calendar-grid" role="grid" data-copy-aria="calendarTitle"></div>
+        </details>
+
+        <details class="daily-surface compact-tool-card saved-combinations-card">
+          <summary><span><b data-copy="combinationsTitle">Saved combinations</b><small data-copy="combinationsHint">Save today’s entries as a reusable meal combination.</small></span><img class="details-icon" src="/icons/tabler/plus.svg" alt=""></summary>
+          <form id="combinationForm" class="combination-form"><label><span data-copy="combinationName">Combination name</span><input name="name" maxlength="80" required></label><button type="submit" class="secondary-button" data-copy="saveCombination">Save current entries</button></form>
+          <div id="savedCombinations" class="quick-add-list"></div>
+        </details>
       </aside>
     </div>
-
-    <section class="daily-utility-grid">
-      <article class="daily-surface compact-tool-card" aria-labelledby="recentTitle">
-        <div><span class="daily-kicker" data-copy="recentTitle">Recent foods</span><h2 id="recentTitle" data-copy="recentHint">Quick add foods you actually logged.</h2></div>
-        <div id="recentFoods" class="quick-add-list"></div>
-      </article>
-
-      <details class="daily-surface compact-tool-card">
-        <summary><span><b data-copy="customTitle">Custom food</b><small data-copy="customHint">Save a label or supermarket item once, then reuse it.</small></span><img class="details-icon" src="/icons/tabler/plus.svg" alt=""></summary>
-        <form id="customFoodForm" class="custom-food-form">
-          <label><span data-copy="customName">Food name</span><input name="name" maxlength="80" required></label>
-          <label><span data-copy="customNameHe">Hebrew name (optional)</span><input name="nameHe" maxlength="80"></label>
-          <label><span data-copy="serving">Serving amount</span><input name="baseAmount" type="number" min="0.1" max="10000" step="0.1" value="100" required></label>
-          <label><span data-copy="unit">Unit</span><select name="baseUnit"><option value="g" data-copy="grams">grams</option><option value="item" data-copy="item">item</option><option value="ml" data-copy="milliliters">ml</option></select></label>
-          <label><span data-copy="calories">Calories</span><input name="calories" type="number" min="0" max="10000" step="0.1" required></label>
-          <label><span data-copy="protein">Protein</span><input name="proteinGrams" type="number" min="0" max="1000" step="0.1" required></label>
-          <label><span data-copy="carbs">Carbohydrates</span><input name="carbsGrams" type="number" min="0" max="1000" step="0.1" required></label>
-          <label><span data-copy="fat">Fat</span><input name="fatGrams" type="number" min="0" max="1000" step="0.1" required></label>
-          <label class="custom-check"><input name="favorite" type="checkbox"><span data-copy="favorite">Add to favorites</span></label>
-          <button type="submit" class="finish-button" data-copy="saveCustom">Save custom food</button>
-        </form>
-      </details>
-
-      <details class="daily-surface compact-tool-card">
-        <summary><span><b data-copy="combinationsTitle">Saved combinations</b><small data-copy="combinationsHint">Save today’s entries as a reusable meal combination.</small></span><img class="details-icon" src="/icons/tabler/plus.svg" alt=""></summary>
-        <form id="combinationForm" class="combination-form"><label><span data-copy="combinationName">Combination name</span><input name="name" maxlength="80" required></label><button type="submit" class="secondary-button" data-copy="saveCombination">Save current entries</button></form>
-        <div id="savedCombinations" class="quick-add-list"></div>
-      </details>
-    </section>
-
-    <section class="weekly-panel daily-surface" aria-labelledby="weeklyTitle">
-      <div class="section-heading-row">
-        <div><span class="daily-kicker" data-copy="weeklyTitle">7-day view</span><h2 id="weeklyTitle" data-copy="weeklyHint">Averages include logged days only; unlogged days are never treated as zero.</h2></div>
-        <div class="weekly-heading-meta"><span id="weeklyBalanceStatus" class="weekly-balance-status"></span><span id="weeklyDenominator" class="weekly-denominator"></span></div>
-      </div>
-      <div class="weekly-metrics">
-        <div><span data-copy="averageIntake">Average intake</span><strong id="weeklyCalories">—</strong></div>
-        <div><span data-copy="averageProtein">Average protein</span><strong id="weeklyProtein">—</strong></div>
-        <div><span data-copy="averageCarbs">Average carbohydrates</span><strong id="weeklyCarbs">—</strong></div>
-        <div><span data-copy="averageFat">Average fat</span><strong id="weeklyFat">—</strong></div>
-        <div><span data-copy="averageMaintenance">Average maintenance</span><strong id="weeklyMaintenance">—</strong></div>
-        <div><span data-copy="averageBalance">Average balance</span><strong id="weeklyBalance">—</strong></div>
-        <div><span data-copy="loggedDays">Logged days</span><strong id="weeklyLogged">0 / 7</strong></div>
-        <div><span data-copy="completedDays">Completed days</span><strong id="weeklyCompleted">0 / 7</strong></div>
-      </div>
-      <div class="weekly-legend" aria-label="Chart reference lines" data-copy-aria="chartReferenceLines"><span><i class="legend-goal"></i><b data-copy="goalReference">Goal target</b></span><span><i class="legend-maintenance"></i><b data-copy="maintenanceReference">Estimated maintenance</b></span></div>
-      <div id="weeklyChart" class="weekly-chart" role="img" aria-label="Seven-day calorie intake trend"></div>
-      <p id="weeklyTextAlternative" class="metric-note"></p>
-    </section>
   </main>
-  <script type="module" src="/js/daily-nutrition.js?v=20260821-v45-daily-nutrition-v11-4"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20260913-smart-food-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

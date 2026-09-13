@@ -519,3 +519,142 @@ html[dir="rtl"] .daily-nutrition-shell {
 @media (prefers-reduced-motion: reduce) {
   .protein-progress span { transition: none; }
 }
+
+/* Daily log focus pass: one readable day, one compact history rail. */
+.daily-page-status:empty { display: none; }
+
+.daily-overview-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(330px, 0.92fr);
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.macro-card--primary,
+.daily-goals-card { min-height: 278px; padding: clamp(22px, 3vw, 32px); }
+.macro-card--primary { display: grid; align-content: center; gap: 18px; }
+.macro-heading h2 { margin: 7px 0 0; color: #f3f8ff; font: 720 clamp(1.45rem, 2.5vw, 2.2rem)/1.08 "Space Grotesk", sans-serif; }
+.macro-card--primary .macro-visual-row { grid-template-columns: minmax(170px, 230px) minmax(180px, 1fr); gap: clamp(20px, 4vw, 44px); }
+.macro-card--primary .macro-ring {
+  width: min(100%, 220px);
+  margin-inline: auto;
+  box-shadow: inset 0 0 0 38px #07192c, 0 18px 42px rgba(0, 0, 0, 0.2);
+}
+.macro-breakdown { gap: 13px; }
+.macro-breakdown div { padding-block: 6px; border-bottom: 1px solid rgba(131, 194, 239, 0.12); }
+.macro-breakdown dt { display: inline-flex; align-items: center; gap: 8px; color: #bed2e4; }
+.macro-breakdown dd { font-size: 1.14rem; }
+.macro-key { width: 9px; aspect-ratio: 1; border-radius: 50%; background: var(--daily-blue); }
+.macro-key--carbs { background: var(--daily-amber); }
+.macro-key--fat { background: var(--daily-purple); }
+.macro-card--primary .metric-note { margin: 0; }
+
+.daily-goals-card { display: grid; grid-template-columns: 1fr 1fr; align-content: start; gap: 0; }
+.goal-stat { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 4px clamp(14px, 2.5vw, 26px) 12px 0; }
+.goal-stat + .goal-stat { padding-inline: clamp(14px, 2.5vw, 26px) 0; border-inline-start: 1px solid rgba(131, 194, 239, 0.15); }
+.goal-stat-value { color: #f7fbff; font: 750 clamp(2.4rem, 4vw, 3.35rem)/1 "Space Grotesk", sans-serif; letter-spacing: -0.06em; }
+.goal-stat-value .nutrition-unit { color: #9db7cd; font-size: 1.05rem; letter-spacing: 0; }
+.goal-stat p { min-height: 34px; margin: 0; color: #91abc3; font-size: 0.82rem; line-height: 1.4; }
+.goal-stat p b { display: block; margin-top: 2px; color: #dce9f4; font-size: 0.96rem; }
+.goal-stat-remaining { display: grid; gap: 4px; margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(131, 194, 239, 0.12); }
+.goal-stat-remaining span { color: #7996b0; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.goal-stat-remaining strong { color: #74dfdf; font-size: 1.08rem; }
+.daily-goals-card .protein-progress { margin-top: 2px; }
+.target-inline-message { grid-column: 1 / -1; margin: 16px 0 0; color: #9db6ca; font-size: 0.83rem; line-height: 1.5; }
+.target-inline-link { grid-column: 1 / -1; width: fit-content; margin-top: 4px; color: var(--daily-cyan); font-size: 0.84rem; font-weight: 800; }
+
+.food-composer { padding: clamp(20px, 2.5vw, 28px); }
+.food-composer-form { grid-template-columns: minmax(0, 1fr) auto; margin-top: 16px; }
+.food-composer-form > .sr-only { position: absolute; }
+.food-composer-form input { min-height: 52px; }
+.food-composer-form button { width: auto; min-width: 104px; min-height: 52px; padding-inline: 17px; }
+.composer-actions { margin-top: 12px; }
+.finish-button,
+.secondary-button { min-height: 42px; }
+
+.daily-content-grid { grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr); align-items: start; }
+.day-history-rail { display: grid; gap: 16px; min-width: 0; }
+.day-history-card { padding: 21px; }
+.day-history-card h2 { margin: 6px 0 16px; color: #b8ccde; font: 600 0.98rem/1.45 "Space Grotesk", sans-serif; }
+.nearby-days { display: grid; gap: 7px; }
+.nearby-day {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 54px;
+  padding: 8px 10px; border: 1px solid rgba(131, 194, 239, 0.13); border-radius: 11px;
+  background: rgba(4, 20, 36, 0.5); color: #dce9f4; cursor: pointer; text-align: start;
+}
+.nearby-day:hover { border-color: rgba(80, 217, 232, 0.42); }
+.nearby-day.is-selected { border-color: rgba(80, 217, 232, 0.56); background: rgba(19, 92, 125, 0.22); }
+.nearby-day > span { display: grid; gap: 2px; }
+.nearby-day b { color: #eef7ff; font-size: 0.87rem; }
+.nearby-day small { color: #87a3ba; font-size: 0.72rem; }
+.nearby-day > strong { color: #71e6e8; font-size: 0.82rem; }
+
+.calendar-panel { padding: 0; overflow: clip; }
+.calendar-panel summary,
+.saved-combinations-card summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 19px 20px; cursor: pointer; list-style: none; }
+.calendar-panel summary::-webkit-details-marker { display: none; }
+.calendar-panel summary span,
+.saved-combinations-card summary span { display: grid; gap: 5px; }
+.calendar-panel summary b,
+.saved-combinations-card summary b { color: #eef7ff; font: 720 1.02rem "Space Grotesk", sans-serif; }
+.calendar-panel summary small,
+.saved-combinations-card summary small { color: #8ca7bf; font-size: 0.76rem; line-height: 1.4; }
+.calendar-panel[open] summary { border-bottom: 1px solid rgba(131, 194, 239, 0.13); }
+.calendar-controls { display: grid; grid-template-columns: 36px 1fr 36px; align-items: center; gap: 8px; padding: 14px 16px 9px; text-align: center; }
+.calendar-controls strong { color: #dce9f4; font: 700 0.87rem "Space Grotesk", sans-serif; }
+.calendar-nav { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(131, 194, 239, 0.2); border-radius: 9px; background: rgba(4, 20, 36, 0.58); cursor: pointer; }
+.calendar-nav img { width: 17px; filter: brightness(0) invert(1); }
+.calendar-nav:last-of-type img { transform: rotate(180deg); }
+.calendar-weekdays,
+.calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; padding-inline: 14px; }
+.calendar-weekdays { padding-bottom: 4px; color: #7897b1; font-size: 0.63rem; font-weight: 800; text-align: center; }
+.calendar-grid { padding-bottom: 16px; }
+.calendar-day { display: grid; place-items: center; gap: 2px; min-height: 42px; padding: 3px 1px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #d4e2ef; font: inherit; cursor: pointer; }
+.calendar-day:hover { border-color: rgba(80, 217, 232, 0.42); }
+.calendar-day--empty { pointer-events: none; }
+.calendar-day b { font-size: 0.78rem; }
+.calendar-day small { color: #78b6d2; font-size: 0.54rem; white-space: nowrap; }
+.calendar-day.is-today { box-shadow: inset 0 0 0 1px rgba(242, 170, 58, 0.58); }
+.calendar-day.is-selected { background: rgba(41, 126, 166, 0.35); border-color: rgba(80, 217, 232, 0.65); }
+.saved-combinations-card { padding: 0; }
+.saved-combinations-card .combination-form,
+.saved-combinations-card .quick-add-list { margin-inline: 20px; }
+.saved-combinations-card .quick-add-list { margin-bottom: 20px; }
+
+@media (max-width: 1020px) {
+  .daily-overview-grid { grid-template-columns: 1fr; }
+  .daily-goals-card { min-height: 220px; }
+  .daily-content-grid { grid-template-columns: minmax(0, 1fr) minmax(250px, 0.48fr); }
+}
+
+@media (max-width: 760px) {
+  .daily-overview-grid { gap: 12px; }
+  .macro-card--primary,
+  .daily-goals-card { min-height: 0; padding: 21px 18px; }
+  .macro-card--primary .macro-visual-row { grid-template-columns: minmax(132px, 170px) minmax(0, 1fr); gap: 18px; }
+  .macro-card--primary .macro-ring { width: 100%; box-shadow: inset 0 0 0 28px #07192c; }
+  .daily-goals-card { grid-template-columns: 1fr 1fr; }
+  .goal-stat { padding-inline-end: 12px; }
+  .goal-stat + .goal-stat { padding-inline-start: 12px; }
+  .goal-stat-value { font-size: 2.25rem; }
+  .food-composer-form { grid-template-columns: minmax(0, 1fr) auto; }
+  .food-composer-form button { width: auto; min-width: 82px; padding-inline: 13px; }
+  .food-composer-form button img { display: none; }
+  .daily-content-grid { grid-template-columns: 1fr; }
+  .day-history-rail { grid-template-columns: 1fr; }
+  .nearby-days { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+  .nearby-day { min-height: 66px; padding: 7px 3px; justify-content: center; text-align: center; }
+  .nearby-day > span { justify-items: center; }
+  .nearby-day b { font-size: 0.7rem; }
+  .nearby-day small { font-size: 0.61rem; }
+  .nearby-day > strong { font-size: 0.62rem; }
+  .nearby-day .nutrition-unit { display: none; }
+}
+
+@media (max-width: 410px) {
+  .macro-card--primary .macro-visual-row { grid-template-columns: 122px minmax(0, 1fr); gap: 12px; }
+  .macro-breakdown dt { gap: 5px; font-size: 0.83rem; }
+  .macro-breakdown dd { font-size: 0.98rem; }
+  .goal-stat-value { font-size: 2rem; }
+  .food-composer-form button { min-width: 72px; }
+}

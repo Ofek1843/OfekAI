@@ -138,6 +138,54 @@ test("natural English and Hebrew portions resolve to transparent editable estima
   assert.equal(halfPita.portionCount, 0.5);
 });
 
+test("pomegranate is recognized in Hebrew and English with an edible natural-portion estimate", async () => {
+  const { parseFoodText } = await domainPromise;
+  for (const input of ["רימון", "רימון בינוני", "pomegranate", "medium pomegranate", "100 גרם גרגרי רימון"]) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries.length, 1, input);
+    assert.equal(result.entries[0].foodId, "pomegranate", input);
+  }
+  const bare = parseFoodText("רימון").entries[0];
+  assert.equal(bare.amount, 174);
+  assert.equal(bare.estimated, true);
+  const weighed = parseFoodText("100 גרם גרגרי רימון").entries[0];
+  assert.equal(weighed.amount, 100);
+  assert.equal(weighed.calories, 83);
+  assert.equal(weighed.estimated, false);
+});
+
+test("Hebrew number words and practical Israeli foods resolve without silently falling back to 100 g", async () => {
+  const { parseFoodText } = await domainPromise;
+  const directCases = [
+    ["לימון", "lemon"],
+    ["חומוס", "hummus"],
+    ["טחינה", "tahini"],
+    ["מלבי", "malabi"],
+    ["כדור שוקולד", "chocolate-ball"],
+    ["אלפחורס", "alfajores"],
+    ["בורקס גבינה", "cheese-bourekas"],
+    ["מלאווח", "malawach"],
+    ["במבה", "bamba"],
+    ["ביסלי", "bissli"]
+  ];
+  for (const [input, foodId] of directCases) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, foodId, input);
+  }
+
+  const hummus = parseFoodText("חמישים גרם חומוס").entries[0];
+  assert.equal(hummus.amount, 50);
+  assert.equal(hummus.calories, 83);
+  assert.equal(hummus.estimated, false);
+
+  const tahini = parseFoodText("2 כפות טחינה").entries[0];
+  assert.equal(tahini.amount, 30);
+  assert.equal(tahini.estimated, true);
+  assert.equal(parseFoodText("שתי כדורי שוקולד").entries[0].amount, 2);
+});
+
 test("whole pizza requests a compact size choice instead of inventing one", async () => {
   const { parseFoodText, resolveFoodChoice } = await domainPromise;
   const result = parseFoodText("מגש פיצה");
