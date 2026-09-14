@@ -10,6 +10,7 @@ const { normalizeEquipment } = require("../lib/workout-validator");
 const { CANONICAL_EQUIPMENT_TOKENS } = require("../lib/workout-equipment-policy");
 const { buildLocalWorkoutProgram, buildLocalExerciseReplacement } = require("../lib/local-demo-generators");
 const { calculateNutritionTargets } = require("../lib/nutrition-targets");
+const { filterMeals, selectMeals } = require("../lib/meal-catalog");
 
 test("every public exercise uses selectable canonical equipment", () => {
   const allowed = new Set(CANONICAL_EQUIPMENT_TOKENS);
@@ -33,6 +34,28 @@ test("professional static skills use timed holds and sufficient rest", () => {
   assert.ok(frontLever);
   assert.match(frontLever.reps, /sec/);
   assert.ok(frontLever.restSeconds >= 150);
+});
+
+test("local workout generation excludes a specifically restricted muscle", () => {
+  const program = buildLocalWorkoutProgram({
+    experience: "intermediate",
+    trainingStyle: "gym",
+    equipment: ["dumbbell", "barbell", "machine", "cable", "bodyweight"],
+    daysPerWeek: 3,
+    limitations: "I have a chest injury and cannot train chest."
+  });
+  const ids = program.sessions.flatMap((session) => session.exercises.map((exercise) => exercise.exerciseId));
+  assert.ok(ids.length > 0);
+  for (const exercise of program.sessions.flatMap((session) => session.exercises)) {
+    assert.notEqual(exercise.muscleGroup, "chest");
+  }
+});
+
+test("condition-aware meal selection surfaces a matching nutrient when available", () => {
+  const pool = filterMeals({ diet: "omnivore", slot: "lunch" });
+  const vitaminDMeals = selectMeals({ pool, slot: "lunch", targetCalories: 700, count: 3, preferNutrients: ["vitaminD"] });
+  assert.ok(vitaminDMeals.length > 0);
+  assert.ok(vitaminDMeals.some((id) => pool.find((meal) => meal.id === id)?.nutrients.includes("vitaminD")));
 });
 
 test("advanced gym remains foundation-led rather than isolation-only", () => {
