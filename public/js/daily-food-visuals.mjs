@@ -1,4 +1,4 @@
-import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260913-smart-food-1";
+import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260913-smart-food-3";
 
 // Presentation only: canonical IDs come from the nutrition domain. Never infer
 // amounts or nutrition from an image, and never reinterpret a multi-item meal.

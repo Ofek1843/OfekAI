@@ -3,7 +3,7 @@
   if (!document.querySelector('link[href*="v45-deep-ocean.css"]')) {
     const deepOceanStyles = document.createElement("link");
     deepOceanStyles.rel = "stylesheet";
-    deepOceanStyles.href = "/css/v45-deep-ocean.css?v=20260912-targeted-theme-volume-1";
+    deepOceanStyles.href = "/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1";
     document.head.append(deepOceanStyles);
   }
   if (!document.querySelector('link[href*="product-motion-v47.css"]')) {
@@ -118,7 +118,120 @@
       settings: "הגדרות",
       plans: "מסלולים",
     },
+    es: {
+      navigation: "Navegación principal del producto",
+      brand: "FuelPhysique",
+      dashboard: "Panel",
+      workouts: "Planes de entrenamiento",
+      nutrition: "Nutrición",
+      progress: "Progreso",
+      messages: "Mensajes",
+      menu: "Abrir menú",
+      menuClose: "Cerrar menú",
+      menuTitle: "Todas las funciones",
+      menuPrimary: "Tu día",
+      menuBuild: "Crear y registrar",
+      menuAccount: "Cuenta",
+      buildWorkout: "Crear entrenamiento",
+      buildNutrition: "Crear nutrición",
+      dailyNutrition: "Nutrición diaria",
+      tracker: "Registro de entrenamiento",
+      history: "Historial de entrenamiento",
+      settings: "Configuración",
+      plans: "Planes",
+    },
+    fr: {
+      navigation: "Navigation principale du produit",
+      brand: "FuelPhysique",
+      dashboard: "Tableau de bord",
+      workouts: "Programmes",
+      nutrition: "Nutrition",
+      progress: "Progrès",
+      messages: "Messages",
+      menu: "Ouvrir le menu",
+      menuClose: "Fermer le menu",
+      menuTitle: "Toutes les fonctions",
+      menuPrimary: "Votre journée",
+      menuBuild: "Créer et suivre",
+      menuAccount: "Compte",
+      buildWorkout: "Créer un entraînement",
+      buildNutrition: "Créer un plan nutritionnel",
+      dailyNutrition: "Nutrition quotidienne",
+      tracker: "Suivi d'entraînement",
+      history: "Historique d'entraînement",
+      settings: "Paramètres",
+      plans: "Offres",
+    },
+    de: {
+      navigation: "Hauptnavigation",
+      brand: "FuelPhysique",
+      dashboard: "Dashboard",
+      workouts: "Trainingspläne",
+      nutrition: "Ernährung",
+      progress: "Fortschritt",
+      messages: "Nachrichten",
+      menu: "Menü öffnen",
+      menuClose: "Menü schließen",
+      menuTitle: "Alle Funktionen",
+      menuPrimary: "Dein Tag",
+      menuBuild: "Erstellen und verfolgen",
+      menuAccount: "Konto",
+      buildWorkout: "Training erstellen",
+      buildNutrition: "Ernährung erstellen",
+      dailyNutrition: "Tägliche Ernährung",
+      tracker: "Trainingstracker",
+      history: "Trainingsverlauf",
+      settings: "Einstellungen",
+      plans: "Tarife",
+    },
+    ar: {
+      navigation: "التنقل الرئيسي",
+      brand: "FuelPhysique",
+      dashboard: "لوحة التحكم",
+      workouts: "خطط التدريب",
+      nutrition: "التغذية",
+      progress: "التقدم",
+      messages: "الرسائل",
+      menu: "فتح القائمة",
+      menuClose: "إغلاق القائمة",
+      menuTitle: "كل الميزات",
+      menuPrimary: "يومك",
+      menuBuild: "البناء والمتابعة",
+      menuAccount: "الحساب",
+      buildWorkout: "إنشاء تمرين",
+      buildNutrition: "إنشاء تغذية",
+      dailyNutrition: "التغذية اليومية",
+      tracker: "متابعة التدريب",
+      history: "سجل التمارين",
+      settings: "الإعدادات",
+      plans: "الخطط",
+    },
+    zh: {
+      navigation: "主要产品导航",
+      brand: "FuelPhysique",
+      dashboard: "仪表板",
+      workouts: "训练计划",
+      nutrition: "营养",
+      progress: "进度",
+      messages: "消息",
+      menu: "打开菜单",
+      menuClose: "关闭菜单",
+      menuTitle: "所有功能",
+      menuPrimary: "你的今天",
+      menuBuild: "创建与跟踪",
+      menuAccount: "账户",
+      buildWorkout: "创建训练",
+      buildNutrition: "创建营养计划",
+      dailyNutrition: "每日营养",
+      tracker: "训练记录",
+      history: "训练历史",
+      settings: "设置",
+      plans: "方案",
+    },
   };
+  const supportedLanguages = new Set(Object.keys(translations));
+  const normalizeLanguage = (value) => supportedLanguages.has(value) ? value : "en";
+  const isRtlLanguage = (value) => value === "he" || value === "ar";
 
   const addProductNavigation = (copy, language) => {
     if (!protectedRoutes.has(route) || document.querySelector(".fp-global-nav")) return;
@@ -133,7 +246,7 @@
     const nav = document.createElement("nav");
     nav.className = "fp-global-nav";
     nav.setAttribute("aria-label", copy.navigation);
-    nav.dir = language === "he" ? "rtl" : "ltr";
+    nav.dir = isRtlLanguage(language) ? "rtl" : "ltr";
 
     const menuButton = document.createElement("button");
     menuButton.className = "fp-global-menu-button";
@@ -294,12 +407,12 @@
   };
 
   const updateProductLanguage = (language) => {
-    const safeLanguage = language === "he" ? "he" : "en";
+    const safeLanguage = normalizeLanguage(language);
     const copy = translations[safeLanguage];
     const nav = document.querySelector(".fp-global-nav");
     if (!nav) return;
     nav.setAttribute("aria-label", copy.navigation);
-    nav.dir = safeLanguage === "he" ? "rtl" : "ltr";
+    nav.dir = isRtlLanguage(safeLanguage) ? "rtl" : "ltr";
     const brand = nav.querySelector(".fp-global-brand");
     if (brand) brand.textContent = copy.brand;
     for (const key of ["dashboard", "workouts", "nutrition", "progress", "messages"]) {
@@ -335,19 +448,9 @@
   });
 
   const exposeIconActions = () => {
-    const language = (localStorage.getItem("ofek-ai-language") || document.documentElement.lang) === "he" ? "he" : "en";
-    const labels = language === "he" ? {
-      "Start conversation": "חדש",
-      "Back to conversations": "חזרה",
-      "Friend options": "עוד",
-      "Voice input": "קול",
-      "Switch to light mode": "מצב בהיר",
-      "Switch to dark mode": "מצב כהה",
-      "Toggle theme": "ערכת נושא",
-      "Close": "סגירה",
-      "Close profile preview": "סגירה",
-      "Close preview": "סגירה",
-    } : {
+    const language = normalizeLanguage(localStorage.getItem("ofek-ai-language") || document.documentElement.lang);
+    const actionLabels = {
+      en: {
       "Start conversation": "New",
       "Back to conversations": "Back",
       "Friend options": "More",
@@ -358,8 +461,85 @@
       "Close": "Close",
       "Close profile preview": "Close",
       "Close preview": "Close",
+      },
+      he: {
+        "Start conversation": "חדש",
+        "Back to conversations": "חזרה",
+        "Friend options": "עוד",
+        "Voice input": "קול",
+        "Switch to light mode": "מצב בהיר",
+        "Switch to dark mode": "מצב כהה",
+        "Toggle theme": "ערכת נושא",
+        "Close": "סגירה",
+        "Close profile preview": "סגירה",
+        "Close preview": "סגירה",
+      },
+      es: {
+        "Start conversation": "Nuevo",
+        "Back to conversations": "Volver",
+        "Friend options": "Más",
+        "Voice input": "Voz",
+        "Switch to light mode": "Modo claro",
+        "Switch to dark mode": "Modo oscuro",
+        "Toggle theme": "Tema",
+        "Close": "Cerrar",
+        "Close profile preview": "Cerrar",
+        "Close preview": "Cerrar",
+      },
+      fr: {
+        "Start conversation": "Nouveau",
+        "Back to conversations": "Retour",
+        "Friend options": "Plus",
+        "Voice input": "Voix",
+        "Switch to light mode": "Mode clair",
+        "Switch to dark mode": "Mode sombre",
+        "Toggle theme": "Thème",
+        "Close": "Fermer",
+        "Close profile preview": "Fermer",
+        "Close preview": "Fermer",
+      },
+      de: {
+        "Start conversation": "Neu",
+        "Back to conversations": "Zurück",
+        "Friend options": "Mehr",
+        "Voice input": "Stimme",
+        "Switch to light mode": "Heller Modus",
+        "Switch to dark mode": "Dunkler Modus",
+        "Toggle theme": "Design",
+        "Close": "Schließen",
+        "Close profile preview": "Schließen",
+        "Close preview": "Schließen",
+      },
+      ar: {
+        "Start conversation": "جديد",
+        "Back to conversations": "رجوع",
+        "Friend options": "المزيد",
+        "Voice input": "صوت",
+        "Switch to light mode": "الوضع الفاتح",
+        "Switch to dark mode": "الوضع الداكن",
+        "Toggle theme": "السمة",
+        "Close": "إغلاق",
+        "Close profile preview": "إغلاق",
+        "Close preview": "إغلاق",
+      },
+      zh: {
+        "Start conversation": "新建",
+        "Back to conversations": "返回",
+        "Friend options": "更多",
+        "Voice input": "语音",
+        "Switch to light mode": "浅色模式",
+        "Switch to dark mode": "深色模式",
+        "Toggle theme": "主题",
+        "Close": "关闭",
+        "Close profile preview": "关闭",
+        "Close preview": "关闭",
+      },
     };
-    document.querySelectorAll(".icon-button[aria-label], .composer-tool[aria-label], .send-button[aria-label], #voiceInputBtn[aria-label], [data-theme-toggle][aria-label]").forEach((button) => {
+    const labels = actionLabels[language] || actionLabels.en;
+    // Theme controls own their label and state in theme-toggle.js.  Treating
+    // them as generic icon actions overwrote “Light mode” / “Dark mode” with
+    // “Theme” after the toggle initialized.
+    document.querySelectorAll(".icon-button[aria-label], .composer-tool[aria-label], .send-button[aria-label], #voiceInputBtn[aria-label]").forEach((button) => {
       const replacement = labels[button.getAttribute("aria-label")];
       if (!replacement) return;
       button.setAttribute("aria-label", replacement);
@@ -554,10 +734,10 @@
   };
 
   const boot = () => {
-    const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
+    const language = normalizeLanguage(localStorage.getItem("ofek-ai-language") || "en");
     const copy = translations[language];
     document.documentElement.lang = language;
-    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+    document.documentElement.dir = isRtlLanguage(language) ? "rtl" : "ltr";
     document.body.classList.add("fp-redesign", "fp-v45-deep-ocean", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
@@ -572,9 +752,9 @@
   };
 
   window.addEventListener("ofekai:settings-saved", (event) => {
-    const language = event.detail?.language === "he" ? "he" : "en";
+    const language = normalizeLanguage(event.detail?.language || "en");
     document.documentElement.lang = language;
-    document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+    document.documentElement.dir = isRtlLanguage(language) ? "rtl" : "ltr";
     updateProductLanguage(language);
   });
 

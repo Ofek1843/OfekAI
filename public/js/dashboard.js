@@ -19,25 +19,88 @@ import {
 import { guardProtectedPage } from "./verification-gate.js";
 import { disassociateCurrentInstallation } from "./push-notifications.js";
 const $ = selector => document.querySelector(selector);
-const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
+const SUPPORTED_DASHBOARD_LANGUAGES = new Set(["en", "he", "es", "fr", "de", "ar", "zh"]);
+const selectedLanguage = localStorage.getItem("ofek-ai-language") || "en";
+const language = SUPPORTED_DASHBOARD_LANGUAGES.has(selectedLanguage) ? selectedLanguage : "en";
+const he = language === "he";
+const rtl = language === "he" || language === "ar";
 let activeNutritionPlanForQuickFood = null;
 
-function dashboardGreeting(name, isHebrew) {
+function dashboardGreeting(name, locale) {
   const cleanName = String(name || "").trim();
   const hour = new Date().getHours();
-  const greeting = isHebrew
-    ? (hour < 12 ? "בוקר טוב" : hour < 18 ? "צהריים טובים" : "ערב טוב")
-    : (hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening");
+  const greetings = {
+    en: hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening",
+    he: hour < 12 ? "בוקר טוב" : hour < 18 ? "צהריים טובים" : "ערב טוב",
+    es: hour < 12 ? "Buenos días" : hour < 18 ? "Buenas tardes" : "Buenas noches",
+    fr: hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir",
+    de: hour < 12 ? "Guten Morgen" : hour < 18 ? "Guten Tag" : "Guten Abend",
+    ar: hour < 12 ? "صباح الخير" : hour < 18 ? "مساء الخير" : "مساء الخير",
+    zh: hour < 12 ? "早上好" : hour < 18 ? "下午好" : "晚上好"
+  };
+  const greeting = greetings[locale] || greetings.en;
   return cleanName ? `${greeting}, ${cleanName}` : greeting;
 }
 
-const rawUi = he ? {
-  today: "היום",  welcome: name => dashboardGreeting(name, true),  intro: "בחרו צעד ברור אחד — אימון, תזונה, התקדמות או מאמן.",  chat: "שאלו את המאמן שלכם",  loading: "טוען את הדשבורד שלכם...",  week: "אימונים השבוע",  streak: "רצף נוכחי",  weight: "משקל אחרון",  sets: "סטים שהושלמו",  update: "עדכון התקדמות",  next: "האימון הבא",  noneWorkout: "אין תוכנית אימון פעילה",  start: "התחלת אימון",  nutrition: "תזונה פעילה",  noneNutrition: "אין תוכנית תזונה פעילה",  calories: "קלוריות",  protein: "חלבון",  manageNutrition: "ניהול תוכניות תזונה",  recent: "האימון האחרון",  noWorkouts: "עדיין אין אימונים",  history: "היסטוריית אימונים",  progress: "התקדמות",  momentum: "ממשיכים לצבור תנופה",  analytics: "ניתוח תרגילים",  goal: (done, target) => target ? `${done} מתוך ${target} אימונים מתוכננים` : "הגדירו יעד ב־Athlete Core",  streakHint: n => n ? "ימים רצופים עם פעילות" : "האימון הראשון מתחיל את הרצף",  setsHint: "ב־30 האימונים האחרונים",  exerciseMore: n => `ועוד ${n}`,  minutes: "דקות",  completed: "סטים הושלמו",  progressMessage: n => n ? `השלמתם ${n} אימונים. כל אימון מתועד משפר את ניתוח ההתקדמות שלכם.` : "סיימו את האימון הראשון כדי להתחיל למדוד התקדמות.",  error: "לא ניתן לטעון את הדשבורד.",  quickFoodLabel: "בדיקה מהירה",  quickFoodTitle: "חרגתם מהתפריט היום?",  quickFoodText: "כתבו בקירוב מה אכלתם היום. אל תשכחו משקאות. זה חישוב משוער בלבד.",  quickFoodEstimate: "חשב קירוב",  quickFoodClear: "נקה",  quickFoodEmpty: "כאן יופיעו קלוריות ומאקרו משוערים.",  quickFoodPlaceholder: "לדוגמה: 2 ביצים, חזה עוף, אורז, סלט, חלב, קפה",  quickFoodLow: "נראה שהיום לא היה דרמטי במיוחד — אפשר לסגור אותו עם הליכה קלה.",  quickFoodMid: "יש כאן חריגה מתונה. חזרה למסלול מחר תספיק.",  quickFoodHigh: "נראה שהיום היה גבוה יותר קלורית. עדיף לחזור לשגרה ולא להילחץ.",  scheduleLabel: "תצוגת השבוע",  scheduleTitle: "ימי האימון של השבוע",  scheduleHint: "גררו אימון ליום אחר כדי להזיז את כל השבוע קדימה בלי לפגוע במנוחה.",  scheduleShift: "הזז יום קדימה",  buildWorkout: "בניית תוכנית אימון",  buildNutrition: "בניית תוכנית תזונה",  trackProgress: "מעקב התקדמות",  heroHistory: "היסטוריית אימונים",  drawerCoach: "שיחה עם המאמן",  drawerPrimary: "התחלה מהירה",  drawerTraining: "כלי אימון",  drawerSupport: "התקדמות וחשבון",  missedLabel: "פספסתם אימון?",  missedTitle: "הזינו אותו כאן",  missedText: "הוסיפו את האימון עכשיו כדי שההיסטוריה וגרפי ההתקדמות יישארו מלאים.",  missedAction: "הזנת אימון שבוצע",  manualLabel: "תוכנית עצמית",  manualTitle: "בניית תוכנית בעצמכם",  manualText: "בחרו תרגילים, קבעו סטים ומנוחות, ובנו או שכפלו ימי אימון בקצב שלכם.",  manualAction: "יצירת תוכנית עצמית",  manualNav: "בניית תוכנית עצמית",  toolsKicker: "כלים מתקדמים",  toolsSummary: "פתיחת כלים נוספים",  toolsText: "היסטוריה, בנייה ידנית ובדיקת חריגה נשמרים כאן כדי שהמסך הראשי יישאר פשוט וברור.",  logout: "התנתקות",  logoutConfirm: "להתנתק מהחשבון?",  logoutWorking: "מתנתק...",  logoutError: "לא הצלחנו להתנתק. נסו שוב."}
- : {
-  today: "TODAY",  welcome: name => dashboardGreeting(name, false),  intro: "Choose one clear move — train, fuel, track, or ask your coach.",  chat: "Ask your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "Workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day",  buildWorkout: "Build workout plan",  buildNutrition: "Build nutrition plan",  trackProgress: "Track progress",  heroHistory: "Workout history",  drawerCoach: "Chat with your coach",  drawerPrimary: "Start here",  drawerTraining: "Training tools",  drawerSupport: "Progress & account",  missedLabel: "MISSED TRACKING?",  missedTitle: "Missed a workout? Log it here",  missedText: "Add the workout later so your history and progress charts stay complete.",  missedAction: "Log a past workout",  manualLabel: "YOUR OWN PROGRAM",  manualTitle: "Build a plan manually",  manualText: "Search exercises, set your sets and rest times, and build or duplicate workout days at your pace.",  manualAction: "Create my plan",  manualNav: "Build a plan manually",  toolsKicker: "MORE TOOLS",  toolsSummary: "Open advanced tools",  toolsText: "History, manual planning, and nutrition check-ins live here so the main screen stays simple and easy to use.",  logout: "Log out",  logoutConfirm: "Log out of your account?",  logoutWorking: "Logging out...",  logoutError: "Could not log out. Please try again."}
-;
-rawUi.dailyNutrition = he ? "יומן תזונה יומי" : "Daily nutrition";
-const v4Ui = he ? {
+const dashboardCopy = {
+  en: {
+    today: "TODAY",  welcome: name => dashboardGreeting(name, "en"),  intro: "Choose one clear move — train, fuel, track, or ask your coach.",  chat: "Ask your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "Workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day",  buildWorkout: "Build workout plan",  buildNutrition: "Build nutrition plan",  trackProgress: "Track progress",  heroHistory: "Workout history",  drawerCoach: "Chat with your coach",  drawerPrimary: "Start here",  drawerTraining: "Training tools",  drawerSupport: "Progress & account",  missedLabel: "MISSED TRACKING?",  missedTitle: "Missed a workout? Log it here",  missedText: "Add the workout later so your history and progress charts stay complete.",  missedAction: "Log a past workout",  manualLabel: "YOUR OWN PROGRAM",  manualTitle: "Build a plan manually",  manualText: "Search exercises, set your sets and rest times, and build or duplicate workout days at your pace.",  manualAction: "Create my plan",  manualNav: "Build a plan manually",  toolsKicker: "MORE TOOLS",  toolsSummary: "Open advanced tools",  toolsText: "History, manual planning, and nutrition check-ins live here so the main screen stays simple and easy to use.",  logout: "Log out",  logoutConfirm: "Log out of your account?",  logoutWorking: "Logging out...",  logoutError: "Could not log out. Please try again.", dailyNutrition: "Daily nutrition"
+  },
+  he: {
+    today: "היום",  welcome: name => dashboardGreeting(name, "he"),  intro: "בחרו צעד ברור אחד — אימון, תזונה, התקדמות או מאמן.",  chat: "שאלו את המאמן שלכם",  loading: "טוען את הדשבורד שלכם...",  week: "אימונים השבוע",  streak: "רצף נוכחי",  weight: "משקל אחרון",  sets: "סטים שהושלמו",  update: "עדכון התקדמות",  next: "האימון הבא",  noneWorkout: "אין תוכנית אימון פעילה",  start: "התחלת אימון",  nutrition: "תזונה פעילה",  noneNutrition: "אין תוכנית תזונה פעילה",  calories: "קלוריות",  protein: "חלבון",  manageNutrition: "ניהול תוכניות תזונה",  recent: "האימון האחרון",  noWorkouts: "עדיין אין אימונים",  history: "היסטוריית אימונים",  progress: "התקדמות",  momentum: "ממשיכים לצבור תנופה",  analytics: "ניתוח תרגילים",  goal: (done, target) => target ? `${done} מתוך ${target} אימונים מתוכננים` : "הגדירו יעד ב־Athlete Core",  streakHint: n => n ? "ימים רצופים עם פעילות" : "האימון הראשון מתחיל את הרצף",  setsHint: "ב־30 האימונים האחרונים",  exerciseMore: n => `ועוד ${n}`,  minutes: "דקות",  completed: "סטים הושלמו",  progressMessage: n => n ? `השלמתם ${n} אימונים. כל אימון מתועד משפר את ניתוח ההתקדמות שלכם.` : "סיימו את האימון הראשון כדי להתחיל למדוד התקדמות.",  error: "לא ניתן לטעון את הדשבורד.",  quickFoodLabel: "בדיקה מהירה",  quickFoodTitle: "חרגתם מהתפריט היום?",  quickFoodText: "כתבו בקירוב מה אכלתם היום. אל תשכחו משקאות. זה חישוב משוער בלבד.",  quickFoodEstimate: "חשב קירוב",  quickFoodClear: "נקה",  quickFoodEmpty: "כאן יופיעו קלוריות ומאקרו משוערים.",  quickFoodPlaceholder: "לדוגמה: 2 ביצים, חזה עוף, אורז, סלט, חלב, קפה",  quickFoodLow: "נראה שהיום לא היה דרמטי במיוחד — אפשר לסגור אותו עם הליכה קלה.",  quickFoodMid: "יש כאן חריגה מתונה. חזרה למסלול מחר תספיק.",  quickFoodHigh: "נראה שהיום היה גבוה יותר קלורית. עדיף לחזור לשגרה ולא להילחץ.",  scheduleLabel: "תצוגת השבוע",  scheduleTitle: "ימי האימון של השבוע",  scheduleHint: "גררו אימון ליום אחר כדי להזיז את כל השבוע קדימה בלי לפגוע במנוחה.",  scheduleShift: "הזז יום קדימה",  buildWorkout: "בניית תוכנית אימון",  buildNutrition: "בניית תוכנית תזונה",  trackProgress: "מעקב התקדמות",  heroHistory: "היסטוריית אימונים",  drawerCoach: "שיחה עם המאמן",  drawerPrimary: "התחלה מהירה",  drawerTraining: "כלי אימון",  drawerSupport: "התקדמות וחשבון",  missedLabel: "פספסתם אימון?",  missedTitle: "הזינו אותו כאן",  missedText: "הוסיפו את האימון עכשיו כדי שההיסטוריה וגרפי ההתקדמות יישארו מלאים.",  missedAction: "הזנת אימון שבוצע",  manualLabel: "תוכנית עצמית",  manualTitle: "בניית תוכנית בעצמכם",  manualText: "בחרו תרגילים, קבעו סטים ומנוחות, ובנו או שכפלו ימי אימון בקצב שלכם.",  manualAction: "יצירת תוכנית עצמית",  manualNav: "בניית תוכנית עצמית",  toolsKicker: "כלים מתקדמים",  toolsSummary: "פתיחת כלים נוספים",  toolsText: "היסטוריה, בנייה ידנית ובדיקת חריגה נשמרים כאן כדי שהמסך הראשי יישאר פשוט וברור.",  logout: "התנתקות",  logoutConfirm: "להתנתק מהחשבון?",  logoutWorking: "מתנתק...",  logoutError: "לא הצלחנו להתנתק. נסו שוב.", dailyNutrition: "יומן תזונה יומי"
+  },
+  es: {
+    today: "HOY", welcome: name => dashboardGreeting(name, "es"), intro: "Elige un siguiente paso claro: entrenar, comer, medir o preguntar al coach.", chat: "Pregunta a tu coach", loading: "Cargando tu panel...", week: "Entrenamientos esta semana", streak: "Racha actual", weight: "Último peso", sets: "Series completadas", update: "Actualizar progreso", next: "PRÓXIMO ENTRENAMIENTO", noneWorkout: "No hay plan de entrenamiento activo", start: "Iniciar entrenamiento", nutrition: "NUTRICIÓN ACTIVA", noneNutrition: "No hay plan nutricional activo", calories: "Calorías", protein: "Proteína", manageNutrition: "Gestionar planes de nutrición", recent: "ÚLTIMO ENTRENAMIENTO", noWorkouts: "Aún no hay entrenamientos", history: "Historial de entrenamientos", progress: "PROGRESO", momentum: "Sigue construyendo impulso", analytics: "Análisis de ejercicios", goal: (done, target) => target ? `${done} de ${target} entrenamientos planificados` : "Define un objetivo en Athlete Core", streakHint: n => n ? "días activos consecutivos" : "Tu primer entrenamiento inicia la racha", setsHint: "En tus últimos 30 entrenamientos", exerciseMore: n => `y ${n} más`, minutes: "minutos", completed: "series completadas", progressMessage: n => n ? `Has completado ${n} entrenamientos. Cada sesión registrada mejora tus datos de progreso.` : "Termina tu primer entrenamiento para empezar a medir el progreso.", error: "No se pudo cargar tu panel.", quickFoodLabel: "Registro rápido", quickFoodTitle: "¿Te saliste del plan hoy?", quickFoodText: "Escribe aproximadamente qué comiste hoy, incluyendo bebidas. Es solo una estimación.", quickFoodEstimate: "Estimar calorías", quickFoodClear: "Limpiar", quickFoodEmpty: "Aquí aparecerán calorías y macros aproximados.", quickFoodPlaceholder: "Ejemplo: 2 huevos, pechuga de pollo, arroz, ensalada, leche, café", quickFoodLow: "No parece muy dramático; una caminata ligera alcanza.", quickFoodMid: "Parece una desviación moderada. Vuelve al plan mañana.", quickFoodHigh: "Parece un día alto en calorías. Sin drama: vuelve a la rutina mañana.", scheduleLabel: "PLAN SEMANAL", scheduleTitle: "Días de entrenamiento esta semana", scheduleHint: "Arrastra un entrenamiento a otro día y toda la semana se ajustará.", scheduleShift: "Mover +1 día", buildWorkout: "Crear plan de entrenamiento", buildNutrition: "Crear plan de nutrición", trackProgress: "Ver progreso", heroHistory: "Historial de entrenamientos", drawerCoach: "Chatear con tu coach", drawerPrimary: "Inicio rápido", drawerTraining: "Herramientas de entrenamiento", drawerSupport: "Progreso y cuenta", missedLabel: "¿FALTA REGISTRAR?", missedTitle: "¿Olvidaste un entrenamiento? Regístralo aquí", missedText: "Añádelo luego para mantener completo tu historial y tus gráficos.", missedAction: "Registrar entrenamiento pasado", manualLabel: "TU PROPIO PROGRAMA", manualTitle: "Crear un plan manualmente", manualText: "Busca ejercicios, ajusta series y descansos, y crea o duplica días.", manualAction: "Crear mi plan", manualNav: "Crear plan manual", toolsKicker: "MÁS HERRAMIENTAS", toolsSummary: "Abrir herramientas avanzadas", toolsText: "Historial, planificación manual y registros rápidos viven aquí para mantener simple la pantalla principal.", logout: "Cerrar sesión", logoutConfirm: "¿Cerrar sesión?", logoutWorking: "Cerrando sesión...", logoutError: "No se pudo cerrar sesión. Inténtalo de nuevo.", dailyNutrition: "Nutrición diaria"
+  },
+  fr: {
+    today: "AUJOURD'HUI", welcome: name => dashboardGreeting(name, "fr"), intro: "Choisissez une action claire : entraînement, nutrition, progrès ou coach.", chat: "Demander au coach", loading: "Chargement de votre tableau de bord...", week: "Entraînements cette semaine", streak: "Série actuelle", weight: "Dernier poids", sets: "Séries terminées", update: "Mettre à jour les progrès", next: "PROCHAIN ENTRAÎNEMENT", noneWorkout: "Aucun programme d'entraînement actif", start: "Démarrer l'entraînement", nutrition: "NUTRITION ACTIVE", noneNutrition: "Aucun plan nutritionnel actif", calories: "Calories", protein: "Protéines", manageNutrition: "Gérer les plans nutritionnels", recent: "DERNIER ENTRAÎNEMENT", noWorkouts: "Aucun entraînement pour le moment", history: "Historique des entraînements", progress: "PROGRÈS", momentum: "Continuez à avancer", analytics: "Analyse des exercices", goal: (done, target) => target ? `${done} sur ${target} entraînements prévus` : "Définissez un objectif dans Athlete Core", streakHint: n => n ? "jours actifs consécutifs" : "Votre premier entraînement lance la série", setsHint: "Sur vos 30 derniers entraînements", exerciseMore: n => `et ${n} de plus`, minutes: "minutes", completed: "séries terminées", progressMessage: n => n ? `Vous avez terminé ${n} entraînements. Chaque séance enregistrée améliore vos analyses.` : "Terminez votre premier entraînement pour commencer à mesurer vos progrès.", error: "Impossible de charger le tableau de bord.", quickFoodLabel: "Point rapide", quickFoodTitle: "Vous vous êtes éloigné du plan aujourd'hui ?", quickFoodText: "Écrivez approximativement ce que vous avez mangé aujourd'hui, boissons incluses. Ceci reste une estimation.", quickFoodEstimate: "Estimer les calories", quickFoodClear: "Effacer", quickFoodEmpty: "Les calories et macros approximatives apparaîtront ici.", quickFoodPlaceholder: "Exemple : 2 œufs, blanc de poulet, riz, salade, lait, café", quickFoodLow: "Cela ne semble pas trop important ; une marche légère suffit.", quickFoodMid: "C'est un écart modéré. Revenez au plan demain.", quickFoodHigh: "La journée semble plus calorique. Pas de panique : reprenez la routine demain.", scheduleLabel: "PLAN HEBDOMADAIRE", scheduleTitle: "Jours d'entraînement cette semaine", scheduleHint: "Déplacez une séance vers un autre jour et toute la semaine suivra.", scheduleShift: "Décaler d'un jour", buildWorkout: "Créer un programme", buildNutrition: "Créer un plan nutritionnel", trackProgress: "Voir les progrès", heroHistory: "Historique d'entraînement", drawerCoach: "Discuter avec le coach", drawerPrimary: "Démarrage rapide", drawerTraining: "Outils d'entraînement", drawerSupport: "Progrès et compte", missedLabel: "SUIVI MANQUÉ ?", missedTitle: "Séance oubliée ? Ajoutez-la ici", missedText: "Ajoutez-la plus tard pour garder l'historique et les graphiques complets.", missedAction: "Ajouter une ancienne séance", manualLabel: "VOTRE PROGRAMME", manualTitle: "Créer un plan manuellement", manualText: "Cherchez des exercices, réglez les séries et les repos, puis créez ou dupliquez des jours.", manualAction: "Créer mon plan", manualNav: "Créer un plan manuel", toolsKicker: "OUTILS AVANCÉS", toolsSummary: "Ouvrir les outils avancés", toolsText: "Historique, planification manuelle et point nutrition restent ici pour garder l'écran principal simple.", logout: "Déconnexion", logoutConfirm: "Vous déconnecter ?", logoutWorking: "Déconnexion...", logoutError: "Impossible de se déconnecter. Réessayez.", dailyNutrition: "Nutrition quotidienne"
+  },
+  de: {
+    today: "HEUTE", welcome: name => dashboardGreeting(name, "de"), intro: "Wähle einen klaren nächsten Schritt: Training, Ernährung, Fortschritt oder Coach.", chat: "Coach fragen", loading: "Dashboard wird geladen...", week: "Trainings diese Woche", streak: "Aktuelle Serie", weight: "Letztes Gewicht", sets: "Abgeschlossene Sätze", update: "Fortschritt aktualisieren", next: "NÄCHSTES TRAINING", noneWorkout: "Kein aktiver Trainingsplan", start: "Training starten", nutrition: "AKTIVE ERNÄHRUNG", noneNutrition: "Kein aktiver Ernährungsplan", calories: "Kalorien", protein: "Protein", manageNutrition: "Ernährungspläne verwalten", recent: "LETZTES TRAINING", noWorkouts: "Noch keine Trainings", history: "Trainingsverlauf", progress: "FORTSCHRITT", momentum: "Dranbleiben", analytics: "Übungsanalyse", goal: (done, target) => target ? `${done} von ${target} geplanten Trainings` : "Ziel in Athlete Core festlegen", streakHint: n => n ? "aufeinanderfolgende aktive Tage" : "Dein erstes Training startet die Serie", setsHint: "Aus deinen letzten 30 Trainings", exerciseMore: n => `und ${n} weitere`, minutes: "Minuten", completed: "Sätze abgeschlossen", progressMessage: n => n ? `Du hast ${n} Trainings abgeschlossen. Jede protokollierte Einheit verbessert deine Auswertung.` : "Beende dein erstes Training, um Fortschritt zu messen.", error: "Dashboard konnte nicht geladen werden.", quickFoodLabel: "Schnellcheck", quickFoodTitle: "Heute vom Plan abgewichen?", quickFoodText: "Schreibe ungefähr auf, was du heute gegessen hast, Getränke eingeschlossen. Nur eine Schätzung.", quickFoodEstimate: "Kalorien schätzen", quickFoodClear: "Leeren", quickFoodEmpty: "Geschätzte Kalorien und Makros erscheinen hier.", quickFoodPlaceholder: "Beispiel: 2 Eier, Hähnchenbrust, Reis, Salat, Milch, Kaffee", quickFoodLow: "Das wirkt nicht dramatisch; ein leichter Spaziergang reicht.", quickFoodMid: "Das ist eine moderate Abweichung. Morgen wieder in die Routine.", quickFoodHigh: "Das wirkt kalorienreicher. Kein Stress: morgen zurück zur Routine.", scheduleLabel: "WOCHENPLAN", scheduleTitle: "Trainingstage diese Woche", scheduleHint: "Ziehe ein Training auf einen anderen Tag und die ganze Woche verschiebt sich.", scheduleShift: "+1 Tag verschieben", buildWorkout: "Trainingsplan erstellen", buildNutrition: "Ernährungsplan erstellen", trackProgress: "Fortschritt ansehen", heroHistory: "Trainingsverlauf", drawerCoach: "Mit dem Coach chatten", drawerPrimary: "Schnellstart", drawerTraining: "Trainingstools", drawerSupport: "Fortschritt und Konto", missedLabel: "TRACKING VERPASST?", missedTitle: "Training verpasst? Hier eintragen", missedText: "Trage es später ein, damit Verlauf und Diagramme vollständig bleiben.", missedAction: "Vergangenes Training eintragen", manualLabel: "EIGENER PLAN", manualTitle: "Plan manuell erstellen", manualText: "Suche Übungen, setze Sätze und Pausen und erstelle oder dupliziere Trainingstage.", manualAction: "Meinen Plan erstellen", manualNav: "Plan manuell erstellen", toolsKicker: "WEITERE TOOLS", toolsSummary: "Erweiterte Tools öffnen", toolsText: "Verlauf, manuelle Planung und Ernährungschecks bleiben hier, damit die Hauptansicht einfach bleibt.", logout: "Abmelden", logoutConfirm: "Vom Konto abmelden?", logoutWorking: "Abmeldung...", logoutError: "Abmelden fehlgeschlagen. Bitte erneut versuchen.", dailyNutrition: "Tägliche Ernährung"
+  },
+  ar: {
+    today: "اليوم", welcome: name => dashboardGreeting(name, "ar"), intro: "اختر خطوة واضحة: تدريب، تغذية، تقدم، أو سؤال المدرب.", chat: "اسأل مدربك", loading: "جارٍ تحميل لوحة التحكم...", week: "تمارين هذا الأسبوع", streak: "السلسلة الحالية", weight: "آخر وزن", sets: "المجموعات المكتملة", update: "تحديث التقدم", next: "التمرين التالي", noneWorkout: "لا توجد خطة تدريب نشطة", start: "بدء التمرين", nutrition: "التغذية النشطة", noneNutrition: "لا توجد خطة تغذية نشطة", calories: "السعرات", protein: "البروتين", manageNutrition: "إدارة خطط التغذية", recent: "آخر تمرين", noWorkouts: "لا توجد تمارين بعد", history: "سجل التمارين", progress: "التقدم", momentum: "استمر في بناء الزخم", analytics: "تحليل التمارين", goal: (done, target) => target ? `${done} من ${target} تمارين مخططة` : "حدد هدفًا في Athlete Core", streakHint: n => n ? "أيام نشاط متتالية" : "أول تمرين يبدأ السلسلة", setsHint: "ضمن آخر 30 تمرينًا", exerciseMore: n => `و ${n} أخرى`, minutes: "دقائق", completed: "مجموعات مكتملة", progressMessage: n => n ? `أكملت ${n} تمارين. كل تمرين مسجل يحسن تحليل تقدمك.` : "أنه أول تمرين لتبدأ قياس التقدم.", error: "تعذر تحميل لوحة التحكم.", quickFoodLabel: "تسجيل سريع", quickFoodTitle: "هل خرجت عن الخطة اليوم؟", quickFoodText: "اكتب تقريبًا ما أكلته اليوم، ولا تنس المشروبات. هذا تقدير فقط.", quickFoodEstimate: "تقدير السعرات", quickFoodClear: "مسح", quickFoodEmpty: "ستظهر هنا السعرات والماكروز التقريبية.", quickFoodPlaceholder: "مثال: بيضتان، صدر دجاج، أرز، سلطة، حليب، قهوة", quickFoodLow: "لا يبدو الأمر كبيرًا؛ مشي خفيف يكفي.", quickFoodMid: "هذا انحراف متوسط. عد إلى الخطة غدًا.", quickFoodHigh: "يبدو اليوم أعلى بالسعرات. لا مشكلة، عد للروتين غدًا.", scheduleLabel: "الخطة الأسبوعية", scheduleTitle: "أيام التدريب هذا الأسبوع", scheduleHint: "اسحب التمرين إلى يوم آخر وسيتحرك الأسبوع كله معه.", scheduleShift: "تحريك يوم واحد", buildWorkout: "إنشاء خطة تدريب", buildNutrition: "إنشاء خطة تغذية", trackProgress: "عرض التقدم", heroHistory: "سجل التمارين", drawerCoach: "الدردشة مع المدرب", drawerPrimary: "ابدأ هنا", drawerTraining: "أدوات التدريب", drawerSupport: "التقدم والحساب", missedLabel: "فاتك التسجيل؟", missedTitle: "فاتك تمرين؟ سجله هنا", missedText: "أضف التمرين لاحقًا حتى يبقى السجل والرسوم مكتملة.", missedAction: "تسجيل تمرين سابق", manualLabel: "برنامجك الخاص", manualTitle: "إنشاء خطة يدويًا", manualText: "ابحث عن التمارين وحدد المجموعات والراحة وأنشئ أو انسخ أيام التدريب.", manualAction: "إنشاء خطتي", manualNav: "إنشاء خطة يدويًا", toolsKicker: "أدوات إضافية", toolsSummary: "فتح الأدوات المتقدمة", toolsText: "السجل والتخطيط اليدوي وفحص التغذية تبقى هنا حتى تظل الشاشة الرئيسية بسيطة.", logout: "تسجيل الخروج", logoutConfirm: "تسجيل الخروج من الحساب؟", logoutWorking: "جارٍ تسجيل الخروج...", logoutError: "تعذر تسجيل الخروج. حاول مرة أخرى.", dailyNutrition: "التغذية اليومية"
+  },
+  zh: {
+    today: "今天", welcome: name => dashboardGreeting(name, "zh"), intro: "选择一个清晰的下一步：训练、饮食、进度或询问教练。", chat: "询问教练", loading: "正在加载仪表板...", week: "本周训练", streak: "当前连续天数", weight: "最新体重", sets: "已完成组数", update: "更新进度", next: "下一次训练", noneWorkout: "没有启用的训练计划", start: "开始训练", nutrition: "当前营养计划", noneNutrition: "没有启用的营养计划", calories: "卡路里", protein: "蛋白质", manageNutrition: "管理营养计划", recent: "最近训练", noWorkouts: "还没有训练记录", history: "训练历史", progress: "进度", momentum: "继续积累进展", analytics: "动作分析", goal: (done, target) => target ? `${done}/${target} 次计划训练` : "在 Athlete Core 中设置目标", streakHint: n => n ? "连续活跃天数" : "第一次训练会开启连续记录", setsHint: "最近 30 次训练", exerciseMore: n => `另外 ${n} 个`, minutes: "分钟", completed: "组已完成", progressMessage: n => n ? `你已完成 ${n} 次训练。每次记录都会让进度分析更准确。` : "完成第一次训练后即可开始跟踪进度。", error: "无法加载仪表板。", quickFoodLabel: "快速记录", quickFoodTitle: "今天偏离计划了吗？", quickFoodText: "大致写下今天吃了什么，也包括饮品。这只是估算。", quickFoodEstimate: "估算卡路里", quickFoodClear: "清除", quickFoodEmpty: "估算的卡路里和宏量营养会显示在这里。", quickFoodPlaceholder: "例如：2 个鸡蛋、鸡胸肉、米饭、沙拉、牛奶、咖啡", quickFoodLow: "看起来不算严重，轻松散步即可。", quickFoodMid: "这是中等偏离，明天回到计划就好。", quickFoodHigh: "今天热量可能偏高。别紧张，明天回到规律即可。", scheduleLabel: "周计划", scheduleTitle: "本周训练日", scheduleHint: "把训练拖到另一天，整周安排会一起移动。", scheduleShift: "后移一天", buildWorkout: "生成训练计划", buildNutrition: "生成营养计划", trackProgress: "查看进度", heroHistory: "训练历史", drawerCoach: "和教练聊天", drawerPrimary: "从这里开始", drawerTraining: "训练工具", drawerSupport: "进度与账户", missedLabel: "漏记了吗？", missedTitle: "漏掉训练？在这里补记", missedText: "稍后添加训练，让历史和进度图保持完整。", missedAction: "补记过去训练", manualLabel: "自定义计划", manualTitle: "手动创建计划", manualText: "搜索动作、设置组数和休息，并创建或复制训练日。", manualAction: "创建我的计划", manualNav: "手动创建计划", toolsKicker: "更多工具", toolsSummary: "打开高级工具", toolsText: "历史、手动计划和营养快速记录放在这里，让主屏保持简单。", logout: "退出登录", logoutConfirm: "要退出账户吗？", logoutWorking: "正在退出...", logoutError: "退出失败，请重试。", dailyNutrition: "每日营养"
+  }
+};
+const rawUi = dashboardCopy[language] || dashboardCopy.en;
+const v4Copy = {
+  en: {
+    capabilityStudioTitle: "Start with one clear move",
+    date: "DATE",
+    streak: "STREAK",
+    days: "days",
+    day: "day",
+    lastDate: "Date",
+    lastDuration: "Duration",
+    lastSets: "Sets",
+    lastExercises: "Exercises",
+    weekOnTrack: "Your training week is on track.",
+    weekReady: "Your next move is ready to choose.",
+    studioTrainingKicker: "TRAINING STUDIO",
+    studioTrainingTitle: "Build your next session",
+    studioTrainingText: "Generate a plan, shape it manually, or reopen a saved session.",
+    studioManualWorkoutLink: "Build manually",
+    studioSavedWorkoutLink: "Saved plans",
+    studioNutritionKicker: "FUEL",
+    studioNutritionTitle: "Plan what powers you",
+    studioNutritionText: "Turn your target and preferences into meals you can actually follow.",
+    studioManualNutritionLink: "Build manually",
+    studioSavedNutritionLink: "Saved plans",
+    studioProgressKicker: "PROGRESS",
+    studioProgressTitle: "See whether it is working",
+    studioProgressText: "Log body metrics, inspect trends, and keep personal records visible.",
+    studioExerciseProgressLink: "Exercise progress",
+    studioCoachKicker: "COACH",
+    studioCoachTitle: "Turn a question into action",
+    studioCoachText: "Ask about the plan you are following and get a practical next step.",
+    studioSocialKicker: "SOCIAL",
+    studioSocialTitle: "Share the work",
+    studioSocialText: "Message friends and exchange plans, progress, voice, and music safely."
+  },
+  he: {
   capabilityStudioTitle: "מתחילים מצעד ברור אחד",
   date: "תאריך",
   streak: "רצף",
@@ -69,40 +132,37 @@ const v4Ui = he ? {
   studioSocialKicker: "חברים",
   studioSocialTitle: "משתפים את העבודה",
   studioSocialText: "שלחו הודעות ושתפו תוכניות, התקדמות, קול ומוזיקה בבטחה."
-} : {
-  capabilityStudioTitle: "Start with one clear move",
-  date: "DATE",
-  streak: "STREAK",
-  days: "days",
-  day: "day",
-  lastDate: "Date",
-  lastDuration: "Duration",
-  lastSets: "Sets",
-  lastExercises: "Exercises",
-  weekOnTrack: "Your training week is on track.",
-  weekReady: "Your next move is ready to choose.",
-  studioTrainingKicker: "TRAINING STUDIO",
-  studioTrainingTitle: "Build your next session",
-  studioTrainingText: "Generate a plan, shape it manually, or reopen a saved session.",
-  studioManualWorkoutLink: "Build manually",
-  studioSavedWorkoutLink: "Saved plans",
-  studioNutritionKicker: "FUEL",
-  studioNutritionTitle: "Plan what powers you",
-  studioNutritionText: "Turn your target and preferences into meals you can actually follow.",
-  studioManualNutritionLink: "Build manually",
-  studioSavedNutritionLink: "Saved plans",
-  studioProgressKicker: "PROGRESS",
-  studioProgressTitle: "See whether it is working",
-  studioProgressText: "Log body metrics, inspect trends, and keep personal records visible.",
-  studioExerciseProgressLink: "Exercise progress",
-  studioCoachKicker: "COACH",
-  studioCoachTitle: "Turn a question into action",
-  studioCoachText: "Ask about the plan you are following and get a practical next step.",
-  studioSocialKicker: "SOCIAL",
-  studioSocialTitle: "Share the work",
-  studioSocialText: "Message friends and exchange plans, progress, voice, and music safely."
+  },
+  es: {
+    capabilityStudioTitle: "Empieza con una acción clara", date: "FECHA", streak: "RACHA", days: "días", day: "día", lastDate: "Fecha", lastDuration: "Duración", lastSets: "Series", lastExercises: "Ejercicios", weekOnTrack: "Tu semana de entrenamiento va según el plan.", weekReady: "Tu siguiente paso está listo.", studioTrainingKicker: "ESTUDIO DE ENTRENAMIENTO", studioTrainingTitle: "Construye tu próxima sesión", studioTrainingText: "Genera un plan, edítalo manualmente o abre una sesión guardada.", studioManualWorkoutLink: "Crear manualmente", studioSavedWorkoutLink: "Planes guardados", studioNutritionKicker: "COMBUSTIBLE", studioNutritionTitle: "Planifica lo que te da energía", studioNutritionText: "Convierte tu objetivo y preferencias en comidas que puedas seguir.", studioManualNutritionLink: "Crear manualmente", studioSavedNutritionLink: "Planes guardados", studioProgressKicker: "PROGRESO", studioProgressTitle: "Comprueba si funciona", studioProgressText: "Registra métricas, revisa tendencias y guarda marcas personales.", studioExerciseProgressLink: "Progreso por ejercicio", studioCoachKicker: "COACH", studioCoachTitle: "Convierte una pregunta en acción", studioCoachText: "Pregunta sobre tu plan y recibe un siguiente paso práctico.", studioSocialKicker: "SOCIAL", studioSocialTitle: "Comparte el trabajo", studioSocialText: "Envía mensajes y comparte planes, progreso, voz y música con seguridad."
+  },
+  fr: {
+    capabilityStudioTitle: "Commencez par une action claire", date: "DATE", streak: "SÉRIE", days: "jours", day: "jour", lastDate: "Date", lastDuration: "Durée", lastSets: "Séries", lastExercises: "Exercices", weekOnTrack: "Votre semaine d'entraînement suit le plan.", weekReady: "Votre prochaine action est prête.", studioTrainingKicker: "STUDIO D'ENTRAÎNEMENT", studioTrainingTitle: "Construisez votre prochaine séance", studioTrainingText: "Générez un programme, ajustez-le manuellement ou rouvrez une séance sauvegardée.", studioManualWorkoutLink: "Créer manuellement", studioSavedWorkoutLink: "Plans sauvegardés", studioNutritionKicker: "ÉNERGIE", studioNutritionTitle: "Planifiez ce qui vous nourrit", studioNutritionText: "Transformez votre objectif et vos préférences en repas faciles à suivre.", studioManualNutritionLink: "Créer manuellement", studioSavedNutritionLink: "Plans sauvegardés", studioProgressKicker: "PROGRÈS", studioProgressTitle: "Voyez si cela fonctionne", studioProgressText: "Enregistrez vos mesures, suivez les tendances et gardez vos records.", studioExerciseProgressLink: "Progrès par exercice", studioCoachKicker: "COACH", studioCoachTitle: "Transformez une question en action", studioCoachText: "Demandez conseil sur votre plan et repartez avec une étape concrète.", studioSocialKicker: "SOCIAL", studioSocialTitle: "Partagez le travail", studioSocialText: "Échangez messages, plans, progrès, voix et musique en sécurité."
+  },
+  de: {
+    capabilityStudioTitle: "Starte mit einem klaren Schritt", date: "DATUM", streak: "SERIE", days: "Tage", day: "Tag", lastDate: "Datum", lastDuration: "Dauer", lastSets: "Sätze", lastExercises: "Übungen", weekOnTrack: "Deine Trainingswoche läuft nach Plan.", weekReady: "Dein nächster Schritt ist bereit.", studioTrainingKicker: "TRAININGSSTUDIO", studioTrainingTitle: "Baue deine nächste Einheit", studioTrainingText: "Erstelle einen Plan, passe ihn manuell an oder öffne eine gespeicherte Einheit.", studioManualWorkoutLink: "Manuell erstellen", studioSavedWorkoutLink: "Gespeicherte Pläne", studioNutritionKicker: "ENERGIE", studioNutritionTitle: "Plane, was dich antreibt", studioNutritionText: "Mache aus Ziel und Vorlieben Mahlzeiten, denen du folgen kannst.", studioManualNutritionLink: "Manuell erstellen", studioSavedNutritionLink: "Gespeicherte Pläne", studioProgressKicker: "FORTSCHRITT", studioProgressTitle: "Sieh, ob es funktioniert", studioProgressText: "Protokolliere Körperdaten, erkenne Trends und behalte Rekorde im Blick.", studioExerciseProgressLink: "Übungsfortschritt", studioCoachKicker: "COACH", studioCoachTitle: "Aus Fragen werden Schritte", studioCoachText: "Frag zu deinem aktiven Plan und erhalte einen praktischen nächsten Schritt.", studioSocialKicker: "SOZIAL", studioSocialTitle: "Teile die Arbeit", studioSocialText: "Nachrichten, Pläne, Fortschritt, Sprache und Musik sicher teilen."
+  },
+  ar: {
+    capabilityStudioTitle: "ابدأ بخطوة واضحة", date: "التاريخ", streak: "السلسلة", days: "أيام", day: "يوم", lastDate: "التاريخ", lastDuration: "المدة", lastSets: "المجموعات", lastExercises: "التمارين", weekOnTrack: "أسبوع تدريبك يسير حسب الخطة.", weekReady: "خطوتك التالية جاهزة.", studioTrainingKicker: "استوديو التدريب", studioTrainingTitle: "ابنِ جلستك التالية", studioTrainingText: "أنشئ خطة أو عدلها يدويًا أو افتح جلسة محفوظة.", studioManualWorkoutLink: "إنشاء يدوي", studioSavedWorkoutLink: "الخطط المحفوظة", studioNutritionKicker: "التغذية", studioNutritionTitle: "خطط لما يمنحك الطاقة", studioNutritionText: "حوّل هدفك وتفضيلاتك إلى وجبات يمكنك الالتزام بها.", studioManualNutritionLink: "إنشاء يدوي", studioSavedNutritionLink: "الخطط المحفوظة", studioProgressKicker: "التقدم", studioProgressTitle: "اعرف إن كان يعمل", studioProgressText: "سجل مقاييس الجسم وراجع الاتجاهات واحفظ أرقامك الشخصية.", studioExerciseProgressLink: "تقدم التمارين", studioCoachKicker: "المدرب", studioCoachTitle: "حوّل السؤال إلى فعل", studioCoachText: "اسأل عن خطتك واحصل على خطوة عملية.", studioSocialKicker: "اجتماعي", studioSocialTitle: "شارك العمل", studioSocialText: "شارك الرسائل والخطط والتقدم والصوت والموسيقى بأمان."
+  },
+  zh: {
+    capabilityStudioTitle: "从一个清晰动作开始", date: "日期", streak: "连续", days: "天", day: "天", lastDate: "日期", lastDuration: "时长", lastSets: "组数", lastExercises: "动作", weekOnTrack: "你的训练周正在按计划进行。", weekReady: "你的下一步已经准备好。", studioTrainingKicker: "训练工作室", studioTrainingTitle: "构建下一次训练", studioTrainingText: "生成计划、手动调整，或重新打开已保存训练。", studioManualWorkoutLink: "手动创建", studioSavedWorkoutLink: "已保存计划", studioNutritionKicker: "能量", studioNutritionTitle: "规划你的饮食动力", studioNutritionText: "把目标和偏好变成真正能执行的餐食。", studioManualNutritionLink: "手动创建", studioSavedNutritionLink: "已保存计划", studioProgressKicker: "进度", studioProgressTitle: "看看是否有效", studioProgressText: "记录身体数据、查看趋势，并保存个人记录。", studioExerciseProgressLink: "动作进度", studioCoachKicker: "教练", studioCoachTitle: "把问题变成行动", studioCoachText: "询问当前计划，并获得实际下一步。", studioSocialKicker: "社交", studioSocialTitle: "分享训练过程", studioSocialText: "安全分享消息、计划、进度、语音和音乐。"
+  }
 };
-const navLabels = he ? {
+const v4Ui = v4Copy[language] || v4Copy.en;
+const navCopy = {
+  en: {
+    dashboard: "Dashboard",
+    programs: "Workout Plans",
+    workouts: "Workout Tracker",
+    nutrition: "Nutrition",
+    social: "Friends & Messages",
+    progress: "Progress",
+    settings: "Settings",
+    plans: "Plans",
+    history: "History"
+  },
+  he: {
   dashboard: "דשבורד",
   programs: "תוכניות אימון",
   workouts: "מעקב אימון",
@@ -112,30 +172,34 @@ const navLabels = he ? {
   settings: "הגדרות",
   plans: "מסלולים",
   history: "היסטוריה"
-} : {
-  dashboard: "Dashboard",
-  programs: "Workout Plans",
-  workouts: "Workout Tracker",
-  nutrition: "Nutrition",
-  social: "Friends & Messages",
-  progress: "Progress",
-  settings: "Settings",
-  plans: "Plans",
-  history: "History"
+  },
+  es: { dashboard: "Panel", programs: "Planes de entrenamiento", workouts: "Registro de entrenamiento", nutrition: "Nutrición", social: "Amigos y mensajes", progress: "Progreso", settings: "Configuración", plans: "Planes", history: "Historial" },
+  fr: { dashboard: "Tableau de bord", programs: "Programmes", workouts: "Suivi d'entraînement", nutrition: "Nutrition", social: "Amis et messages", progress: "Progrès", settings: "Paramètres", plans: "Offres", history: "Historique" },
+  de: { dashboard: "Dashboard", programs: "Trainingspläne", workouts: "Trainingstracker", nutrition: "Ernährung", social: "Freunde & Nachrichten", progress: "Fortschritt", settings: "Einstellungen", plans: "Tarife", history: "Verlauf" },
+  ar: { dashboard: "لوحة التحكم", programs: "خطط التدريب", workouts: "متابعة التدريب", nutrition: "التغذية", social: "الأصدقاء والرسائل", progress: "التقدم", settings: "الإعدادات", plans: "الخطط", history: "السجل" },
+  zh: { dashboard: "仪表板", programs: "训练计划", workouts: "训练记录", nutrition: "营养", social: "好友与消息", progress: "进度", settings: "设置", plans: "方案", history: "历史" }
 };
-const drawerSearchCopy = he
-  ? {
+const navLabels = navCopy[language] || navCopy.en;
+const drawerSearchTranslations = {
+  en: {
+    topbar: "Search dashboard",
+    placeholder: "Search pages or tools...",
+    open: "Open search",
+    noResults: "No results found"
+  },
+  he: {
       topbar: "חיפוש מהיר",
       placeholder: "חפש עמוד או כלי...",
       open: "פתח חיפוש",
       noResults: "לא נמצאו תוצאות"
-    }
-  : {
-      topbar: "Search dashboard",
-      placeholder: "Search pages or tools...",
-      open: "Open search",
-      noResults: "No results found"
-    };
+  },
+  es: { topbar: "Buscar", placeholder: "Buscar páginas o herramientas...", open: "Abrir búsqueda", noResults: "No se encontraron resultados" },
+  fr: { topbar: "Recherche", placeholder: "Rechercher des pages ou outils...", open: "Ouvrir la recherche", noResults: "Aucun résultat" },
+  de: { topbar: "Suchen", placeholder: "Seiten oder Tools suchen...", open: "Suche öffnen", noResults: "Keine Ergebnisse gefunden" },
+  ar: { topbar: "بحث", placeholder: "ابحث عن صفحات أو أدوات...", open: "فتح البحث", noResults: "لا توجد نتائج" },
+  zh: { topbar: "搜索", placeholder: "搜索页面或工具...", open: "打开搜索", noResults: "未找到结果" }
+};
+const drawerSearchCopy = drawerSearchTranslations[language] || drawerSearchTranslations.en;
 const searchableItems = [
   {
     id: "dashboard",
@@ -383,9 +447,9 @@ function initDashboardSearch() {
 }
 
 function localize() {
-  document.documentElement.lang = he ? "he" : "en";
-  document.documentElement.dir = he ? "rtl" : "ltr";
-  const socialQuickAction = he ? "צ׳אט עם חברים" : "Chat with friends";
+  document.documentElement.lang = language;
+  document.documentElement.dir = rtl ? "rtl" : "ltr";
+  const socialQuickAction = navLabels.social;
   const socialLink = $("#heroSocialLink");
   if (socialLink) {
     const label = socialLink.querySelector(".dashboard-action-label");
@@ -413,11 +477,38 @@ function localize() {
     const key = node.dataset.navKey;
     if (key && navLabels[key]) node.textContent = navLabels[key];
   });
-  const menuOpenLabel = he ? "פתח תפריט" : "Open menu";
-  const menuCloseLabel = he ? "סגור תפריט" : "Close menu";
+  const menuOpenLabels = {
+    en: "Open menu",
+    he: "פתח תפריט",
+    es: "Abrir menú",
+    fr: "Ouvrir le menu",
+    de: "Menü öffnen",
+    ar: "فتح القائمة",
+    zh: "打开菜单"
+  };
+  const menuCloseLabels = {
+    en: "Close menu",
+    he: "סגור תפריט",
+    es: "Cerrar menú",
+    fr: "Fermer le menu",
+    de: "Menü schließen",
+    ar: "إغلاق القائمة",
+    zh: "关闭菜单"
+  };
+  const settingsOpenLabels = {
+    en: "Open settings",
+    he: "פתח הגדרות",
+    es: "Abrir configuración",
+    fr: "Ouvrir les paramètres",
+    de: "Einstellungen öffnen",
+    ar: "فتح الإعدادات",
+    zh: "打开设置"
+  };
+  const menuOpenLabel = menuOpenLabels[language] || menuOpenLabels.en;
+  const menuCloseLabel = menuCloseLabels[language] || menuCloseLabels.en;
   $("#mobileMenuButton")?.setAttribute("aria-label", menuOpenLabel);
   $("#sidebarClose")?.setAttribute("aria-label", menuCloseLabel);
-  $("#mobileProfileButton")?.setAttribute("aria-label", he ? "פתח הגדרות" : "Open settings");
+  $("#mobileProfileButton")?.setAttribute("aria-label", settingsOpenLabels[language] || settingsOpenLabels.en);
   $("#mobileSearchButton")?.setAttribute("aria-label", drawerSearchCopy.open);
   const searchLabel = $("#mobileSearchButton .mobile-search-label");
   if (searchLabel) searchLabel.textContent = drawerSearchCopy.topbar;
@@ -436,7 +527,16 @@ function localize() {
   const manualNutritionLink = $("#manualNutritionLink");
   if (manualNutritionLink) manualNutritionLink.textContent = v4Ui.studioManualNutritionLink;
   const date = $("#dashboardContextDate");
-  if (date) date.textContent = new Intl.DateTimeFormat(he ? "he-IL" : "en-US", { weekday: "short", month: "short", day: "numeric" }).format(new Date());
+  const dateLocale = {
+    en: "en-US",
+    he: "he-IL",
+    es: "es-ES",
+    fr: "fr-FR",
+    de: "de-DE",
+    ar: "ar",
+    zh: "zh-CN"
+  }[language] || "en-US";
+  if (date) date.textContent = new Intl.DateTimeFormat(dateLocale, { weekday: "short", month: "short", day: "numeric" }).format(new Date());
 }
 
 const DRAWER_MAX_WIDTH = 1100;

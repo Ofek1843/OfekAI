@@ -1,4 +1,4 @@
-import { t, getLanguage, setLanguage } from "./i18n.js?v=20260722-3";
+import { t, getLanguage, setLanguage } from "./i18n.js?v=20260914-landing-i18n-1";
 import { trackPageView, trackClick } from "./analytics.js";
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";

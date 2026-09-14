@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260913-smart-food-1";
+import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260913-smart-food-3";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import {
@@ -11,7 +11,7 @@ import {
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
-} from "./daily-nutrition-domain.mjs?v=20260913-smart-food-1";
+} from "./daily-nutrition-domain.mjs?v=20260913-smart-food-3";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -21,14 +21,14 @@ import {
   normalizeLog,
   saveDailyLog,
   saveFoodCombination
-} from "./daily-nutrition-store.mjs?v=20260821-v45-daily-nutrition-v11-4";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260913-smart-food-1";
+} from "./daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260913-smart-food-3";
 import {
   formatNutritionAmount,
   formatNutritionNumber,
   nutritionAmountParts,
   nutritionUnitLabel
-} from "./daily-nutrition-format.mjs?v=20260821-v45-daily-nutrition-v11-4";
+} from "./daily-nutrition-format.mjs?v=20260914-i18n-dashboard-1";
 
 const $ = (selector) => document.querySelector(selector);
 const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";

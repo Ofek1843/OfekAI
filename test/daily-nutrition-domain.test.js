@@ -186,6 +186,44 @@ test("Hebrew number words and practical Israeli foods resolve without silently f
   assert.equal(parseFoodText("שתי כדורי שוקולד").entries[0].amount, 2);
 });
 
+test("common nuts resolve from Hebrew singular, plural, and weighed entries", async () => {
+  const { parseFoodText } = await domainPromise;
+  const cases = [
+    ["10 גרם אגוז מלך", "walnuts", 10, 65.4],
+    ["10g walnuts", "walnuts", 10, 65.4],
+    ["אגוזי מלך", "walnuts", 28, 183.1],
+    ["שקדים", "almonds", 28, 162.1],
+    ["25 גרם קשיו", "cashews", 25, 138.3],
+    ["כף חמאת בוטנים", "peanut-butter", 16, 94.1]
+  ];
+  for (const [input, foodId, amount, calories] of cases) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, foodId, input);
+    assert.equal(result.entries[0].amount, amount, input);
+    assert.equal(result.entries[0].calories, calories, input);
+  }
+  const weighedWalnuts = parseFoodText("10 גרם אגוז מלך").entries[0];
+  assert.equal(weighedWalnuts.estimated, false);
+});
+
+test("the local catalog covers a broad everyday Hebrew food corpus before smart fallback", async () => {
+  const { parseFoodText } = await domainPromise;
+  const cases = [
+    ["תפוז", "orange"], ["אגס", "pear"], ["ענבים", "grapes"], ["תותים", "strawberries"], ["אבטיח", "watermelon"], ["מנגו", "mango"],
+    ["עגבניות", "tomato"], ["גזר", "carrot"], ["גמבה", "bell-pepper"], ["חסה", "lettuce"], ["ברוקולי", "broccoli"], ["קישואים", "zucchini"], ["פטריות", "mushrooms"],
+    ["חלב", "milk-3"], ["יוגורט יווני", "greek-yogurt"], ["גבינה צהובה", "yellow-cheese"], ["מוצרלה", "mozzarella"],
+    ["פרגית", "chicken-thigh"], ["בשר טחון", "ground-beef"], ["סטייק", "beef-steak"], ["פילה דג", "white-fish"], ["טופו", "tofu"], ["עדשים", "lentils-cooked"], ["גרגירי חומוס", "chickpeas-cooked"],
+    ["קינואה", "quinoa-cooked"], ["בורגול", "bulgur-cooked"], ["קוסקוס", "couscous-cooked"], ["שמן זית", "olive-oil"], ["גרנולה", "granola"]
+  ];
+  for (const [input, foodId] of cases) {
+    const result = parseFoodText(`100 גרם ${input}`);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, foodId, input);
+    assert.equal(result.entries[0].estimated, false, input);
+  }
+});
+
 test("whole pizza requests a compact size choice instead of inventing one", async () => {
   const { parseFoodText, resolveFoodChoice } = await domainPromise;
   const result = parseFoodText("מגש פיצה");

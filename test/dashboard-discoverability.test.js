@@ -30,7 +30,8 @@ test("dashboard primary actions include the direct social chat destination", () 
 });
 
 test("dashboard social action is localized and remains a same-tab keyboard link", () => {
-  assert.match(JS, /socialQuickAction = he \? "צ׳אט עם חברים" : "Chat with friends"/);
+  assert.match(JS, /const socialQuickAction = navLabels\.social/);
+  assert.match(JS, /fr: \{ dashboard: "Tableau de bord"[\s\S]*?social: "Amis et messages"/);
   assert.match(JS, /socialLink\.setAttribute\("aria-label", socialQuickAction\)/);
   assert.match(CSS, /\.dashboard-action:focus-visible\s*\{[\s\S]*?outline:/);
   assert.match(CSS, /\.dashboard-action:active\s*\{[\s\S]*?filter:\s*brightness\(\.96\)/);

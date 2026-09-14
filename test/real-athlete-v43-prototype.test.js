@@ -13,7 +13,7 @@ const MOTION_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
 const PLATE_ASSET_VERSION = VERSION;
 const CONNECT_ASSET_VERSION = "20260908-v46-connect-phone-review-fix-1";
 const ENGINE_VERSION = VERSION;
-const CSS_VERSION = MOTION_ASSET_VERSION;
+const CSS_VERSION = "20260914-i18n-dashboard-1";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
 const INTEGRATION = read("public", "js", "illustrated-v4.js");
@@ -196,7 +196,7 @@ test("landing and dashboard load the engine before integration with one cache ge
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-v45-targeted-theme-volume-1/);
+  assert.match(SW, /fuelphysique-v45-i18n-dashboard-1/);
   assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);

@@ -974,9 +974,32 @@ html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.dashb
   background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(235,246,253,.94)) !important;
   box-shadow: 0 16px 38px rgba(34,83,121,.11) !important;
 }
-html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.dashboard-compact-header .hero-copy h1, .capability-card h2, .dashboard-context-item strong) { color: #10243a !important; text-shadow: none !important; }
-html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-card p { color: #47627a !important; }
-html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.theme-toggle, .capability-action:not(.capability-action--primary)) { color: #244864 !important; background: rgba(255,255,255,.84) !important; }
+/* Daylight dashboard: every reading surface uses dark ink.  This intentionally
+   overrides the dark-mode-only white type that earlier V4.5 rules supplied. */
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard :where(.dashboard-compact-header .hero-copy h1, .dashboard-compact-header .hero-copy p, .dashboard-compact-header .eyebrow, .capability-card h2, .dashboard-context-item strong, .dashboard-context-item span) {
+  color: #10243a !important;
+  text-shadow: none !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-card p { color: #385873 !important; opacity: 1; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-kicker { color: var(--capability-accent) !important; opacity: 1; }
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-action--primary {
+  background: var(--capability-accent) !important;
+  border-color: var(--capability-accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--capability-accent) 28%, transparent) !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .capability-action:not(.capability-action--primary) {
+  border-color: color-mix(in srgb, var(--capability-accent) 42%, #b7cde0) !important;
+  background: color-mix(in srgb, var(--capability-accent) 8%, #ffffff) !important;
+  color: #183a55 !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean.fp-route-dashboard .theme-toggle {
+  border-color: #183a55 !important;
+  background: #183a55 !important;
+  color: #ffffff !important;
+}
+html[data-theme="light"] body.fp-v45-deep-ocean :where(.fp-global-brand, .fp-global-link, .nav-link) { color: #183a55 !important; }
+html[data-theme="light"] body.fp-v45-deep-ocean .fp-global-link[aria-current="page"] { color: #075f9f !important; }
 html[data-theme="light"] body.fp-v45-deep-ocean:not(.fp-route-index) :where(.builder-card, .builder-wizard, .program-card, .plan-card, .nutrition-plan-card, .settings-card, .panel, .view-hero) {
   border-color: rgba(28, 94, 142, .18) !important;
   background-color: rgba(255,255,255,.94) !important;
