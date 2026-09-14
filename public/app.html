@@ -1144,28 +1144,28 @@ html[data-theme="light"] .coach-back-link {
     />
   </label>
 
-  <h4>Social profile</h4>
-  <p class="settings-description">This public profile is limited to your photo, name, username and short bio. Private fitness data is never shown.</p>
+  <h4 id="socialProfileTitle">Social profile</h4>
+  <p id="socialProfileDescription" class="settings-description">This public profile is limited to your photo, name, username and short bio. Private fitness data is never shown.</p>
   <div class="settings-social-photo">
     <img id="settingsSocialPhotoPreview" alt="Social profile preview" hidden>
     <span id="settingsSocialPhotoFallback" aria-hidden="true">FP</span>
   </div>
   <label class="settings-field">
-    <span>Profile photo</span>
+    <span id="profilePhotoLabel">Profile photo</span>
     <input id="settingsSocialPhoto" type="file" accept="image/jpeg,image/png,image/webp">
-    <small>JPEG, PNG or WebP up to 5 MB. A square crop is used in Social.</small>
+    <small id="profilePhotoHint">JPEG, PNG or WebP up to 5 MB. A square crop is used in Social.</small>
   </label>
   <label class="settings-field">
-    <span>Social display name</span>
+    <span id="socialDisplayNameLabel">Social display name</span>
     <input id="settingsSocialDisplayName" type="text" maxlength="80" autocomplete="name">
   </label>
   <label class="settings-field">
-    <span>Username</span>
+    <span id="usernameLabel">Username</span>
     <input id="settingsSocialUsername" type="text" maxlength="20" autocomplete="username" pattern="[A-Za-z0-9_](?:[A-Za-z0-9_.]{1,18}[A-Za-z0-9_])?">
     <p id="settingsSocialUsernameError" class="settings-field-error" role="alert" hidden></p>
   </label>
   <label class="settings-field">
-    <span>Bio</span>
+    <span id="bioLabel">Bio</span>
     <textarea id="settingsSocialBio" rows="3" maxlength="160" placeholder="A short public description"></textarea>
   </label>
 </section>

@@ -16,7 +16,7 @@ export const FOOD_THUMBNAILS = Object.freeze({
   avocado: "foods/avocado.webp", "peanut-butter": "foods/peanut-butter.webp", nuts: "foods/almonds.webp",
   pizza: "common/pizza.svg", "shawarma-laffa": "meals/chicken-shawarma-pita.webp",
   cornflakes: "foods/cornflakes.webp", granola: "foods/granola.webp", "chocolate-snack": "foods/dark-chocolate.webp",
-  hummus: "foods/hummus.webp", salmon: "foods/salmon.webp", "turkey-pastrami": "foods/turkey-breast.webp"
+  hummus: "foods/hummus.webp", salmon: "foods/salmon.webp", "turkey-pastrami": "foods/turkey-breast.webp", "turkey-breast": "foods/turkey-breast.webp", spinach: "foods/spinach.webp"
 });
 
 export const FOOD_THUMBNAIL_FALLBACK = "/images/common/meal.svg";

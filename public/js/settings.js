@@ -249,6 +249,7 @@ function accountCopy() {
 }
 
 function localizeAccountSettings() {
+    localizeSettingsInterface();
     const copy = accountCopy();
     if (elements.accountTitle) elements.accountTitle.textContent = copy.title;
     if (elements.accountDescription) elements.accountDescription.textContent = copy.description;
@@ -257,6 +258,103 @@ function localizeAccountSettings() {
     if (elements.deleteAccountTitle) elements.deleteAccountTitle.textContent = copy.deleteTitle;
     if (elements.deleteAccountHint) elements.deleteAccountHint.textContent = copy.deleteHint;
     if (elements.deleteAccount) elements.deleteAccount.textContent = copy.delete;
+}
+
+// app.html predates the shared translation engine and contains a sizeable
+// static settings surface. Keep those labels in the same locale as the
+// selected language instead of translating only the account subsection.
+function localizeSettingsInterface() {
+    const language = settingsLanguage();
+    const localOnly = {
+        en: { notifications: "Notifications", accountPrivacy: "Account & Privacy" },
+        he: { notifications: "התראות", accountPrivacy: "חשבון ופרטיות" },
+        es: { notifications: "Notificaciones", accountPrivacy: "Cuenta y privacidad" },
+        fr: { notifications: "Notifications", accountPrivacy: "Compte et confidentialité" },
+        de: { notifications: "Benachrichtigungen", accountPrivacy: "Konto und Datenschutz" },
+        ar: { notifications: "الإشعارات", accountPrivacy: "الحساب والخصوصية" },
+        zh: { notifications: "通知", accountPrivacy: "账户与隐私" }
+    }[language] || { notifications: "Notifications", accountPrivacy: "Account & Privacy" };
+    const social = {
+        en: ["Social profile", "This public profile is limited to your photo, name, username and short bio. Private fitness data is never shown.", "Profile photo", "JPEG, PNG or WebP up to 5 MB. A square crop is used in Social.", "Social display name", "Username", "Bio", "A short public description"],
+        he: ["פרופיל חברתי", "הפרופיל הציבורי מוגבל לתמונה, שם, שם משתמש וביוגרפיה קצרה. נתוני הכושר הפרטיים לעולם אינם מוצגים.", "תמונת פרופיל", "JPEG, PNG או WebP עד 5 MB. ב-Social נעשה שימוש בחיתוך ריבועי.", "שם תצוגה חברתי", "שם משתמש", "ביוגרפיה", "תיאור ציבורי קצר"],
+        es: ["Perfil social", "Este perfil público solo muestra foto, nombre, usuario y una biografía breve. Los datos privados nunca se muestran.", "Foto de perfil", "JPEG, PNG o WebP de hasta 5 MB. En Social se usa un recorte cuadrado.", "Nombre visible", "Nombre de usuario", "Biografía", "Una breve descripción pública"],
+        fr: ["Profil social", "Ce profil public se limite à votre photo, nom, identifiant et courte bio. Les données privées ne sont jamais affichées.", "Photo de profil", "JPEG, PNG ou WebP jusqu’à 5 Mo. Social utilise un recadrage carré.", "Nom affiché", "Nom d’utilisateur", "Bio", "Une courte description publique"],
+        de: ["Soziales Profil", "Dieses öffentliche Profil zeigt nur Foto, Name, Benutzername und eine kurze Bio. Private Daten werden nie angezeigt.", "Profilfoto", "JPEG, PNG oder WebP bis 5 MB. Social verwendet einen quadratischen Zuschnitt.", "Anzeigename", "Benutzername", "Bio", "Kurze öffentliche Beschreibung"],
+        ar: ["الملف الاجتماعي", "يقتصر هذا الملف العام على الصورة والاسم واسم المستخدم ونبذة قصيرة. لا تظهر بيانات اللياقة الخاصة.", "صورة الملف", "JPEG أو PNG أو WebP حتى 5 MB. يستخدم Social اقتصاصًا مربعًا.", "اسم العرض", "اسم المستخدم", "نبذة", "وصف عام قصير"],
+        zh: ["社交资料", "公开资料仅显示照片、姓名、用户名和简短简介。私密健身数据不会显示。", "头像", "JPEG、PNG 或 WebP，最大 5 MB。社交页面使用方形裁剪。", "显示名称", "用户名", "简介", "简短的公开描述"]
+    }[language] || null;
+    const labels = {
+        settingsTitle: "settings",
+        profileTab: "profile",
+        athleteCoreTab: "athleteCore",
+        aiPreferencesTab: "aiPreferences",
+        languageTab: "language",
+        notificationsTab: "notifications",
+        accountTab: "accountPrivacy",
+        appearanceTab: "appearance",
+        profileTitle: "profile",
+        profileDescription: "profileDescription",
+        fullNameLabel: "fullName",
+        emailLabel: "email",
+        athleteCoreTitle: "athleteCore",
+        athleteCoreDescription: "athleteCoreDescription",
+        ageLabel: "age",
+        bodyWeightLabel: "bodyWeight",
+        heightLabel: "height",
+        trainingExperienceLabel: "trainingExperience",
+        primaryGoalLabel: "primaryGoal",
+        limitationsLabel: "limitations",
+        aiPreferencesTitle: "aiPreferences",
+        aiPreferencesDescription: "aiPreferencesDescription",
+        responseDepthLabel: "responseDepth",
+        coachingStyleLabel: "coachingStyle",
+        useAthleteCoreLabel: "useAthleteCore",
+        evidenceBasedLabel: "evidenceBased",
+        languageTitle: "language",
+        languageDescription: "languageDescription",
+        defaultLanguageLabel: "defaultLanguage",
+        appearanceTitle: "appearance",
+        appearanceDescription: "appearanceDescription",
+        themeLabel: "theme",
+        themeSystemOption: "systemTheme",
+        themeDarkOption: "darkTheme",
+        themeLightOption: "lightTheme",
+        cancelSettingsBtn: "cancel",
+        saveSettingsBtn: "saveChanges"
+    };
+    Object.entries(labels).forEach(([id, key]) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = localOnly[key] || t(language, key);
+    });
+    if (social) {
+        ["socialProfileTitle", "socialProfileDescription", "profilePhotoLabel", "profilePhotoHint", "socialDisplayNameLabel", "usernameLabel", "bioLabel"].forEach((id, index) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = social[index];
+        });
+        const bio = document.getElementById("settingsSocialBio");
+        if (bio) bio.placeholder = social[7];
+    }
+
+    const optionLabels = {
+        experienceBeginnerOption: "beginner",
+        experienceIntermediateOption: "intermediate",
+        experienceAdvancedOption: "advanced",
+        goalMuscleGainOption: "buildMuscle",
+        goalFatLossOption: "loseFat",
+        goalStrengthOption: "increaseStrength",
+        goalSkillsOption: "improveSkills",
+        goalMaintenanceOption: "maintainPerformance",
+        responseConciseOption: "concise",
+        responseBalancedOption: "balanced",
+        responseDetailedOption: "detailed"
+    };
+    Object.entries(optionLabels).forEach(([id, key]) => {
+        const option = document.getElementById(id);
+        if (option) option.textContent = t(language, key);
+    });
+
+    const limitations = document.getElementById("settingsLimitations");
+    if (limitations) limitations.placeholder = t(language, "limitationsPlaceholder");
 }
 
 async function accountApi(path, options = {}) {

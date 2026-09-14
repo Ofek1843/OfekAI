@@ -60,7 +60,10 @@ test("portion scaling is centralized for counted and weighted foods", async () =
   const chicken = FOOD_CATALOG.find((food) => food.id === "ready-chicken");
   assert.equal(scaleFood(riceCake, 4).calories, 140);
   assert.equal(scaleFood(chicken, 150, "g").proteinGrams, 46.5);
-  assert.throws(() => scaleFood(riceCake, 100, "g"), /INCOMPATIBLE_UNIT/);
+  const weighedRiceCakes = scaleFood(riceCake, 100, "g");
+  assert.equal(weighedRiceCakes.unit, "g");
+  assert.equal(weighedRiceCakes.calories, 388.9);
+  assert.equal(weighedRiceCakes.unitEstimated, true);
 });
 
 test("daily totals and remaining targets update across every macro", async () => {
@@ -153,6 +156,33 @@ test("pomegranate is recognized in Hebrew and English with an edible natural-por
   assert.equal(weighed.amount, 100);
   assert.equal(weighed.calories, 83);
   assert.equal(weighed.estimated, false);
+});
+
+test("basic spinach and turkey inputs are recognized in both languages and by weight", async () => {
+  const { parseFoodText } = await domainPromise;
+  const cases = [
+    ["100 גרם תרד", "spinach", 23, 2.9],
+    ["100g spinach", "spinach", 23, 2.9],
+    ["100 גרם חזה הודו", "turkey-breast", 135, 29],
+    ["100g turkey breast", "turkey-breast", 135, 29]
+  ];
+  for (const [input, foodId, calories, protein] of cases) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, foodId, input);
+    assert.equal(result.entries[0].calories, calories, input);
+    assert.equal(result.entries[0].proteinGrams, protein, input);
+    assert.equal(result.entries[0].estimated, false, input);
+  }
+});
+
+test("counted foods accept grams using a documented average item weight", async () => {
+  const { parseFoodText } = await domainPromise;
+  const result = parseFoodText("50 גרם ביצה, 50 גרם פלאפל, 35 גרם אלפחורס");
+  assert.equal(result.status, "ready");
+  assert.deepEqual(result.entries.map((entry) => entry.foodId), ["egg", "falafel-ball", "alfajores"]);
+  assert.ok(result.entries.every((entry) => entry.estimated && entry.approximate));
+  assert.deepEqual(result.entries.map((entry) => entry.unit), ["g", "g", "g"]);
 });
 
 test("Hebrew number words and practical Israeli foods resolve without silently falling back to 100 g", async () => {

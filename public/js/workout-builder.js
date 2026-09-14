@@ -7,6 +7,7 @@ import { derivePriorityFromGoal } from "./workout-priority.js";
 import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
+import { t } from "./i18n.js";
 
 // This builder has no data to load on page open (generation is entirely
 // user-interaction-driven via the Generate button, which reads
@@ -207,6 +208,22 @@ const ui = isHebrew
       weeklyVolumeAdjustHint: "Adjust one set on a related exercise",
       weeklyVolumeCapReached: "Volume cannot be increased: this muscle is already at its safe ceiling."
     };
+
+const builderPageLabels = {
+  en: { title: "Workout Builder", description: "Build a personalized workout plan based on your goals, experience, schedule, equipment, and limitations.", back: "← FuelPhysique", plans: "📂 My Workout Plans" },
+  he: { title: "בונה תוכניות אימון", description: "בנה תוכנית אימונים אישית לפי המטרה, הניסיון, לוח הזמנים, הציוד והמגבלות שלך.", back: "← FuelPhysique", plans: "📂 תוכניות האימון שלי" },
+  es: { title: "Creador de entrenamientos", description: "Crea un plan de entrenamiento personalizado según tus objetivos, experiencia, horario, equipo y limitaciones.", back: "← FuelPhysique", plans: "📂 Mis planes de entrenamiento" },
+  fr: { title: "Créateur d’entraînement", description: "Créez un programme personnalisé selon vos objectifs, votre expérience, votre emploi du temps, votre équipement et vos limites.", back: "← FuelPhysique", plans: "📂 Mes programmes" },
+  de: { title: "Trainingsplan erstellen", description: "Erstelle einen persönlichen Trainingsplan nach deinen Zielen, deiner Erfahrung, deinem Zeitplan, deiner Ausrüstung und deinen Einschränkungen.", back: "← FuelPhysique", plans: "📂 Meine Trainingspläne" },
+  ar: { title: "منشئ خطة التدريب", description: "أنشئ خطة تدريب شخصية وفق أهدافك وخبرتك وجدولك ومعداتك وقيودك.", back: "← FuelPhysique", plans: "📂 خطط التدريب الخاصة بي" },
+  zh: { title: "训练计划生成器", description: "根据你的目标、经验、时间安排、器械和限制创建个性化训练计划。", back: "← FuelPhysique", plans: "📂 我的训练计划" }
+};
+const builderLabels = builderPageLabels[currentLanguage] || builderPageLabels.en;
+ui.pageTitle = builderLabels.title;
+ui.pageDescription = builderLabels.description;
+ui.primaryGoal = t(currentLanguage, "primaryGoal");
+ui.trainingExperience = t(currentLanguage, "trainingExperience");
+ui.limitations = t(currentLanguage, "limitations");
     function setText(selector, text) {
   const element = document.querySelector(selector);
 
@@ -220,18 +237,19 @@ function translateBuilderInterface() {
 
   const description =
     document.querySelector(".builder-description") ||
+    document.querySelector(".builder-header > p") ||
     document.querySelector("header p");
 
   if (description) {
     description.textContent = ui.pageDescription;
   }
 
-  setText('label[for="goal"]', ui.primaryGoal);
-  setText('label[for="experience"]', ui.trainingExperience);
-  setText('label[for="daysPerWeek"]', ui.trainingDays);
-  setText('label[for="sessionDuration"]', ui.sessionDuration);
-  setText('label[for="trainingStyle"]', ui.trainingStyle);
-  setText('label[for="limitations"]', ui.limitations);
+  setText('label[for="goal"], [data-builder-label="goal"]', ui.primaryGoal);
+  setText('label[for="experience"], [data-builder-label="experience"]', ui.trainingExperience);
+  setText('label[for="daysPerWeek"], [data-builder-label="daysPerWeek"]', ui.trainingDays);
+  setText('label[for="sessionDuration"], [data-builder-label="sessionDuration"]', ui.sessionDuration);
+  setText('label[for="trainingStyle"], [data-builder-label="trainingStyle"]', ui.trainingStyle);
+  setText('label[for="limitations"], [data-builder-label="limitations"]', ui.limitations);
 
 const equipmentHeading =
   document.querySelector(
@@ -260,6 +278,8 @@ const equipmentHeading =
 }
 
 translateBuilderInterface();
+document.querySelector(".builder-navigation a:first-child")?.replaceChildren(document.createTextNode(builderLabels.back));
+document.querySelector(".builder-navigation a:nth-child(2)")?.replaceChildren(document.createTextNode(builderLabels.plans));
 const hebrewOptionLabels = {
   buildMuscle: "בניית שריר",
   loseFat: "ירידה באחוזי שומן",
