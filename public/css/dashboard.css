@@ -438,6 +438,57 @@ html[data-theme="light"] .dashboard-search-result {
   justify-items: start;
 }
 
+.daily-focus {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(75, 217, 230, 0.28);
+  border-radius: 20px;
+  background: linear-gradient(110deg, rgba(16, 49, 76, 0.92), rgba(11, 31, 53, 0.82));
+  box-shadow: 0 18px 44px rgba(0, 8, 20, 0.22);
+  overflow: hidden;
+}
+
+.daily-focus::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  inset-inline-end: -90px;
+  top: -130px;
+  border-radius: 50%;
+  background: rgba(75, 217, 230, 0.12);
+  pointer-events: none;
+}
+
+.daily-focus-marker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4bd9e6;
+  box-shadow: 0 0 0 7px rgba(75, 217, 230, 0.12), 0 0 20px rgba(75, 217, 230, 0.5);
+}
+
+.daily-focus-copy { min-width: 0; }
+.daily-focus-copy h2 { margin: 4px 0 3px; font-size: clamp(18px, 2vw, 25px); letter-spacing: -0.03em; }
+.daily-focus-copy p { margin: 0; color: var(--muted); line-height: 1.45; }
+.daily-focus-meta { display: grid; gap: 4px; color: #a9c5dc; font-size: 13px; font-weight: 800; white-space: nowrap; }
+.daily-focus-action { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border-radius: 12px; background: #4bd9e6; color: #062031; font-weight: 900; text-decoration: none; transition: transform .2s ease, box-shadow .2s ease; }
+.daily-focus-action:hover, .daily-focus-action:focus-visible { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(75, 217, 230, 0.22); }
+
+html[data-theme="light"] .daily-focus { background: linear-gradient(110deg, rgba(232, 248, 251, 0.96), rgba(245, 250, 254, 0.96)); border-color: rgba(25, 145, 164, 0.24); box-shadow: 0 16px 34px rgba(52, 69, 70, 0.09); }
+html[data-theme="light"] .daily-focus-meta { color: #42627e; }
+
+@media (max-width: 720px) {
+  .daily-focus { grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 16px; }
+  .daily-focus-meta { grid-column: 2; grid-row: 2; display: flex; flex-wrap: wrap; gap: 8px 14px; white-space: normal; }
+  .daily-focus-action { grid-column: 1 / -1; width: 100%; }
+}
+
 .hero-theme-toggle {
   width: fit-content;
   min-width: 174px;

@@ -25,6 +25,16 @@ const language = SUPPORTED_DASHBOARD_LANGUAGES.has(selectedLanguage) ? selectedL
 const he = language === "he";
 const rtl = language === "he" || language === "ar";
 let activeNutritionPlanForQuickFood = null;
+const dailyFocusCopy = {
+  en: { kicker: "TODAY'S FOCUS", title: "Your next best move", workout: "Start today's workout", workoutText: "Your next session is ready. One focused session keeps the week moving.", nutrition: "Log today's food", nutritionText: "Keep your nutrition picture current with one quick check-in.", progress: "Review your progress", progressText: "You completed today's action. Take a look at what is changing.", setup: "Set up your plan", setupText: "Choose your goal and equipment so FuelPhysique can build your first clear step.", start: "Start here", workouts: n => `${n} workout${n === 1 ? "" : "s"} this week`, streak: n => `${n} day${n === 1 ? "" : "s"} streak` },
+  he: { kicker: "המיקוד של היום", title: "הצעד הבא שלך", workout: "התחלת האימון של היום", workoutText: "האימון הבא מוכן. אימון ממוקד אחד מקדם את השבוע.", nutrition: "תיעוד התזונה של היום", nutritionText: "שמרו על תמונת התזונה מעודכנת בבדיקה קצרה.", progress: "בדיקת ההתקדמות", progressText: "השלמתם את הפעולה של היום. זה הזמן לראות מה משתנה.", setup: "הגדרת התוכנית", setupText: "בחרו יעד וציוד כדי ש־FuelPhysique יבנה לכם צעד ראשון ברור.", start: "מתחילים כאן", workouts: n => `${n} אימונים השבוע`, streak: n => `רצף של ${n} ימים` },
+  es: { kicker: "ENFOQUE DE HOY", title: "Tu próximo paso", workout: "Empieza el entrenamiento de hoy", workoutText: "Tu próxima sesión está lista. Una sesión mantiene la semana en marcha.", nutrition: "Registra la comida de hoy", nutritionText: "Mantén tu nutrición actualizada con un registro rápido.", progress: "Revisa tu progreso", progressText: "Completaste la acción de hoy. Mira qué está cambiando.", setup: "Configura tu plan", setupText: "Elige tu objetivo y equipo para crear tu primer paso.", start: "Empieza aquí", workouts: n => `${n} entrenamientos esta semana`, streak: n => `${n} días seguidos` },
+  fr: { kicker: "OBJECTIF DU JOUR", title: "Votre prochaine étape", workout: "Commencer l'entraînement du jour", workoutText: "Votre prochaine séance est prête. Une séance ciblée fait avancer la semaine.", nutrition: "Noter l'alimentation du jour", nutritionText: "Gardez votre suivi nutritionnel à jour en quelques secondes.", progress: "Voir vos progrès", progressText: "Vous avez réalisé l'action du jour. Voyez ce qui évolue.", setup: "Configurer votre plan", setupText: "Choisissez votre objectif et votre équipement pour commencer.", start: "Commencer", workouts: n => `${n} entraînement${n === 1 ? "" : "s"} cette semaine`, streak: n => `${n} jour${n === 1 ? "" : "s"} consécutif${n === 1 ? "" : "s"}` },
+  de: { kicker: "HEUTE IM FOKUS", title: "Dein nächster Schritt", workout: "Heutiges Training starten", workoutText: "Deine nächste Einheit ist bereit und hält die Woche in Bewegung.", nutrition: "Heutiges Essen eintragen", nutritionText: "Halte deinen Ernährungsüberblick mit einem kurzen Check-in aktuell.", progress: "Fortschritt ansehen", progressText: "Du hast die heutige Aktion erledigt. Sieh, was sich verändert.", setup: "Plan einrichten", setupText: "Wähle Ziel und Ausrüstung für deinen ersten klaren Schritt.", start: "Hier starten", workouts: n => `${n} Training${n === 1 ? "" : "s"} diese Woche`, streak: n => `${n} Tage Serie` },
+  ar: { kicker: "تركيز اليوم", title: "خطوتك التالية", workout: "ابدأ تمرين اليوم", workoutText: "جلستك التالية جاهزة. جلسة مركزة تحافظ على تقدم الأسبوع.", nutrition: "سجل طعام اليوم", nutritionText: "حافظ على صورة تغذيتك بتسجيل سريع.", progress: "راجع تقدمك", progressText: "أنجزت مهمة اليوم. شاهد ما الذي يتغير.", setup: "إعداد خطتك", setupText: "اختر هدفك ومعداتك لبناء خطوتك الأولى.", start: "ابدأ من هنا", workouts: n => `${n} تمارين هذا الأسبوع`, streak: n => `سلسلة ${n} أيام` },
+  zh: { kicker: "今日重点", title: "你的下一步", workout: "开始今天的训练", workoutText: "下一次训练已准备好。一次专注训练就能推动本周进度。", nutrition: "记录今天的饮食", nutritionText: "用一次快速记录保持营养数据最新。", progress: "查看你的进度", progressText: "你完成了今天的行动。看看有哪些变化。", setup: "设置你的计划", setupText: "选择目标和器械，开始清晰的第一步。", start: "从这里开始", workouts: n => `本周 ${n} 次训练`, streak: n => `连续 ${n} 天` }
+};
+const dailyFocusUi = dailyFocusCopy[language] || dailyFocusCopy.en;
 
 function dashboardGreeting(name, locale) {
   const cleanName = String(name || "").trim();
@@ -731,6 +741,33 @@ function renderNutrition(saved) {
   action.textContent = ui.manageNutrition;
   const plan = saved.plan || {
 }
+function renderDailyFocus({ workout, nutrition, logs, weekly, streak }) {
+  const title = $("#dailyFocusTitle");
+  const text = $("#dailyFocusText");
+  const action = $("#dailyFocusAction");
+  const kicker = $("#dailyFocusKicker");
+  const workoutStatus = $("#dailyFocusWorkoutStatus");
+  const streakStatus = $("#dailyFocusStreakStatus");
+  if (!title || !text || !action) return;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const completedToday = logs.some(log => {
+    const date = timestampDate(log.completedAt) || timestampDate(log.startedAt);
+    if (!date) return false;
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized.getTime() === today.getTime();
+  });
+  const state = !workout ? "setup" : completedToday && nutrition ? "progress" : completedToday ? "nutrition" : "workout";
+  const content = { workout: [dailyFocusUi.workout, dailyFocusUi.workoutText, "/workout-tracker.html"], nutrition: [dailyFocusUi.nutrition, dailyFocusUi.nutritionText, "/daily-nutrition.html"], progress: [dailyFocusUi.progress, dailyFocusUi.progressText, "/progress.html"], setup: [dailyFocusUi.setup, dailyFocusUi.setupText, "/workout-builder.html"] }[state];
+  if (kicker) kicker.textContent = dailyFocusUi.kicker;
+  title.textContent = content[0];
+  text.textContent = content[1];
+  action.href = content[2];
+  action.textContent = dailyFocusUi.start;
+  if (workoutStatus) workoutStatus.textContent = dailyFocusUi.workouts(weekly);
+  if (streakStatus) streakStatus.textContent = dailyFocusUi.streak(streak);
+}
 ;
   activeNutritionPlanForQuickFood = {
     name: saved.name || plan.planName || "Nutrition Plan",    dailyCalories: Number(plan.dailyCalories) || null,    proteinGrams: Number(plan.proteinGrams) || null,    carbsGrams: Number(plan.carbsGrams) || null,    fatGrams: Number(plan.fatGrams) || null  }
@@ -1182,6 +1219,7 @@ async function load(user) {
   renderWeeklySchedule(workout);
   renderNutrition(nutrition);
   renderRecent(logs[0]);
+  renderDailyFocus({ workout, nutrition, logs, weekly, streak });
   $("#dashboardStatus").textContent = "";
   $("#dashboardContent").classList.remove("hidden");
   showAthleteCorePromptIfNeeded(settings);
