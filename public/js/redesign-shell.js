@@ -379,6 +379,15 @@
     menuButton.addEventListener("click", () => setMenuOpen(menu.hidden));
     menuClose.addEventListener("click", () => setMenuOpen(false));
     backdrop.addEventListener("click", () => setMenuOpen(false));
+    // Desktop wheel routing keeps the open menu independent from the page:
+    // the menu panel consumes its own scroll, while the dimmed page area
+    // remains a page scroll surface. Touch/mobile behavior stays unchanged.
+    nav.addEventListener("wheel", (event) => {
+      if (menu.hidden || event.ctrlKey || !window.matchMedia("(min-width: 761px)").matches) return;
+      if (event.target.closest(".fp-global-menu")) return;
+      event.preventDefault();
+      window.scrollBy({ top: event.deltaY, left: 0, behavior: "auto" });
+    }, { passive: false });
     document.addEventListener("click", (event) => {
       if (!menu.hidden && !nav.contains(event.target)) setMenuOpen(false);
     });

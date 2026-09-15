@@ -7,6 +7,8 @@ const ROOT = path.join(__dirname, "..");
 const HTML = fs.readFileSync(path.join(ROOT, "public", "dashboard.html"), "utf8");
 const JS = fs.readFileSync(path.join(ROOT, "public", "js", "dashboard.js"), "utf8");
 const CSS = fs.readFileSync(path.join(ROOT, "public", "css", "dashboard.css"), "utf8");
+const SHELL = fs.readFileSync(path.join(ROOT, "public", "js", "redesign-shell.js"), "utf8");
+const SHELL_CSS = fs.readFileSync(path.join(ROOT, "public", "css", "redesign-v1.css"), "utf8");
 
 function primaryActions() {
   const match = HTML.match(/<(?:nav|section)\b[^>]*class="[^"]*\bdashboard-primary-actions\b[^"]*"[\s\S]*?<\/(?:nav|section)>/);
@@ -43,4 +45,13 @@ test("dashboard quick actions use the requested responsive grid", () => {
   assert.match(CSS, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*1fr 1fr/);
   assert.match(CSS, /@media\s*\(max-width:\s*360px\)[\s\S]*?\.dashboard-primary-actions\s*\{[\s\S]*?grid-template-columns:\s*1fr/);
   assert.match(CSS, /\.dashboard-action\s*\{[\s\S]*?min-width:\s*0;[\s\S]*?height:\s*100%/);
+});
+
+test("daily nutrition is a visible dashboard destination and desktop drawer wheel routing is explicit", () => {
+  assert.match(HTML, /class="daily-nutrition-spotlight"[^>]*href="\/daily-nutrition\.html"/);
+  assert.match(JS, /dailyNutritionSpotlightTitle/);
+  assert.match(SHELL, /nav\.addEventListener\("wheel"/);
+  assert.match(SHELL, /event\.target\.closest\("\.fp-global-menu"\)/);
+  assert.match(SHELL_CSS, /@media\s*\(min-width:\s*761px\)[\s\S]*?body\.fp-global-menu-open\s*\{\s*overflow-y:\s*auto/);
+  assert.match(SHELL_CSS, /\.fp-global-menu\s*\{[\s\S]*?overflow-y:\s*auto/);
 });

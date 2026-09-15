@@ -483,10 +483,61 @@ html[data-theme="light"] .dashboard-search-result {
 html[data-theme="light"] .daily-focus { background: linear-gradient(110deg, rgba(232, 248, 251, 0.96), rgba(245, 250, 254, 0.96)); border-color: rgba(25, 145, 164, 0.24); box-shadow: 0 16px 34px rgba(52, 69, 70, 0.09); }
 html[data-theme="light"] .daily-focus-meta { color: #42627e; }
 
+.daily-nutrition-spotlight {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 14px 18px;
+  border: 1px solid rgba(82, 201, 138, 0.34);
+  border-radius: 18px;
+  color: #f4fbff;
+  background: linear-gradient(110deg, rgba(18, 64, 67, 0.9), rgba(12, 39, 59, 0.86));
+  box-shadow: 0 16px 36px rgba(0, 8, 20, 0.18);
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.daily-nutrition-spotlight:hover,
+.daily-nutrition-spotlight:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(82, 201, 138, 0.72);
+  box-shadow: 0 20px 42px rgba(0, 8, 20, 0.28);
+}
+
+.daily-nutrition-spotlight-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: rgba(82, 201, 138, 0.16);
+}
+
+.daily-nutrition-spotlight-icon img { width: 23px; height: 23px; filter: brightness(0) invert(1); }
+.daily-nutrition-spotlight-copy { display: grid; gap: 2px; min-width: 0; }
+.daily-nutrition-spotlight-copy strong { font-size: 1.08rem; line-height: 1.2; }
+.daily-nutrition-spotlight-copy > span:last-child { color: #a9c5dc; font-size: 0.9rem; line-height: 1.4; }
+.daily-nutrition-spotlight-arrow { color: #7de0a8; font-size: 1.65rem; line-height: 1; }
+
+html[data-theme="light"] .daily-nutrition-spotlight {
+  color: #12314a;
+  border-color: rgba(31, 147, 90, 0.28);
+  background: linear-gradient(110deg, #eefbf5, #f3f9ff);
+  box-shadow: 0 14px 32px rgba(52, 69, 70, 0.08);
+}
+html[data-theme="light"] .daily-nutrition-spotlight-copy > span:last-child { color: #526d84; }
+html[data-theme="light"] .daily-nutrition-spotlight-icon { background: rgba(31, 147, 90, 0.12); }
+html[data-theme="light"] .daily-nutrition-spotlight-icon img { filter: none; }
+html[data-theme="light"] .daily-nutrition-spotlight-arrow { color: #16734a; }
+
 @media (max-width: 720px) {
   .daily-focus { grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 16px; }
   .daily-focus-meta { grid-column: 2; grid-row: 2; display: flex; flex-wrap: wrap; gap: 8px 14px; white-space: normal; }
   .daily-focus-action { grid-column: 1 / -1; width: 100%; }
+  .daily-nutrition-spotlight { padding: 13px 14px; }
+  .daily-nutrition-spotlight-copy > span:last-child { font-size: .84rem; }
 }
 
 .hero-theme-toggle {

@@ -2423,6 +2423,13 @@ body.fp-global-menu-open {
   overflow: hidden;
 }
 
+/* On desktop, wheel input over the menu panel scrolls that panel and wheel
+   input over the dimmed page is routed back to the dashboard by the shell.
+   Mobile retains the modal, body-locked drawer behavior above. */
+@media (min-width: 761px) {
+  body.fp-global-menu-open { overflow-y: auto; }
+}
+
 .fp-global-menu-header {
   display: flex;
   align-items: center;

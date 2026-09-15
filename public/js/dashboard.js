@@ -474,6 +474,12 @@ function localize() {
     const node = $("#" + id);
     if (node) node.textContent = ui.dailyNutrition;
   }
+  const dailyNutritionSpotlightKicker = $("#dailyNutritionSpotlightKicker");
+  const dailyNutritionSpotlightTitle = $("#dailyNutritionSpotlightTitle");
+  const dailyNutritionSpotlightText = $("#dailyNutritionSpotlightText");
+  if (dailyNutritionSpotlightKicker) dailyNutritionSpotlightKicker.textContent = ui.dailyNutrition;
+  if (dailyNutritionSpotlightTitle) dailyNutritionSpotlightTitle.textContent = dailyFocusUi.nutrition;
+  if (dailyNutritionSpotlightText) dailyNutritionSpotlightText.textContent = dailyFocusUi.nutritionText;
   for (const [id, key] of [["chatLink", "chat"], ["heroWorkoutBuilderLink", "buildWorkout"], ["heroNutritionBuilderLink", "buildNutrition"], ["heroProgressLink", "trackProgress"]]) {
     const label = $("#" + id + " .dashboard-action-label");
     if (label) label.textContent = ui[key];
