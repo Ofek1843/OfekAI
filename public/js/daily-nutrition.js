@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260918-daily-clarity-1";
+import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260918-daily-resilience-1";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import {
@@ -12,7 +12,7 @@ import {
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
-} from "./daily-nutrition-domain.mjs?v=20260918-daily-clarity-1";
+} from "./daily-nutrition-domain.mjs?v=20260918-daily-resilience-1";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -23,7 +23,7 @@ import {
   saveDailyLog,
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-daily-clarity-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-daily-resilience-1";
 import {
   formatNutritionAmount,
   formatNutritionNumber,

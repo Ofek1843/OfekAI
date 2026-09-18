@@ -170,3 +170,11 @@ test("mobile layout stacks food rows without horizontal table scrolling", () => 
   assert.match(css, /body\.daily-nutrition-route\s*\{[^}]*overflow-x:\s*hidden/);
   assert.match(css, /\.food-table-wrap\s*\{[^}]*overflow:\s*hidden/);
 });
+
+test("mobile food logging keeps the input, date and save actions readable", () => {
+  assert.match(css, /Final mobile clarity overrides/);
+  assert.match(css, /\.food-composer-form\s*\{\s*grid-template-columns:\s*1fr;\s*gap:\s*11px/);
+  assert.match(css, /\.food-composer-form button\s*\{\s*width:\s*100%;\s*min-width:\s*0/);
+  assert.match(css, /\.date-picker-label input\s*\{\s*width:\s*84px/);
+  assert.match(css, /\.composer-actions\s*\{\s*grid-template-columns:\s*1fr;\s*gap:\s*10px/);
+});

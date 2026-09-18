@@ -1810,11 +1810,17 @@ app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
     }
     res.json({ interpretation });
   } catch (error) {
-    console.error("Daily food interpretation failed:", error.message);
+    console.error("Daily food interpretation failed:", {
+      message: error.message,
+      status: error.upstreamStatus || error.status || null,
+      upstreamType: error.upstreamType || null,
+      upstreamCode: error.upstreamCode || null,
+      model: String(process.env.OPENAI_FOOD_MODEL || FOOD_INTERPRETATION_MODEL).trim() || FOOD_INTERPRETATION_MODEL
+    });
     const fallbackText = String(req.body?.text || "").replace(/\s+/g, " ").trim().slice(0, MAX_FOOD_TEXT_LENGTH);
     const fallbackLanguage = String(req.body?.language || "en").toLowerCase() === "he" ? "he" : "en";
     const localEstimate = heuristicFoodInterpretation(fallbackText, { language: fallbackLanguage });
-    if (localEstimate && error.status !== 429) return res.json({ interpretation: localEstimate });
+    if (localEstimate) return res.json({ interpretation: localEstimate });
     res.status(error.status || (error.name === "AbortError" ? 504 : 502)).json({
       error: error.status === 429 ? "Too many food lookups. Please try again shortly." : "Could not identify that food right now.",
       code: error.status === 429 ? "RATE_LIMITED" : "SMART_FOOD_UNAVAILABLE"

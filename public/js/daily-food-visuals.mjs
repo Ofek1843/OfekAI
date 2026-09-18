@@ -1,4 +1,4 @@
-import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260918-daily-clarity-1";
+import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260918-daily-resilience-1";
 
 // Presentation only: canonical IDs come from the nutrition domain. Never infer
 // amounts or nutrition from an image, and never reinterpret a multi-item meal.

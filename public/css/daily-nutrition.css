@@ -675,6 +675,28 @@ html[dir="rtl"] .daily-nutrition-shell {
   .food-composer-form button { min-width: 72px; }
 }
 
+/* Final mobile clarity overrides must come after the legacy compact rules above. */
+@media (max-width: 760px) {
+  .date-toolbar-center { min-width: 0; gap: 8px; }
+  .date-toolbar-center strong { font-size: 0.96rem; }
+  .date-picker-label input { width: 84px; min-width: 84px; }
+  .food-composer { padding: 18px 14px 20px; }
+  .food-composer .section-heading-row { align-items: flex-start; gap: 12px; }
+  .food-composer-form { grid-template-columns: 1fr; gap: 11px; margin-top: 16px; }
+  .food-composer-form input { min-height: 56px; font-size: 1rem; }
+  .food-composer-form button { width: 100%; min-width: 0; min-height: 52px; }
+  .food-examples { margin-top: 14px; gap: 7px; }
+  .food-examples button { min-height: 42px; }
+  .composer-message { margin-top: 14px; font-size: 0.92rem; line-height: 1.5; }
+  .composer-actions { grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+  .composer-actions > * { width: 100%; min-height: 48px; }
+}
+
+@media (max-width: 410px) {
+  .date-picker-label input { width: 78px; min-width: 78px; }
+  .food-composer { padding-inline: 12px; }
+}
+
 /* Clarity pass: make the daily log read as one guided sequence. */
 .food-composer {
   margin-top: 4px;

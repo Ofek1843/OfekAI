@@ -55,7 +55,7 @@ test("progress chart uses a one-time reveal class and does not invent data", () 
 test("motion assets load through the shared shell and stale cache identity is replaced", () => {
   assert.match(shell, /product-motion-v47\.css/);
   assert.match(shell, /product-motion-v47\.js/);
-  assert.match(sw, /fuelphysique-v45-daily-clarity-1/);
+  assert.match(sw, /fuelphysique-v45-daily-resilience-1/);
 });
 test("gender visual cards preserve the existing male/female calculation values", () => {
   assert.match(js, /\[\"male\"/);

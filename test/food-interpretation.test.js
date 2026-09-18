@@ -46,6 +46,16 @@ test("food interpretation keeps plausible specific snack wording usable when the
   assert.equal(parsed.portion.choices.at(-1).id, "average");
 });
 
+test("local food fallback keeps common foods loggable during an AI outage", () => {
+  const cheesecake = heuristicFoodInterpretation("Cheese cake", { language: "en" });
+  const pomegranate = heuristicFoodInterpretation("רימון", { language: "he" });
+  assert.equal(cheesecake.recognized, true);
+  assert.equal(cheesecake.nutritionPer100g.calories, 321);
+  assert.equal(cheesecake.portion.defaultGrams, 120);
+  assert.equal(pomegranate.recognized, true);
+  assert.equal(pomegranate.confidence, "low");
+});
+
 test("food interpretation does not invent a generic estimate for clearly non-food text", () => {
   assert.equal(heuristicFoodInterpretation("hello there", { language: "en" }), null);
 });
@@ -74,5 +84,7 @@ test("daily food fallback is authenticated, rate-limited, model-configurable, an
   assert.match(server, /process\.env\.OPENAI_FOOD_MODEL \|\| FOOD_INTERPRETATION_MODEL/);
   assert.match(server, /SMART_FOOD_UNAVAILABLE/);
   assert.match(server, /heuristicFoodInterpretation/);
+  assert.match(server, /if \(localEstimate\) return res\.json\(\{ interpretation: localEstimate \}\)/);
+  assert.match(server, /upstreamCode: error\.upstreamCode/);
   assert.doesNotMatch(server, /res\.status\(500\)\.json\(\{ error: "OPENAI_API_KEY is missing" \}\);[\s\S]*daily-food-interpretation/);
 });

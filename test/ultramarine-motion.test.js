@@ -90,7 +90,7 @@ test("all public pages and the service worker use their exact versioned shell ge
       : /redesign-shell\.js\?v=20260914-i18n-dashboard-1/;
     assert.match(html, expectedShell);
   }
-  assert.match(SW, /fuelphysique-v45-daily-clarity-1/);
+  assert.match(SW, /fuelphysique-v45-daily-resilience-1/);
   assert.match(SW, /redesign-shell\.js\?v=20260914-i18n-dashboard-1/);
   assert.match(SW, /redesign-shell\.js\?v=20260914-i18n-dashboard-1/);
   assert.match(SW, /ultramarine-athlete-hero\.webp/);
