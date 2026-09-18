@@ -14,6 +14,7 @@ const assert = require("node:assert/strict");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
 const { normalizeEquipment } = require("../lib/workout-validator");
+const { primaryMuscleForExerciseId } = require("../lib/workout-focus");
 const { stopChildProcess } = require("./child-process-cleanup");
 
 const PORT = 4173;
@@ -317,6 +318,38 @@ test("POST /api/workout-builder/reroll-exercise never reports an echoed exercise
   const data = await res.json();
   assert.equal(res.status, 200, `Expected a distinct catalog replacement: ${JSON.stringify(data)}`);
   assert.notEqual(data.exercise?.exerciseId, currentExercise.exerciseId);
+});
+
+test("POST /api/workout-builder/reroll-exercise searches catalog after an unsuitable model suggestion", async () => {
+  for (const [exerciseId, name, muscle, selectedEquipment] of [
+    ["barbell-upright-row", "Barbell Upright Row", "delts", ["barbell", "dumbbell"]],
+    ["crunch", "Crunch", "core", ["machine", "bodyweight", "cable"]]
+  ]) {
+    const currentExercise = {
+      exerciseId, name, demoName: name, muscleGroup: muscle,
+      equipment: exerciseId === "crunch" ? "Machine" : "Barbell",
+      sets: 2, reps: "10-12", restSeconds: 75, rir: "1-2"
+    };
+    const res = await fetch(`${BASE_URL}/api/workout-builder/reroll-exercise`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({
+        sessionIndex: 0, exerciseIndex: 0,
+        program: {
+          daysPerWeek: 1, sessionDuration: 45,
+          muscleFocusMode: "selected_only", selectedMuscles: [muscle],
+          sessions: [{ day: 1, name: "Day 1", exercises: [currentExercise] }]
+        },
+        equipment: selectedEquipment,
+        experience: "intermediate", goal: "Build muscle"
+      })
+    });
+    const data = await res.json();
+    assert.equal(res.status, 200, `${name}: ${JSON.stringify(data)}`);
+    assert.notEqual(data.exercise.exerciseId, exerciseId);
+    assert.equal(primaryMuscleForExerciseId(data.exercise.exerciseId), muscle);
+    assert.ok(selectedEquipment.includes(normalizeEquipment(data.exercise.equipment)));
+  }
 });
 
 test("POST /api/workout-builder: missing auth header returns 401", async () => {

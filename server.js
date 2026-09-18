@@ -39,7 +39,7 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
-const { MISSING_DEDICATED_IMAGE_EXERCISES, canonicalizeExerciseId } = require("./lib/workout-exercise-catalog");
+const { MISSING_DEDICATED_IMAGE_EXERCISES, canonicalizeExerciseId, getEnabledPublicExerciseIds } = require("./lib/workout-exercise-catalog");
 const { eligibleExerciseCatalog } = require("./lib/exercise-suitability");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
@@ -3716,6 +3716,7 @@ Required JSON format:
     // A provider can echo the requested exercise, or the repair pass can
     // normalize its alias back to the original. Never report that as a swap.
     const originalId = canonicalizeExerciseId(currentExercise.exerciseId || currentExercise.demoName || currentExercise.name);
+    const targetMuscle = primaryMuscleForExerciseId(originalId);
     const replacementId = canonicalizeExerciseId(newExercise?.exerciseId || newExercise?.demoName || newExercise?.name);
     if (newExercise && replacementId === originalId) {
       newExercise = buildLocalExerciseReplacement({
@@ -3727,73 +3728,74 @@ Required JSON format:
         language
       });
     }
-    if (!newExercise) {
-      return res.status(422).json({
-        success: false,
-        error: "No valid replacement exercise satisfies the muscle focus contract."
-      });
-    }
-    if (muscleFocus.muscleFocusMode === "selected_only"
-      && !muscleFocus.selectedMuscles.includes(primaryMuscleForExerciseId(newExercise.exerciseId))) {
-      return res.status(422).json({
-        success: false,
-        error: "Replacement exercise does not satisfy the selected-only muscle focus contract."
-      });
-    }
     if (rerollRepairs.length > 0) {
       console.info("Reroll repair applied:", rerollRepairs);
     }
-
-    if (language !== "he") {
-      sanitizeLanguageLeakage({ sessions: [{ exercises: [newExercise] }] });
-    }
-
-    if (selectedEquipment.length > 0) {
-      const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment).filter(Boolean));
-      const newEquipNorm = normalizeEquipment(newExercise.equipment);
-      // No unconditional bodyweight exemption here either — selectedEquipment
-      // is already the final canonical allowed set from
-      // deriveAllowedEquipment(), which includes "bodyweight" itself when
-      // it's actually allowed (e.g. Calisthenics).
-      const isAllowed = newEquipNorm !== "" && selectedNorm.has(newEquipNorm);
-
-      if (!isAllowed) {
-        console.warn(
-          `Reroll produced exercise with disallowed equipment after repair: "${newExercise.equipment}", selected: ${selectedEquipment.join(", ")}`
-        );
-        return res.status(422).json({
-          success: false,
-          error: language === "he"
-            ? `התרגיל החלופי דורש "${newExercise.equipment || "ציוד לא ידוע"}", שאינו זמין.`
-            : `Replacement exercise requires "${newExercise.equipment || "unknown equipment"}", which is not available.`
-        });
-      }
-    }
-
-    // Validate full program with replacement
-    session.exercises[exerciseIndex] = newExercise;
-    program.muscleFocusMode = muscleFocus.muscleFocusMode;
-    program.selectedMuscles = muscleFocus.selectedMuscles;
-    const programValidation = validateWorkoutProgram(program, {
+    const validationContext = {
       experience: program.experience || experience,
       daysPerWeek: program.daysPerWeek || program.sessions.length,
       sessionDuration: program.sessionDuration || 60,
       equipment: selectedEquipment,
       goalProfile: goal && goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
-    });
+    };
+    const selectedNorm = new Set(selectedEquipment.map(normalizeEquipment).filter(Boolean));
+    const rejectedIds = new Set();
+    let programValidation;
+    let acceptedExercise = null;
+    // The model's first suggestion is not necessarily valid for the full
+    // session (duration, duplicate IDs, level, etc.). Try the other catalog
+    // alternatives before telling the user none exist.
+    for (let attempt = 0; attempt <= getEnabledPublicExerciseIds().length; attempt += 1) {
+      const candidate = attempt === 0 && newExercise ? newExercise : buildLocalExerciseReplacement({
+        currentExercise,
+        experience: program.experience || experience,
+        equipment: selectedEquipment,
+        reservedExerciseIds: [...reservedSiblingExerciseIds, ...rejectedIds],
+        limitations,
+        language
+      });
+      if (!candidate) break;
+      const candidateId = canonicalizeExerciseId(candidate.exerciseId || candidate.demoName || candidate.name);
+      if (!candidateId || candidateId === originalId || rejectedIds.has(candidateId)) {
+        if (candidateId) rejectedIds.add(candidateId);
+        continue;
+      }
+      rejectedIds.add(candidateId);
+      if (targetMuscle && primaryMuscleForExerciseId(candidateId) !== targetMuscle) continue;
+      if (muscleFocus.muscleFocusMode === "selected_only"
+        && !muscleFocus.selectedMuscles.includes(primaryMuscleForExerciseId(candidateId))) continue;
+      const candidateEquipment = normalizeEquipment(candidate.equipment);
+      if (selectedNorm.size > 0 && (!candidateEquipment || !selectedNorm.has(candidateEquipment))) continue;
+      if (language !== "he") sanitizeLanguageLeakage({ sessions: [{ exercises: [candidate] }] });
+      const trialProgram = {
+        ...program,
+        muscleFocusMode: muscleFocus.muscleFocusMode,
+        selectedMuscles: muscleFocus.selectedMuscles,
+        sessions: program.sessions.map((item, index) => index === sessionIndex
+          ? { ...item, exercises: item.exercises.map((exercise, position) => position === exerciseIndex ? candidate : exercise) }
+          : item)
+      };
+      programValidation = validateWorkoutProgram(trialProgram, validationContext);
+      if (programValidation.ok) {
+        acceptedExercise = candidate;
+        break;
+      }
+    }
 
-    if (!programValidation.ok) {
-      // Raw validator lines are internal diagnostics (already logged
-      // server-side above) — never echoed to the client. See the same
-      // policy on /api/workout-builder's 422 response.
-      console.warn(`Reroll validation failed:`, programValidation.errors);
+    if (!acceptedExercise) {
+      // Internal diagnostics remain server-side; no invalid plan is returned.
+      console.warn("Reroll exhausted compatible catalog exercises:", programValidation?.errors || []);
       return res.status(422).json({
         success: false,
         error: language === "he"
-          ? "התרגיל החלופי הופך את התוכנית ללא תקינה."
-          : "Replacement exercise makes the program invalid."
+          ? "לא נמצא תרגיל חלופי תקין עם הציוד, הרמה ומשך האימון שנבחרו."
+          : "No valid replacement fits the selected equipment, level, and session duration."
       });
     }
+    newExercise = acceptedExercise;
+    session.exercises[exerciseIndex] = newExercise;
+    program.muscleFocusMode = muscleFocus.muscleFocusMode;
+    program.selectedMuscles = muscleFocus.selectedMuscles;
 
     // Recalculate volume and durations against the updated program so the
     // client's displayed totals never go stale after a reroll -- fresh
