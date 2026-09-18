@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1">
-  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260918-food-save-2">
+  <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260918-daily-clarity-1">
   <script defer src="/js/redesign-shell.js?v=20260914-i18n-dashboard-1"></script>
 </head>
 <body class="daily-nutrition-route">
@@ -42,50 +42,9 @@
 
     <p id="pageStatus" class="daily-page-status" role="status" aria-live="polite" data-copy="loading">Loading your nutrition log…</p>
 
-    <section class="daily-overview-grid" aria-label="Daily nutrition overview" data-copy-aria="dailyOverview">
-      <article class="daily-surface macro-card macro-card--primary" aria-labelledby="macroTitle">
-        <div class="macro-heading">
-          <span class="daily-kicker" data-copy="macroDistribution">Macro energy distribution</span>
-          <h2 id="macroTitle" data-copy="dailyMetrics">Today’s macro split</h2>
-        </div>
-        <div class="macro-visual-row">
-          <div id="macroRing" class="macro-ring" role="img" aria-label="Macro energy distribution"></div>
-          <dl class="macro-breakdown">
-            <div><dt><i class="macro-key macro-key--protein"></i><span data-copy="protein">Protein</span></dt><dd id="proteinPercent">0%</dd></div>
-            <div><dt><i class="macro-key macro-key--carbs"></i><span data-copy="carbs">Carbohydrates</span></dt><dd id="carbsPercent">0%</dd></div>
-            <div><dt><i class="macro-key macro-key--fat"></i><span data-copy="fat">Fat</span></dt><dd id="fatPercent">0%</dd></div>
-          </dl>
-        </div>
-        <p class="metric-note" data-copy="macroNote">The split updates from the food you log today.</p>
-      </article>
-
-      <article class="daily-surface daily-goals-card" id="calorieCard">
-        <div class="goal-stat goal-stat--calories">
-          <span class="metric-eyebrow" data-copy="calories">Calories</span>
-          <strong class="goal-stat-value" id="calorieConsumed">0</strong>
-          <p><span data-copy="goalTarget">Goal calorie target</span> <b id="calorieTarget">—</b></p>
-          <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
-        </div>
-        <div class="goal-stat goal-stat--protein">
-          <span class="metric-eyebrow" data-copy="protein">Protein</span>
-          <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
-          <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
-          <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
-        </div>
-        <div id="targetSetup" class="target-setup" role="note">
-          <h3 data-copy="targetSetupTitle">To see your daily calorie target, create a nutrition plan</h3>
-          <p id="targetMessage" data-copy="targetMissing">Build and save a nutrition plan, then set it as your active plan. Your calorie and protein targets will appear here.</p>
-          <div class="target-setup-actions">
-            <a class="target-setup-primary" href="/nutrition-builder.html" data-copy="setupTargets">Build a nutrition plan</a>
-            <a class="target-setup-secondary" href="/my-nutrition-plans.html" data-copy="activateSavedPlan">Already have a plan? Activate it</a>
-          </div>
-        </div>
-      </article>
-    </section>
-
     <section class="food-composer daily-surface" aria-labelledby="foodComposerTitle">
       <div class="section-heading-row">
-        <div><span class="daily-kicker" data-copy="inputLabel">What did you eat?</span><h2 id="foodComposerTitle" data-copy="inputHint">Type one or several foods in natural language.</h2></div>
+        <div><span class="daily-kicker" data-copy="stepLog">1 · LOG FOOD</span><h2 id="foodComposerTitle" data-copy="inputLabel">What did you eat?</h2><p class="section-helper" data-copy="inputHint">Write what you ate, then press Add. Use a quantity when you know it; estimates can be edited.</p></div>
         <span class="autosave-state" id="autosaveState" aria-live="polite" data-copy="saveStatus">Saved</span>
       </div>
       <form id="foodComposerForm" class="food-composer-form">
@@ -108,12 +67,61 @@
         <button id="copyYesterdayButton" type="button" class="secondary-button" data-copy="copyYesterday">Copy yesterday</button>
         <button id="finishDayButton" type="button" class="finish-button" data-copy="finishDay">Finish day</button>
       </div>
+      <p class="save-guide" data-copy="saveGuide">Your entries save automatically. Use the green button when you want to save right now.</p>
+    </section>
+
+    <section class="daily-progress-section" aria-labelledby="progressSectionTitle">
+      <div class="daily-section-heading">
+        <span class="daily-kicker" data-copy="stepProgress">2 · CHECK YOUR PROGRESS</span>
+        <h2 id="progressSectionTitle" data-copy="progressTitle">See today at a glance</h2>
+        <p data-copy="progressHint">Calories, protein, and the macro split update as you log food.</p>
+      </div>
+      <div class="daily-overview-grid" aria-label="Daily nutrition overview" data-copy-aria="dailyOverview">
+        <article class="daily-surface macro-card macro-card--primary" aria-labelledby="macroTitle">
+          <div class="macro-heading">
+            <span class="daily-kicker" data-copy="macroDistribution">Macro energy distribution</span>
+            <h2 id="macroTitle" data-copy="dailyMetrics">Today’s macro split</h2>
+          </div>
+          <div class="macro-visual-row">
+            <div id="macroRing" class="macro-ring" role="img" aria-label="Macro energy distribution"></div>
+            <dl class="macro-breakdown">
+              <div><dt><i class="macro-key macro-key--protein"></i><span data-copy="protein">Protein</span></dt><dd id="proteinPercent">0%</dd></div>
+              <div><dt><i class="macro-key macro-key--carbs"></i><span data-copy="carbs">Carbohydrates</span></dt><dd id="carbsPercent">0%</dd></div>
+              <div><dt><i class="macro-key macro-key--fat"></i><span data-copy="fat">Fat</span></dt><dd id="fatPercent">0%</dd></div>
+            </dl>
+          </div>
+          <p class="metric-note" data-copy="macroNote">The split updates from the food you log today.</p>
+        </article>
+
+        <article class="daily-surface daily-goals-card" id="calorieCard">
+          <div class="goal-stat goal-stat--calories">
+            <span class="metric-eyebrow" data-copy="calories">Calories</span>
+            <strong class="goal-stat-value" id="calorieConsumed">0</strong>
+            <p><span data-copy="goalTarget">Goal calorie target</span> <b id="calorieTarget">—</b></p>
+            <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
+          </div>
+          <div class="goal-stat goal-stat--protein">
+            <span class="metric-eyebrow" data-copy="protein">Protein</span>
+            <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
+            <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
+            <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
+          </div>
+          <div id="targetSetup" class="target-setup" role="note">
+            <h3 data-copy="targetSetupTitle">To see your daily calorie target, create a nutrition plan</h3>
+            <p id="targetMessage" data-copy="targetMissing">Build and save a nutrition plan, then set it as your active plan. Your calorie and protein targets will appear here.</p>
+            <div class="target-setup-actions">
+              <a class="target-setup-primary" href="/nutrition-builder.html" data-copy="setupTargets">Build a nutrition plan</a>
+              <a class="target-setup-secondary" href="/my-nutrition-plans.html" data-copy="activateSavedPlan">Already have a plan? Activate it</a>
+            </div>
+          </div>
+        </article>
+      </div>
     </section>
 
     <div class="daily-content-grid">
       <section class="entries-panel daily-surface" aria-labelledby="entriesTitle">
         <div class="section-heading-row">
-          <div><span class="daily-kicker" data-copy="entriesTitle">Today’s food</span><h2 id="entriesTitle" data-copy="entriesHint">Every change updates totals and autosaves.</h2></div>
+          <div><span class="daily-kicker" data-copy="entriesTitle">3 · TODAY’S FOOD</span><h2 id="entriesTitle" data-copy="entriesHint">Review, edit, duplicate or remove what you logged.</h2></div>
           <span class="entry-count" id="entryCount">0</span>
         </div>
         <div class="food-table-wrap">
@@ -151,7 +159,7 @@
       </aside>
     </div>
   </main>
-  <script type="module" src="/js/daily-nutrition.js?v=20260918-food-save-2"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20260918-daily-clarity-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

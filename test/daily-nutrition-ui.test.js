@@ -19,11 +19,27 @@ const server = read("server.js");
 
 test("daily logging action precedes entries and the day history", () => {
   const composer = html.indexOf('id="foodComposerForm"');
+  const progress = html.indexOf('id="progressSectionTitle"');
   const entries = html.indexOf('id="foodEntries"');
   const calendar = html.indexOf('id="calendarGrid"');
   assert.ok(composer > 0);
+  assert.ok(composer < progress);
+  assert.ok(progress < entries);
   assert.ok(composer < entries);
   assert.ok(entries < calendar);
+});
+
+test("daily nutrition explains the first three actions without hiding the existing tools", () => {
+  for (const marker of ["stepLog", "stepProgress", "entriesTitle", "saveGuide", "saveDailyLogButton"]) {
+    assert.match(html, new RegExp(`data-copy="${marker}"|id="${marker}"`));
+  }
+  assert.match(html, /class="section-helper" data-copy="inputHint"/);
+  assert.match(html, /class="daily-progress-section"/);
+  assert.match(html, /class="daily-section-heading"/);
+  assert.match(css, /\.daily-progress-section\s*\{/);
+  assert.match(css, /\.save-guide\s*\{/);
+  assert.match(copy, /Your entries save automatically/);
+  assert.match(copy, /הפריטים נשמרים אוטומטית/);
 });
 
 test("daily nutrition uses semantic, accessible controls and live summaries", () => {

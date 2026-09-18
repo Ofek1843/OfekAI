@@ -674,3 +674,31 @@ html[dir="rtl"] .daily-nutrition-shell {
   .goal-stat-value { font-size: 2rem; }
   .food-composer-form button { min-width: 72px; }
 }
+
+/* Clarity pass: make the daily log read as one guided sequence. */
+.food-composer {
+  margin-top: 4px;
+  border-color: rgba(80, 217, 232, 0.48);
+  box-shadow: 0 24px 64px rgba(0, 5, 15, 0.24), 0 0 0 1px rgba(80, 217, 232, 0.06);
+}
+.daily-hero { margin-bottom: 18px; }
+.daily-hero h1 { font-size: clamp(2.2rem, 4.5vw, 3.8rem); }
+.daily-hero p { font-size: 0.98rem; line-height: 1.5; }
+.section-heading-row h2 { color: #f3f8ff; }
+.section-helper { max-width: 720px; margin: 8px 0 0; color: #a9bfd3; font-size: 0.96rem; line-height: 1.55; }
+.composer-actions { align-items: center; justify-content: flex-start; }
+.save-guide { margin: 10px 0 0; color: #8ea9c0; font-size: 0.82rem; line-height: 1.45; }
+.daily-progress-section { margin-top: 30px; }
+.daily-section-heading { margin: 0 4px 14px; }
+.daily-section-heading h2 { margin: 7px 0 0; color: #f3f8ff; font: 720 clamp(1.5rem, 2.6vw, 2.15rem)/1.08 "Space Grotesk", sans-serif; }
+.daily-section-heading p { max-width: 700px; margin: 8px 0 0; color: #9db7cd; font-size: 0.98rem; line-height: 1.5; }
+.daily-progress-section .daily-overview-grid { margin-top: 0; }
+.entries-panel .section-heading-row { align-items: center; }
+
+@media (max-width: 760px) {
+  .daily-hero h1 { font-size: clamp(2.15rem, 10vw, 3.2rem); }
+  .daily-section-heading { margin-inline: 2px; }
+  .daily-section-heading h2 { font-size: 1.55rem; }
+  .section-helper { font-size: 0.92rem; }
+  .save-guide { font-size: 0.8rem; }
+}
