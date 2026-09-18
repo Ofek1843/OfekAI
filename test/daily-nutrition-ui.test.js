@@ -114,6 +114,11 @@ test("natural portions, estimates, partial success and editable corrections are 
   assert.match(client, /2 משולשי פיצה/);
   assert.match(client, /copy\.estimatedComposite/);
   assert.match(client, /copy\.partialAdded/);
+  assert.match(client, /lookupUnavailable \? copy\.smartFoodUnavailable : copy\.unknownFood/);
+  assert.match(client, /parseAmountPrefix\(firstUnknown\.segment\)/);
+  assert.match(client, /\["g", "kg"\]\.includes\(explicit\.unit\)/);
+  assert.match(copy, /Food recognition is temporarily unavailable/);
+  assert.match(copy, /שירות זיהוי המזון אינו זמין כרגע/);
   assert.match(client, /result\.errors\.length && !result\.entries\.length/);
   assert.match(client, /estimated:\s*false, approximate:\s*false/);
   assert.match(client, /data-food-choice-index/);

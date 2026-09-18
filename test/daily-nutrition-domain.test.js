@@ -19,6 +19,26 @@ test("parses and scales a single gram-based food", async () => {
   assert.equal(result.entries[0].estimated, false);
 });
 
+test("silan/date syrup is a distinct local food with weighted and spoon portions", async () => {
+  const { parseAmountPrefix, parseFoodText } = await domainPromise;
+  for (const input of ["סילאן", "סילן", "date syrup", "silan", "דבש תמרים"]) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, "date-syrup", input);
+    assert.equal(result.entries[0].amount, 20, input);
+    assert.equal(result.entries[0].estimated, true, input);
+  }
+  const weighed = parseFoodText("50 גרם סילאן").entries[0];
+  assert.equal(weighed.foodId, "date-syrup");
+  assert.equal(weighed.calories, 159);
+  assert.equal(weighed.carbsGrams, 38.8);
+  assert.equal(weighed.estimated, false);
+  const spoon = parseFoodText("כף סילאן").entries[0];
+  assert.equal(spoon.foodId, "date-syrup");
+  assert.equal(spoon.amount, 20);
+  assert.deepEqual(parseAmountPrefix("50 גרם מאכל חדש"), { amount: 50, unit: "g", foodText: "מאכל חדש" });
+});
+
 test("parses multiple foods in one English sentence", async () => {
   const { parseFoodText } = await domainPromise;
   const result = parseFoodText("250g cottage cheese 3% and 4 rice cakes");

@@ -1,17 +1,18 @@
 import { auth, db } from "./firebase-config.js";
-import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260913-smart-food-3";
+import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260918-silan-1";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import {
   localDateKey,
   macroEnergyPercentages,
+  parseAmountPrefix,
   parseFoodText,
   remainingAgainstTargets,
   resolveFoodChoice,
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
-} from "./daily-nutrition-domain.mjs?v=20260913-smart-food-3";
+} from "./daily-nutrition-domain.mjs?v=20260918-silan-1";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -22,7 +23,7 @@ import {
   saveDailyLog,
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-target-setup-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-silan-1";
 import {
   formatNutritionAmount,
   formatNutritionNumber,
@@ -572,6 +573,7 @@ async function requestSmartFoodInterpretation(segment) {
 
 async function submitFoodText(value) {
   let result = parseFoodText(value, { customFoods: availableFoods() });
+  let lookupUnavailable = false;
   if (result.ambiguities.length === 1) {
     const remembered = localStorage.getItem(`fp-daily-choice-${result.ambiguities[0].segment.replace(/\d+/g, "").trim()}`);
     const rememberedChoice = result.ambiguities[0].choices.find((choice) => (choice.choiceId || choice.foodId) === remembered);
@@ -596,6 +598,23 @@ async function submitFoodText(value) {
       setComposerMessage(language === "he" ? "מזהים את המאכל…" : "Identifying that food…");
       try {
         const interpretation = await requestSmartFoodInterpretation(firstUnknown.segment);
+        const explicit = parseAmountPrefix(firstUnknown.segment);
+        if (["g", "kg"].includes(explicit.unit) && explicit.amount > 0) {
+          const food = smartFoodFromInterpretation(interpretation, firstUnknown.segment);
+          const scaled = resolveFoodChoice(food.id, {
+            amount: explicit.amount,
+            unit: explicit.unit,
+            rawText: firstUnknown.segment,
+            customFoods: availableFoods()
+          });
+          const entry = { ...scaled, estimated: true, approximate: true,
+            estimateConfidence: interpretation.confidence || "low", estimateReason: "ai-food-estimate",
+            estimatedGrams: scaled.unit === "g" ? scaled.amount : null };
+          const remaining = result.errors.filter((error) => error !== firstUnknown);
+          setComposerMessage(remaining.length ? format(copy.partialAdded, { food: remaining.map((error) => error.segment).join(", ") }) : "", remaining.length > 0);
+          addEntries([...result.entries, entry]);
+          return;
+        }
         const ambiguity = smartFoodAmbiguity(interpretation, firstUnknown.segment);
         renderClarification({
           ...result,
@@ -607,14 +626,15 @@ async function submitFoodText(value) {
         // The local catalog remains the primary path. A provider/key outage
         // must not look like the food itself was invalid or block known foods.
         console.warn("Smart food lookup unavailable:", error.code || error.message);
+        lookupUnavailable = error.code !== "UNKNOWN_FOOD";
       }
     }
   }
   if (result.errors.length && !result.entries.length) {
-    setComposerMessage(format(copy.unknownFood, { food: result.errors.map((error) => error.segment).join(", ") }), true);
+    setComposerMessage(format(lookupUnavailable ? copy.smartFoodUnavailable : copy.unknownFood, { food: result.errors.map((error) => error.segment).join(", ") }), true);
     return;
   }
-  setComposerMessage(result.errors.length ? format(copy.partialAdded, { food: result.errors.map((error) => error.segment).join(", ") }) : "", result.errors.length > 0);
+  setComposerMessage(result.errors.length ? format(lookupUnavailable ? copy.smartFoodUnavailable : copy.partialAdded, { food: result.errors.map((error) => error.segment).join(", ") }) : "", result.errors.length > 0);
   $("#clarificationPanel").hidden = true;
   addEntries(result.entries);
 }
