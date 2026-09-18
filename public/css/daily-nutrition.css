@@ -560,8 +560,21 @@ html[dir="rtl"] .daily-nutrition-shell {
 .goal-stat-remaining span { color: #7996b0; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
 .goal-stat-remaining strong { color: #74dfdf; font-size: 1.08rem; }
 .daily-goals-card .protein-progress { margin-top: 2px; }
-.target-inline-message { grid-column: 1 / -1; margin: 16px 0 0; color: #9db6ca; font-size: 0.83rem; line-height: 1.5; }
-.target-inline-link { grid-column: 1 / -1; width: fit-content; margin-top: 4px; color: var(--daily-cyan); font-size: 0.84rem; font-weight: 800; }
+.target-setup {
+  grid-column: 1 / -1;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(80, 217, 232, 0.38);
+  border-radius: 14px;
+  background: rgba(80, 217, 232, 0.09);
+}
+.target-setup[hidden] { display: none; }
+.target-setup h3 { margin: 0; color: #f3faff; font: 700 clamp(1.05rem, 1.6vw, 1.25rem)/1.3 "Space Grotesk", sans-serif; }
+.target-setup p { margin: 8px 0 0; color: #c4d8e8; font-size: 0.95rem; line-height: 1.55; }
+.target-setup-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-top: 16px; }
+.target-setup-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 16px; border-radius: 9px; background: #57dce5; color: #082039 !important; font-weight: 800; text-decoration: none; }
+.target-setup-primary:hover { background: #8bedf0; }
+.target-setup-secondary { color: #c8eefa; font-size: 0.9rem; font-weight: 700; text-underline-offset: 3px; }
 
 .food-composer { padding: clamp(20px, 2.5vw, 28px); }
 .food-composer-form { grid-template-columns: minmax(0, 1fr) auto; margin-top: 16px; }

@@ -290,6 +290,35 @@ test("POST /api/workout-builder/reroll-exercise: a valid reroll returns 200", as
   assert.ok(data.validationSummary, "Should return a validationSummary");
 });
 
+test("POST /api/workout-builder/reroll-exercise never reports an echoed exercise as replaced", async () => {
+  const currentExercise = {
+    exerciseId: "mock-bodyweight-replacement",
+    name: "Mock Bodyweight Replacement",
+    demoName: "Mock Bodyweight Replacement",
+    muscleGroup: "Quads",
+    equipment: "Bodyweight",
+    sets: 3,
+    reps: "8-12",
+    restSeconds: 90,
+    rir: "1-3"
+  };
+  const res = await fetch(`${BASE_URL}/api/workout-builder/reroll-exercise`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({
+      sessionIndex: 0,
+      exerciseIndex: 0,
+      program: { daysPerWeek: 1, sessionDuration: 60, sessions: [{ day: 1, name: "Day 1", exercises: [currentExercise] }] },
+      equipment: ["bodyweight"],
+      experience: "intermediate",
+      goal: "Build muscle"
+    })
+  });
+  const data = await res.json();
+  assert.equal(res.status, 200, `Expected a distinct catalog replacement: ${JSON.stringify(data)}`);
+  assert.notEqual(data.exercise?.exerciseId, currentExercise.exerciseId);
+});
+
 test("POST /api/workout-builder: missing auth header returns 401", async () => {
   const res = await fetch(`${BASE_URL}/api/workout-builder`, {
     method: "POST",

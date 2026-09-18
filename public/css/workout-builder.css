@@ -724,6 +724,33 @@ textarea:focus {
 .is-volume-updated {
   animation: exercise-volume-pulse .55s ease;
 }
+.volume-change-cue {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border: 1px solid rgba(75, 217, 230, .55);
+  border-radius: 10px;
+  background: #123b4d;
+  color: #e4fbff;
+  font-size: .83rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+.workout-day-header.is-volume-updated { flex-wrap: wrap; }
+.workout-day-header > .volume-change-cue { order: 3; flex-basis: 100%; margin-bottom: 0; }
+.weekly-volume-open-hint {
+  margin-inline-start: auto;
+  padding: 5px 9px;
+  border: 1px solid rgba(75, 217, 230, .35);
+  border-radius: 7px;
+  color: #7fe8f1;
+  font-size: .74rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.plan-volume-disclosure[open] > summary .weekly-volume-open-hint { display: none; }
 @keyframes weekly-volume-focus-in {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1100,6 +1127,7 @@ textarea:focus {
   opacity: 0.8;
   box-shadow: inset 0 -3px 0 #35cfdf;
 }
+.reroll-feedback { margin: 0 0 12px; color: #ffb2bc; font-size: .84rem; font-weight: 750; line-height: 1.4; }
 /* Mobile */
 
 @media (max-width: 760px) {

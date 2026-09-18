@@ -22,7 +22,7 @@ import {
   saveDailyLog,
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260913-smart-food-3";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-target-setup-1";
 import {
   formatNutritionAmount,
   formatNutritionNumber,
@@ -249,8 +249,7 @@ function renderTargets(totals) {
   const proteinPercent = proteinTarget ? Math.min(100, (totals.proteinGrams / proteinTarget) * 100) : 0;
   $("#proteinProgress").style.width = `${proteinPercent}%`;
   $(".protein-progress").setAttribute("aria-valuenow", String(Math.round(proteinPercent)));
-  $("#targetMessage").hidden = targets.complete;
-  $(".target-inline-link").hidden = targets.complete;
+  $("#targetSetup").hidden = targets.complete;
 }
 
 function renderMacroDistribution(totals) {

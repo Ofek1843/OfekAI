@@ -1314,9 +1314,27 @@ async function adjustWeeklyVolume(root, muscle, delta) {
     const url = new URL(window.location.href);
     url.searchParams.set("day", String((Number(data.change?.sessionIndex) || 0) + 1));
     history.replaceState(history.state, "", `${url.pathname}${url.search}${url.hash}`);
-    renderProgram(data.program, data.weeklyVolume);
+    renderProgram(data.program, data.weeklyVolume, { scrollToTop: false });
     setStatus(data.message || (isHebrew ? "התוכנית עודכנה." : "Program updated."));
-    requestAnimationFrame(() => resultElement.querySelector(`[data-program-day="${Number(data.change?.sessionIndex) || 0}"]`)?.classList.add("is-volume-updated"));
+    const dayIndex = Number(data.change?.sessionIndex) || 0;
+    const exerciseIndex = Number(data.change?.exerciseIndex);
+    const changedDay = resultElement.querySelector(`[data-program-day="${dayIndex}"]`);
+    const changedCard = Number.isInteger(exerciseIndex)
+      ? changedDay?.querySelector(`.exercise-card[data-exercise="${exerciseIndex}"]`)
+      : null;
+    const target = data.change?.action === "removed-exercise"
+      ? changedDay?.querySelector(".workout-day-header")
+      : changedCard || changedDay?.querySelector(".workout-day-header");
+    if (target) {
+      const cue = document.createElement("span");
+      cue.className = "volume-change-cue";
+      cue.setAttribute("role", "status");
+      cue.textContent = data.message || (isHebrew ? "השינוי בוצע כאן" : "Changed here");
+      target.classList.add("is-volume-updated");
+      (target.querySelector(".exercise-card-body") || target).prepend(cue);
+      requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "center" }));
+      window.setTimeout(() => { cue.remove(); target.classList.remove("is-volume-updated"); }, 5000);
+    }
   } catch (error) {
     setStatus(error instanceof Error && error.message ? error.message : (isHebrew ? "לא ניתן לעדכן את נפח האימון." : "Could not update training volume."), true);
   } finally {
@@ -1375,7 +1393,7 @@ function renderTrainingEffortGuidance() {
   `;
 }
 
-function renderProgram(program, weeklyVolume) {
+function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
   const sessions = Array.isArray(program.sessions)
     ? program.sessions
     : [];
@@ -1619,7 +1637,7 @@ function renderProgram(program, weeklyVolume) {
           <label class="plan-day-select-label" for="planDaySelect">${isHebrew ? "בחירת יום" : "Choose a day"}</label>
           <select class="plan-day-select" id="planDaySelect">${dayOptions}</select>
           <details class="plan-volume-disclosure" id="weekly-volume-container">
-            <summary>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</summary>
+            <summary><span>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</span><span class="weekly-volume-open-hint">${isHebrew ? "לחצו כאן להצגה" : "Tap to view"}</span></summary>
             ${renderWeeklyVolumeSummary(weeklyVolume)}
           </details>
         </aside>
@@ -1797,6 +1815,12 @@ try {
   }
 
   if (data.exercise) {
+    const previousExercise = window.currentWorkoutProgram.sessions[sessionIndex].exercises[exerciseIndex];
+    const previousId = String(previousExercise?.exerciseId || previousExercise?.demoName || previousExercise?.name || "").trim().toLowerCase();
+    const nextId = String(data.exercise.exerciseId || data.exercise.demoName || data.exercise.name || "").trim().toLowerCase();
+    if (!nextId || previousId === nextId) throw new Error(isHebrew
+      ? "לא נמצא תרגיל חלופי שונה. נסו שוב."
+      : "No different replacement was found. Please try again.");
 
     window.currentWorkoutProgram.sessions[sessionIndex].exercises[exerciseIndex] =
   data.exercise;
@@ -1860,7 +1884,7 @@ try {
   const volumeContainer = resultElement.querySelector("#weekly-volume-container");
   if (volumeContainer) {
     volumeContainer.innerHTML = `
-      <summary>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</summary>
+      <summary><span>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</span><span class="weekly-volume-open-hint">${isHebrew ? "לחצו כאן להצגה" : "Tap to view"}</span></summary>
       ${renderWeeklyVolumeSummary(data.weeklyVolume)}
     `;
   }
@@ -1869,14 +1893,17 @@ try {
   setStatus(isHebrew ? "התרגיל הוחלף." : "Exercise replaced.");
 } catch (error) {
   console.error("Could not replace exercise:", error);
-  setStatus(
-    error instanceof Error && error.message
-      ? error.message
-      : isHebrew
-        ? "לא ניתן היה להחליף את התרגיל."
-        : "Could not replace this exercise.",
-    true
-  );
+  const message = error instanceof Error && error.message
+    ? error.message
+    : isHebrew ? "לא ניתן היה להחליף את התרגיל." : "Could not replace this exercise.";
+  setStatus(message, true);
+  const card = rerollButton.closest(".exercise-card");
+  const feedback = card?.querySelector(".reroll-feedback") || document.createElement("p");
+  feedback.className = "reroll-feedback";
+  feedback.setAttribute("role", "alert");
+  feedback.textContent = message;
+  card?.querySelector(".exercise-card-body")?.prepend(feedback);
+  window.setTimeout(() => feedback.remove(), 5000);
 } finally {
   rerollButton.classList.remove("is-loading");
   rerollButton.disabled = false;
@@ -1885,7 +1912,7 @@ try {
 }
     });
   });
-  resultElement.scrollIntoView({
+  if (scrollToTop) resultElement.scrollIntoView({
     behavior: "smooth",
     block: "start"
   });

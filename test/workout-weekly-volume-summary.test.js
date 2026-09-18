@@ -156,7 +156,7 @@ test("workout-builder.js: renders the Weekly Muscle Volume section for both init
   const source = fs.readFileSync(path.join(ROOT, "public", "js", "workout-builder.js"), "utf8");
 
   assert.match(source, /function renderWeeklyVolumeSummary\(/);
-  assert.match(source, /function renderProgram\(program, weeklyVolume\)/);
+  assert.match(source, /function renderProgram\(program, weeklyVolume, \{ scrollToTop = true \} = \{\}\)/);
   assert.match(source, /renderProgram\(data\.program, data\.weeklyVolume\)/, "the initial generation response must pass weeklyVolume through to rendering");
   assert.match(source, /id="weekly-volume-container"/);
   assert.match(source, /volumeContainer\.innerHTML = `[\s\S]*?<summary>[\s\S]*?renderWeeklyVolumeSummary\(data\.weeklyVolume\)/, "reroll must preserve the disclosure heading and re-render the summary from the reroll response's OWN weeklyVolume");

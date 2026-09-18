@@ -39,7 +39,7 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
-const { MISSING_DEDICATED_IMAGE_EXERCISES } = require("./lib/workout-exercise-catalog");
+const { MISSING_DEDICATED_IMAGE_EXERCISES, canonicalizeExerciseId } = require("./lib/workout-exercise-catalog");
 const { eligibleExerciseCatalog } = require("./lib/exercise-suitability");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
@@ -3713,6 +3713,20 @@ Required JSON format:
       }
     );
     newExercise = rerollRepairContainer.sessions[0]?.exercises?.[0];
+    // A provider can echo the requested exercise, or the repair pass can
+    // normalize its alias back to the original. Never report that as a swap.
+    const originalId = canonicalizeExerciseId(currentExercise.exerciseId || currentExercise.demoName || currentExercise.name);
+    const replacementId = canonicalizeExerciseId(newExercise?.exerciseId || newExercise?.demoName || newExercise?.name);
+    if (newExercise && replacementId === originalId) {
+      newExercise = buildLocalExerciseReplacement({
+        currentExercise,
+        experience: program.experience || experience,
+        equipment: selectedEquipment,
+        reservedExerciseIds: reservedSiblingExerciseIds,
+        limitations,
+        language
+      });
+    }
     if (!newExercise) {
       return res.status(422).json({
         success: false,

@@ -35,6 +35,17 @@ test("daily nutrition uses semantic, accessible controls and live summaries", ()
   assert.match(html, /id="macroRing" class="macro-ring" role="img"/);
 });
 
+test("missing nutrition targets explain the required plan and offer both setup paths", () => {
+  assert.match(html, /id="targetSetup" class="target-setup" role="note"/);
+  assert.match(html, /data-copy="targetSetupTitle"/);
+  assert.match(html, /class="target-setup-primary" href="\/nutrition-builder\.html"/);
+  assert.match(html, /class="target-setup-secondary" href="\/my-nutrition-plans\.html"/);
+  assert.match(client, /\$\("#targetSetup"\)\.hidden = targets\.complete/);
+  assert.match(css, /\.target-setup\[hidden\]\s*\{\s*display:\s*none/);
+  assert.match(copy, /Build and save a nutrition plan, then set it as your active plan/);
+  assert.match(copy, /בנו ושמרו תוכנית תזונה, ואז הגדירו אותה כתוכנית הפעילה/);
+});
+
 test("client protects the route and keeps target history plan-first", () => {
   assert.match(client, /guardProtectedPage\(\{ onAuthenticated: init \}\)/);
   assert.match(client, /targetSnapshot\(\{ activePlan \}\)/);

@@ -43,6 +43,7 @@ test("weekly volume add changes the program and never exceeds four working sets"
   assert.equal(result.changed, true);
   assert.equal(result.change.action, "added-set");
   assert.equal(result.change.day, 1);
+  assert.equal(result.change.exerciseIndex, 0);
   assert.equal(result.program.sessions[0].exercises[0].sets, 4);
   assert.ok(result.program.sessions.flatMap((session) => session.exercises).every((item) => item.sets <= MAX_WORKING_SETS_PER_EXERCISE));
 });
@@ -53,6 +54,7 @@ test("weekly volume add creates a compatible supplementary exercise once a direc
   });
   assert.equal(result.changed, true);
   assert.equal(result.change.action, "added-exercise");
+  assert.equal(result.change.exerciseIndex, 1);
   assert.equal(result.program.sessions[0].exercises.length, 2);
   assert.equal(result.program.sessions[0].exercises[1].sets, 2);
   assert.notEqual(result.program.sessions[0].exercises[1].exerciseId, "barbell-bench-press");
@@ -73,6 +75,7 @@ test("weekly volume reduction removes accessory work before reducing a compound"
   assert.equal(result.changed, true);
   assert.equal(result.change.action, "removed-exercise");
   assert.equal(result.change.exerciseName, "Cable Chest Fly");
+  assert.equal(result.change.exerciseIndex, 1);
   assert.equal(result.program.sessions[0].exercises.length, 1);
   assert.equal(result.program.sessions[0].exercises[0].exerciseId, "barbell-bench-press");
 });
@@ -106,4 +109,19 @@ test("targeted builder UX uses anatomy visuals, a real mutation endpoint, option
   assert.match(nutritionClient, /foodStylePreference: "mix"/);
   assert.match(theme, /html\[data-theme="light"\] body\.fp-v45-deep-ocean/);
   assert.match(theme, /--v45-ocean-deep: #f7fbff/);
+});
+
+test("volume edits focus the changed exercise and rerolls cannot silently keep the same exercise", () => {
+  const client = read("public/js/workout-builder.js");
+  const css = read("public/css/workout-builder.css");
+  const server = read("server.js");
+  assert.match(client, /renderProgram\(data\.program, data\.weeklyVolume, \{ scrollToTop: false \}\)/);
+  assert.match(client, /\.exercise-card\[data-exercise="\$\{exerciseIndex\}"\]/);
+  assert.match(client, /target\.scrollIntoView\(\{ behavior: "smooth", block: "center" \}\)/);
+  assert.match(client, /className = "volume-change-cue"/);
+  assert.match(client, /class="weekly-volume-open-hint"/);
+  assert.match(client, /previousId === nextId/);
+  assert.match(server, /replacementId === originalId/);
+  assert.match(server, /newExercise = buildLocalExerciseReplacement/);
+  assert.match(css, /\.volume-change-cue\s*\{/);
 });
