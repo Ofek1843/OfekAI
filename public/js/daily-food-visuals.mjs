@@ -1,4 +1,4 @@
-import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260918-silan-1";
+import { FOOD_CATALOG, normalizeText } from "./daily-nutrition-domain.mjs?v=20260918-food-save-2";
 
 // Presentation only: canonical IDs come from the nutrition domain. Never infer
 // amounts or nutrition from an image, and never reinterpret a multi-item meal.
@@ -15,7 +15,7 @@ export const FOOD_THUMBNAILS = Object.freeze({
   banana: "foods/banana.webp", apple: "foods/apple.webp", pomegranate: "foods/pomegranate.webp", cucumber: "foods/cucumber.webp",
   avocado: "foods/avocado.webp", "peanut-butter": "foods/peanut-butter.webp", nuts: "foods/almonds.webp",
   pizza: "common/pizza.svg", "shawarma-laffa": "meals/chicken-shawarma-pita.webp",
-  cornflakes: "foods/cornflakes.webp", granola: "foods/granola.webp", "chocolate-snack": "foods/dark-chocolate.webp",
+  cornflakes: "foods/cornflakes.webp", granola: "foods/granola.webp", "chocolate-granola-bar": "foods/granola.webp", "chocolate-snack": "foods/dark-chocolate.webp",
   hummus: "foods/hummus.webp", salmon: "foods/salmon.webp", "turkey-pastrami": "foods/turkey-breast.webp", "turkey-breast": "foods/turkey-breast.webp", spinach: "foods/spinach.webp"
 });
 

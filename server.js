@@ -90,6 +90,7 @@ const {
   FOOD_INTERPRETATION_MODEL,
   MAX_FOOD_TEXT_LENGTH,
   foodInterpretationMessages,
+  heuristicFoodInterpretation,
   sanitizeFoodInterpretation
 } = require("./lib/food-interpretation");
 
@@ -1789,6 +1790,8 @@ app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
     // broken food log. The browser keeps the deterministic catalog path and
     // simply tells the user to choose a clearer known food for this entry.
     if (!process.env.OPENAI_API_KEY && !mockExternalServices) {
+      const localEstimate = heuristicFoodInterpretation(text, { language });
+      if (localEstimate) return res.json({ interpretation: localEstimate });
       return res.status(503).json({ error: "Smart food lookup is not configured on this server.", code: "SMART_FOOD_UNAVAILABLE" });
     }
 
@@ -1800,10 +1803,18 @@ app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
       messages: foodInterpretationMessages({ text, language })
     });
     const interpretation = sanitizeFoodInterpretation(extractJsonObject(reply), { fallbackName: text });
-    if (!interpretation) return res.status(422).json({ error: "Could not identify that food confidently.", code: "UNKNOWN_FOOD" });
+    if (!interpretation) {
+      const localEstimate = heuristicFoodInterpretation(text, { language });
+      if (localEstimate) return res.json({ interpretation: localEstimate });
+      return res.status(422).json({ error: "Could not identify that food confidently.", code: "UNKNOWN_FOOD" });
+    }
     res.json({ interpretation });
   } catch (error) {
     console.error("Daily food interpretation failed:", error.message);
+    const fallbackText = String(req.body?.text || "").replace(/\s+/g, " ").trim().slice(0, MAX_FOOD_TEXT_LENGTH);
+    const fallbackLanguage = String(req.body?.language || "en").toLowerCase() === "he" ? "he" : "en";
+    const localEstimate = heuristicFoodInterpretation(fallbackText, { language: fallbackLanguage });
+    if (localEstimate && error.status !== 429) return res.json({ interpretation: localEstimate });
     res.status(error.status || (error.name === "AbortError" ? 504 : 502)).json({
       error: error.status === 429 ? "Too many food lookups. Please try again shortly." : "Could not identify that food right now.",
       code: error.status === 429 ? "RATE_LIMITED" : "SMART_FOOD_UNAVAILABLE"

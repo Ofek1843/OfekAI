@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v45-silan-1';
+const CACHE_NAME = 'fuelphysique-v45-food-save-2';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -46,7 +46,7 @@ const urlsToCache = [
   '/css/dashboard.css',
   '/css/redesign-v1.css?v=20260914-i18n-dashboard-1',
   '/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1',
-  '/css/daily-nutrition.css?v=20260918-target-setup-1',
+  '/css/daily-nutrition.css?v=20260918-food-save-2',
   '/css/product-motion-v47.css?v=20260908-v47-choice-polish-2',
   '/css/product-polish-v3.css?v=20260811-spectrum-v3',
   '/css/illustrated-v4.css?v=20260914-i18n-dashboard-1',
@@ -58,12 +58,12 @@ const urlsToCache = [
   '/js/social.js',
   '/js/redesign-shell.js?v=20260914-i18n-dashboard-1',
   '/js/redesign-shell.js?v=20260914-i18n-dashboard-1',
-  '/js/daily-nutrition.js?v=20260918-silan-1',
-  '/js/daily-food-visuals.mjs?v=20260918-silan-1',
+  '/js/daily-nutrition.js?v=20260918-food-save-2',
+  '/js/daily-food-visuals.mjs?v=20260918-food-save-2',
   '/images/common/meal.svg',
-  '/js/daily-nutrition-domain.mjs?v=20260918-silan-1',
+  '/js/daily-nutrition-domain.mjs?v=20260918-food-save-2',
   '/js/daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1',
-  '/js/daily-nutrition-i18n.mjs?v=20260918-silan-1',
+  '/js/daily-nutrition-i18n.mjs?v=20260918-food-save-2',
   '/js/daily-nutrition-format.mjs?v=20260914-i18n-dashboard-1',
   '/js/product-motion-v47.js?v=20260908-v47-choice-polish-2',
   '/js/athlete-figure.js?v=20260815-real-athlete-v43-complete-5',

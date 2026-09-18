@@ -6,6 +6,7 @@ const {
   FOOD_INTERPRETATION_MODEL,
   MAX_FOOD_TEXT_LENGTH,
   foodInterpretationMessages,
+  heuristicFoodInterpretation,
   sanitizeFoodInterpretation
 } = require("../lib/food-interpretation");
 
@@ -36,6 +37,19 @@ test("AI food interpretation accepts a bounded representative food and always su
   assert.equal(parsed.portion.choices.at(-1).grams, 90);
 });
 
+test("food interpretation keeps plausible specific snack wording usable when the model cannot classify it", () => {
+  const parsed = heuristicFoodInterpretation("חטיף שוקולד גרנול", { language: "he" });
+  assert.equal(parsed.recognized, true);
+  assert.equal(parsed.confidence, "low");
+  assert.equal(parsed.nutritionPer100g.calories, 450);
+  assert.equal(parsed.portion.defaultGrams, 40);
+  assert.equal(parsed.portion.choices.at(-1).id, "average");
+});
+
+test("food interpretation does not invent a generic estimate for clearly non-food text", () => {
+  assert.equal(heuristicFoodInterpretation("hello there", { language: "en" }), null);
+});
+
 test("AI food interpretation refuses unsafe, incoherent, or unrecognized data", () => {
   assert.equal(sanitizeFoodInterpretation({ recognized: false }), null);
   assert.equal(sanitizeFoodInterpretation({
@@ -59,5 +73,6 @@ test("daily food fallback is authenticated, rate-limited, model-configurable, an
   assert.match(server, /rateLimiters\.ai\(req, user\.uid\)/);
   assert.match(server, /process\.env\.OPENAI_FOOD_MODEL \|\| FOOD_INTERPRETATION_MODEL/);
   assert.match(server, /SMART_FOOD_UNAVAILABLE/);
+  assert.match(server, /heuristicFoodInterpretation/);
   assert.doesNotMatch(server, /res\.status\(500\)\.json\(\{ error: "OPENAI_API_KEY is missing" \}\);[\s\S]*daily-food-interpretation/);
 });

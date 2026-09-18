@@ -39,6 +39,17 @@ test("silan/date syrup is a distinct local food with weighted and spoon portions
   assert.deepEqual(parseAmountPrefix("50 גרם מאכל חדש"), { amount: 50, unit: "g", foodText: "מאכל חדש" });
 });
 
+test("specific chocolate granola bar wording resolves locally, including common Hebrew typos", async () => {
+  const { parseFoodText } = await domainPromise;
+  for (const input of ["חטיף שוקולד גרנולה", "חטיף שוקולד גרנול", "חטיף שוקולד גרנל", "chocolate granola bar"]) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, "chocolate-granola-bar", input);
+    assert.equal(result.entries[0].amount, 1, input);
+    assert.equal(result.entries[0].calories, 180, input);
+  }
+});
+
 test("parses multiple foods in one English sentence", async () => {
   const { parseFoodText } = await domainPromise;
   const result = parseFoodText("250g cottage cheese 3% and 4 rice cakes");

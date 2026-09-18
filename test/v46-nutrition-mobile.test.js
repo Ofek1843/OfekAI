@@ -83,7 +83,7 @@ test("queued daily save captures its day and immutable entries", async () => {
   const fn = js.slice(js.indexOf("function queueSave()"), js.indexOf("function renderTargets"));
   const state = { user: {uid:"test"}, dateKey:"2026-09-07", log: {entries:[{calories:100}]}, saveChain:Promise.resolve() };
   let saved;
-  const ctx = { state, structuredClone, updateWeekLog() {}, $: () => ({}), copy: {}, console,
+  const ctx = { state, structuredClone, writeDailyDraft() {}, clearDailyDraft() {}, updateWeekLog() {}, $: () => ({}), copy: { savingStatus: "Saving", saveStatus: "Saved", savedOnDevice: "Saved locally" }, console,
     db: {}, saveDailyLog: async (...args) => { saved = args; } };
   vm.runInNewContext(fn + "\nqueueSave()", ctx);
   state.dateKey = "2026-09-08"; state.log.entries[0].calories = 200;

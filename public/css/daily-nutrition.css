@@ -283,6 +283,9 @@ body.daily-nutrition-route .site-feedback-widget {
 .clarification-advanced { margin: 10px 0 0 !important; color: #b7c6d8 !important; font-size: 12px; }
 .composer-message { min-height: 20px; margin: 10px 0 0; color: #9db7ce; }
 .composer-actions { display: flex; justify-content: end; gap: 10px; margin-top: 16px; }
+.save-now-button { min-height: 48px; padding: 0 22px; border: 1px solid rgba(76, 216, 184, 0.6); border-radius: 12px; background: linear-gradient(135deg, #28c7b0, #2f86ff); color: #061423; font: 800 0.98rem "Space Grotesk", sans-serif; cursor: pointer; box-shadow: 0 10px 24px rgba(35, 177, 210, 0.18); }
+.save-now-button:hover, .save-now-button:focus-visible { filter: brightness(1.08); transform: translateY(-1px); }
+.save-now-button:disabled { cursor: wait; opacity: 0.7; transform: none; }
 .secondary-button { padding: 0 16px; cursor: pointer; }
 
 .daily-content-grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.72fr); gap: 16px; margin-top: 16px; }

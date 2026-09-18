@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260918-silan-1";
+import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260918-food-save-2";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import {
@@ -12,7 +12,7 @@ import {
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
-} from "./daily-nutrition-domain.mjs?v=20260918-silan-1";
+} from "./daily-nutrition-domain.mjs?v=20260918-food-save-2";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -23,7 +23,7 @@ import {
   saveDailyLog,
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-silan-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-food-save-2";
 import {
   formatNutritionAmount,
   formatNutritionNumber,
@@ -35,6 +35,7 @@ const $ = (selector) => document.querySelector(selector);
 const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
 const copy = dailyNutritionCopy(language);
 const SMART_FOODS_STORAGE_KEY = "fp-daily-smart-foods-v1";
+const DAILY_DRAFT_STORAGE_PREFIX = "fp-daily-log-draft-v2";
 
 function loadSmartFoods() {
   try {
@@ -54,6 +55,43 @@ function persistSmartFoods() {
     // Storage is a convenience cache only. An unavailable localStorage must
     // never prevent the current food entry from being saved.
   }
+}
+
+function dailyDraftKey(uid, dateKey) {
+  return `${DAILY_DRAFT_STORAGE_PREFIX}:${String(uid || "")}:${String(dateKey || "")}`;
+}
+
+function writeDailyDraft(uid, dateKey, log, token) {
+  try {
+    localStorage.setItem(dailyDraftKey(uid, dateKey), JSON.stringify({ token, savedAt: Date.now(), log }));
+  } catch {
+    // The Firestore path remains authoritative when browser storage is full or unavailable.
+  }
+}
+
+function readDailyDraft(uid, dateKey) {
+  try {
+    const value = JSON.parse(localStorage.getItem(dailyDraftKey(uid, dateKey)) || "null");
+    return value?.log && value.token ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearDailyDraft(uid, dateKey, token) {
+  try {
+    const current = readDailyDraft(uid, dateKey);
+    if (!token || current?.token === token) localStorage.removeItem(dailyDraftKey(uid, dateKey));
+  } catch {
+    // A successful Firestore save is still a successful save if cleanup is unavailable.
+  }
+}
+
+function timestampMillis(value) {
+  if (!value) return 0;
+  if (typeof value.toMillis === "function") return value.toMillis();
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : 0;
 }
 
 const state = {
@@ -184,9 +222,15 @@ function queueSave() {
   const uid = state.user.uid;
   const dateKey = state.dateKey;
   const log = structuredClone(state.log);
+  const draftToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  writeDailyDraft(uid, dateKey, log, draftToken);
   const status = $("#autosaveState");
-  status.textContent = copy.savingStatus;
-  status.className = "autosave-state saving";
+  const setSaveStatus = (message, className) => {
+    if (state.dateKey !== dateKey) return;
+    status.textContent = message;
+    status.className = `autosave-state ${className || ""}`.trim();
+  };
+  setSaveStatus(copy.savingStatus, "saving");
   state.saveChain = state.saveChain
     .catch(() => undefined)
     .then(async () => {
@@ -210,15 +254,28 @@ function queueSave() {
         }
       }
     })
-    .then(() => saveDailyLog(db, uid, dateKey, log))
+    .then(async () => {
+      let lastError;
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        try {
+          const saved = await saveDailyLog(db, uid, dateKey, log);
+          clearDailyDraft(uid, dateKey, draftToken);
+          return saved;
+        } catch (error) {
+          lastError = error;
+          if (attempt === 0) await new Promise((resolve) => setTimeout(resolve, 350));
+        }
+      }
+      throw lastError;
+    })
     .then(() => {
-      status.textContent = copy.saveStatus;
-      status.className = "autosave-state";
+      setSaveStatus(copy.saveStatus, "");
+      state.lastSaveOk = true;
     })
     .catch((error) => {
       console.error("Daily nutrition autosave failed:", error);
-      status.textContent = copy.saveError;
-      status.className = "autosave-state error";
+      setSaveStatus(copy.savedOnDevice, "error");
+      state.lastSaveOk = false;
     });
   return state.saveChain;
 }
@@ -397,11 +454,16 @@ async function loadDate(dateKey) {
   // queueSave() then re-reads and merges the saved day before the next write,
   // so an unread saved log is never silently overwritten with new-only entries.
   let log;
+  const localDraft = readDailyDraft(state.user.uid, state.dateKey);
   try {
     log = await withTimeout(loadDailyLog(db, state.user.uid, state.dateKey), LOG_LOAD_TIMEOUT_MS);
+    if (localDraft && localDraft.savedAt > timestampMillis(log.updatedAt)) {
+      log = normalizeLog(state.dateKey, localDraft.log);
+      log.readFailed = false;
+    }
   } catch (error) {
     console.warn("Daily nutrition: today's log did not load; starting a local working log.", error);
-    log = normalizeLog(state.dateKey);
+    log = normalizeLog(state.dateKey, localDraft?.log || {});
     log.readFailed = true;
   }
   const weekLogs = await loadNutritionWeek(db, state.user.uid, state.dateKey).catch(() => [log]);
@@ -758,6 +820,15 @@ function bindEvents() {
     render();
     window.fpV47Success?.($("#finishDayButton"));
     queueSave();
+  });
+  $("#saveDailyLogButton").addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    try {
+      await queueSave();
+    } finally {
+      button.disabled = false;
+    }
   });
   $("#previousDay").addEventListener("click", () => loadDate(shiftDateKey(state.dateKey, -1)));
   $("#nextDay").addEventListener("click", () => loadDate(shiftDateKey(state.dateKey, 1)));
