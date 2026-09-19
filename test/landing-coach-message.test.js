@@ -34,3 +34,9 @@ test("the landing deadlift sequence loops instead of freezing after its first pa
   assert.match(engine, /if \(scene\.loop\) \{/);
   assert.match(engine, /scene\.loopDelay \|\| 900/);
 });
+
+test("the live hero keeps its athlete stage absolute instead of collapsing it", () => {
+  const css = read("public/css/v45-deep-ocean.css");
+  assert.match(css, /hero-panel > \.landing-hero-illustration\[data-v43-motion="prototype"\][\s\S]*?position:\s*absolute !important/);
+  assert.match(css, /hero-panel > \.landing-hero-illustration\[data-v43-motion="prototype"\][\s\S]*?inset:\s*0 0 112px !important/);
+});

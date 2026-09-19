@@ -698,6 +698,21 @@ body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start:
   z-index: 1;
 }
 
+/* The athlete stage must remain an absolute layer. The generic hero child
+   stacking rule above is useful for cards and copy, but it collapses this
+   empty host to zero height and makes an otherwise loaded sequence invisible. */
+.fp-v45-deep-ocean.fp-route-index .hero-panel > .landing-hero-illustration[data-v43-motion="prototype"] {
+  position: absolute !important;
+  inset: 0 0 112px !important;
+  z-index: 2;
+}
+
+@media (max-width: 720px) {
+  .fp-v45-deep-ocean.fp-route-index .hero-panel > .landing-hero-illustration[data-v43-motion="prototype"] {
+    inset-block-end: 124px !important;
+  }
+}
+
 .fp-v45-deep-ocean.fp-route-index .hero-panel .system-card {
   background-image: linear-gradient(115deg, rgba(255,255,255,0.025), rgba(255,255,255,0.08), rgba(255,255,255,0.025)) !important;
   background-size: 220% 100%;
