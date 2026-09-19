@@ -43,6 +43,7 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "concentration-curl",
   "diamond-push-up",
   "dip",
+  "dragon-flag",
   "dumbbell-bench-press",
   "dumbbell-bicep-curl",
   "dumbbell-bulgarian-split-squat",
@@ -81,6 +82,7 @@ export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
   "one-arm-pull-up",
   "overhead-tricep-extension",
   "pike-push-up",
+  "pseudo-planche-push-up",
   "pistol-squat",
   "plank",
   "preacher-curl",
@@ -129,6 +131,10 @@ export function slugifyExerciseName(name = "") {
 }
 
 const ALIASES = {
+  "dragon-flags": "dragon-flag",
+  "pseudo-planche-pushup": "pseudo-planche-push-up",
+  "pseudo-planche-pushups": "pseudo-planche-push-up",
+  "pseudo-planche-push-ups": "pseudo-planche-push-up",
   // --- Squat / leg patterns ---
   "back-squat": "barbell-squat",
   "barbell-back-squat": "barbell-squat",
@@ -440,6 +446,20 @@ export function exerciseImageSlug(name = "") {
   }
 
   return slug;
+}
+
+// A small number of skill movements are routinely mislabeled by free-form
+// generator output. Prefer the verified primary muscle for those exercises
+// in the card badge, even when rendering an older saved plan.
+export function exercisePrimaryMuscleGroup(exercise = {}) {
+  const candidates = typeof exercise === "string"
+    ? [exercise]
+    : [exercise.exerciseId, exercise.id, exercise.demoName, exercise.name];
+  for (const candidate of candidates) {
+    const slug = exerciseImageSlug(String(candidate || ""));
+    if (slug === "pseudo-planche-push-up") return "Shoulders";
+  }
+  return "";
 }
 
 export function hasExerciseImageSlug(slug = "") {

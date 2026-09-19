@@ -144,6 +144,24 @@ test("E/F: workout and nutrition shares reveal type only and deep-link exact art
   }
 });
 
+test("workout check-in push names the exact session and opens its dashboard card without duplicate delivery", async () => {
+  const current = fixture();
+  const input = {
+    uid: "user-b", checkinId: "a".repeat(64), planId: "plan-1", workoutId: "push-a",
+    sessionName: "Push A", scheduledDate: "2026-09-19", promptNumber: 2, locale: "en"
+  };
+  await current.service.sendWorkoutCheckin(input);
+  const payload = current.transport.sent[0].payload;
+  assert.equal(payload.type, "workout_checkin");
+  assert.equal(payload.title, "How did Push A go?");
+  assert.equal(payload.url, `/dashboard.html?checkin=${input.checkinId}&source=notification&plan=plan-1&workout=push-a&date=2026-09-19`);
+  assert.equal((await current.service.sendWorkoutCheckin(input)).duplicate, true);
+  assert.equal(current.transport.sent.length, 1);
+  const hebrew = fixture({ preferences: { locale: "he" } });
+  await hebrew.service.sendWorkoutCheckin({ ...input, sessionName: "אימון A", promptNumber: 1, locale: "he" });
+  assert.equal(hebrew.transport.sent[0].payload.title, "איך היה אימון A?");
+});
+
 test("G/H: all active installations receive while stale registrations are deactivated", async () => {
   const current = fixture({ installs: 2 });
   current.store.installations.get("user-b")[1].fid = "stale";

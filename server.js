@@ -19,6 +19,8 @@ const { FieldValue } = require("firebase-admin/firestore");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
 const { createSocialRouter } = require("./lib/social-router");
 const { createPushRouter } = require("./lib/push-router");
+const { createWorkoutCheckinRouter } = require("./lib/workout-checkin-router");
+const { WorkoutCheckinService } = require("./lib/workout-checkin");
 const { createAccountRouter } = require("./lib/account-router");
 const { AccountService } = require("./lib/account-service");
 const { VoiceMediaService } = require("./lib/voice-media-service");
@@ -118,6 +120,7 @@ const rateLimiters = {
   socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" }),
   socialReports: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_REPORTS_PER_UID_PER_MINUTE || 3), keyPrefix: "social-report" }),
   push: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUSH_API_PER_UID_PER_MINUTE || 30), keyPrefix: "push" }),
+  workoutCheckins: createRateLimiter({ windowMs: 60_000, max: Number(process.env.WORKOUT_CHECKINS_PER_UID_PER_MINUTE || 45), keyPrefix: "workout-checkin" }),
   account: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ACCOUNT_API_PER_UID_PER_MINUTE || 4), keyPrefix: "account" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
@@ -721,6 +724,15 @@ const pushNotifications = new PushNotificationService({
   store: new FirestorePushStore(),
   transport: pushTransport
 });
+const workoutCheckins = new WorkoutCheckinService({
+  store: pushNotifications.store,
+  pushService: pushNotifications,
+  onAnalytics: (event, properties = {}) => telemetry.recordAnalytics(event, {
+    path: "/dashboard.html",
+    type: "workout_checkin",
+    ...properties
+  })
+});
 const voiceConfig = voiceMessageConfig();
 const voiceMedia = new VoiceMediaService({ provider: imageKitVoiceProvider(), config: voiceConfig });
 const accountService = new AccountService({
@@ -766,6 +778,12 @@ app.use("/api/notifications", createPushRouter({
   vapidPublicKey: process.env.FIREBASE_WEB_PUSH_VAPID_PUBLIC_KEY || "",
   testEnabled: process.env.PUSH_TEST_NOTIFICATIONS_ENABLED === "true" || Boolean(process.env.FIRESTORE_EMULATOR_HOST),
   rateLimit: rateLimiters.push
+}));
+
+app.use("/api/workout-checkins", createWorkoutCheckinRouter({
+  authenticate: requireFirebaseUser,
+  service: workoutCheckins,
+  rateLimit: rateLimiters.workoutCheckins
 }));
 
 app.get("/api/imagekit/upload-auth", async (req, res) => {

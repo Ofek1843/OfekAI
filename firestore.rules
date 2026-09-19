@@ -80,6 +80,12 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Check-in state is authoritative and written only by authenticated server routes.
+    match /users/{uid}/workoutCheckins/{checkinId} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
     match /users/{userId}/{legacyCollection}/{document=**} {
       allow read, write: if isSelf(userId) && isLegacyUserCollection(legacyCollection);
     }

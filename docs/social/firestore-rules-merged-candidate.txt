@@ -77,6 +77,12 @@ service cloud.firestore {
       allow read, update, delete: if isSelf(userId);
     }
 
+    // Check-in state is authoritative and written only by authenticated server routes.
+    match /users/{uid}/workoutCheckins/{checkinId} {
+      allow get, list: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
     // The former catch-all is narrowed to the documented legacy paths. This
     // keeps owner CRUD for existing application behavior without granting
     // client writes to social server-owned collections.

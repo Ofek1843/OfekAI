@@ -4,7 +4,11 @@ import { setupPlanSharing } from "./plan-sharing.js";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
 import { derivePriorityFromGoal } from "./workout-priority.js";
-import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
+import {
+  exerciseImageUrl,
+  exercisePrimaryMuscleGroup,
+  fallbackExerciseImageUrl
+} from "./exercise-image.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 
@@ -1246,7 +1250,9 @@ function renderProgram(program, weeklyVolume) {
 
       exercises.forEach((exercise, exerciseIndex) => {
           const exerciseName = translateWorkoutValue(exercise.name);
-          const muscleName = translateWorkoutValue(exercise.muscleGroup || ui.general);
+          const muscleName = translateWorkoutValue(
+            exercisePrimaryMuscleGroup(exercise) || exercise.muscleGroup || ui.general
+          );
           // The old title="" tooltip was hover-only: unreachable by keyboard,
           // by touch, and by screen readers. Replaced by the focusable
           // .rir-help-trigger button and the shared #rirHelpPopover dialog.
@@ -1583,7 +1589,9 @@ try {
 
     const badges = card.querySelectorAll(".exercise-card-badges span");
     if (badges[0]) {
-      badges[0].textContent = translateWorkoutValue(data.exercise.muscleGroup || ui.general);
+      badges[0].textContent = translateWorkoutValue(
+        exercisePrimaryMuscleGroup(data.exercise) || data.exercise.muscleGroup || ui.general
+      );
     }
     if (badges[1]) {
       badges[1].textContent = translateWorkoutValue(data.exercise.equipment || ui.equipmentFallback);

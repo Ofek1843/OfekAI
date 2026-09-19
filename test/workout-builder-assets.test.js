@@ -29,6 +29,7 @@ function loadBrowserExerciseImageModule() {
     moduleExports.exerciseImageUrl = exerciseImageUrl;
     moduleExports.exerciseImageResolutionDetails = exerciseImageResolutionDetails;
     moduleExports.fallbackExerciseImageUrl = fallbackExerciseImageUrl;
+    moduleExports.exercisePrimaryMuscleGroup = exercisePrimaryMuscleGroup;
     moduleExports.exerciseImageSlug = exerciseImageSlug;
     moduleExports.hasExerciseImageSlug = hasExerciseImageSlug;`,
     sandbox
@@ -129,7 +130,11 @@ test("exercise image resolver maps newly imported images to existing files", asy
     ["Triceps Dip", "tricep-dip.png"],
     ["Dumbbell Hammer Curl", "hammer-curl.png"],
     ["Hammer Curls", "hammer-curl.png"],
-    ["Cable Face Pull", "face-pull.png"]
+    ["Cable Face Pull", "face-pull.png"],
+    ["Dragon Flag", "dragon-flag.png"],
+    ["Dragon Flags", "dragon-flag.png"],
+    ["Pseudo Planche Push Up", "pseudo-planche-push-up.png"],
+    ["Pseudo Planche Pushup", "pseudo-planche-push-up.png"]
   ];
 
   for (const [exerciseName, expectedFile] of cases) {
@@ -141,6 +146,51 @@ test("exercise image resolver maps newly imported images to existing files", asy
     );
     assert.ok(fs.existsSync(publicFile(url)), `Missing resolved demo image: ${url}`);
   }
+});
+
+test("pseudo-planche push-ups resolve to shoulder-primary imagery and catalog credits", () => {
+  const imageModule = loadBrowserExerciseImageModule();
+  for (const name of ["Pseudo Planche Push Up", "Pseudo Planche Pushup"]) {
+    const details = imageModule.exerciseImageResolutionDetails({ name, demoName: name });
+    assert.equal(details.usedFallback, false);
+    assert.equal(details.imageUrl, "/images/exercises/pseudo-planche-push-up.png");
+    assert.ok(fs.existsSync(publicFile(details.imageUrl)));
+  }
+  assert.equal(imageModule.exercisePrimaryMuscleGroup({
+    exerciseId: "pseudo-planche-push-up",
+    name: "Pseudo Planche Push Up",
+    muscleGroup: "Chest"
+  }), "Shoulders");
+
+  const catalog = require("../lib/workout-exercise-catalog");
+  const exercise = catalog.getCatalogExercise("pseudo-planche-pushup");
+  assert.equal(exercise.muscleGroup, "Shoulders");
+  assert.equal(exercise.setCredits.delts, 1);
+  assert.ok(exercise.setCredits.chest < exercise.setCredits.delts);
+});
+
+test("workout repair corrects the pseudo-planche primary muscle to shoulders", () => {
+  const { repairWorkoutProgram } = require("../lib/workout-repair");
+  const program = {
+    sessions: [{
+      name: "Day 1",
+      exercises: [{
+        exerciseId: "pseudo-planche-push-up",
+        name: "Pseudo Planche Push Up",
+        demoName: "Pseudo Planche Push Up",
+        muscleGroup: "Chest",
+        equipment: "Bodyweight",
+        sets: 3,
+        reps: "6-10",
+        restSeconds: 120,
+        rir: "1-3"
+      }]
+    }]
+  };
+
+  const result = repairWorkoutProgram(program);
+  assert.equal(result.program.sessions[0].exercises[0].muscleGroup, "Shoulders");
+  assert.ok(result.repairs.some((repair) => /corrected .* primary muscle to Shoulders/.test(repair)));
 });
 
 test("public generated exercise variants resolve to exact real images without frontend fallback", () => {

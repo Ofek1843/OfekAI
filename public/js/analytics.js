@@ -18,7 +18,14 @@ const ALLOWED_EVENTS = new Set([
   "subscription_completed",
   "subscription_cancelled",
   "referral_link_opened",
-  "nutrition_shopping_list"
+  "nutrition_shopping_list",
+  "workout_checkin_created",
+  "workout_checkin_shown",
+  "workout_checkin_opened",
+  "workout_checkin_snoozed",
+  "workout_checkin_completed",
+  "workout_checkin_skipped",
+  "workout_checkin_expired"
 ]);
 
 function cleanText(value, limit = 80) {

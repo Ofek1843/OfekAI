@@ -1,6 +1,10 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { AccountService, uidHash } = require("../lib/account-service");
+const { AccountService, uidHash, USER_SUBCOLLECTIONS } = require("../lib/account-service");
+
+test("account cleanup includes server-owned workout check-ins", () => {
+  assert.ok(USER_SUBCOLLECTIONS.includes("workoutCheckins"));
+});
 
 function makeFixture({ readyForAuthDelete = false } = {}) {
   const state = new Map();

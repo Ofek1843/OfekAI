@@ -8,8 +8,8 @@ This runbook prepares the infrastructure only after the feature branch has passe
 - Server Firebase Admin SDK: `14.2.0` (already current in this repository), targeting `message.fid` rather than the deprecated registration-token field.
 - Existing root service worker: `/sw.js`. The FCM registration is explicitly attached to this registration; do not add `firebase-messaging-sw.js` or another root-scope worker.
 - Server-only Firestore collections: `pushInstallations`, `notificationPreferences`, and `pushEvents`.
-- Scheduler command: `npm run notifications:send-workout-reminders`.
-- Scheduler cadence: every 10 minutes in UTC. The script converts each user's IANA timezone and exits after one bounded, idempotent pass.
+- Scheduler command: `npm run notifications:send-workout-reminders` (existing job; now also sends due post-workout check-ins).
+- Scheduler cadence: every 10 minutes in UTC. The script converts each user's IANA timezone and exits after one bounded, idempotent pass. In-app check-ins are also materialized when the authenticated dashboard opens after 19:00 local, including for users without push permission.
 
 Official references:
 
@@ -77,12 +77,12 @@ Do not add a permanent worker or `setInterval`. Render documents a minimum month
 
 ## Firestore rules and indexes
 
-No rules or index deployment is required for this release:
+The check-in route writes with Firebase Admin. Users can read only their own `users/{uid}/workoutCheckins/*` records; client create/update/delete is denied. The existing push collections remain server-only through default deny.
 
-- The three new root collections have no client `match` grants in the currently reviewed rules, so Firestore's default deny behavior keeps them server-only.
-- Registration/preferences are written through authenticated server endpoints using Admin credentials.
+- Deploy the reviewed `firestore.rules` change with the application release so dashboard reads succeed. Do not add `workoutCheckins` to the legacy client-writable collection allowlist.
+- Registration and preferences are still written through authenticated server endpoints using Admin credentials.
 - Queries use single-field filters/orders only; no additional composite index is required.
-- Emulator tests must remain green before release. Do not publish rules merely because this feature is deployed.
+- Run Firestore emulator tests before release and verify the deployed rules match the reviewed file.
 
 ## Controlled smoke test
 

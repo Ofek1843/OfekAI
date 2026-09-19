@@ -53,6 +53,8 @@ test("known legacy collections retain owner access without a social catch-all", 
   assert.match(RULES, /isSelf\(userId\)\s*&&\s*isLegacyUserCollection\(legacyCollection\)/);
   assert.match(RULES, /match \/users\/\{userId\}\/\{legacyCollection\}\/\{document=\*\*\}/);
   assert.match(RULES, /match \/leaderboardEntries\/\{entryId\}[\s\S]*?allow read: if signedIn\(\)/);
+  assert.doesNotMatch(RULES.match(/function isLegacyUserCollection\(name\)\s*\{([\s\S]*?)\n\s*\}/)?.[1] || "", /workoutCheckins/);
+  assert.match(RULES, /match \/users\/\{uid\}\/workoutCheckins\/\{checkinId\}[\s\S]*?allow get, list: if isSelf\(uid\);[\s\S]*?allow create, update, delete: if false;/);
   assert.match(RULES, /isLeaderboardAdmin\(\)/);
 });
 

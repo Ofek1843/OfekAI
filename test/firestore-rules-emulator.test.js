@@ -68,6 +68,7 @@ async function seed() {
     batch.set(doc(db, "users/alice/workoutPlans/plan-a"), { name: "Alice plan", createdAt: 1 });
     batch.set(doc(db, "users/alice/nutritionPlans/nutrition-a"), { name: "Alice nutrition", createdAt: 1 });
     batch.set(doc(db, "users/alice/workoutLogs/log-a"), { completedAt: 1 });
+    batch.set(doc(db, "users/alice/workoutCheckins/checkin-a"), { ownerUid: "alice", status: "pending" });
     batch.set(doc(db, "users/alice/weightEntries/weight-a"), { date: "2026-01-01", weight: 70 });
     batch.set(doc(db, "users/alice/bodyMeasurements/measurement-a"), { date: "2026-01-01", waist: 80 });
     batch.set(doc(db, "users/alice/progressPhotos/photo-a"), { date: "2026-01-01", photos: {} });
@@ -143,6 +144,9 @@ test("legacy owner access is preserved and cross-user access is denied", async (
     assertFails(getDoc(doc(other, `users/alice/${relativePath}`)), relativePath);
   }
   await assertSucceeds(setDoc(doc(owner, "users/alice/workoutPlans/new-plan"), { name: "new" }));
+  await assertSucceeds(getDoc(doc(owner, "users/alice/workoutCheckins/checkin-a")));
+  await assertFails(getDoc(doc(other, "users/alice/workoutCheckins/checkin-a")));
+  await assertFails(setDoc(doc(owner, "users/alice/workoutCheckins/forged"), { ownerUid: "alice", status: "completed" }));
   await assertFails(setDoc(doc(other, "users/alice/workoutPlans/forged"), { name: "forged" }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { displayName: "Alice updated" }));
   await assertSucceeds(updateDoc(doc(owner, "users/alice"), { activeNutritionPlanId: "nutrition-a" }));

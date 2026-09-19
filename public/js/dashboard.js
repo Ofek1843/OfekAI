@@ -5,7 +5,7 @@ import {
  normalizeSubscription }
  from "./subscription-plans.js";
 import {
- trackPageView }
+ trackEvent, trackPageView }
  from "./analytics.js";
 import {
   createWeeklyScheduleDays,  getWeekdayLabels,  normalizeDayIndex,  shiftWeeklyScheduleDays}
@@ -21,6 +21,26 @@ import { disassociateCurrentInstallation } from "./push-notifications.js";
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 let activeNutritionPlanForQuickFood = null;
+let checkinRefreshTimer = 0;
+const openedWorkoutCheckins = new Set();
+const CHECKIN_COPY = {
+he: {
+  kicker: "צ׳ק־אין אימון", previous: "אימון קודם", makeup: "אימון להשלמה מחר", scheduled: "מתוכנן ל־", exercises: count => `${count} תרגילים`,
+  initial: name => `השלמת את ${name} היום?`, initialPrevious: (name, date) => `השלמת את ${name} בתאריך ${date}?`, most: "השלמת את רוב האימון המתוכנן?", difficulty: "האימון הרגיש קשה במיוחד?", pain: "הרגשת כאב או אי־נוחות חריגה?",
+  recovery: "דילגת על האימון כדי לנוח או להתאושש?", tomorrow: "להשאיר את האימון זמין למחר?", yes: "כן", no: "לא", later: "שאלו אותי מאוחר יותר — עוד לא התאמנתי",
+  completed: "צ׳ק־אין הושלם ✓", trackerCompleted: "האימון כבר סומן כהושלם", completedNote: "תודה, המשוב נשמר.", skipped: "האימון לא הושלם", skippedNote: "אפשר לעבור על לוח הזמנים ולתכנן את האימון הבא.",
+  makeupReady: "האימון נשמר כאפשרות למחר. התוכנית השבועית לא שונתה.", makeupToday: "האימון זמין היום כאפשרות חד־פעמית. התוכנית השבועית לא שונתה.", startMakeup: "פתיחת האימון", reviewSchedule: "מעבר ללוח האימונים", snoozed: "נשאל שוב ב־", snoozedNoTime: "האימון נשאר פתוח למענה בפעם הבאה שתיכנס.",
+  retry: "נסה שוב", error: "לא ניתן לשמור כרגע. נסה שוב.", sent: "המשוב נשלח."
+},
+en: {
+  kicker: "WORKOUT CHECK-IN", previous: "Previous workout", makeup: "Make-up workout", scheduled: "Scheduled ", exercises: count => `${count} exercises`,
+  initial: name => `Did you complete ${name} today?`, initialPrevious: (name, date) => `Did you complete ${name} on ${date}?`, most: "Did you complete most of the planned workout?", difficulty: "Did it feel unusually difficult?", pain: "Did you experience pain or unusual discomfort?",
+  recovery: "Did you skip it to rest or recover?", tomorrow: "Keep this workout available for tomorrow?", yes: "Yes", no: "No", later: "Ask me later — I haven't trained yet",
+  completed: "Check-in complete ✓", trackerCompleted: "Workout already marked complete", completedNote: "Thanks — your feedback is saved.", skipped: "Workout not completed", skippedNote: "You can review your schedule and plan what comes next.",
+  makeupReady: "This workout is saved as an option for tomorrow. Your weekly plan was not changed.", makeupToday: "This workout is available as a one-off option for today. Your weekly plan was not changed.", startMakeup: "Open this workout", reviewSchedule: "Review workout schedule", snoozed: "We'll ask again at ", snoozedNoTime: "This workout will stay here for you to answer later.",
+  retry: "Try again", error: "Could not save your answer right now. Please try again.", sent: "Your feedback was saved."
+}
+};
 
 function dashboardGreeting(name, isHebrew) {
   const cleanName = String(name || "").trim();
@@ -39,8 +59,10 @@ function dashboardGreeting(name, isHebrew) {
 }
 
 const rawUi = he ? {
+  checkin: CHECKIN_COPY.he,
   today: "היום",  welcome: name => dashboardGreeting(name, true),  intro: "בחר את הצעד הבא שלך בלי ללכת לאיבוד בין יותר מדי כפתורים.",  chat: "שאל את המאמן שלך →",  loading: "טוען את הדשבורד שלך...",  week: "אימונים השבוע",  streak: "רצף נוכחי",  weight: "משקל אחרון",  sets: "סטים שהושלמו",  update: "עדכון התקדמות",  next: "האימון הבא",  noneWorkout: "אין תוכנית אימון פעילה",  start: "התחלת אימון",  nutrition: "תזונה פעילה",  noneNutrition: "אין תוכנית תזונה פעילה",  calories: "קלוריות",  protein: "חלבון",  manageNutrition: "ניהול תוכניות תזונה",  recent: "האימון האחרון",  noWorkouts: "עדיין אין אימונים",  history: "היסטוריית אימונים",  progress: "התקדמות",  momentum: "ממשיכים לצבור תנופה",  analytics: "ניתוח תרגילים",  goal: (done, target) => target ? `${done} מתוך ${target} אימונים מתוכננים` : "הגדר יעד ב־Athlete Core",  streakHint: n => n ? "ימים רצופים עם פעילות" : "האימון הראשון מתחיל את הרצף",  setsHint: "ב־30 האימונים האחרונים",  exerciseMore: n => `ועוד ${n}`,  minutes: "דקות",  completed: "סטים הושלמו",  progressMessage: n => n ? `השלמת ${n} אימונים. כל אימון מתועד משפר את ניתוח ההתקדמות שלך.` : "סיים את האימון הראשון כדי להתחיל למדוד התקדמות.",  error: "לא ניתן לטעון את הדשבורד.",  quickFoodLabel: "בדיקה מהירה",  quickFoodTitle: "חרגת מהתפריט היום?",  quickFoodText: "כתוב בקירוב מה אכלת היום. אל תשכח משקאות. זה חישוב משוער בלבד.",  quickFoodEstimate: "חשב קירוב",  quickFoodClear: "נקה",  quickFoodEmpty: "כאן יופיעו קלוריות ומאקרו משוערים.",  quickFoodPlaceholder: "לדוגמה: 2 ביצים, חזה עוף, אורז, סלט, חלב, קפה",  quickFoodLow: "נראה שהיום לא היה דרמטי במיוחד — אפשר לסגור אותו עם הליכה קלה.",  quickFoodMid: "יש כאן חריגה מתונה. חזרה למסלול מחר תספיק.",  quickFoodHigh: "נראה שהיום היה גבוה יותר קלורית. עדיף לחזור לשגרה ולא להילחץ.",  scheduleLabel: "תצוגת השבוע",  scheduleTitle: "ימי האימון של השבוע",  scheduleHint: "גרור אימון ליום אחר כדי להזיז את כל השבוע קדימה בלי לפגוע במנוחה.",  scheduleShift: "הזז יום קדימה",  buildWorkout: "בניית תוכנית אימון",  buildNutrition: "בניית תוכנית תזונה",  trackProgress: "מעקב התקדמות",  heroHistory: "היסטוריית אימונים",  drawerCoach: "שיחה עם המאמן",  drawerPrimary: "התחלה מהירה",  drawerTraining: "כלי אימון",  drawerSupport: "התקדמות וחשבון",  missedLabel: "פספסת אימון?",  missedTitle: "הזן אותו כאן",  missedText: "הוסף את האימון עכשיו כדי שההיסטוריה וגרפי ההתקדמות יישארו מלאים.",  missedAction: "הזנת אימון שבוצע",  manualLabel: "תוכנית עצמית",  manualTitle: "בניית תוכנית בעצמך",  manualText: "בחר תרגילים, קבע סטים ומנוחות, ובנה או שכפל ימי אימון בקצב שלך.",  manualAction: "יצירת תוכנית עצמית",  manualNav: "בניית תוכנית עצמית",  toolsKicker: "כלים מתקדמים",  toolsSummary: "פתיחת כלים נוספים",  toolsText: "היסטוריה, בנייה ידנית ובדיקת חריגה נשמרים כאן כדי שהמסך הראשי יישאר פשוט וברור.",  logout: "התנתקות",  logoutConfirm: "להתנתק מהחשבון?",  logoutWorking: "מתנתק...",  logoutError: "לא הצלחנו להתנתק. נסה שוב."}
  : {
+  checkin: CHECKIN_COPY.en,
   today: "TODAY",  welcome: name => dashboardGreeting(name, false),  intro: "Pick your next move without wading through too many buttons at once.",  chat: "Ask your coach",  loading: "Loading your dashboard...",  week: "Workouts this week",  streak: "Current streak",  weight: "Latest weight",  sets: "Sets completed",  update: "Update progress",  next: "NEXT WORKOUT",  noneWorkout: "No active workout plan",  start: "Start Workout",  nutrition: "ACTIVE NUTRITION",  noneNutrition: "No active nutrition plan",  calories: "Calories",  protein: "Protein",  manageNutrition: "Manage nutrition plans",  recent: "LAST WORKOUT",  noWorkouts: "No workouts yet",  history: "Workout history",  progress: "PROGRESS",  momentum: "Keep building momentum",  analytics: "Exercise analytics",  goal: (done, target) => target ? `${done} of ${target} planned workouts` : "Set a goal in Athlete Core",  streakHint: n => n ? "consecutive active days" : "Your first workout starts the streak",  setsHint: "Across your last 30 workouts",  exerciseMore: n => `and ${n} more`,  minutes: "minutes",  completed: "sets completed",  progressMessage: n => n ? `You have completed ${n} workouts. Every logged session improves your progress insights.` : "Finish your first workout to begin measuring progress.",  error: "Could not load your dashboard.",  quickFoodLabel: "Quick check-in",  quickFoodTitle: "Did you stray from the plan today?",  quickFoodText: "Write roughly what you ate today, and don't forget drinks. This is only an estimate.",  quickFoodEstimate: "Estimate calories",  quickFoodClear: "Clear",  quickFoodEmpty: "Approximate calories and macros will appear here.",  quickFoodPlaceholder: "Example: 2 eggs, chicken breast, rice, salad, milk, coffee",  quickFoodLow: "That does not look too dramatic — a light walk is enough.",  quickFoodMid: "This looks like a moderate deviation. Get back on track tomorrow.",  quickFoodHigh: "This looks like a higher-calorie day. No drama — just return to the routine tomorrow.",  scheduleLabel: "WEEKLY PLAN",  scheduleTitle: "Training days this week",  scheduleHint: "Drag a workout card to another day and the whole week slides together.",  scheduleShift: "Shift +1 day",  buildWorkout: "Build workout plan",  buildNutrition: "Build nutrition plan",  trackProgress: "Track progress",  heroHistory: "Workout history",  drawerCoach: "Chat with your coach",  drawerPrimary: "Start here",  drawerTraining: "Training tools",  drawerSupport: "Progress & account",  missedLabel: "MISSED TRACKING?",  missedTitle: "Missed a workout? Log it here",  missedText: "Add the workout later so your history and progress charts stay complete.",  missedAction: "Log a past workout",  manualLabel: "YOUR OWN PROGRAM",  manualTitle: "Build a plan manually",  manualText: "Search exercises, set your sets and rest times, and build or duplicate workout days at your pace.",  manualAction: "Create my plan",  manualNav: "Build a plan manually",  toolsKicker: "MORE TOOLS",  toolsSummary: "Open advanced tools",  toolsText: "History, manual planning, and nutrition check-ins live here so the main screen stays simple and easy to use.",  logout: "Log out",  logoutConfirm: "Log out of your account?",  logoutWorking: "Logging out...",  logoutError: "Could not log out. Please try again."}
 ;
 const navLabels = he ? {
@@ -197,6 +219,7 @@ const ui = new Proxy(rawUi, {
   }
 }
 );
+const checkinUi = ui.checkin;
 const esc = value => String(value ?? "").replace(/[&<>"\x27]/g, char => ({
   "&": "&amp;",
   "<": "&lt;",
@@ -536,6 +559,162 @@ function renderWorkout(planDoc, logs) {
   const exercises = Array.isArray(session.exercises) ? session.exercises : [];
   $("#exercisePreview").innerHTML = exercises.slice(0, 5).map(item => `<span>${esc(item.name || "Exercise")}</span>`).join("") + (exercises.length > 5 ? `<span>+ ${ui.exerciseMore(exercises.length - 5)}</span>` : "");
 }
+
+function workoutCheckinDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))) return "";
+  return new Intl.DateTimeFormat(he ? "he-IL" : "en-US", { dateStyle: "medium" }).format(new Date(`${value}T12:00:00`));
+}
+
+function workoutCheckinMuscles(checkin) {
+  const muscles = Array.isArray(checkin.targetMuscles) ? checkin.targetMuscles.filter(Boolean) : [];
+  if (!muscles.length) return "";
+  const hebrew = { chest: "חזה", shoulders: "כתפיים", triceps: "יד אחורית", biceps: "יד קדמית", back: "גב", lats: "רחב גבי", legs: "רגליים", quads: "ארבע־ראשי", hamstrings: "המסטרינג", glutes: "ישבן", calves: "שוקיים", core: "ליבה", abs: "בטן" };
+  return muscles.slice(0, 4).map(value => he ? (hebrew[String(value).toLowerCase()] || value) : value).join(" · ");
+}
+
+function workoutCheckinQuestion(checkin) {
+  if (checkin.step === "completed_most") return checkinUi.most;
+  if (checkin.step === "completed_difficulty") return checkinUi.difficulty;
+  if (checkin.step === "completed_pain") return checkinUi.pain;
+  if (checkin.step === "skipped_recovery") return checkinUi.recovery;
+  if (checkin.step === "skipped_tomorrow") return checkinUi.tomorrow;
+  const name = checkin.workoutName || (he ? "האימון" : "your workout");
+  return checkin.isPrevious ? checkinUi.initialPrevious(name, workoutCheckinDate(checkin.scheduledDate)) : checkinUi.initial(name);
+}
+
+function workoutCheckinActions(checkin) {
+  if (checkin.isMakeup || checkin.status === "completed" || checkin.status === "skipped" || !checkin.answerAvailable) return [];
+  if (checkin.step === "initial") {
+    const actions = [["completed", checkinUi.yes, "positive"], ["not_completed", checkinUi.no, "neutral"]];
+    if (!checkin.isPrevious && Number(checkin.snoozeCount || 0) < 2) actions.push(["later", checkinUi.later, "quiet"]);
+    return actions;
+  }
+  if (checkin.step === "completed_most") return [["most_yes", checkinUi.yes, "positive"], ["most_no", checkinUi.no, "neutral"]];
+  if (checkin.step === "completed_difficulty") return [["difficulty_yes", checkinUi.yes, "positive"], ["difficulty_no", checkinUi.no, "neutral"]];
+  if (checkin.step === "completed_pain") return [["pain_yes", checkinUi.yes, "positive"], ["pain_no", checkinUi.no, "neutral"]];
+  if (checkin.step === "skipped_recovery") return [["recover_yes", checkinUi.yes, "positive"], ["recover_no", checkinUi.no, "neutral"]];
+  if (checkin.step === "skipped_tomorrow") return [["tomorrow_yes", checkinUi.yes, "positive"], ["tomorrow_no", checkinUi.no, "neutral"]];
+  return [];
+}
+
+function renderWorkoutCheckins(checkins, user) {
+  const root = $("#workoutCheckins");
+  if (!root) return;
+  root.innerHTML = checkins.map(checkin => {
+    const date = checkin.makeupScheduledDate && checkin.isMakeup ? checkin.makeupScheduledDate : checkin.scheduledDate;
+    const muscles = workoutCheckinMuscles(checkin);
+    const badges = [checkin.isPrevious ? checkinUi.previous : "", checkin.isMakeup ? checkinUi.makeup : ""].filter(Boolean);
+    let state = "";
+    let question = "";
+    let buttons = workoutCheckinActions(checkin);
+    if (checkin.status === "completed") {
+      state = checkin.completionSource === "workout_tracker" ? checkinUi.trackerCompleted : checkinUi.completed;
+      question = checkin.completionSource === "workout_tracker" ? "" : checkinUi.completedNote;
+      buttons = [];
+    } else if (checkin.status === "skipped" && !checkin.isMakeup) {
+      state = checkinUi.skipped;
+      question = checkin.moveToTomorrowRequested ? checkinUi.makeupReady : checkinUi.skippedNote;
+      buttons = [];
+    } else if (checkin.isMakeup) {
+      state = checkinUi.makeupToday;
+      question = "";
+      buttons = [];
+    } else if (!checkin.answerAvailable) {
+      state = checkin.nextPromptAt ? `${checkinUi.snoozed}${new Intl.DateTimeFormat(he ? "he-IL" : "en-US", { hour: "numeric", minute: "2-digit" }).format(new Date(checkin.nextPromptAt))}` : checkinUi.snoozedNoTime;
+      buttons = [];
+    } else {
+      question = workoutCheckinQuestion(checkin);
+    }
+    const musclesLine = muscles ? `<span>${esc(muscles)}</span>` : "";
+    const exerciseLine = Number(checkin.exerciseCount) > 0 ? `<span>${esc(checkinUi.exercises(Number(checkin.exerciseCount)))}</span>` : "";
+    const actionMarkup = buttons.map(([action, label, kind]) => `<button type="button" class="workout-checkin-button is-${kind}" data-checkin-action="${action}">${esc(label)}</button>`).join("");
+    const planId = encodeURIComponent(checkin.planId || "");
+    const workoutId = encodeURIComponent(checkin.workoutId || checkin.sessionIndex || "");
+    const makeupDate = encodeURIComponent(checkin.makeupScheduledDate || checkin.scheduledDate || "");
+    const finalAction = checkin.isMakeup
+      ? `<a class="workout-checkin-button is-positive" href="/workout-tracker.html?plan=${planId}&amp;session=${workoutId}&amp;date=${makeupDate}">${esc(checkinUi.startMakeup)}</a>`
+      : checkin.status === "skipped" && !checkin.moveToTomorrowRequested
+        ? `<a class="workout-checkin-button is-neutral" href="#weeklyScheduleBoard">${esc(checkinUi.reviewSchedule)}</a>` : "";
+    return `<article class="workout-checkin-card${checkin.isPrevious ? " is-previous" : ""}" data-checkin-id="${esc(checkin.id)}" tabindex="-1">
+      <div class="workout-checkin-heading"><span class="workout-checkin-icon" aria-hidden="true">✓</span><div><span class="workout-checkin-kicker">${esc(checkinUi.kicker)}</span><h3>${esc(checkin.workoutName || (he ? "אימון" : "Workout"))}</h3></div></div>
+      ${badges.length ? `<div class="workout-checkin-badges">${badges.map(label => `<span>${esc(label)}</span>`).join("")}</div>` : ""}
+      <div class="workout-checkin-meta">${musclesLine}${exerciseLine}<span>${esc(checkinUi.scheduled)}${esc(workoutCheckinDate(date))}</span></div>
+      ${question ? `<p class="workout-checkin-question">${esc(question)}</p>` : ""}
+      ${state ? `<p class="workout-checkin-state" role="status">${esc(state)}</p>` : ""}
+      <div class="workout-checkin-feedback"${buttons.length || finalAction ? "" : " hidden"}>${actionMarkup}${finalAction}</div>
+      <p class="workout-checkin-error" role="alert" hidden></p>
+    </article>`;
+  }).join("");
+
+  root.onclick = async event => {
+    const button = event.target.closest("[data-checkin-action]");
+    if (!button || !root.contains(button)) return;
+    const card = button.closest("[data-checkin-id]");
+    const checkin = checkins.find(item => item.id === card?.dataset.checkinId);
+    if (!checkin || button.disabled) return;
+    if (!openedWorkoutCheckins.has(checkin.id)) {
+      openedWorkoutCheckins.add(checkin.id);
+      trackEvent("workout_checkin_opened", { workout_id: checkin.workoutId || checkin.sessionIndex, plan_id: checkin.planId, scheduled_date: checkin.scheduledDate, source: "dashboard" });
+    }
+    card.querySelectorAll("button[data-checkin-action]").forEach(item => { item.disabled = true; });
+    const error = card.querySelector(".workout-checkin-error");
+    try {
+      const token = await getIdToken(user);
+      const response = await fetch(`/api/workout-checkins/${encodeURIComponent(checkin.id)}/answer`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ action: button.dataset.checkinAction })
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Could not save answer.");
+      await loadWorkoutCheckins(user);
+      document.querySelector(`[data-checkin-id="${CSS.escape(checkin.id)}"]`)?.focus({ preventScroll: true });
+    } catch (requestError) {
+      console.error("Workout check-in answer failed:", requestError);
+      error.textContent = checkinUi.error;
+      error.hidden = false;
+      card.querySelectorAll("button[data-checkin-action]").forEach(item => { item.disabled = false; });
+    }
+  };
+}
+
+async function loadWorkoutCheckins(user) {
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  const token = await getIdToken(user);
+  const response = await fetch(`/api/workout-checkins?timezone=${encodeURIComponent(timezone)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store"
+  });
+  if (!response.ok) throw new Error("Could not load workout check-ins.");
+  const data = await response.json();
+  const checkins = Array.isArray(data.checkins) ? data.checkins : [];
+  renderWorkoutCheckins(checkins, user);
+  clearTimeout(checkinRefreshTimer);
+  const now = new Date();
+  const nextPrompt = checkins.map(item => item.nextPromptAt ? Date.parse(item.nextPromptAt) : 0)
+    .filter(value => value > now.getTime()).sort((a, b) => a - b)[0];
+  const nextEvening = new Date(now);
+  nextEvening.setHours(19, 0, 0, 0);
+  if (nextEvening <= now) nextEvening.setDate(nextEvening.getDate() + 1);
+  const refreshAt = Math.min(nextPrompt || Infinity, nextEvening.getTime());
+  if (Number.isFinite(refreshAt)) checkinRefreshTimer = setTimeout(() => loadWorkoutCheckins(user).catch(() => {}), Math.max(1000, refreshAt - now.getTime() + 1000));
+  const params = new URLSearchParams(window.location.search);
+  const requestedId = params.get("checkin");
+  if (requestedId && checkins.some(item => item.id === requestedId)) {
+    const target = document.querySelector(`[data-checkin-id="${CSS.escape(requestedId)}"]`);
+    if (target) {
+      if (params.get("source") === "notification" && !openedWorkoutCheckins.has(requestedId)) {
+        trackEvent("workout_checkin_opened", { workout_id: checkins.find(item => item.id === requestedId)?.workoutId, plan_id: checkins.find(item => item.id === requestedId)?.planId, scheduled_date: checkins.find(item => item.id === requestedId)?.scheduledDate, source: "notification" });
+        openedWorkoutCheckins.add(requestedId);
+      }
+      setTimeout(() => { target.scrollIntoView({ behavior: "smooth", block: "center" }); target.focus({ preventScroll: true }); }, 80);
+      params.delete("checkin");
+      params.delete("source");
+      history.replaceState({}, "", `${window.location.pathname}${params.toString() ? `?${params}` : ""}`);
+    }
+  }
+}
+
 function renderNutrition(saved) {
   const action = $("#nutritionLink");
   if (!saved) {
@@ -996,6 +1175,11 @@ async function load(user) {
   renderRecent(logs[0]);
   $("#dashboardStatus").textContent = "";
   $("#dashboardContent").classList.remove("hidden");
+  try {
+    await loadWorkoutCheckins(user);
+  } catch (checkinError) {
+    console.warn("Workout check-in panel is temporarily unavailable:", checkinError);
+  }
   showAthleteCorePromptIfNeeded(settings);
 }
 localize();

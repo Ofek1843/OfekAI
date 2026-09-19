@@ -1450,6 +1450,23 @@ async function finishWorkout() {
     } catch (prError) {
       console.error("Personal-record check failed:", prError);
     }
+
+    try {
+      await fetch("/api/workout-checkins/workout-completed", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${await user.getIdToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          planId: activePlanId,
+          workoutId: String(session.id ?? sessionIndex),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"
+        })
+      });
+    } catch (checkinError) {
+      console.warn("Workout check-in completion sync failed:", checkinError);
+    }
   } catch (error) {
     console.error("Workout save error:", error);
     const errorMsg = error?.message || error?.code || "Save failed";
