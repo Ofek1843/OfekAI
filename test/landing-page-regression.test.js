@@ -26,6 +26,8 @@ test("landing uses the narrow social-proof contract and keeps the primary CTA ho
   assert.match(html, /id="builderChooser"/);
   assert.match(landingJs, /\/api\/public-social-proof/);
   assert.doesNotMatch(landingJs, /\/api\/public-stats|loadPublicStats/);
+  assert.match(landingJs, /function renderSocialProofCount/);
+  assert.doesNotMatch(landingJs, /function animateSocialProofCount/);
   assert.match(server, /app\.get\("\/api\/public-social-proof"/);
   assert.match(server, /res\.json\(toPublicSocialProof\(stats\)\)/);
 });
