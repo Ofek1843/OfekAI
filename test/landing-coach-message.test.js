@@ -28,9 +28,12 @@ test("the real-athlete sequence also runs on the Render production hostname", ()
   assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
 });
 
-test("the landing deadlift sequence loops instead of freezing after its first pass", () => {
+test("the landing uses the intended dumbbell-curl sequence and loops instead of freezing", () => {
   const engine = read("public/js/image-sequence-v43.js");
-  assert.match(engine, /deadlift:\s*Object\.freeze\(\{\s*loop:\s*true,/);
+  const landing = read("public/index.html");
+  assert.match(landing, /data-v43-scene="curl"/);
+  assert.match(engine, /curl:\s*Object\.freeze\(\{\s*loop:\s*true,/);
+  assert.match(engine, /frame\("curl", 3, 540, "png"\)/);
   assert.match(engine, /if \(scene\.loop\) \{/);
   assert.match(engine, /scene\.loopDelay \|\| 900/);
 });
@@ -39,4 +42,7 @@ test("the live hero keeps its athlete stage absolute instead of collapsing it", 
   const css = read("public/css/v45-deep-ocean.css");
   assert.match(css, /hero-panel > \.landing-hero-illustration\[data-v43-motion="prototype"\][\s\S]*?position:\s*absolute !important/);
   assert.match(css, /hero-panel > \.landing-hero-illustration\[data-v43-motion="prototype"\][\s\S]*?inset:\s*0 0 112px !important/);
+  assert.match(css, /hero-panel > \.system-card[\s\S]*?z-index:\s*4/);
+  assert.match(css, /v43-image-sequence--curl[\s\S]*?width:\s*40% !important/);
+  assert.match(css, /v43-image-sequence--curl[\s\S]*?max-height:\s*76% !important/);
 });

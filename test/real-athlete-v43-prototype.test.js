@@ -151,7 +151,7 @@ test("preload failures restore the original V4.2 markup instead of blanking a sc
   assert.match(ENGINE, /const fallbackMarkup = host\.innerHTML/);
   assert.match(ENGINE, /host\.innerHTML = fallbackMarkup/);
   assert.match(ENGINE, /v43-fallback-restored/);
-  assert.match(INTEGRATION, /const v43Scene = name === "progress" \? "track" : name === "training" \? "session" : name === "nutrition" \? "plate" : name/);
+  assert.match(INTEGRATION, /const v43Scene = host\.dataset\.v43Scene \|\| \(name === "progress" \? "track" : name === "training" \? "session" : name === "nutrition" \? "plate" : name\)/);
   assert.match(INTEGRATION, /v43\?\.isEnabled\(\) && v43\.mount\(host, v43Scene\)/);
   assert.match(INTEGRATION, /hosts = hosts\.filter\(\(host\) => host\.dataset\.v43Motion !== "prototype"\)/);
 });

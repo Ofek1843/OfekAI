@@ -42,7 +42,7 @@ test("the dashboard is a varied five-capability studio with compact context", ()
 });
 
 test("landing uses one continuous canvas and five original illustrated journeys", () => {
-  assert.match(LANDING, /data-v4-illustration="deadlift"/);
+  assert.match(LANDING, /data-v4-illustration="deadlift"\s+data-v43-scene="curl"/);
   for (const word of ["TRAIN", "FUEL", "TRACK", "CONNECT", "COACH"]) assert.match(LANDING, new RegExp(`>${word}<`));
   assert.equal((LANDING.match(/class="journey-illustration" data-v4-illustration=/g) || []).length, 5);
   assert.match(CSS, /\.fp-route-index \.feature-section,[\s\S]*?background:\s*var\(--v4-canvas-light\)/);

@@ -707,9 +707,38 @@ body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start:
   z-index: 2;
 }
 
+.fp-v45-deep-ocean.fp-route-index .hero-panel > .system-card {
+  position: absolute !important;
+  z-index: 4;
+}
+
+.fp-v45-deep-ocean.fp-route-index .landing-hero-illustration .v43-image-sequence--curl {
+  place-items: end end;
+  padding-inline-end: 7%;
+}
+
+.fp-v45-deep-ocean.fp-route-index .landing-hero-illustration .v43-image-sequence--curl .v43-image-sequence__frame {
+  width: 40% !important;
+  height: auto;
+  max-width: 40% !important;
+  max-height: 76% !important;
+  object-fit: contain;
+  object-position: right bottom;
+}
+
 @media (max-width: 720px) {
   .fp-v45-deep-ocean.fp-route-index .hero-panel > .landing-hero-illustration[data-v43-motion="prototype"] {
     inset-block-end: 124px !important;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .landing-hero-illustration .v43-image-sequence--curl {
+    padding-inline-end: 3%;
+  }
+
+  .fp-v45-deep-ocean.fp-route-index .landing-hero-illustration .v43-image-sequence--curl .v43-image-sequence__frame {
+    width: 38% !important;
+    max-width: 38% !important;
+    max-height: 74% !important;
   }
 }
 

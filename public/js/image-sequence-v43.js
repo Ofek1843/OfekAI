@@ -15,8 +15,8 @@
   const ROOT = "/assets/athlete-motion/v43";
   const FRAME_DIRECTORIES = Object.freeze({ session: "normalized-clean" });
 
-  const frame = (scene, number, duration) => Object.freeze({
-    url: `${ROOT}/${scene}/${FRAME_DIRECTORIES[scene] || "normalized"}/frame-${String(number).padStart(2, "0")}.webp?v=${SCENE_ASSET_VERSIONS[scene] || DEFAULT_FRAME_VERSION}`,
+  const frame = (scene, number, duration, extension = "webp") => Object.freeze({
+    url: `${ROOT}/${scene}/${FRAME_DIRECTORIES[scene] || "normalized"}/frame-${String(number).padStart(2, "0")}.${extension}?v=${SCENE_ASSET_VERSIONS[scene] || DEFAULT_FRAME_VERSION}`,
     duration
   });
 
@@ -44,6 +44,17 @@
         frame("deadlift", 1, 360)
       ]),
       reducedFrame: frame("deadlift", 3, 0)
+    }),
+    curl: Object.freeze({
+      loop: true,
+      loopDelay: 1050,
+      frames: Object.freeze([
+        frame("curl", 1, 520, "png"),
+        frame("curl", 2, 340, "png"),
+        frame("curl", 3, 540, "png"),
+        frame("curl", 4, 520, "png")
+      ]),
+      reducedFrame: frame("curl", 1, 0, "png")
     }),
     benchPr: Object.freeze({
       frames: Object.freeze([
