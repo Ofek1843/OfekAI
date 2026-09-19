@@ -16,6 +16,7 @@ test("landing coach message is inside the live hero panel and does not mirror in
   assert.match(landing, /<strong>consistency\.<\/strong>/);
   assert.match(landing, /<small>Not perfection\.<\/small>/);
   assert.match(css, /\.coach-message\s*\{[\s\S]*?pointer-events:\s*none;/);
+  assert.match(css, /coach-message::after[\s\S]*?inset-inline-start:\s*calc\(63% - 9px\)/);
   assert.doesNotMatch(css, /coach-message[^}]*scaleX\s*\(\s*-1/i);
 });
 

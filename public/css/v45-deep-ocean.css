@@ -596,7 +596,8 @@ body.fp-v45-deep-ocean.fp-route-index .hero-panel .coach-message {
 body.fp-v45-deep-ocean.fp-route-index .coach-message::after {
   position: absolute;
   inset-block-end: -10px;
-  inset-inline-start: 18px;
+  /* The tail aligns with the curl athlete's head, not the bubble's left edge. */
+  inset-inline-start: calc(63% - 9px);
   width: 18px;
   height: 18px;
   border-inline-start: 1px solid rgba(51, 224, 238, .9);
