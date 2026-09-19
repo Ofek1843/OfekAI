@@ -91,7 +91,7 @@ test("mobile and Hebrew polish keeps core controls visible and localized", () =>
 
 test("the PWA cache is versioned with the Illustrated V4 assets and private voice remains network-only", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v45-daily-resilience-1/);
+  assert.match(sw, /fuelphysique-v45-hero-message-render-1/);
   assert.match(sw, /illustrated-v4\.css\?v=20260914-i18n-dashboard-1/);
   assert.match(sw, /illustrated-v4\.js\?v=20260815-real-athlete-v43-complete-5/);
   assert.match(sw, /const NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);

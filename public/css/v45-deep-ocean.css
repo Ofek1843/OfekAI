@@ -573,6 +573,55 @@ html[dir="rtl"] .fp-v45-deep-ocean.fp-route-dashboard .dashboard-compact-header:
   }
 }
 
+/* Landing coach message: it sits above the real-athlete scene but never
+   receives pointer events, so the primary CTA and panel interactions remain
+   unobstructed. The English quote is intentionally not mirrored in RTL. */
+body.fp-v45-deep-ocean.fp-route-index .hero-panel .coach-message {
+  position: absolute;
+  z-index: 5;
+  inset-block-start: 20px;
+  inset-inline-end: 18px;
+  width: min(58%, 292px);
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(51, 224, 238, .9);
+  border-radius: 20px 20px 20px 5px;
+  background: linear-gradient(145deg, rgba(5, 26, 47, .94), rgba(7, 13, 31, .95));
+  color: #f8fbff;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .28), 0 0 26px rgba(37, 211, 231, .15);
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  line-height: 1.08;
+  pointer-events: none;
+}
+body.fp-v45-deep-ocean.fp-route-index .coach-message::after {
+  position: absolute;
+  inset-block-end: -10px;
+  inset-inline-start: 18px;
+  width: 18px;
+  height: 18px;
+  border-inline-start: 1px solid rgba(51, 224, 238, .9);
+  border-block-end: 1px solid rgba(51, 224, 238, .9);
+  background: #08152d;
+  content: "";
+  transform: rotate(-45deg);
+}
+body.fp-v45-deep-ocean.fp-route-index .coach-message :is(span, strong, small) { display: block; }
+body.fp-v45-deep-ocean.fp-route-index .coach-message span { font-size: clamp(1rem, 1.55vw, 1.28rem); font-weight: 700; }
+body.fp-v45-deep-ocean.fp-route-index .coach-message strong { color: #38e5ef; font-size: clamp(1.5rem, 2.6vw, 2.2rem); font-weight: 800; }
+body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start: 8px; color: #c7d4e3; font-size: .9rem; font-weight: 600; }
+
+@media (max-width: 640px) {
+  body.fp-v45-deep-ocean.fp-route-index .hero-panel .coach-message {
+    inset-block-start: 12px;
+    inset-inline-end: 12px;
+    width: min(61%, 245px);
+    padding: 13px 15px;
+  }
+  body.fp-v45-deep-ocean.fp-route-index .coach-message span { font-size: .84rem; }
+  body.fp-v45-deep-ocean.fp-route-index .coach-message strong { font-size: 1.32rem; }
+  body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start: 5px; font-size: .76rem; }
+}
+
 @media (max-width: 760px) {
   .fp-v45-deep-ocean.fp-route-index .hero {
     padding-block-start: 28px !important;

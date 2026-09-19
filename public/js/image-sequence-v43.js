@@ -1,7 +1,8 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
+  const VERSION = "20260919-hero-message-render-1";
+  const DEFAULT_FRAME_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
   // Per-scene asset cache tokens. Bump a scene's entry only when that scene's
   // normalized frames are re-authored, so a long-lived image cache (webp is
   // served max-age=604800) cannot keep serving a stale frame after deploy.
@@ -10,12 +11,12 @@
     connect: "20260908-v46-connect-phone-review-fix-1"
   });
   const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
-  const PRODUCTION_HOSTS = new Set(["fuelphysique.com", "www.fuelphysique.com"]);
+  const PRODUCTION_HOSTS = new Set(["fuelphysique.com", "www.fuelphysique.com", "ofekai.onrender.com"]);
   const ROOT = "/assets/athlete-motion/v43";
   const FRAME_DIRECTORIES = Object.freeze({ session: "normalized-clean" });
 
   const frame = (scene, number, duration) => Object.freeze({
-    url: `${ROOT}/${scene}/${FRAME_DIRECTORIES[scene] || "normalized"}/frame-${String(number).padStart(2, "0")}.webp?v=${SCENE_ASSET_VERSIONS[scene] || VERSION}`,
+    url: `${ROOT}/${scene}/${FRAME_DIRECTORIES[scene] || "normalized"}/frame-${String(number).padStart(2, "0")}.webp?v=${SCENE_ASSET_VERSIONS[scene] || DEFAULT_FRAME_VERSION}`,
     duration
   });
 
