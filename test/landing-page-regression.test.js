@@ -6,6 +6,15 @@ const path = require("node:path");
 const root = path.join(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
+test("coach message is in the hero panel and remains readable in RTL", () => {
+  const html = read("public/index.html");
+  assert.match(html, /<aside class="hero-panel"[^>]*>\s*<blockquote class="coach-message" lang="en" dir="ltr">/);
+  assert.match(html, /It's a game of/);
+  assert.match(html, /<strong>consistency\.<\/strong>/);
+  assert.match(html, /<small>Not perfection\.<\/small>/);
+  assert.match(read("public/css/landing.css"), /\.coach-message\s*\{[^}]*pointer-events: none/s);
+});
+
 test("landing page no longer exposes Public Beta copy", () => {
   const html = read("public/index.html");
   const landingJs = read("public/js/landing.js");

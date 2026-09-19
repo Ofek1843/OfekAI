@@ -301,6 +301,24 @@ input {
     color: #c2cee1;
 }
 
+.coach-message {
+    position: relative;
+    margin: 0 0 14px;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid #35cfdf;
+    border-radius: 24px 24px 24px 6px;
+    background: #071b2b;
+    color: #f5f8fc;
+    text-align: left;
+    line-height: 1.15;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .18);
+    overflow-wrap: anywhere;
+    pointer-events: none;
+}
+.coach-message span { display: block; font-size: clamp(20px, 2.2vw, 30px); font-weight: 700; }
+.coach-message strong { display: block; color: #35dfeb; font-size: clamp(30px, 3vw, 44px); }
+.coach-message small { display: block; margin-top: 10px; color: #c5d3df; font-size: 18px; }
+
 .hero-panel {
     position: relative;
     display: grid;
