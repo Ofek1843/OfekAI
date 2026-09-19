@@ -13,7 +13,7 @@ const DASHBOARD = read("public", "dashboard.html");
 const ILLUSTRATIONS = read("public", "js", "illustrated-v4.js");
 const SW = read("public", "sw.js");
 const ASSET_VERSION = "20260815-real-athlete-v43-complete-5";
-const ENGINE_VERSION = "20260919-hero-message-render-1";
+const ENGINE_VERSION = "20260919-hero-message-render-2";
 const CSS_VERSION = "20260914-i18n-dashboard-1";
 
 function illustrationScripts(html) {

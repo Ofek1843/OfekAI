@@ -34,8 +34,10 @@ test("high-value V4.7 primitives animate real values and remain reduced-motion s
   assert.match(js, /requestAnimationFrame/);
   assert.match(css, /fp-v47-chart-reveal/);
   assert.match(css, /fp-v47-number-update/);
-  assert.match(read("public/js/landing.js"), /const duration = 480/);
-  assert.match(read("public/js/landing.js"), /prefers-reduced-motion/);
+  const landing = read("public/js/landing.js");
+  assert.doesNotMatch(landing, /\/api\/public-stats|loadPublicStats|animateNumber/);
+  assert.match(landing, /wireProductLoopDemo/);
+  assert.match(landing, /prefers-reduced-motion/);
 });
 test("success feedback is wired to real product actions without replacing their behavior", () => {
   for (const file of [

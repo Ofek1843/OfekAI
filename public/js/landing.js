@@ -232,63 +232,7 @@ const LANDING_FALLBACKS = {
   }
 };
 
-let statsPollHandle = null;
 let authStatePromise = null;
-
-function formatCount(value, language) {
-  return Number(value || 0).toLocaleString(language === "he" ? "he-IL" : "en-US");
-}
-
-function animateNumber(element, nextValue, language) {
-  if (!element) return;
-  const target = Math.max(0, Number(nextValue) || 0);
-  const previous = Number(element.dataset.countValue || 0);
-  if (previous === target) {
-    element.textContent = formatCount(target, language);
-    return;
-  }
-
-  const startedAt = performance.now();
-  const duration = 480;
-
-  if (window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
-    element.dataset.countValue = String(target);
-    element.textContent = formatCount(target, language);
-    return;
-  }
-
-  element.dataset.countValue = String(target);
-  element.closest(".landing-stat")?.classList.remove("count-bump");
-  void element.offsetWidth;
-  element.closest(".landing-stat")?.classList.add("count-bump");
-
-  const tick = (now) => {
-    const progress = Math.min(1, (now - startedAt) / duration);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = Math.round(previous + ((target - previous) * eased));
-    element.textContent = formatCount(current, language);
-    if (progress < 1) {
-      requestAnimationFrame(tick);
-    }
-  };
-
-  requestAnimationFrame(tick);
-}
-
-async function loadPublicStats() {
-  try {
-    const response = await fetch("/api/public-stats", {
-      headers: { Accept: "application/json" },
-      cache: "no-store"
-    });
-    if (!response.ok) return;
-
-    const stats = await response.json();
-    const language = getLanguage();
-    animateNumber(document.getElementById("publicRegisteredUsers"), stats.registeredUsers, language);
-    animateNumber(document.getElementById("publicWorkoutPlans"), stats.savedWorkoutPlans, language);
-  } catch {}
-}
 
 function translateLandingPage() {
   const language = setLanguage(getLanguage());
@@ -481,10 +425,6 @@ document.addEventListener("DOMContentLoaded", () => {
   wireRevealAnimations();
   wireComparisonSliders();
   wireProductLoopDemo();
-  loadPublicStats();
-
-  if (statsPollHandle) clearInterval(statsPollHandle);
-  statsPollHandle = setInterval(loadPublicStats, 8000);
 
   trackPageView({ page: "landing" });
   trackClick("landing_page_view", { source: "landing" });

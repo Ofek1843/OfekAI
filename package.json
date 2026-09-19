@@ -14,6 +14,8 @@
     "test:workout-guidance-ux": "node --test --test-concurrency=1 test/workout-guidance-ux.test.js",
     "test:workout-muscle-focus-ux": "node --test --test-concurrency=1 test/workout-muscle-focus-ux.test.js",
     "test:openai-upstream-errors": "node --test --test-concurrency=1 test/openai-upstream-error-mapping.test.js",
+    "security:audit": "npm audit --omit=dev --audit-level=high",
+    "security:check": "npm run security:audit && node --test --test-concurrency=1 test/security-headers.test.js test/legal-privacy-regression.test.js test/verification-gate-coverage.test.js test/voice-media-service.test.js test/voice-message-domain.test.js test/social-domain.test.js",
     "notifications:send-workout-reminders": "node scripts/send-workout-reminders.js",
     "test": "npm run lint && npm run test:with-emulators && npm run load:test",
     "images:optimize": "node scripts/optimize-images.js",
@@ -29,15 +31,15 @@
     "node": ">=20"
   },
   "dependencies": {
-    "autocannon": "^8.0.0",
+    "@imagekit/nodejs": "^7.12.1",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "firebase-admin": "^14.2.0",
-    "http-proxy-middleware": "^3.0.7",
-    "imagekit": "^6.0.0"
+    "http-proxy-middleware": "^3.0.7"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^3.0.4",
+    "autocannon": "^8.0.0",
     "firebase": "^10.14.1",
     "sharp": "^0.35.3"
   }

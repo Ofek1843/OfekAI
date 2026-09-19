@@ -10,7 +10,7 @@ const {
 const source = fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8");
 
 test("server sets baseline browser security headers and a restrictive CSP", () => {
-  for (const value of ["Content-Security-Policy", "X-Content-Type-Options", "Referrer-Policy", "Permissions-Policy", "object-src 'none'"]) {
+  for (const value of ["Content-Security-Policy", "X-Content-Type-Options", "X-Frame-Options", "Cross-Origin-Opener-Policy", "Origin-Agent-Cluster", "X-Permitted-Cross-Domain-Policies", "Referrer-Policy", "Permissions-Policy", "object-src 'none'"]) {
     assert.match(source, new RegExp(value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
   assert.equal(getFrameAncestorsDirective("/auth.html"), "frame-ancestors 'none'");
@@ -20,6 +20,8 @@ test("server sets baseline browser security headers and a restrictive CSP", () =
   assert.doesNotMatch(source, /const cspConnectSources = \[[\s\S]*?https:\/\/\*\.google\.com[\s\S]*?\];/);
   assert.doesNotMatch(source, /const cspConnectSources = \[[\s\S]*?["'](?:\*|https:)["'][\s\S]*?\];/);
   assert.match(source, /Strict-Transport-Security/);
+  assert.match(source, /same-origin-allow-popups/);
+  assert.match(source, /isFirebaseAuthHelperPath\(req\.path, AUTH_PROXY_PATH\) \? "SAMEORIGIN" : "DENY"/);
 });
 
 test("only the exact Firebase Auth helper route can be framed by FuelPhysique itself", () => {

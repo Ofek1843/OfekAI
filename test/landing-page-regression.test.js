@@ -16,17 +16,14 @@ test("landing page no longer exposes Public Beta copy", () => {
   assert.doesNotMatch(visibleText, />[^<]*Public beta[^<]*</i);
 });
 
-test("landing live counter IDs and primary CTA hooks remain intact", () => {
+test("landing does not expose operational usage counts and keeps the primary CTA hooks", () => {
   const html = read("public/index.html");
   const landingJs = read("public/js/landing.js");
 
-  assert.match(html, /id="publicRegisteredUsers"/);
-  assert.match(html, /id="publicWorkoutPlans"/);
+  assert.doesNotMatch(html, /publicRegisteredUsers|publicWorkoutPlans|landing-stats/);
   assert.match(html, /id="buildProgramCta"/);
   assert.match(html, /id="builderChooser"/);
-  assert.match(landingJs, /\/api\/public-stats/);
-  assert.match(landingJs, /animateNumber\(document\.getElementById\("publicRegisteredUsers"\)/);
-  assert.match(landingJs, /animateNumber\(document\.getElementById\("publicWorkoutPlans"\)/);
+  assert.doesNotMatch(landingJs, /\/api\/public-stats|loadPublicStats|animateNumber/);
 });
 
 test("landing contains both verified transformation stories and comparison labels", () => {

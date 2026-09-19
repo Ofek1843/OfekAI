@@ -14,10 +14,10 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
-const ImageKit = require("imagekit");
+const ImageKit = require("@imagekit/nodejs");
 const { FieldValue } = require("firebase-admin/firestore");
 const { createAuthProxy, AUTH_PROXY_PATH } = require("./lib/auth-proxy");
-const { getFrameAncestorsDirective } = require("./lib/security-headers");
+const { getFrameAncestorsDirective, isFirebaseAuthHelperPath } = require("./lib/security-headers");
 const { createSocialRouter } = require("./lib/social-router");
 const { createPushRouter } = require("./lib/push-router");
 const { createAccountRouter } = require("./lib/account-router");
@@ -197,6 +197,14 @@ app.use((req, res, next) => {
     "manifest-src 'self'"
   ].join("; "));
   res.setHeader("X-Content-Type-Options", "nosniff");
+  // CSP frame-ancestors is the primary control. This is a fallback for older
+  // clients; Firebase's exact same-origin helper is the only framing exception.
+  res.setHeader("X-Frame-Options", isFirebaseAuthHelperPath(req.path, AUTH_PROXY_PATH) ? "SAMEORIGIN" : "DENY");
+  // OAuth uses a popup, so same-origin-allow-popups preserves its safe return
+  // flow while preventing cross-origin opener access to application pages.
+  res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  res.setHeader("Origin-Agent-Cluster", "?1");
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Permissions-Policy", "camera=(), microphone=(self), geolocation=(), payment=()");
   if (!localDemoMode && !/^(localhost|127\.0\.0\.1)$/i.test(req.hostname || "")) {
@@ -364,45 +372,6 @@ app.post("/api/site-feedback", (req, res) => {
   } catch (error) {
     console.error("Site feedback error:", error.message);
     res.status(500).json({ error: "Could not submit feedback." });
-  }
-});
-
-app.get("/api/public-stats", async (req, res) => {
-  try {
-    const stats = await getPublicStats();
-    // The stats module has its own short cache. Do not let browsers/CDNs keep
-    // an old counter after a user saves a plan.
-    res.setHeader("Cache-Control", "no-store, max-age=0");
-    const fallbackReason = String(stats.fallbackReason || "");
-    const statsSource = stats.fallback ? "fallback" : "live";
-    const diagnostics = !stats.fallback
-      ? "live"
-      : /missing/i.test(fallbackReason)
-        ? "service-account-missing"
-        : /invalid|incomplete|json/i.test(fallbackReason)
-          ? "service-account-invalid"
-          : /authenticate|oauth|token/i.test(fallbackReason)
-            ? "service-account-auth-failed"
-            : "firestore-query-failed";
-    res.setHeader("X-FuelPhysique-Stats-Source", statsSource);
-    res.json({
-      registeredUsers: stats.registeredUsers,
-      activeProSubscribers: stats.activeProSubscribers || 0,
-      estimatedMonthlyRevenueIls: stats.estimatedMonthlyRevenueIls || 0,
-      savedPlansTotal: stats.savedPlansTotal,
-      savedWorkoutPlans: stats.savedWorkoutPlans,
-      savedNutritionPlans: stats.savedNutritionPlans,
-      workoutProgramsGenerated: stats.workoutProgramsGenerated,
-      workoutsLogged: stats.workoutsLogged,
-      exercisesTracked: stats.exercisesTracked,
-      // A safe status code lets us diagnose counters without exposing keys,
-      // tokens, Firestore paths, or any private user data.
-      statsSource,
-      statsDiagnostics: diagnostics
-    });
-  } catch (error) {
-    console.error("Public stats error:", error.message);
-    res.status(503).json({ error: "Public stats are temporarily unavailable." });
   }
 });
 
@@ -649,10 +618,10 @@ function logVoiceMessageStartupDiagnostics() {
 function imageKitClient() {
   const config = imageKitConfig();
   if (!config) return null;
+  // The current SDK requires only the private key server-side. The public key
+  // remains an explicit response field of the authenticated upload-auth route.
   return new ImageKit({
-    publicKey: config.publicKey,
-    privateKey: config.privateKey,
-    urlEndpoint: config.urlEndpoint
+    privateKey: config.privateKey
   });
 }
 
@@ -661,9 +630,9 @@ function imageKitVoiceProvider() {
   const config = imageKitConfig();
   if (!client || !config) return null;
   return {
-    upload: (options) => client.upload(options),
-    getFileDetails: (fileId) => client.getFileDetails(fileId),
-    deleteFile: (fileId) => client.deleteFile(fileId),
+    upload: (options) => client.files.upload(options),
+    getFileDetails: (fileId) => client.files.get(fileId),
+    deleteFile: (fileId) => client.files.delete(fileId),
     getSignedUrl(source, expiresInSeconds) {
       const absolute = String(source || "").startsWith(`${config.urlEndpoint}/`)
         ? String(source)
@@ -813,13 +782,14 @@ app.get("/api/imagekit/upload-auth", async (req, res) => {
   if (!user) return;
   try {
     rateLimiters.auth(req, user.uid);
+    const config = imageKitConfig();
     const client = imageKitClient();
-    if (!client) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
+    if (!config || !client) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
     const token = crypto.randomUUID();
     const expire = Math.floor(Date.now() / 1000) + uploadAuthTtlSeconds;
-    const auth = client.getAuthenticationParameters(token, expire);
+    const auth = client.helper.getAuthenticationParameters(token, expire);
     res.json({
-      publicKey: client.options.publicKey,
+      publicKey: config.publicKey,
       token: auth.token || token,
       expire: auth.expire || expire,
       signature: auth.signature,

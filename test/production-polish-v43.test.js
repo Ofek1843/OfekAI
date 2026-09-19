@@ -38,7 +38,7 @@ test("dashboard greeting receives the restrained Deep Ocean treatment without ch
 test("the polish cache generation is synchronized and preserves auth/private bypasses", () => {
   const sw = read("public", "sw.js");
   assert.match(sw, /fuelphysique-v45-hero-message-render-1/);
-  assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-1/);
+  assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
   assert.match(sw, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(sw, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /AUTH_INFRASTRUCTURE_ORIGINS/);

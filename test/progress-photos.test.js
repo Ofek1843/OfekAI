@@ -18,6 +18,17 @@ const ROOT = path.join(__dirname, "..");
 const SERVER = fs.readFileSync(path.join(ROOT, "server.js"), "utf8");
 const PROGRESS_JS = fs.readFileSync(path.join(ROOT, "public", "js", "progress.js"), "utf8");
 
+test("server uses the maintained ImageKit Node SDK surface", () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
+  assert.equal(typeof packageJson.dependencies["@imagekit/nodejs"], "string");
+  assert.equal(packageJson.dependencies.imagekit, undefined, "the deprecated ImageKit SDK must not return to production dependencies");
+  assert.match(SERVER, /require\("@imagekit\/nodejs"\)/);
+  assert.match(SERVER, /client\.files\.upload\(options\)/);
+  assert.match(SERVER, /client\.files\.get\(fileId\)/);
+  assert.match(SERVER, /client\.files\.delete\(fileId\)/);
+  assert.match(SERVER, /client\.helper\.getAuthenticationParameters\(token, expire\)/);
+});
+
 test("no user-facing error names the storage provider", () => {
   const offenders = [...SERVER.matchAll(/error:\s*"([^"]*)"/g)]
     .map(m => m[1])
