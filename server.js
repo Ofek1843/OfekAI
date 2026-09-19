@@ -98,7 +98,7 @@ const WORKOUT_DISABLED_EXERCISE_PROMPT_LIST = MISSING_DEDICATED_IMAGE_EXERCISES
   .map((exercise) => exercise.title)
   .join(", ");
 const { BRAND_NAME, COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnalyticsPayload } = require("./lib/fuelphysique-policy");
-const { getPublicStats } = require("./lib/public-stats");
+const { getPublicStats, toPublicSocialProof } = require("./lib/public-stats");
 const { getUsdToIlsRate } = require("./lib/fx-rate");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
 const { assessSafety } = require("./lib/health-safety");
@@ -128,6 +128,7 @@ const rateLimiters = {
   uploads: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOADS_PER_UID_PER_MINUTE || 8), keyPrefix: "upload" }),
   auth: createRateLimiter({ windowMs: 60_000, max: Number(process.env.UPLOAD_AUTH_PER_UID_PER_MINUTE || 10), keyPrefix: "upload-auth" }),
   analytics: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ANALYTICS_PER_IP_PER_MINUTE || 180), keyPrefix: "analytics" }),
+  publicStats: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUBLIC_SOCIAL_PROOF_PER_IP_PER_MINUTE || 60), keyPrefix: "public-social-proof" }),
   feedback: createRateLimiter({ windowMs: 60_000, max: Number(process.env.FEEDBACK_PER_IP_PER_MINUTE || 6), keyPrefix: "feedback" }),
   socialSearch: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_SEARCHES_PER_UID_PER_MINUTE || 20), keyPrefix: "social-search" }),
   socialRelationships: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_RELATIONSHIPS_PER_UID_PER_MINUTE || 12), keyPrefix: "social-relationship" }),
@@ -345,6 +346,21 @@ app.post("/api/analytics/event", (req, res) => {
   } catch (error) {
     console.error("Analytics event error:", error.message);
     return res.status(204).end();
+  }
+});
+
+// This endpoint is intentionally public: it powers the two aggregate counters
+// on the landing page. Keep it narrow; do not expose the richer statistics used
+// internally by operations/telemetry.
+app.get("/api/public-social-proof", async (req, res) => {
+  try {
+    rateLimiters.publicStats(req, clientIp(req));
+    const stats = await getPublicStats();
+    res.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=600");
+    return res.json(toPublicSocialProof(stats));
+  } catch (error) {
+    console.error("Public social proof error:", error.message);
+    return res.status(503).json({ error: "Social proof is temporarily unavailable." });
   }
 });
 

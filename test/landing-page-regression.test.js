@@ -16,14 +16,18 @@ test("landing page no longer exposes Public Beta copy", () => {
   assert.doesNotMatch(visibleText, />[^<]*Public beta[^<]*</i);
 });
 
-test("landing does not expose operational usage counts and keeps the primary CTA hooks", () => {
+test("landing uses the narrow social-proof contract and keeps the primary CTA hooks", () => {
   const html = read("public/index.html");
   const landingJs = read("public/js/landing.js");
+  const server = read("server.js");
 
-  assert.doesNotMatch(html, /publicRegisteredUsers|publicWorkoutPlans|landing-stats/);
+  assert.match(html, /publicRegisteredUsers|publicWorkoutPlans|landing-stats/);
   assert.match(html, /id="buildProgramCta"/);
   assert.match(html, /id="builderChooser"/);
-  assert.doesNotMatch(landingJs, /\/api\/public-stats|loadPublicStats|animateNumber/);
+  assert.match(landingJs, /\/api\/public-social-proof/);
+  assert.doesNotMatch(landingJs, /\/api\/public-stats|loadPublicStats/);
+  assert.match(server, /app\.get\("\/api\/public-social-proof"/);
+  assert.match(server, /res\.json\(toPublicSocialProof\(stats\)\)/);
 });
 
 test("landing contains both verified transformation stories and comparison labels", () => {

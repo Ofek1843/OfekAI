@@ -234,6 +234,46 @@ const LANDING_FALLBACKS = {
 
 let authStatePromise = null;
 
+function formatSocialProofCount(value, language) {
+  return Math.max(0, Number(value) || 0).toLocaleString(language === "he" ? "he-IL" : "en-US");
+}
+
+function animateSocialProofCount(element, nextValue, language) {
+  if (!element) return;
+  const target = Math.max(0, Math.floor(Number(nextValue) || 0));
+  const previous = Math.max(0, Math.floor(Number(element.dataset.countValue) || 0));
+  element.dataset.countValue = String(target);
+
+  if (previous === target || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) {
+    element.textContent = formatSocialProofCount(target, language);
+    return;
+  }
+
+  const startedAt = performance.now();
+  const duration = 480;
+  element.closest(".landing-stat")?.classList.remove("count-bump");
+  void element.offsetWidth;
+  element.closest(".landing-stat")?.classList.add("count-bump");
+  const tick = (now) => {
+    const progress = Math.min(1, (now - startedAt) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = formatSocialProofCount(Math.round(previous + ((target - previous) * eased)), language);
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+async function loadPublicSocialProof() {
+  try {
+    const response = await fetch("/api/public-social-proof", { headers: { Accept: "application/json" } });
+    if (!response.ok) return;
+    const socialProof = await response.json();
+    const language = getLanguage();
+    animateSocialProofCount(document.getElementById("publicRegisteredUsers"), socialProof.registeredUsers, language);
+    animateSocialProofCount(document.getElementById("publicWorkoutPlans"), socialProof.savedWorkoutPlans, language);
+  } catch {}
+}
+
 function translateLandingPage() {
   const language = setLanguage(getLanguage());
 
@@ -425,6 +465,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireRevealAnimations();
   wireComparisonSliders();
   wireProductLoopDemo();
+  loadPublicSocialProof();
 
   trackPageView({ page: "landing" });
   trackClick("landing_page_view", { source: "landing" });
