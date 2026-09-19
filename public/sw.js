@@ -71,7 +71,7 @@ const urlsToCache = [
   '/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/progress.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/coachsocial.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/image-sequence-v43.js?v=20260919-hero-message-render-1',
+  '/js/image-sequence-v43.js?v=20260919-hero-message-render-2',
   '/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',

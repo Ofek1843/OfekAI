@@ -33,6 +33,8 @@
       reducedFrame: frame("training", 3, 0)
     }),
     deadlift: Object.freeze({
+      loop: true,
+      loopDelay: 1250,
       frames: Object.freeze([
         frame("deadlift", 1, 380),
         frame("deadlift", 2, 240),
@@ -199,6 +201,19 @@
         if (!visible || destroyed) return;
         const next = frameIndex + 1;
         if (next >= scene.frames.length) {
+          if (scene.loop) {
+            root.classList.remove("is-v43-playing");
+            root.classList.add("is-v43-complete");
+            timer = window.setTimeout(() => {
+              timer = null;
+              if (!visible || destroyed) return;
+              show(0);
+              root.classList.remove("is-v43-complete");
+              root.classList.add("is-v43-playing");
+              schedule();
+            }, scene.loopDelay || 900);
+            return;
+          }
           root.classList.remove("is-v43-playing");
           root.classList.add("is-v43-complete");
           return;

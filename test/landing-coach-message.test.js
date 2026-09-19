@@ -24,6 +24,13 @@ test("the real-athlete sequence also runs on the Render production hostname", ()
   const landing = read("public/index.html");
   const sw = read("public/sw.js");
   assert.match(engine, /"ofekai\.onrender\.com"/);
-  assert.match(landing, /image-sequence-v43\.js\?v=20260919-hero-message-render-1/);
-  assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-1/);
+  assert.match(landing, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
+  assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
+});
+
+test("the landing deadlift sequence loops instead of freezing after its first pass", () => {
+  const engine = read("public/js/image-sequence-v43.js");
+  assert.match(engine, /deadlift:\s*Object\.freeze\(\{\s*loop:\s*true,/);
+  assert.match(engine, /if \(scene\.loop\) \{/);
+  assert.match(engine, /scene\.loopDelay \|\| 900/);
 });

@@ -12,7 +12,7 @@ const INTEGRATION_VERSION = "20260815-real-athlete-v43-complete-5";
 const MOTION_ASSET_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
 const PLATE_ASSET_VERSION = VERSION;
 const CONNECT_ASSET_VERSION = "20260908-v46-connect-phone-review-fix-1";
-const ENGINE_VERSION = "20260919-hero-message-render-1";
+const ENGINE_VERSION = "20260919-hero-message-render-2";
 const CSS_VERSION = "20260914-i18n-dashboard-1";
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const ENGINE = read("public", "js", "image-sequence-v43.js");
