@@ -39,6 +39,20 @@ test("exact grams bypass every clarification", async () => {
   assert.equal(he.amount, 50);
 });
 
+test("an explicit dry rice qualifier selects dry rice rather than the cooked default", async () => {
+  const { parseFoodText } = await domainPromise;
+  for (const input of ["50 גרם אורז יבש", "50g dry rice", "dry rice 50g", "אורז יבש"]) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries.length, 1, input);
+    assert.equal(result.entries[0].foodId, "rice-dry", input);
+    assert.equal(result.entries[0].reference.state, "dry", input);
+  }
+  const entry = parseFoodText("50 גרם אורז יבש").entries[0];
+  assert.equal(entry.calories, 182.5);
+  assert.equal(entry.carbsGrams, 40);
+});
+
 test("a whole vegetable with no size asks one compact size question with an estimate path", async () => {
   const { parseFoodText } = await domainPromise;
   const result = parseFoodText("מלפפון");
