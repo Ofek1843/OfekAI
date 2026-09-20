@@ -53,6 +53,28 @@ test("an explicit dry rice qualifier selects dry rice rather than the cooked def
   assert.equal(entry.carbsGrams, 40);
 });
 
+test("explicit preparation-state qualifiers never silently fall back to cooked catalog values", async () => {
+  const { parseFoodText } = await domainPromise;
+  const dryCases = [
+    ["50 גרם פסטה יבשה", "pasta-dry"], ["50g dry pasta", "pasta-dry"],
+    ["50 גרם קינואה יבשה", "quinoa-dry"], ["50g dry quinoa", "quinoa-dry"],
+    ["50 גרם עדשים יבשות", "lentils-dry"], ["50g dry lentils", "lentils-dry"],
+    ["50 גרם גרגרי חומוס יבשים", "chickpeas-dry"], ["50g dry chickpeas", "chickpeas-dry"],
+    ["50 גרם בורגול יבש", "bulgur-dry"], ["50g dry bulgur", "bulgur-dry"],
+    ["50 גרם קוסקוס יבש", "couscous-dry"], ["50g dry couscous", "couscous-dry"],
+    ["50 גרם חזה עוף נא", "chicken-breast-raw"], ["50g raw chicken breast", "chicken-breast-raw"]
+  ];
+  for (const [input, foodId] of dryCases) {
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.entries[0].foodId, foodId, input);
+    assert.notEqual(result.entries[0].reference?.state, "cooked", input);
+  }
+  for (const input of ["50 גרם פסטה מבושלת", "50 גרם קינואה מבושלת", "50 גרם עדשים מבושלות", "50 גרם חזה עוף מבושל"]) {
+    assert.equal(parseFoodText(input).entries[0].reference?.state, "cooked", input);
+  }
+});
+
 test("a whole vegetable with no size asks one compact size question with an estimate path", async () => {
   const { parseFoodText } = await domainPromise;
   const result = parseFoodText("מלפפון");
