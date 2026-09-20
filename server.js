@@ -117,6 +117,7 @@ const SERVER_HOST = localDemoMode
   ? String(process.env.LOCAL_REVIEW_BIND_HOST || "127.0.0.1").trim()
   : undefined;
 const BUILD_ID = String(process.env.RENDER_GIT_COMMIT || "local").trim() || "local";
+const VERIFIED_SIGNUP_ALERT_WINDOW_MS = Math.max(60_000, Number(process.env.TELEGRAM_SIGNUP_ALERT_WINDOW_MS || 15 * 60 * 1000));
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 180000);
@@ -312,7 +313,9 @@ app.post("/api/legal/acceptance", async (req, res) => {
   if (req.body?.accepted !== true) {
     return res.status(400).json({ error: "Explicit Terms acceptance is required.", code: "terms_acceptance_required" });
   }
-  await getFuelPhysiqueFirestore().doc(`users/${user.uid}`).set({
+  const profileRef = getFuelPhysiqueFirestore().doc(`users/${user.uid}`);
+  const existingProfile = await profileRef.get();
+  await profileRef.set({
     termsAccepted: true,
     termsVersion: publicLegalPolicy().termsVersion,
     termsAcceptedAt: FieldValue.serverTimestamp(),
@@ -320,6 +323,19 @@ app.post("/api/legal/acceptance", async (req, res) => {
     privacyAcceptedAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp()
   }, { merge: true });
+  // A fresh Firebase account with no profile is the only server-verified
+  // registration signal. Do not trust the public browser analytics event for
+  // an operator alert: it can be replayed by anyone.
+  const accountAgeMs = Date.now() - Number(user.createdAt || 0);
+  const isFreshRegistration = !existingProfile.exists
+    && Number.isFinite(accountAgeMs)
+    && accountAgeMs >= -60_000
+    && accountAgeMs <= VERIFIED_SIGNUP_ALERT_WINDOW_MS;
+  if (isFreshRegistration) {
+    telemetry.recordVerifiedRegistration({ uid: user.uid }).catch(error => {
+      console.error("Verified signup telemetry failed:", error.message);
+    });
+  }
   res.setHeader("Cache-Control", "no-store");
   res.json({ accepted: true, ...publicLegalPolicy() });
 });
@@ -689,7 +705,7 @@ async function requireFirebaseUser(req, res) {
   // and offline. A bearer token is still required — only the network call
   // to Firebase Identity Toolkit is skipped. Never true outside test/CI.
   if (mockExternalServices) {
-    return { uid: `mock-${token.slice(0, 24)}`, email: "mock-user@example.test", authTime: Math.floor(Date.now() / 1000) };
+    return { uid: `mock-${token.slice(0, 24)}`, email: "mock-user@example.test", authTime: Math.floor(Date.now() / 1000), createdAt: Date.now() };
   }
 
   try {
@@ -706,6 +722,7 @@ async function requireFirebaseUser(req, res) {
     const data = await response.json();
     const uid = data?.users?.[0]?.localId;
     const email = data?.users?.[0]?.email || "";
+    const createdAt = Number(data?.users?.[0]?.createdAt || 0);
     if (!response.ok || !uid) throw new Error("Invalid Firebase token");
     let authTime = 0;
     try {
@@ -718,7 +735,7 @@ async function requireFirebaseUser(req, res) {
         return null;
       }
     }
-    return { uid, email, authTime };
+    return { uid, email, authTime, createdAt };
   } catch (error) {
     console.error("Firebase token verification failed:", error.message);
     res.status(401).json({ error: "Your session is invalid or expired." });
