@@ -42,6 +42,7 @@ const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { MISSING_DEDICATED_IMAGE_EXERCISES, canonicalizeExerciseId, getEnabledPublicExerciseIds } = require("./lib/workout-exercise-catalog");
 const { eligibleExerciseCatalog } = require("./lib/exercise-suitability");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
+const { applyProgramSplitIdentity } = require("./lib/workout-program-identity");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { normalizeMuscleFocusContract, primaryMuscleForExerciseId } = require("./lib/workout-focus");
 const {
@@ -2884,6 +2885,7 @@ const outputLanguage =
       selectedEquipment: equipment
     }).allowed;
     const volumeProfile = {
+      goal,
       experience,
       priority: canonicalPriority,
       daysPerWeek: parsedDays,
@@ -2979,6 +2981,8 @@ Programming rules:
 - Use evidence-based hypertrophy and strength principles.
 - Avoid excessive volume.
 - Use realistic sets, repetitions, rest periods and RIR.
+- Name the program after the split you actually created. Use precise split names such as "Upper / Lower", "Full Body", "Push / Pull / Legs", or a truthful combination such as "Full Body + Upper / Lower" or "Push / Pull / Legs + Upper / Lower". Never use a generic goal-only program name when the session structure reveals the split.
+- For fat loss / cutting, prioritize retaining performance and muscle with recoverable training: use moderate weekly volume (never a mass-phase chest volume), mostly 8–15 repetitions when appropriate, and practical shorter rests (usually 75–90 seconds for compounds and 45–75 seconds for isolation). Do not claim that muscle gain is impossible in a deficit.
 - Prescribe no more than 4 working sets for any one exercise in a session. If more volume is needed, use another compatible movement or distribute it across training days rather than assigning 5 or more sets to one exercise.
 - Treat experience level as programming context, not a reason to add arbitrary complexity. For beginners, prefer understandable, stable movements, manageable complexity and recoverable volume. For advanced athletes, use the existing advanced target ranges and add exercise variety or specialization only when the stated constraints justify it; do not automatically make the plan longer or more complex.
 - When experience is professional and training style is calisthenics, this is an elite skill athlete request: prioritize appropriately difficult, well-scaled skill practice such as planche, front lever, one-arm pull-up, muscle-up, handstand push-up and typewriter pull-ups when the required equipment is available. Do not fill an advanced calisthenics plan with beginner substitutions such as Australian rows unless the user explicitly requests regressions or lacks the needed equipment. Skill work must still include safe progressions, realistic holds/reps and fatigue-aware volume.
@@ -3126,6 +3130,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     program.daysPerWeek = parsedDays;
+    program.goal = String(goal || program.goal || "");
     // Workout sex is optional contextual metadata only. Do not use it for
     // volume, exercise, progression or any physiological inference.
     program.gender = ["male", "female"].includes(String(gender).toLowerCase())
@@ -3166,6 +3171,7 @@ Injuries, limitations or special requests: ${String(limitations)}
       sessionDuration: parsedDuration,
       equipment: equipmentForGeneration,
       experience,
+      goal,
       priority: canonicalPriority,
       daysPerWeek: parsedDays,
       muscleFocusMode: muscleFocus.muscleFocusMode,
@@ -3232,6 +3238,7 @@ Injuries, limitations or special requests: ${String(limitations)}
           program = correctedProgram;
           program.experience = experience;
           program.daysPerWeek = parsedDays;
+          program.goal = String(goal || program.goal || "");
           program.muscleFocusMode = muscleFocus.muscleFocusMode;
           program.selectedMuscles = muscleFocus.selectedMuscles;
           program.weeklyScheduleDays = program.weeklyScheduleDays || [];
@@ -3241,6 +3248,7 @@ Injuries, limitations or special requests: ${String(limitations)}
               sessionDuration: parsedDuration,
               equipment: equipmentForGeneration,
               experience,
+              goal,
               priority: canonicalPriority,
               daysPerWeek: parsedDays,
               muscleFocusMode: muscleFocus.muscleFocusMode,
@@ -3282,6 +3290,12 @@ Injuries, limitations or special requests: ${String(limitations)}
     if (language !== "he") {
       sanitizeLanguageLeakage(program, goal);
     }
+
+    // The provider may return a goal slogan or a stale generic title.  Name
+    // the final, repaired plan after its actual sessions so the title stays
+    // true even when repair changed exercise distribution or an AI retry
+    // replaced the original structure.
+    applyProgramSplitIdentity(program, { language });
 
     // Deterministic weekly volume, based only on the explicit setCredits map.
     // This runs AFTER every repair pass above (including the volume-repair
@@ -3467,6 +3481,7 @@ app.post("/api/workout-builder/adjust-volume", async (req, res) => {
     if (!muscleFocus.ok) return res.status(400).json({ error: "Invalid muscle focus preferences." });
 
     const profile = {
+      goal: goal || program.goal,
       priority: priority || derivePriorityFromGoal(goal || program.goal),
       experience: String(experience || program.experience || "beginner").toLowerCase(),
       daysPerWeek: program.sessions.length,
@@ -3716,6 +3731,7 @@ Required JSON format:
     const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
       rerollRepairContainer,
       {
+        goal: goal || program.goal,
         sessionDuration: program.sessionDuration || 60,
         equipment: selectedEquipment,
         muscleFocusMode: muscleFocus.muscleFocusMode,
@@ -3829,6 +3845,7 @@ Required JSON format:
     }));
 
     const rerollVolumeProfile = {
+      goal: goal || program.goal,
       experience,
       priority: canonicalPriority,
       daysPerWeek: program.daysPerWeek || program.sessions.length,

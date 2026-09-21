@@ -181,6 +181,7 @@ test("production-path fixture uses authoritative repair and validates the muscle
   assert.equal(body.success, true);
   assert.equal(body.program.muscleFocusMode, "selected_only");
   assert.deepEqual(body.program.selectedMuscles, ["chest", "triceps"]);
+  assert.equal(body.program.programName, "Upper Body", "the API names the final program from its actual sessions");
   assert.equal(body.validationSummary.passed, true);
   assert.equal(body.validationSummary.volumePassed, true);
   assert.ok(body.weeklyVolume.perMuscle.chest.total >= body.weeklyVolume.perMuscle.chest.preferredMin);
