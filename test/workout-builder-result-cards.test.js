@@ -48,11 +48,36 @@ test("exercise cards use the canonical exerciseId-first image resolver with a br
     /import \{ exerciseImageUrl, fallbackExerciseImageUrl \} from "\.\/exercise-image\.js";/
   );
   assert.match(workoutBuilderJs, /exerciseImageUrl\(exercise\)/);
+  assert.match(workoutBuilderJs, /data-src="\$\{imageSource\}"/);
+  assert.match(workoutBuilderJs, /decoding="async"/);
+  assert.match(workoutBuilderJs, /function syncExerciseImageLoading\(activeDayIndex\)/);
   assert.match(workoutBuilderJs, /data-fallback-src="\$\{escapeHtml\(fallbackExerciseImageUrl\(\)\)\}"/);
   assert.match(
     workoutBuilderJs,
     /image\.src = image\.dataset\.fallbackSrc/,
     "a broken/missing demo image must fall back to the branded image, not a broken-image icon"
+  );
+});
+
+test("workout days unload inactive exercise images instead of trusting lazy loading alone", () => {
+  assert.match(workoutBuilderJs, /image\.removeAttribute\("src"\)/);
+  assert.match(workoutBuilderJs, /syncExerciseImageLoading\(safeIndex\)/);
+  assert.match(workoutBuilderCss, /contain:\s*layout paint style/);
+  assert.match(workoutBuilderCss, /content-visibility:\s*auto/);
+  assert.doesNotMatch(
+    workoutBuilderCss,
+    /\.exercise-card-number\s*\{[^}]*backdrop-filter/,
+    "card number badges must not create a blur layer while scrolling"
+  );
+  assert.doesNotMatch(
+    workoutBuilderCss,
+    /\.exercise-demo-button\s*\{[^}]*backdrop-filter/,
+    "card demo controls must not create a blur layer while scrolling"
+  );
+  assert.doesNotMatch(
+    workoutBuilderCss,
+    /\.reroll-button\s*\{[^}]*backdrop-filter/,
+    "card replacement controls must not create a blur layer while scrolling"
   );
 });
 

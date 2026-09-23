@@ -907,6 +907,11 @@ textarea:focus {
   grid-template-columns: minmax(330px, 0.9fr) minmax(300px, 1fr);
   min-height: 285px;
   overflow: hidden;
+  /* Keep long programs from forcing repaint/layout work for cards outside
+     the viewport. The intrinsic size prevents scroll jumps while skipped. */
+  contain: layout paint style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 285px;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 20px;
   background:
@@ -952,8 +957,7 @@ textarea:focus {
   place-items: center;
   border-radius: 999px;
   color: #ffffff;
-  background: rgba(5, 10, 20, 0.72);
-  backdrop-filter: blur(6px);
+  background: rgba(5, 10, 20, 0.94);
   font-size: 13px;
   font-weight: 900;
 }
@@ -966,8 +970,7 @@ textarea:focus {
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
   color: #ffffff;
-  background: rgba(5, 10, 20, 0.72);
-  backdrop-filter: blur(6px);
+  background: rgba(5, 10, 20, 0.94);
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
@@ -1096,7 +1099,6 @@ textarea:focus {
   border: 1px solid rgba(53, 207, 223, 0.7);
   border-radius: 12px;
   background: rgba(4, 17, 31, 0.94);
-  backdrop-filter: blur(6px);
   color: #ffffff;
   font-size: 12px;
   font-weight: 900;
@@ -1162,7 +1164,7 @@ textarea:focus {
   .exercise-cards{grid-template-columns:1fr;padding:14px;gap:14px}
   .muscle-exercise-group{padding:12px;border-radius:18px}
   .muscle-exercise-group-header{align-items:flex-start;flex-direction:column;gap:8px}
-  .exercise-card{grid-template-columns:1fr;min-height:0}
+  .exercise-card{grid-template-columns:1fr;min-height:0;contain-intrinsic-size:auto 560px}
   .exercise-card-media{aspect-ratio:16/11;min-height:0}
   .exercise-card-body{justify-content:flex-start}
   .exercise-card-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1232,6 +1234,8 @@ textarea:focus {
 
   .exercise-card {
     break-inside: avoid;
+    contain: none;
+    content-visibility: visible;
     border: 1px solid #d3dbd7 !important;
     background: #ffffff !important;
   }

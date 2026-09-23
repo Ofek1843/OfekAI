@@ -1053,12 +1053,34 @@ const hebrewWorkoutTerms = {
   maintainPerformance: "שמירה על הביצועים"
 };
 
+// A saved program can predate the language sanitizer or arrive from a shared
+// plan. Keep structural display values readable in English rather than
+// showing a Hebrew muscle name or a raw goal key.
+const englishWorkoutDisplayTerms = Object.freeze({
+  "חזה": "Chest",
+  "גב": "Back",
+  "כתפיים": "Shoulders",
+  "כתפיים אחוריות": "Rear Delts",
+  "טרפז": "Traps",
+  "יד קדמית": "Biceps",
+  "יד אחורית": "Triceps",
+  "ארבע ראשי": "Quads",
+  "המסטרינג": "Hamstrings",
+  "ישבן": "Glutes",
+  "תאומים": "Calves",
+  "שרירי ליבה": "Core",
+  buildMuscle: "Build Muscle",
+  loseFat: "Fat Loss",
+  increaseStrength: "Increase Strength",
+  improveSkills: "Improve Skills",
+  maintainPerformance: "Maintain Performance"
+});
+
 function translateWorkoutValue(value = "") {
   const text = String(value).trim();
 
-  if (!isHebrew || !text) {
-    return text;
-  }
+  if (!text) return text;
+  if (!isHebrew) return englishWorkoutDisplayTerms[text] || text;
 
   if (hebrewWorkoutTerms[text]) {
     return hebrewWorkoutTerms[text];
@@ -1417,12 +1439,14 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
       const exercises = Array.isArray(session.exercises)
         ? session.exercises
         : [];
+      const isActiveSession = sessionIndex === initialDayIndex;
 
       const exerciseGroups = new Map();
 
       exercises.forEach((exercise, exerciseIndex) => {
           const exerciseName = translateWorkoutValue(exercise.name);
           const muscleName = translateWorkoutValue(exercise.muscleGroup || ui.general);
+          const imageSource = escapeHtml(exerciseImageUrl(exercise));
           // The old title="" tooltip was hover-only: unreachable by keyboard,
           // by touch, and by screen readers. Replaced by the focusable
           // .rir-help-trigger button and the shared #rirHelpPopover dialog.
@@ -1432,10 +1456,12 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
               <div class="exercise-card-media">
                 <img
                   class="exercise-card-image"
-                  src="${escapeHtml(exerciseImageUrl(exercise))}"
+                  ${isActiveSession ? `src="${imageSource}"` : ""}
+                  data-src="${imageSource}"
                   data-fallback-src="${escapeHtml(fallbackExerciseImageUrl())}"
                   alt="${escapeHtml(exerciseName)}"
-                  loading="lazy"
+                  loading="${isActiveSession ? "eager" : "lazy"}"
+                  decoding="async"
                 >
                 <span class="exercise-card-number">${exerciseIndex + 1}</span>
                 <button
@@ -1667,6 +1693,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
     resultElement.querySelectorAll("[data-program-day]").forEach((day) => {
       day.hidden = Number(day.dataset.programDay) !== safeIndex;
     });
+    syncExerciseImageLoading(safeIndex);
     resultElement.querySelectorAll("[data-program-day-target]").forEach((button) => {
       const active = Number(button.dataset.programDayTarget) === safeIndex;
       button.classList.toggle("is-active", active);
@@ -1846,7 +1873,8 @@ try {
     const image = card.querySelector(".exercise-card-image");
     if (image) {
       image.onerror = null;
-      image.src = exerciseImageUrl(data.exercise);
+      image.dataset.src = exerciseImageUrl(data.exercise);
+      image.src = image.dataset.src;
       image.alt = exerciseName;
       image.addEventListener("error", () => {
         image.onerror = null;
@@ -1924,6 +1952,26 @@ try {
   if (scrollToTop) resultElement.scrollIntoView({
     behavior: "smooth",
     block: "start"
+  });
+}
+
+// `loading="lazy"` is only a hint: Chromium can still fetch images in
+// hidden program days. Keep non-active days genuinely source-less so a
+// four-day plan paints and decodes only the day the athlete is viewing.
+function syncExerciseImageLoading(activeDayIndex) {
+  resultElement.querySelectorAll("[data-program-day]").forEach((day) => {
+    const isActiveDay = Number(day.dataset.programDay) === Number(activeDayIndex);
+    day.querySelectorAll(".exercise-card-image").forEach((image) => {
+      const source = image.dataset.src;
+      if (!source) return;
+      if (isActiveDay) {
+        if (!image.getAttribute("src")) image.src = source;
+        image.loading = "eager";
+      } else {
+        image.removeAttribute("src");
+        image.loading = "lazy";
+      }
+    });
   });
 }
 

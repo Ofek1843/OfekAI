@@ -203,3 +203,11 @@ test("the Hebrew label set contains no leftover English prose", () => {
     "English prose must not appear inside the Hebrew label set"
   );
 });
+
+test("English program rendering maps a legacy Hebrew trap label back to Traps", () => {
+  assert.match(
+    BUILDER_JS,
+    /"טרפז": "Traps"/,
+    "English workout display values must never show the legacy Hebrew trap label"
+  );
+});
