@@ -70,3 +70,12 @@ test("nutrition meal card shrinks to the viewport so the reroll control stays on
   assert.match(nutritionClient, /nutrition-reroll-meal-button/);
   assert.match(nutritionClient, /api\/nutrition-builder\/reroll-meal/);
 });
+
+test("inactive meal alternatives do not decode their photos and ingredient thumbnails", () => {
+  assert.match(nutritionClient, /data-src=/, "carousel images should keep an inactive source in data-src");
+  assert.match(nutritionClient, /function syncMealOptionImageLoading/);
+  assert.match(nutritionClient, /syncMealOptionImageLoading\(options, options\[wrappedIndex\]\)/);
+  assert.match(nutritionClient, /image\.removeAttribute\("src"\)/);
+  assert.match(nutritionCss, /\.meal-card\s*\{[\s\S]*?content-visibility:\s*auto/);
+  assert.match(nutritionCss, /\.meal-card\s*\{[\s\S]*?contain:\s*layout paint style/);
+});

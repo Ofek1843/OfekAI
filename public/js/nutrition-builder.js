@@ -590,13 +590,22 @@ function renderNutritionPlan(plan, activeOptions = null) {
         .map((option, idx) => {
           const foods = Array.isArray(option.foods) ? option.foods : [];
           const mealName = option.mealName || meal.name || "";
+          const isInitiallyActive = idx === 0;
+          // Native `loading="lazy"` is only a hint: Chromium can still fetch
+          // images in the absolutely positioned, inactive carousel slides.
+          // Keep those slides genuinely source-less until an athlete opens
+          // them, so generating a plan does not decode every alternate meal.
+          const imageAttributes = (source) => {
+            const safeSource = escapeHtml(source || "/images/food-placeholder.png");
+            return `${isInitiallyActive ? `src="${safeSource}"` : ""} data-src="${safeSource}" loading="${isInitiallyActive ? "eager" : "lazy"}" decoding="async"`;
+          };
 
           const foodRows = foods
             .map(
               (food) => `
                 <tr>
                   <td class="food-cell">
-                    <img class="food-image" src="${food.imageUrl || "/images/food-placeholder.png"}" alt="" loading="lazy" />
+                    <img class="food-image" ${imageAttributes(food.imageUrl)} alt="" />
                     <span>${escapeHtml(food.name || "")}</span>
                   </td>
                   <td class="food-amount">${escapeHtml(food.amount || "")}</td>
@@ -611,7 +620,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
                 <div class="meal-photo${option.mealImage ? "" : " no-image"}">
                   ${
                     option.mealImage
-                      ? `<img src="${option.mealImage}" alt="${escapeHtml(mealName)}" loading="lazy" decoding="async"
+                      ? `<img ${imageAttributes(option.mealImage)} alt="${escapeHtml(mealName)}"
                            onerror="this.parentElement.classList.add('no-image');this.remove();" />`
                       : ""
                   }
@@ -953,6 +962,7 @@ resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
     options.forEach((option) => option.classList.remove("active"));
     dots.forEach((dot) => dot.classList.remove("active"));
     options[wrappedIndex].classList.add("active");
+    syncMealOptionImageLoading(options, options[wrappedIndex]);
     dots[wrappedIndex]?.classList.add("active");
     currentIndex = wrappedIndex;
     if (currentCounter) currentCounter.textContent = wrappedIndex + 1;
@@ -975,6 +985,28 @@ resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
 });
 
 }
+
+// A carousel option has a full meal photo plus several ingredient thumbnails.
+// Releasing `src` for inactive options keeps their decoded image memory and
+// paint work out of the result page; files remain in the HTTP cache, so moving
+// back to an option is still immediate in normal use.
+function syncMealOptionImageLoading(options, activeOption) {
+  options.forEach((option) => {
+    const isActive = option === activeOption;
+    option.querySelectorAll("img[data-src]").forEach((image) => {
+      const source = image.dataset.src;
+      if (!source) return;
+      if (isActive) {
+        if (!image.getAttribute("src")) image.src = source;
+        image.loading = "eager";
+      } else {
+        image.removeAttribute("src");
+        image.loading = "lazy";
+      }
+    });
+  });
+}
+
 function escapeHtml(value = "") {
   return String(value)
     .replaceAll("&", "&amp;")

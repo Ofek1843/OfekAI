@@ -1033,33 +1033,35 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 
 .meal-card {
-  /* This card is intentionally light (white surface, dark text) even
-     though the rest of the app is a dark theme. Its descendants below use
-     these card-local variables instead of the page-level --text/--muted/
-     --surface/--border (which are tuned for light-text-on-dark-page and
-     would render as white-on-white here) — the card controls its own text
-     theme explicitly rather than inheriting the page's. */
-  --card-text: #0f172a;
-  --card-text-secondary: #3d4a48;
-  --card-text-muted: #64748b;
+  /* The redesign shell gives meal cards a Deep Ocean surface. Keep the
+     component's local foreground tokens in that same dark-mode contract;
+     the previous light-card values made ingredients and macros black-on-blue
+     once the shell correctly applied its dark background. */
+  --card-text: #f4f8ff;
+  --card-text-secondary: #c9d8ea;
+  --card-text-muted: #9fb6cf;
   --card-accent: #52c98a;
-  --card-accent-soft: #f3f0ff;
-  --card-surface: #f3f0e8;
-  --card-border: #e7eaf0;
+  --card-accent-soft: rgba(82, 201, 138, 0.14);
+  --card-surface: #112c48;
+  --card-border: #285477;
 
-  background: #ffffff;
+  background: #0d243c;
   color: var(--card-text);
   border: 1px solid var(--card-border);
   border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: 0 8px 24px rgba(32, 43, 44, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 12px 30px rgba(2, 8, 18, 0.22);
+  /* A nutrition plan contains several full recipe cards. Skipping offscreen
+     rendering keeps scrolling fluid without changing the visible layout. */
+  contain: layout paint style;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 820px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .meal-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(32, 43, 44, 0.1);
+  border-color: rgba(82, 201, 138, 0.48);
 }
 .meal-header {
   display: flex;
@@ -1115,7 +1117,7 @@ html[dir="ltr"] .nutrition-food-table td {
 
 .food-cell span {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--card-text);
 }
 .nutrition-reroll-food-button.is-rerolling {
   animation: nutrition-reroll-spin 0.8s linear infinite;
@@ -1733,7 +1735,7 @@ html[dir="ltr"] .nutrition-food-table td {
   padding: 18px 16px;
   border: 1px solid rgba(82, 201, 138, 0.2);
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(82, 201, 138, 0.08), rgba(82, 201, 138, 0.04));
+  background: linear-gradient(135deg, rgba(82, 201, 138, 0.17), rgba(47, 155, 255, 0.1));
   text-align: center;
   margin-top: 18px;
 }
@@ -1801,11 +1803,11 @@ html[dir="ltr"] .nutrition-food-table td {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(32, 43, 44, 0.18);
+  background: rgba(159, 182, 207, 0.35);
   opacity: 0.8;
   cursor: pointer;
   transition: all 0.25s ease;
-  border: 1px solid rgba(32, 43, 44, 0.12);
+  border: 1px solid rgba(159, 182, 207, 0.3);
 }
 
 .carousel-dot:hover {
@@ -1813,12 +1815,12 @@ html[dir="ltr"] .nutrition-food-table td {
 }
 
 .carousel-dot.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2f9bff 0%, #52c98a 100%);
   opacity: 1;
   width: 24px;
   border-radius: 4px;
-  border-color: rgba(102, 126, 234, 0.5);
-  box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+  border-color: rgba(82, 201, 138, 0.58);
+  box-shadow: 0 0 8px rgba(82, 201, 138, 0.36);
 }
 
 .meals-list {
@@ -1844,6 +1846,8 @@ html[dir="ltr"] .nutrition-food-table td {
     min-height: 0;
   }
 
+  .meal-card { contain-intrinsic-size: auto 980px; }
+
   .meal-option-macros {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1852,6 +1856,44 @@ html[dir="ltr"] .nutrition-food-table td {
     flex-wrap: wrap;
     justify-content: center;
   }
+}
+
+/* The global redesign stylesheet is loaded after this page stylesheet and
+   intentionally restyles generic cards. Pin the nutrition table to the meal
+   card's readable dark palette so that global dark-mode overrides can never
+   leave dark text on a dark table again. */
+body.fp-redesign.fp-route-nutrition-builder .nutrition-food-table {
+  overflow: hidden;
+  border: 1px solid rgba(147, 197, 253, 0.26);
+  border-radius: 14px;
+  background: rgba(5, 18, 33, 0.42);
+}
+
+body.fp-redesign.fp-route-nutrition-builder .nutrition-food-table th {
+  color: #eaf6ff !important;
+  background: #1e547f !important;
+  border-color: rgba(147, 197, 253, 0.28) !important;
+}
+
+body.fp-redesign.fp-route-nutrition-builder .nutrition-food-table td {
+  color: var(--card-text) !important;
+  border-color: rgba(147, 197, 253, 0.18) !important;
+  background: transparent !important;
+}
+
+body.fp-redesign.fp-route-nutrition-builder .nutrition-food-table tbody tr:hover {
+  background: rgba(47, 155, 255, 0.1);
+  transform: none;
+}
+
+body.fp-redesign.fp-route-nutrition-builder .food-cell span {
+  color: var(--card-text) !important;
+}
+
+body.fp-redesign.fp-route-nutrition-builder .food-amount {
+  color: #dcebff !important;
+  background: rgba(47, 155, 255, 0.16);
+  border: 1px solid rgba(147, 197, 253, 0.23);
 }
 /* Localized recommendation hint under the food-style selector. */
 .builder-field-hint{display:block;margin-top:8px;color:#77dce7;font-size:12px;line-height:1.45}
