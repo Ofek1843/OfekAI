@@ -189,10 +189,56 @@ input {
 }
 
 .hero-shell {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.72fr);
     gap: clamp(28px, 5vw, 64px);
     align-items: center;
+}
+
+.hero-social-links {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border: 1px solid rgba(110, 159, 194, 0.18);
+    border-radius: 999px;
+    background: rgba(7, 20, 36, 0.54);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-social-link {
+    display: inline-grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 10px;
+    transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.hero-social-link img {
+    display: block;
+    max-width: 28px;
+    max-height: 28px;
+}
+
+.hero-social-link--youtube img {
+    max-width: 31px;
+    max-height: 31px;
+}
+
+.hero-social-link:hover,
+.hero-social-link:focus-visible {
+    transform: translateY(-3px) scale(1.06);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    outline: none;
 }
 
 .hero-content {
@@ -1199,40 +1245,6 @@ html[dir="rtl"] .product-loop-step.is-active {
     gap: 14px 22px;
 }
 
-.landing-footer-social {
-    align-items: center;
-    gap: 10px !important;
-}
-
-.landing-social-link {
-    display: inline-grid;
-    width: 42px;
-    height: 42px;
-    place-items: center;
-    border: 1px solid rgba(142, 157, 153, .2);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, .035);
-    transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
-}
-
-.landing-social-link span {
-    display: block;
-    font-size: 0.72rem;
-    font-weight: 900;
-    letter-spacing: 0.02em;
-}
-
-.landing-social-link:hover,
-.landing-social-link:focus-visible {
-    transform: translateY(-2px);
-    border-color: currentColor;
-    background: rgba(255, 255, 255, .08);
-}
-
-.landing-social-link--instagram { color: #f1538a; }
-.landing-social-link--youtube { color: #ff5c6c; }
-.landing-social-link--tiktok { color: #55e7ef; }
-
 .landing-footer a:hover,
 .landing-footer a:focus-visible {
     color: var(--text-primary);
@@ -1337,6 +1349,14 @@ html[data-theme="light"] .transformation-invite {
 @media (max-width: 920px) {
     .hero-shell {
         grid-template-columns: 1fr;
+    }
+
+    .hero-social-links {
+        position: static;
+        grid-column: 1;
+        justify-self: center;
+        order: -1;
+        margin-bottom: -4px;
     }
 
     .hero-content {
@@ -1552,9 +1572,6 @@ html[data-theme="light"] .transformation-invite {
         padding-inline: 14px;
     }
 
-    .landing-footer-social {
-        align-self: stretch;
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {
