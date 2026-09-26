@@ -39,7 +39,7 @@ const { calculateWeeklyVolume } = require("./lib/workout-volume");
 const { estimateSessionDuration } = require("./lib/workout-duration");
 const { validateWorkoutProgram, normalizeEquipment } = require("./lib/workout-validator");
 const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
-const { MISSING_DEDICATED_IMAGE_EXERCISES, canonicalizeExerciseId, getEnabledPublicExerciseIds } = require("./lib/workout-exercise-catalog");
+const { MISSING_DEDICATED_IMAGE_EXERCISES, WORKOUT_EXERCISE_CATALOG, canonicalizeExerciseId, getEnabledPublicExerciseIds } = require("./lib/workout-exercise-catalog");
 const { eligibleExerciseCatalog } = require("./lib/exercise-suitability");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
 const { applyProgramSplitIdentity } = require("./lib/workout-program-identity");
@@ -1131,6 +1131,77 @@ app.post("/api/transcribe", async (req, res) => {
       error: error.name === "AbortError" ? "Transcription timed out." : "Could not transcribe audio."
     });
   }
+});
+
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>\"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+app.get("/exercise-library", (req, res) => {
+  const publicDirectory = path.join(__dirname, "public");
+  const exerciseIds = getEnabledPublicExerciseIds();
+  const exercises = exerciseIds.map((exerciseId) => {
+    const exercise = WORKOUT_EXERCISE_CATALOG[exerciseId];
+    const credits = Object.entries(exercise.setCredits || {}).sort((a, b) => b[1] - a[1]);
+    const primaryMuscle = credits[0]?.[0] || "general";
+    const muscles = credits.map(([muscle]) => muscle.replace(/_/g, " "));
+    const imageBase = path.basename(exercise.image || "").replace(/\.[^.]+$/, "");
+    const webpImage = `/images/exercises/${imageBase}.webp`;
+    const image = imageBase && fs.existsSync(path.join(publicDirectory, "images", "exercises", `${imageBase}.webp`))
+      ? webpImage
+      : `/images/exercises/${path.basename(exercise.image || "fuelphysique-demo-fallback.svg")}`;
+    const title = exercise.title || exerciseId.split("-").map((part) => part[0]?.toUpperCase() + part.slice(1)).join(" ");
+    const equipment = exercise.equipment || "Varies";
+    return {
+      exerciseId,
+      title,
+      equipment,
+      primaryMuscle: primaryMuscle.replace(/_/g, " "),
+      muscles,
+      image,
+      searchText: `${title} ${equipment} ${muscles.join(" ")}`.toLowerCase()
+    };
+  });
+  const muscles = [...new Set(exercises.map((exercise) => exercise.primaryMuscle))].sort();
+  const cardsByMuscle = muscles.map((muscle) => {
+    const cards = exercises.filter((exercise) => exercise.primaryMuscle === muscle).map((exercise) => `
+      <article class="exercise-card" data-exercise-card data-search="${escapeHtml(exercise.searchText)}">
+        <img src="${escapeHtml(exercise.image)}" alt="${escapeHtml(exercise.title)} exercise illustration" width="320" height="220" loading="lazy" decoding="async">
+        <div class="exercise-card-copy"><h3>${escapeHtml(exercise.title)}</h3>
+          <p><strong>Catalog focus:</strong> ${escapeHtml(exercise.primaryMuscle)}</p>
+          <p><strong>Equipment:</strong> ${escapeHtml(exercise.equipment)}</p>
+          ${exercise.muscles.length > 1 ? `<p><strong>Also tagged:</strong> ${escapeHtml(exercise.muscles.slice(1).join(", "))}</p>` : ""}
+        </div>
+      </article>`).join("");
+    const slug = muscle.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    return `<section class="muscle-section" id="muscle-${escapeHtml(slug)}" data-muscle-section><h2>${escapeHtml(muscle)} <span>${exercises.filter((exercise) => exercise.primaryMuscle === muscle).length} movements</span></h2><div class="exercise-grid">${cards}</div></section>`;
+  }).join("");
+  const description = `Browse ${exercises.length} exercises by muscle focus and equipment. Compare the movements in the FuelPhysique planning catalog and open the workout builder to use them in a plan.`;
+  const html = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="${escapeHtml(description)}"><link rel="canonical" href="https://fuelphysique.com/exercise-library">
+  <meta property="og:type" content="website"><meta property="og:site_name" content="FuelPhysique"><meta property="og:title" content="Exercise Library: Browse by Muscle and Equipment | FuelPhysique"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="https://fuelphysique.com/exercise-library">
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="Exercise Library | FuelPhysique"><meta name="twitter:description" content="${escapeHtml(description)}">
+  <title>Exercise Library: Browse by Muscle and Equipment | FuelPhysique</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/legal.css"><link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1"><script defer src="/js/exercise-library.js"></script>
+  <style>
+    .exercise-library{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:24px 0 80px}.exercise-library .legal-nav{margin-bottom:36px}.library-intro{max-width:850px;margin:0 auto 32px;text-align:center}.library-intro h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin:16px 0}.library-intro>p{color:var(--fp-text-muted);font-size:18px}.library-tools{position:sticky;top:8px;z-index:2;display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:16px;align-items:center;padding:14px;background:var(--fp-surface);border:1px solid var(--fp-border);border-radius:16px;margin:28px 0}.library-tools input{width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--fp-border);border-radius:10px;background:var(--fp-bg-page);color:var(--fp-text-primary)}.muscle-jumps{display:flex;flex-wrap:wrap;gap:8px}.muscle-jumps a{padding:7px 10px;border:1px solid var(--fp-border);border-radius:999px;font-size:13px}.muscle-section{scroll-margin-top:110px;margin:44px 0}.muscle-section>h2{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--fp-border);padding-bottom:12px}.muscle-section>h2 span{font-size:13px;color:var(--fp-text-muted);font-weight:500}.exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.exercise-card{overflow:hidden;border:1px solid var(--fp-border);border-radius:14px;background:var(--fp-surface)}.exercise-card[hidden],.muscle-section[hidden]{display:none}.exercise-card img{display:block;width:100%;height:180px;object-fit:cover;background:#091526}.exercise-card-copy{padding:14px}.exercise-card h3{font-size:18px;margin:0 0 12px}.exercise-card p{font-size:14px;margin:6px 0;color:var(--fp-text-muted)}.library-note{padding:16px;border-inline-start:3px solid var(--fp-brand-primary);background:var(--fp-surface);border-radius:8px;color:var(--fp-text-muted)}.library-cta{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0}.library-cta a{display:inline-block;padding:12px 18px;border-radius:10px;background:var(--fp-brand-primary);color:#06111c;font-weight:800}.library-cta a.secondary{background:transparent;color:var(--fp-text-primary);border:1px solid var(--fp-border)}@media(max-width:720px){.library-tools{position:static;grid-template-columns:1fr}.muscle-jumps{max-height:126px;overflow:auto}.exercise-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.exercise-card img{height:130px}.exercise-card-copy{padding:10px}.exercise-card h3{font-size:15px}}
+  </style>
+</head><body><main class="exercise-library">
+  <nav class="legal-nav" aria-label="Main navigation"><a class="legal-nav-brand" href="/">FuelPhysique</a><div class="legal-nav-links"><a href="/about.html">About</a><a href="/faq.html">FAQ</a><a href="/pricing.html">Plans</a></div></nav>
+  <header class="library-intro"><span class="legal-badge">Free exercise directory</span><h1>Browse exercises by muscle and equipment</h1><p>Explore movements included in the FuelPhysique workout-planning catalog. Search by exercise name, equipment or the muscle tags used by the planner.</p><div class="library-cta"><a href="/workout-builder.html">Build a workout plan</a><a class="secondary" href="/about.html">How FuelPhysique works</a></div></header>
+  <p class="library-note">Muscle tags describe how each movement is categorized in the planning catalog; they are not a claim that an exercise trains only those muscles or a substitute for professional guidance. Choose movements that suit your experience, equipment and circumstances.</p>
+  <div class="library-tools"><label><input type="search" id="exercise-search" aria-label="Search exercises, muscles or equipment" placeholder="Search exercises, muscles or equipment" autocomplete="off"></label><nav class="muscle-jumps" aria-label="Browse muscle groups">${muscles.map((muscle) => `<a href="#muscle-${escapeHtml(muscle.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}">${escapeHtml(muscle)}</a>`).join("")}</nav></div>
+  <p id="exercise-count" aria-live="polite">Showing ${exercises.length} movements</p>${cardsByMuscle}
+  <footer class="site-footer"><div class="site-footer-inner"><div class="site-footer-brand">FuelPhysique</div><nav class="site-footer-links" aria-label="Footer"><a href="/">Home</a><a href="/about.html">About</a><a href="/faq.html">FAQ</a><a href="/pricing.html">Plans</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></nav></div></footer>
+</main></body></html>`;
+  res.set("Cache-Control", "public, max-age=300");
+  res.type("html").send(html);
 });
 
 app.get("/", (req, res) => {

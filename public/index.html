@@ -38,12 +38,10 @@
     <link rel="stylesheet" href="css/landing.css">
     <!--
       Structured data for the landing page only. Deliberately limited to
-      facts the site itself demonstrates: identity, the site URL, and what
-      the application does. No aggregateRating, review, offers or price --
-      there are no published ratings, reviews or checkout prices to back
-      them, and asserting any would be fabricated. Organization/logo is
-      omitted because the only brand mark in the repository is a 64x64 SVG
-      favicon, which does not meet the raster logo requirements.
+      facts the site itself demonstrates: identity, the site URL, its logo,
+      public social profiles and what the application does. No aggregateRating,
+      review, offers or price -- there are no published ratings, reviews or
+      checkout prices to back them, and asserting any would be fabricated.
     -->
     <script type="application/ld+json">
     {
@@ -53,7 +51,14 @@
           "@type": "Organization",
           "@id": "https://fuelphysique.com/#organization",
           "name": "FuelPhysique",
-          "url": "https://fuelphysique.com/"
+          "url": "https://fuelphysique.com/",
+          "description": "Workout planning, nutrition tools and progress tracking in one connected fitness platform.",
+          "logo": "https://fuelphysique.com/images/brand/fuelphysique-icon-512.png",
+          "sameAs": [
+            "https://www.instagram.com/fuel_physique/",
+            "https://www.youtube.com/@fuelphysique",
+            "https://www.tiktok.com/@fuelphysique1"
+          ]
         },
         {
           "@type": "WebSite",
@@ -391,7 +396,10 @@
     <footer class="landing-footer">
         <span>FuelPhysique</span>
         <nav aria-label="Footer">
+            <a href="/about.html">About</a>
+            <a href="/exercise-library">Exercise library</a>
             <a href="/faq.html">FAQ</a>
+            <a href="/pricing.html">Plans</a>
             <a href="/contact.html">Contact</a>
             <a href="/privacy.html">Privacy</a>
             <a href="/terms.html">Terms</a>
