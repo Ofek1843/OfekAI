@@ -292,9 +292,12 @@ app.use(express.static(path.join(__dirname, "public"), {
       return;
     }
     if (/\.(?:css|m?js)$/i.test(filePath)) {
-      // Code is not content-hashed, so it must still revalidate to keep a
-      // deployed fix visible immediately.
-      res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+      // Keep browser caches revalidating code so a deploy is visible
+      // immediately, while allowing the shared edge cache to serve these
+      // identical static assets without a Render round-trip on every page.
+      // The short shared TTL bounds stale assets even for URLs without a
+      // content hash; API and HTML responses never enter this branch.
+      res.setHeader("Cache-Control", "public, max-age=0, must-revalidate, s-maxage=300");
     }
   }
 }));
@@ -356,7 +359,7 @@ app.post("/api/analytics/event", (req, res) => {
     });
 
     console.log(
-      `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"}`
+      `[analytics] ${req.requestId} ${sanitized.event} path=${sanitized.path || "-"} title=${sanitized.title || "-"} ref=${sanitized.referrer ? "set" : "none"} campaign_source=${sanitized.properties?.campaign_source || "-"} campaign_medium=${sanitized.properties?.campaign_medium || "-"} campaign_name=${sanitized.properties?.campaign_name || "-"}`
     );
 
     return res.status(204).end();

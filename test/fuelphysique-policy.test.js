@@ -39,6 +39,9 @@ test("analytics sanitizer drops unsupported events and sensitive fields", () => 
     referrer: "https://example.com",
     properties: {
       source: "landing",
+      campaign_source: "TikTok!",
+      campaign_medium: "organic social",
+      campaign_name: "fall-launch-2026",
       email: "secret@example.com",
       token: "abc",
       count: 3,
@@ -49,6 +52,9 @@ test("analytics sanitizer drops unsupported events and sensitive fields", () => 
   assert.ok(payload);
   assert.equal(payload.event, "signup_started");
   assert.equal(payload.properties.source, "landing");
+  assert.equal(payload.properties.campaign_source, "tiktok");
+  assert.equal(payload.properties.campaign_medium, "organicsocial");
+  assert.equal(payload.properties.campaign_name, "fall-launch-2026");
   assert.equal(payload.properties.count, 3);
   assert.equal(payload.properties.email, undefined);
   assert.equal(payload.properties.token, undefined);

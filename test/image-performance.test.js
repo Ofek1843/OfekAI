@@ -91,10 +91,12 @@ test("images are cached instead of revalidated on every request", () => {
   assert.doesNotMatch(value, /must-revalidate/, "images must not force a blocking revalidation round-trip");
 });
 
-test("code assets still revalidate so a deploy is visible immediately", () => {
+test("code assets revalidate in browsers and use a short shared edge cache", () => {
   const value = cacheControlForBranch("css");
   assert.ok(value, "css/js must keep their own Cache-Control rule");
   assert.match(value, /must-revalidate/);
+  assert.match(value, /max-age=0/, "browsers must revalidate code after deploys");
+  assert.match(value, /s-maxage=300/, "the CDN should cache static code briefly at the edge");
 });
 
 test("webp negotiation is guarded against path traversal", () => {

@@ -501,6 +501,18 @@ input {
     background: rgba(255, 255, 255, 0.04);
 }
 
+.landing-plan-guide-link {
+  display: inline-flex;
+  margin-top: 14px;
+  color: #83dcea;
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.landing-plan-guide-link:hover,
+.landing-plan-guide-link:focus-visible { color: #fff; }
+
 .builder-chooser {
     grid-column: 1 / -1;
     width: min(100%, 760px);

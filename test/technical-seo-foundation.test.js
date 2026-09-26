@@ -41,14 +41,27 @@ const read = file => fs.readFileSync(path.join(PUBLIC_DIR, file), "utf8");
 //   billing-result.html     B -- transitional post-checkout status page
 const PUBLIC_INDEXABLE = Object.freeze({
   "index.html": "/",
+  "about.html": "/about.html",
   "pricing.html": "/pricing.html",
+  "workout-plan-generator.html": "/workout-plan-generator.html",
   "faq.html": "/faq.html",
   "contact.html": "/contact.html",
   "terms.html": "/terms.html",
   "privacy.html": "/privacy.html",
   "refund-policy.html": "/refund-policy.html",
-  "subscription-policy.html": "/subscription-policy.html"
+  "subscription-policy.html": "/subscription-policy.html",
+  "accessibility.html": "/accessibility.html",
+  "community-guidelines.html": "/community-guidelines.html",
+  "copyright.html": "/copyright.html",
+  "subprocessors.html": "/subprocessors.html"
 });
+
+const PUBLIC_SITEMAP_ROUTES = Object.freeze([
+  "/", "/about.html", "/workout-plan-generator.html", "/exercise-library",
+  "/pricing.html", "/faq.html", "/contact.html", "/terms.html", "/privacy.html",
+  "/refund-policy.html", "/subscription-policy.html", "/accessibility.html",
+  "/community-guidelines.html", "/copyright.html", "/subprocessors.html"
+]);
 
 const MUST_BE_NOINDEX = Object.freeze([
   "app.html", "auth.html", "auth-action.html", "billing-result.html",
@@ -67,7 +80,7 @@ const FORBIDDEN_IN_METADATA = Object.freeze([
 ]);
 
 const metaTags = html => [...html.matchAll(/<meta\b[^>]*>/gi)].map(m => m[0]);
-const attr = (tag, name) => (tag.match(new RegExp(`${name}=["']([^"']*)["']`, "i")) || [])[1];
+const attr = (tag, name) => (tag.match(new RegExp(`${name}=(['"])(.*?)\\1`, "i")) || [])[2];
 
 function metaContent(html, key) {
   const found = metaTags(html).filter(tag => {
@@ -165,7 +178,7 @@ test("sitemap omits lastmod, changefreq and priority rather than inventing them"
 });
 
 test("sitemap contains exactly the approved public indexable routes", () => {
-  const expected = Object.values(PUBLIC_INDEXABLE).map(route => `${ORIGIN}${route}`).sort();
+  const expected = PUBLIC_SITEMAP_ROUTES.map(route => `${ORIGIN}${route}`).sort();
   assert.deepEqual(sitemapUrls().slice().sort(), expected);
 });
 
@@ -184,6 +197,10 @@ test("every sitemap URL maps to a real file that is served", () => {
     const route = url.slice(ORIGIN.length);
     // "/" is served by express.static's directory index.
     const file = route === "/" ? "index.html" : route.replace(/^\//, "");
+    if (route === "/exercise-library") {
+      assert.match(fs.readFileSync(path.join(ROOT, "server.js"), "utf8"), /app\.get\("\/exercise-library"/);
+      continue;
+    }
     assert.ok(
       fs.existsSync(path.join(PUBLIC_DIR, file)),
       `${url} has no backing file at public/${file}`
@@ -231,6 +248,18 @@ test("the landing title describes the product rather than only the brand", () =>
   const title = read("index.html").match(/<title>([\s\S]*?)<\/title>/)[1].trim();
   assert.notEqual(title, "FuelPhysique", "the bare brand name explains nothing");
   assert.match(title, /FuelPhysique/);
+});
+
+test("workout plan generator page explains real inputs and has a direct signup path", () => {
+  const page = read("workout-plan-generator.html");
+  assert.match(page, /Build a workout plan around your real week/);
+  assert.match(page, /experience[\s\S]*equipment[\s\S]*schedule/i);
+  assert.match(page, /injuries, pain or movement limitations/i);
+  assert.match(page, /Generated plans are general fitness suggestions/);
+  assert.match(page, /href="\/auth\.html\?next=workout-builder\.html"/);
+  assert.match(page, /data-legal-language="he"/);
+  assert.match(page, /מתחילים לבנות תוכנית אימון/);
+  assert.match(read("index.html"), /href="\/workout-plan-generator\.html"/);
 });
 
 test("every public indexable page has one page-specific description", () => {
