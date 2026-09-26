@@ -1,12 +1,13 @@
 (() => {
   "use strict";
 
-  const VERSION = "20260919-hero-message-render-1";
+  const VERSION = "20260926-curl-webp-1";
   const DEFAULT_FRAME_VERSION = "20260822-v45-rtl-hebrew-animation-fix-1";
   // Per-scene asset cache tokens. Bump a scene's entry only when that scene's
   // normalized frames are re-authored, so a long-lived image cache (webp is
   // served max-age=604800) cannot keep serving a stale frame after deploy.
   const SCENE_ASSET_VERSIONS = Object.freeze({
+    curl: "20260926-curl-webp-1",
     plate: "20260907-v45-plate-bulk-female-leg-repair-1",
     connect: "20260908-v46-connect-phone-review-fix-1"
   });
@@ -49,12 +50,12 @@
       loop: true,
       loopDelay: 1050,
       frames: Object.freeze([
-        frame("curl", 1, 520, "png"),
-        frame("curl", 2, 340, "png"),
-        frame("curl", 3, 540, "png"),
-        frame("curl", 4, 520, "png")
+        frame("curl", 1, 520),
+        frame("curl", 2, 340),
+        frame("curl", 3, 540),
+        frame("curl", 4, 520)
       ]),
-      reducedFrame: frame("curl", 1, 0, "png")
+      reducedFrame: frame("curl", 1, 0)
     }),
     benchPr: Object.freeze({
       frames: Object.freeze([
