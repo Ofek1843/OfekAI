@@ -1,4 +1,4 @@
-import { t, getLanguage, setLanguage } from "./i18n.js?v=20260928-en-default-1";
+import { t, getLanguage, setLanguage } from "./i18n.js?v=20260928-language-welcome-fix-1";
 import { trackPageView, trackClick } from "./analytics.js";
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
@@ -312,6 +312,7 @@ function wireLanguageWelcome() {
   const continueWith = (language) => {
     select.value = language;
     setLanguage(language);
+    try { localStorage.setItem("ofek-ai-language-welcome-complete", "1"); } catch {}
     translateLandingPage();
     loadPublicSocialProof();
     dialog.close();

@@ -14,6 +14,9 @@ test("new visitors default to English and can choose any supported landing-page 
   assert.doesNotMatch(AUTH, /HE\s*\/\s*EN|EN\s*\/\s*HE/i);
   assert.match(LANDING, /<html lang="en" dir="ltr">/);
   assert.match(LANDING, /id="languageWelcomeDialog"/);
+  assert.match(LANDING, /window\.__fpLanguageWelcomeRequired = localStorage\.getItem\("ofek-ai-language-welcome-complete"\) !== "1"/);
+  assert.match(LANDING, /ofek-ai-language-welcome-complete/);
+  assert.match(LANDING, /window\.__fpLanguageWelcomeRequired = localStorage\.getItem\("ofek-ai-language-welcome-complete"\) !== "1"/);
   assert.match(LANDING, /<option value="en" selected>English<\/option>/);
   for (const language of ["en", "he", "es", "fr", "de", "ar", "zh"]) {
     assert.match(LANDING, new RegExp(`<option value="${language}"`));
@@ -21,6 +24,8 @@ test("new visitors default to English and can choose any supported landing-page 
   const landingScript = fs.readFileSync(path.join(ROOT, "public", "js", "landing.js"), "utf8");
   assert.match(landingScript, /window\.__fpLanguageWelcomeRequired/);
   assert.match(landingScript, /setLanguage\(language\)/);
+  assert.match(landingScript, /setItem\("ofek-ai-language-welcome-complete", "1"\)/);
+  assert.match(landingScript, /setItem\("ofek-ai-language-welcome-complete", "1"\)/);
   assert.match(LANDING, /Continue in Hebrew/);
   assert.match(I18N, /const current = supported\.includes\(lang\)[\s\S]*?: "en";/);
 });
