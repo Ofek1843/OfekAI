@@ -23,12 +23,13 @@
             const initialLanguage = supportedLanguages.includes(savedLanguage) ? savedLanguage : "en";
             document.documentElement.lang = initialLanguage;
             document.documentElement.dir = ["he", "ar"].includes(initialLanguage) ? "rtl" : "ltr";
-            window.__fpLanguageWelcomeRequired = localStorage.getItem("ofek-ai-language-welcome-complete") !== "1";
         } catch {
-            window.__fpLanguageWelcomeRequired = true;
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
         }
     </script>
 <link rel="stylesheet" href="/css/theme.css">
+    <link rel="preload" as="script" href="/js/language-welcome.js?v=20260928-instant-language-1">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#10131A">
     <link rel="manifest" href="/manifest.json">
@@ -139,6 +140,7 @@
             </div>
         </div>
     </dialog>
+    <script src="/js/language-welcome.js?v=20260928-instant-language-1"></script>
 
     <main>
         <section class="hero" aria-labelledby="landingHeroTitle">
@@ -442,7 +444,7 @@
         </nav>
     </footer>
 
-    <script type="module" src="js/landing.js?v=20260928-language-welcome-fix-1"></script>
+    <script type="module" src="js/landing.js?v=20260928-language-welcome-instant-2"></script>
     <script type="module" src="/js/site-feedback.js"></script>
     <script type="module" src="/js/pwa-install.js"></script>
 </body>

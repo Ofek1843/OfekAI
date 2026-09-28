@@ -14,18 +14,19 @@ test("new visitors default to English and can choose any supported landing-page 
   assert.doesNotMatch(AUTH, /HE\s*\/\s*EN|EN\s*\/\s*HE/i);
   assert.match(LANDING, /<html lang="en" dir="ltr">/);
   assert.match(LANDING, /id="languageWelcomeDialog"/);
-  assert.match(LANDING, /window\.__fpLanguageWelcomeRequired = localStorage\.getItem\("ofek-ai-language-welcome-complete"\) !== "1"/);
-  assert.match(LANDING, /ofek-ai-language-welcome-complete/);
-  assert.match(LANDING, /window\.__fpLanguageWelcomeRequired = localStorage\.getItem\("ofek-ai-language-welcome-complete"\) !== "1"/);
   assert.match(LANDING, /<option value="en" selected>English<\/option>/);
   for (const language of ["en", "he", "es", "fr", "de", "ar", "zh"]) {
     assert.match(LANDING, new RegExp(`<option value="${language}"`));
   }
   const landingScript = fs.readFileSync(path.join(ROOT, "public", "js", "landing.js"), "utf8");
-  assert.match(landingScript, /window\.__fpLanguageWelcomeRequired/);
-  assert.match(landingScript, /setLanguage\(language\)/);
-  assert.match(landingScript, /setItem\("ofek-ai-language-welcome-complete", "1"\)/);
-  assert.match(landingScript, /setItem\("ofek-ai-language-welcome-complete", "1"\)/);
+  const welcomeScript = fs.readFileSync(path.join(ROOT, "public", "js", "language-welcome.js"), "utf8");
+  assert.match(welcomeScript, /ofek-ai-language-welcome-complete/);
+  assert.match(LANDING, /language-welcome\.js\?v=20260928-instant-language-1/);
+  assert.match(welcomeScript, /dialog\.showModal\(\)/);
+  assert.ok(LANDING.indexOf("language-welcome.js") < LANDING.indexOf("<main>"), "language chooser should run before page content and the deferred landing module");
+  assert.match(welcomeScript, /setItem\(completedKey, "1"\)/);
+  assert.match(welcomeScript, /setItem\(languageKey, language\)/);
+  assert.doesNotMatch(landingScript, /wireLanguageWelcome/);
   assert.match(LANDING, /Continue in Hebrew/);
   assert.match(I18N, /const current = supported\.includes\(lang\)[\s\S]*?: "en";/);
 });
