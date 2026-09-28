@@ -11,7 +11,7 @@ const SW = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
 const pages = fs.readdirSync(PUBLIC).filter((file) => file.endsWith(".html")).sort();
 
 test("the complete redesign is applied once to every public HTML route", () => {
-  assert.equal(pages.length, 34);
+  assert.equal(pages.length, 36);
   const failures = [];
   for (const page of pages) {
     const html = fs.readFileSync(path.join(PUBLIC, page), "utf8");
@@ -80,9 +80,9 @@ test("focus, reduced motion, disabled controls, and minimum control size are exp
 });
 
 test("the service worker versions and pre-caches the shared redesign assets", () => {
-  assert.match(SW, /fuelphysique-v45-hero-message-render-1/);
+  assert.match(SW, /fuelphysique-v45-language-food-i18n-2/);
   assert.ok(SW.includes("/css/redesign-v1.css?v=20260914-i18n-dashboard-1"));
-  assert.ok(SW.includes("/js/redesign-shell.js?v=20260914-i18n-dashboard-1"));
+  assert.ok(SW.includes("/js/redesign-shell.js?v=20260928-site-i18n-1"));
   assert.ok(SW.includes("/css/illustrated-v4.css?v=20260914-i18n-dashboard-1"));
   assert.ok(SW.includes("/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5"));
   assert.ok(SW.includes("/images/brand/ultramarine-athlete-hero.webp"));

@@ -12,12 +12,12 @@ const CATEGORY_OPTIONS = [
 ];
 const state = {
   user: null, targets: null, selected: [], editingId: null,
-  language: localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en",
+  language: ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language")) ? localStorage.getItem("ofek-ai-language") : "en",
   activeCategories: [], menuOpen: false,
   discovery: { offset: 0, hasMore: false, requestId: 0, controller: null, timer: null, loading: false, results: [] }
 };
 document.documentElement.lang = state.language;
-document.documentElement.dir = state.language === "he" ? "rtl" : "ltr";
+document.documentElement.dir = ["he", "ar"].includes(state.language) ? "rtl" : "ltr";
 const esc = value => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const number = value => Number.isFinite(Number(value)) ? Number(value) : 0;
 const parseList = value => String(value || "").split(/[,;|\n]+/).map(item => item.trim()).filter(Boolean);

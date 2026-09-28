@@ -1,4 +1,8 @@
 (() => {
+  let applyLanguageCopy = null;
+  const languageModuleReady = import("./i18n.js?v=20260928-site-i18n-1")
+    .then((module) => { applyLanguageCopy = module.applyDocumentTranslations; })
+    .catch(() => {});
   const route = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
   if (!document.querySelector('link[href*="v45-deep-ocean.css"]')) {
     const deepOceanStyles = document.createElement("link");
@@ -747,6 +751,7 @@
     const copy = translations[language];
     document.documentElement.lang = language;
     document.documentElement.dir = isRtlLanguage(language) ? "rtl" : "ltr";
+    void languageModuleReady.then(() => applyLanguageCopy?.(language));
     document.body.classList.add("fp-redesign", "fp-v45-deep-ocean", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
@@ -764,6 +769,7 @@
     const language = normalizeLanguage(event.detail?.language || "en");
     document.documentElement.lang = language;
     document.documentElement.dir = isRtlLanguage(language) ? "rtl" : "ltr";
+    void languageModuleReady.then(() => applyLanguageCopy?.(language));
     updateProductLanguage(language);
   });
 

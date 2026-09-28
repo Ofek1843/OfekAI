@@ -15,7 +15,17 @@ test("AI food interpretation defaults to the approved low-cost model and bounds 
   const messages = foodInterpretationMessages({ text: "אינג'רה ".repeat(100), language: "he" });
   assert.equal(messages.length, 2);
   assert.match(messages[0].content, /regional foods \(for example injera\)/);
-  assert.ok(messages[1].content.length <= "Unknown food text: ".length + MAX_FOOD_TEXT_LENGTH);
+  assert.ok(messages[1].content.length <= 220 + MAX_FOOD_TEXT_LENGTH);
+  assert.match(messages[1].content, /Unknown food text: /);
+});
+
+test("AI food fallback passes the selected supported language and spelled-quantity guidance", () => {
+  for (const [language, expected] of [["en", "English"], ["he", "Hebrew"], ["es", "Spanish"], ["fr", "French"], ["de", "German"], ["ar", "Arabic"], ["zh", "Simplified Chinese"]]) {
+    const messages = foodInterpretationMessages({ text: "forty grams of an unfamiliar food", language });
+    assert.match(messages[1].content, new RegExp(`interface language: ${expected}`));
+    assert.match(messages[1].content, /quantity may be written in any supported language/);
+    assert.match(messages[1].content, /Preserve any explicit weight/);
+  }
 });
 
 test("AI food interpretation accepts a bounded representative food and always supplies an average", () => {

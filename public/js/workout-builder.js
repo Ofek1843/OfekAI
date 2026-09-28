@@ -28,7 +28,9 @@ const button = document.querySelector("#generate-button");
 const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#program-result");
 const currentLanguage =
-  localStorage.getItem("ofek-ai-language") || "en";
+  ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
+    ? localStorage.getItem("ofek-ai-language")
+    : "en";
 trackPageView({ page: "workout-builder" });
 trackEvent("builder_open", { builder: "workout" });
 async function authHeaders(contentType = "application/json") {
@@ -377,8 +379,8 @@ function translateFormOptions() {
 }
 
 translateFormOptions();
-document.documentElement.lang = isHebrew ? "he" : "en";
-document.documentElement.dir = isHebrew ? "rtl" : "ltr";
+document.documentElement.lang = currentLanguage;
+document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : "ltr";
 
 
 const wizardSteps = [...document.querySelectorAll(".wizard-step")];

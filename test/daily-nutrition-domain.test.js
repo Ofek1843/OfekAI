@@ -150,6 +150,32 @@ test("explicit grams override natural portion estimation", async () => {
   assert.equal(specificSuffix.amount, 250);
 });
 
+test("spelled-out quantities and basic foods resolve in every supported language", async () => {
+  const { parseAmountPrefix, parseFoodText } = await domainPromise;
+  const cases = [
+    ["forty grams potatoes", "potato"],
+    ["ארבעים גרם תפוח אדמה", "potato"],
+    ["cuarenta gramos de patata", "potato"],
+    ["quarante grammes de pommes de terre", "potato"],
+    ["vierzig Gramm Kartoffeln", "potato"],
+    ["أربعون غرامًا من البطاطس", "potato"],
+    ["٤٠ غرام بطاطس", "potato"],
+    ["四十克土豆", "potato"]
+  ];
+  for (const [input, foodId] of cases) {
+    const parsedAmount = parseAmountPrefix(input);
+    assert.equal(parsedAmount.amount, 40, input);
+    assert.equal(parsedAmount.unit, "g", input);
+    const result = parseFoodText(input);
+    assert.equal(result.status, "ready", input);
+    assert.equal(result.errors.length, 0, input);
+    assert.equal(result.entries[0].foodId, foodId, input);
+    assert.equal(result.entries[0].amount, 40, input);
+    assert.equal(result.entries[0].calories, 34.8, input);
+    assert.equal(result.entries[0].estimated, false, input);
+  }
+});
+
 test("natural English and Hebrew portions resolve to transparent editable estimates", async () => {
   const { parseFoodText } = await domainPromise;
   const cases = [

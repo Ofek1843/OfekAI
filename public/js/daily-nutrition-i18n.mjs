@@ -304,7 +304,10 @@ const DAILY_NUTRITION_COPY = Object.freeze({
 });
 
 function dailyNutritionCopy(language = "en") {
-  return DAILY_NUTRITION_COPY[language === "he" ? "he" : "en"];
+  // The page has complete English/Hebrew copy; other locales currently use
+  // English as a safe fallback while preserving their document language and
+  // direction instead of silently switching the whole app to English mode.
+  return DAILY_NUTRITION_COPY[language] || DAILY_NUTRITION_COPY.en;
 }
 
 export { DAILY_NUTRITION_COPY, dailyNutritionCopy };

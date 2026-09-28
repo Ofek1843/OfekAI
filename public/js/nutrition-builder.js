@@ -15,7 +15,9 @@ const button = document.querySelector("#generate-button");
 const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#nutrition-result");
 const currentLanguage =
-  localStorage.getItem("ofek-ai-language") || "en";
+  ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
+    ? localStorage.getItem("ofek-ai-language")
+    : "en";
 async function authHeaders(contentType = "application/json") {
   const user = auth.currentUser;
   if (!user) throw new Error("Authentication required.");
@@ -291,8 +293,8 @@ translateFormOptions();
 trackPageView({ page: "nutrition-builder" });
 trackEvent("builder_open", { builder: "nutrition" });
 
-document.documentElement.lang = isHebrew ? "he" : "en";
-document.documentElement.dir = isHebrew ? "rtl" : "ltr";
+document.documentElement.lang = currentLanguage;
+document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : "ltr";
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (button.disabled) return;
@@ -866,7 +868,7 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
         body: JSON.stringify({
           mealNumber,
           optionNumber,
-          language: isHebrew ? "he" : "en",
+          language: currentLanguage,
           plan: window.currentNutritionPlan
         })
       });

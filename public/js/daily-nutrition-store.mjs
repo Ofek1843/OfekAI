@@ -8,7 +8,7 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
-import { shiftDateKey, totalsForEntries, weekDateKeys } from "./daily-nutrition-domain.mjs";
+import { shiftDateKey, totalsForEntries, weekDateKeys } from "./daily-nutrition-domain.mjs?v=20260928-multilingual-food-1";
 
 const MAX_DAILY_ENTRIES = 80;
 

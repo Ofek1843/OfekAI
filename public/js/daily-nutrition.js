@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260918-daily-resilience-1";
+import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260928-multilingual-food-1";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import {
@@ -12,7 +12,7 @@ import {
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
-} from "./daily-nutrition-domain.mjs?v=20260918-daily-resilience-1";
+} from "./daily-nutrition-domain.mjs?v=20260928-multilingual-food-1";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -22,8 +22,8 @@ import {
   normalizeLog,
   saveDailyLog,
   saveFoodCombination
-} from "./daily-nutrition-store.mjs?v=20260914-i18n-dashboard-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260918-daily-resilience-1";
+} from "./daily-nutrition-store.mjs?v=20260928-multilingual-food-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260928-language-coverage-1";
 import {
   formatNutritionAmount,
   formatNutritionNumber,
@@ -32,7 +32,11 @@ import {
 } from "./daily-nutrition-format.mjs?v=20260914-i18n-dashboard-1";
 
 const $ = (selector) => document.querySelector(selector);
-const language = localStorage.getItem("ofek-ai-language") === "he" ? "he" : "en";
+const language = ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
+  ? localStorage.getItem("ofek-ai-language")
+  : "en";
+document.documentElement.lang = language;
+document.documentElement.dir = ["he", "ar"].includes(language) ? "rtl" : "ltr";
 const copy = dailyNutritionCopy(language);
 const SMART_FOODS_STORAGE_KEY = "fp-daily-smart-foods-v1";
 const DAILY_DRAFT_STORAGE_PREFIX = "fp-daily-log-draft-v2";
@@ -143,7 +147,7 @@ function setAmount(element, value, unit, precision = 1, options = {}) {
 
 function applyLanguage() {
   document.documentElement.lang = language;
-  document.documentElement.dir = language === "he" ? "rtl" : "ltr";
+  document.documentElement.dir = ["he", "ar"].includes(language) ? "rtl" : "ltr";
   document.title = copy.pageTitle;
   document.querySelectorAll("[data-copy]").forEach((element) => {
     const value = copy[element.dataset.copy];

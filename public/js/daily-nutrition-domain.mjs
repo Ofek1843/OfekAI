@@ -59,7 +59,7 @@ const FOOD_CATALOG = Object.freeze([
   { id: "ready-rice", name: { en: "Cooked rice", he: "אורז מבושל" }, aliases: ["ready rice", "cooked rice", "rice", "אורז מוכן", "אורז מבושל", "אורז"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 130, protein: 2.7, carbs: 28, fat: 0.3 }, reference: { source: "generic cooked white rice", ediblePortion: true, state: "cooked", defaultState: "cooked when logged as eaten" } },
   { id: "pasta-dry", name: { en: "Dry pasta", he: "פסטה יבשה" }, aliases: ["dry pasta", "uncooked pasta", "raw pasta", "dry noodles", "פסטה יבשה", "פסטה לא מבושלת", "פסטה נאה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 371, protein: 13, carbs: 74, fat: 1.5 }, reference: { source: "generic dry durum-wheat pasta", ediblePortion: true, state: "dry", policy: "representative-not-brand" } },
   { id: "pasta-cooked", name: { en: "Cooked pasta", he: "פסטה מבושלת" }, aliases: ["cooked pasta", "pasta", "פסטה מבושלת", "פסטה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 157, protein: 5.8, carbs: 30.9, fat: 0.9 }, reference: { source: "generic cooked pasta", ediblePortion: true, state: "cooked", defaultState: "cooked when logged as eaten" } },
-  { id: "potato", name: { en: "Cooked potato", he: "תפוח אדמה מבושל" }, aliases: ["potato", "potatoes", "cooked potato", "תפוח אדמה", "תפוחי אדמה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 87, protein: 1.9, carbs: 20.1, fat: 0.1 }, reference: { source: "generic cooked edible portion", ediblePortion: true, state: "cooked" } },
+  { id: "potato", name: { en: "Cooked potato", he: "תפוח אדמה מבושל" }, aliases: ["potato", "potatoes", "cooked potato", "תפוח אדמה", "תפוחי אדמה", "patata", "patatas", "papa", "papas", "pomme de terre", "pommes de terre", "kartoffel", "kartoffeln", "بطاطا", "بطاطس", "البطاطس", "土豆", "马铃薯", "熟土豆", "熟马铃薯"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 87, protein: 1.9, carbs: 20.1, fat: 0.1 }, reference: { source: "generic cooked edible portion", ediblePortion: true, state: "cooked" } },
   { id: "yogurt", name: { en: "Plain yogurt", he: "יוגורט טבעי" }, aliases: ["plain yogurt", "yogurt", "יוגורט טבעי", "יוגורט"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 61, protein: 3.5, carbs: 4.7, fat: 3.3 }, reference: { source: "generic plain whole-milk yogurt", ediblePortion: true, state: "ready-to-eat" } },
   { id: "salmon", name: { en: "Cooked salmon", he: "סלמון מבושל" }, aliases: ["cooked salmon", "salmon", "סלמון מבושל", "סלמון"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 206, protein: 22, carbs: 0, fat: 12.4 }, reference: { source: "generic cooked salmon", ediblePortion: true, state: "cooked" } },
   { id: "cornflakes", name: { en: "Cornflakes", he: "קורנפלקס" }, aliases: ["cornflakes", "corn flakes", "קורנפלקס", "דגני בוקר"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 357, protein: 7.5, carbs: 84, fat: 0.4 }, reference: { source: "generic ready-to-eat corn flakes", ediblePortion: true, state: "dry" } },
@@ -147,7 +147,7 @@ const PIZZA_WHOLE_CHOICES = Object.freeze([
 ]);
 
 const UNIT_ALIASES = new Map([
-  ["g", "g"], ["gr", "g"], ["gram", "g"], ["grams", "g"], ["גרם", "g"], ["גרמים", "g"],
+  ["g", "g"], ["gr", "g"], ["gram", "g"], ["grams", "g"], ["gramo", "g"], ["gramos", "g"], ["gramme", "g"], ["grammes", "g"], ["gramm", "g"], ["克", "g"], ["غرام", "g"], ["غراما", "g"], ["جرام", "g"], ["جراما", "g"], ["גרם", "g"], ["גרמים", "g"],
   ["kg", "kg"], ["kilogram", "kg"], ["kilograms", "kg"], ["קג", "kg"], ["קילו", "kg"],
   ["ml", "ml"], ["milliliter", "ml"], ["milliliters", "ml"], ["מל", "ml"],
   ["item", "item"], ["items", "item"], ["unit", "item"], ["units", "item"], ["יחידה", "item"], ["יחידות", "item"],
@@ -162,6 +162,8 @@ const UNIT_ALIASES = new Map([
 function normalizeText(value) {
   return String(value || "")
     .normalize("NFKD")
+    .replace(/\p{M}/gu, "")
+    .replace(/[٠-٩۰-۹]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹".indexOf(digit) % 10))
     .toLowerCase()
     .replace(/[׳’`]/g, "'")
     .replace(/["“”()[\]{}:!?]/g, " ")
@@ -188,19 +190,19 @@ const COUNT_WORDS = Object.freeze(new Map([
 // Natural food logging should not require a user to switch keyboard layouts
 // merely to write an amount. These are deliberately bounded number words for
 // portion/weight prefixes (not free-form numeric NLP), covering ordinary
-// Hebrew and English quantities up to one hundred.
+// quantities written in every supported interface language.
 const SPELLED_NUMBER_WORDS = Object.freeze(new Map([
   ["half", 0.5], ["חצי", 0.5],
-  ["one", 1], ["a", 1], ["an", 1], ["אחד", 1], ["אחת", 1],
-  ["two", 2], ["שניים", 2], ["שני", 2], ["שתיים", 2], ["שתי", 2],
-  ["three", 3], ["שלוש", 3], ["שלושה", 3],
-  ["four", 4], ["ארבע", 4], ["ארבעה", 4],
-  ["five", 5], ["חמש", 5], ["חמישה", 5],
-  ["six", 6], ["שש", 6], ["שישה", 6],
-  ["seven", 7], ["שבע", 7], ["שבעה", 7],
-  ["eight", 8], ["שמונה", 8], ["שמונת", 8],
-  ["nine", 9], ["תשע", 9], ["תשעה", 9],
-  ["ten", 10], ["עשר", 10], ["עשרה", 10],
+  ["one", 1], ["a", 1], ["an", 1], ["uno", 1], ["una", 1], ["un", 1], ["une", 1], ["eins", 1], ["ein", 1], ["eine", 1], ["واحد", 1], ["واحدة", 1], ["أحد", 1], ["احد", 1], ["一", 1], ["אחד", 1], ["אחת", 1],
+  ["two", 2], ["dos", 2], ["deux", 2], ["zwei", 2], ["اثنان", 2], ["اثنين", 2], ["二", 2], ["שניים", 2], ["שני", 2], ["שתיים", 2], ["שתי", 2],
+  ["three", 3], ["tres", 3], ["trois", 3], ["drei", 3], ["ثلاثة", 3], ["ثلاث", 3], ["三", 3], ["שלוש", 3], ["שלושה", 3],
+  ["four", 4], ["cuatro", 4], ["quatre", 4], ["vier", 4], ["أربعة", 4], ["اربعة", 4], ["四", 4], ["ארבע", 4], ["ארבעה", 4],
+  ["five", 5], ["cinco", 5], ["cinq", 5], ["funf", 5], ["خمسة", 5], ["五", 5], ["חמש", 5], ["חמישה", 5],
+  ["six", 6], ["seis", 6], ["six", 6], ["sechs", 6], ["ستة", 6], ["ست", 6], ["六", 6], ["שש", 6], ["שישה", 6],
+  ["seven", 7], ["siete", 7], ["sept", 7], ["sieben", 7], ["سبعة", 7], ["七", 7], ["שבע", 7], ["שבעה", 7],
+  ["eight", 8], ["ocho", 8], ["huit", 8], ["acht", 8], ["ثمانية", 8], ["ثمان", 8], ["八", 8], ["שמונה", 8], ["שמונת", 8],
+  ["nine", 9], ["nueve", 9], ["neuf", 9], ["neun", 9], ["تسعة", 9], ["تسع", 9], ["九", 9], ["תשע", 9], ["תשעה", 9],
+  ["ten", 10], ["diez", 10], ["dix", 10], ["zehn", 10], ["عشرة", 10], ["عشر", 10], ["十", 10], ["עשר", 10], ["עשרה", 10],
   ["eleven", 11], ["אחת עשרה", 11], ["אחד עשר", 11],
   ["twelve", 12], ["שתים עשרה", 12], ["שנים עשר", 12],
   ["thirteen", 13], ["שלוש עשרה", 13], ["שלושה עשר", 13],
@@ -210,11 +212,15 @@ const SPELLED_NUMBER_WORDS = Object.freeze(new Map([
   ["seventeen", 17], ["שבע עשרה", 17], ["שבעה עשר", 17],
   ["eighteen", 18], ["שמונה עשרה", 18], ["שמונה עשר", 18],
   ["nineteen", 19], ["תשע עשרה", 19], ["תשעה עשר", 19],
-  ["twenty", 20], ["עשרים", 20], ["thirty", 30], ["שלושים", 30],
-  ["forty", 40], ["ארבעים", 40], ["fifty", 50], ["חמישים", 50],
-  ["sixty", 60], ["שישים", 60], ["seventy", 70], ["שבעים", 70],
-  ["eighty", 80], ["שמונים", 80], ["ninety", 90], ["תשעים", 90],
-  ["one hundred", 100], ["מאה", 100]
+  ["twenty", 20], ["עשרים", 20], ["veinte", 20], ["vingt", 20], ["zwanzig", 20], ["عشرون", 20], ["عشرين", 20], ["二十", 20],
+  ["thirty", 30], ["שלושים", 30], ["treinta", 30], ["trente", 30], ["dreißig", 30], ["ثلاثون", 30], ["ثلاثين", 30], ["三十", 30],
+  ["forty", 40], ["ארבעים", 40], ["cuarenta", 40], ["quarante", 40], ["vierzig", 40], ["أربعون", 40], ["أربعين", 40], ["اربعون", 40], ["اربعين", 40], ["四十", 40],
+  ["fifty", 50], ["חמישים", 50], ["cincuenta", 50], ["cinquante", 50], ["funfzig", 50], ["خمسون", 50], ["خمسين", 50], ["五十", 50],
+  ["sixty", 60], ["שישים", 60], ["sesenta", 60], ["soixante", 60], ["sechzig", 60], ["ستون", 60], ["ستين", 60], ["六十", 60],
+  ["seventy", 70], ["שבעים", 70], ["setenta", 70], ["soixante-dix", 70], ["siebzig", 70], ["سبعون", 70], ["سبعين", 70], ["七十", 70],
+  ["eighty", 80], ["שמונים", 80], ["ochenta", 80], ["quatre-vingts", 80], ["achtzig", 80], ["ثمانون", 80], ["ثمانين", 80], ["八十", 80],
+  ["ninety", 90], ["תשעים", 90], ["noventa", 90], ["quatre-vingt-dix", 90], ["neunzig", 90], ["تسعون", 90], ["تسعين", 90], ["九十", 90],
+  ["one hundred", 100], ["מאה", 100], ["cien", 100], ["cent", 100], ["hundert", 100], ["مئة", 100], ["百", 100]
 ]));
 
 function spelledNumberValue(word) {
@@ -236,7 +242,10 @@ function spelledAmountPrefix(normalized) {
     if (!Number.isFinite(amount) || amount <= 0 || amount > 1000) continue;
     const possibleUnit = normalizeUnit(words[wordCount]);
     if (possibleUnit && words.length > wordCount + 1) {
-      return { amount, unit: possibleUnit, foodText: words.slice(wordCount + 1).join(" ") };
+      const foodWords = words.slice(wordCount + 1);
+      const connectors = new Set(["de", "del", "d", "of", "من", "الـ"]);
+      while (connectors.has(foodWords[0])) foodWords.shift();
+      return { amount, unit: possibleUnit, foodText: foodWords.join(" ") };
     }
     return { amount, unit: "", foodText: words.slice(wordCount).join(" ") };
   }
@@ -281,17 +290,38 @@ function splitFoodInput(value) {
 
 function parseAmountPrefix(segment) {
   const normalized = normalizeText(segment);
-  const suffix = normalized.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s*([a-z\u0590-\u05ff.'״׳]+)$/iu);
+  // Chinese conventionally writes the number, unit and food without spaces.
+  const chinese = normalized.match(/^([零〇一二两三四五六七八九十百]+)(千克|公斤|克)(.+)$/u);
+  if (chinese) {
+    const digits = new Map([["零", 0], ["〇", 0], ["一", 1], ["二", 2], ["两", 2], ["三", 3], ["四", 4], ["五", 5], ["六", 6], ["七", 7], ["八", 8], ["九", 9]]);
+    const chineseNumber = (value) => {
+      if (/^[零〇一二两三四五六七八九]$/u.test(value)) return digits.get(value);
+      let total = 0;
+      let current = 0;
+      for (const character of value) {
+        if (digits.has(character)) current = digits.get(character);
+        else if (character === "十") { total += (current || 1) * 10; current = 0; }
+        else if (character === "百") { total += (current || 1) * 100; current = 0; }
+      }
+      return total + current;
+    };
+    const amount = chineseNumber(chinese[1]);
+    if (amount > 0) return { amount, unit: chinese[2] === "千克" || chinese[2] === "公斤" ? "kg" : "g", foodText: normalizeText(chinese[3]) };
+  }
+  const suffix = normalized.match(/^(.+?)\s+(\d+(?:[.,]\d+)?)\s*([a-z\u0590-\u05ff\u0600-\u06ff.'״׳]+)$/iu);
   if (suffix) {
     const suffixUnit = normalizeUnit(suffix[3]);
     if (suffixUnit) return { amount: Number(suffix[2].replace(",", ".")), unit: suffixUnit, foodText: normalizeText(suffix[1]) };
   }
-  const match = normalized.match(/^(\d+(?:[.,]\d+)?)\s*([a-z\u0590-\u05ff.'״׳]*)\s+(.+)$/iu);
+  const match = normalized.match(/^(\d+(?:[.,]\d+)?)\s*([a-z\u0590-\u05ff\u0600-\u06ff.'״׳]*)\s+(.+)$/iu);
   if (!match) return spelledAmountPrefix(normalized) || { amount: null, unit: "", foodText: normalized };
   const amount = Number(match[1].replace(",", "."));
   const unit = normalizeUnit(match[2]);
   if (match[2] && !unit) return { amount, unit: "", foodText: normalizeText(`${match[2]} ${match[3]}`) };
-  return { amount, unit, foodText: normalizeText(match[3]) };
+  const foodWords = normalizeText(match[3]).split(" ");
+  const connectors = new Set(["de", "del", "d", "of", "من", "الـ"]);
+  while (connectors.has(foodWords[0])) foodWords.shift();
+  return { amount, unit, foodText: foodWords.join(" ") };
 }
 
 function catalogWithCustom(customFoods = []) {

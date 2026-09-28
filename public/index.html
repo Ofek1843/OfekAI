@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,6 +16,18 @@
     <title>FuelPhysique — Workout, Nutrition and Progress Tracking</title>
     <meta name="application-name" content="FuelPhysique">
     <meta name="apple-mobile-web-app-title" content="FuelPhysique">
+    <script>
+        try {
+            const savedLanguage = localStorage.getItem("ofek-ai-language");
+            const supportedLanguages = ["en", "he", "es", "fr", "de", "ar", "zh"];
+            const initialLanguage = supportedLanguages.includes(savedLanguage) ? savedLanguage : "en";
+            document.documentElement.lang = initialLanguage;
+            document.documentElement.dir = ["he", "ar"].includes(initialLanguage) ? "rtl" : "ltr";
+            window.__fpLanguageWelcomeRequired = !supportedLanguages.includes(savedLanguage);
+        } catch {
+            window.__fpLanguageWelcomeRequired = true;
+        }
+    </script>
 <link rel="stylesheet" href="/css/theme.css">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#10131A">
@@ -36,7 +48,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="/assets/athlete-motion/v43/curl/normalized/frame-01.webp?v=20260926-curl-webp-1" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="css/landing.css?v=20260928-language-welcome">
     <!--
       Structured data for the landing page only. Deliberately limited to
       facts the site itself demonstrates: identity, the site URL, its logo,
@@ -85,7 +97,7 @@
   <link rel="stylesheet" href="/css/product-polish-v3.css?v=20260811-spectrum-v3">
   <link rel="stylesheet" href="/css/illustrated-v4.css?v=20260914-i18n-dashboard-1">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1">
-  <script defer src="/js/redesign-shell.js?v=20260914-i18n-dashboard-1"></script>
+  <script defer src="/js/redesign-shell.js?v=20260928-site-i18n-1"></script>
   <script defer src="/js/athlete-figure.js?v=20260815-real-athlete-v43-complete-5"></script>
   <script defer src="/js/scenes/training.js?v=20260815-real-athlete-v43-complete-5"></script>
   <script defer src="/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5"></script>
@@ -105,6 +117,28 @@
             <a href="auth.html" class="nav-btn" data-i18n="landingLogin">Login</a>
         </div>
     </nav>
+
+    <dialog class="language-welcome" id="languageWelcomeDialog" aria-labelledby="languageWelcomeTitle" aria-describedby="languageWelcomeDescription">
+        <div class="language-welcome__content">
+            <p class="language-welcome__eyebrow">FuelPhysique</p>
+            <h1 id="languageWelcomeTitle">Choose your language</h1>
+            <p id="languageWelcomeDescription">English is selected by default. Choose another language before continuing if you prefer.</p>
+            <label for="welcomeLanguageSelect">Language</label>
+            <select id="welcomeLanguageSelect">
+                <option value="en" selected>English</option>
+                <option value="he">עברית</option>
+                <option value="es">Español</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="ar">العربية</option>
+                <option value="zh">中文</option>
+            </select>
+            <div class="language-welcome__actions">
+                <button type="button" class="language-welcome__continue" id="welcomeLanguageContinue">Continue in English</button>
+                <button type="button" class="language-welcome__english" id="welcomeLanguageEnglish">Continue in Hebrew</button>
+            </div>
+        </div>
+    </dialog>
 
     <main>
         <section class="hero" aria-labelledby="landingHeroTitle">
@@ -408,7 +442,7 @@
         </nav>
     </footer>
 
-    <script type="module" src="js/landing.js?v=20260728-landing-results"></script>
+    <script type="module" src="js/landing.js?v=20260928-en-default-1"></script>
     <script type="module" src="/js/site-feedback.js"></script>
     <script type="module" src="/js/pwa-install.js"></script>
 </body>

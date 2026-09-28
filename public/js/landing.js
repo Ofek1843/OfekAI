@@ -1,7 +1,18 @@
-import { t, getLanguage, setLanguage } from "./i18n.js?v=20260914-landing-i18n-1";
+import { t, getLanguage, setLanguage } from "./i18n.js?v=20260928-en-default-1";
 import { trackPageView, trackClick } from "./analytics.js";
 import { auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+const LANGUAGE_WELCOME = {
+  en: { title: "Choose your language", description: "English is selected by default. Choose another language before continuing if you prefer.", label: "Language", continue: "Continue in {language}", english: "Continue in Hebrew" },
+  he: { title: "באיזו שפה להשתמש?", description: "אנגלית נבחרה כברירת מחדל. אפשר לבחור שפה אחרת לפני שממשיכים.", label: "שפה", continue: "המשך בעברית", english: "המשך באנגלית" },
+  es: { title: "Elige tu idioma", description: "El inglés está seleccionado de forma predeterminada. Puedes elegir otro idioma antes de continuar.", label: "Idioma", continue: "Continuar en {language}", english: "Continuar en hebreo" },
+  fr: { title: "Choisissez votre langue", description: "L’anglais est sélectionné par défaut. Vous pouvez choisir une autre langue avant de continuer.", label: "Langue", continue: "Continuer en {language}", english: "Continuer en hébreu" },
+  de: { title: "Sprache auswählen", description: "Englisch ist standardmäßig ausgewählt. Wähle vor dem Fortfahren eine andere Sprache, wenn du möchtest.", label: "Sprache", continue: "Weiter auf {language}", english: "Auf Hebräisch fortfahren" },
+  ar: { title: "اختر لغتك", description: "الإنجليزية هي اللغة المحددة افتراضيًا. يمكنك اختيار لغة أخرى قبل المتابعة.", label: "اللغة", continue: "المتابعة باللغة {language}", english: "المتابعة بالعبرية" },
+  zh: { title: "选择语言", description: "默认选择英语。继续前也可以选择其他语言。", label: "语言", continue: "使用{language}继续", english: "使用希伯来语继续" }
+};
+const LANGUAGE_NATIVE_NAMES = { en: "English", he: "עברית", es: "Español", fr: "Français", de: "Deutsch", ar: "العربية", zh: "中文" };
 
 const LANDING_FALLBACKS = {
   en: {
@@ -237,7 +248,7 @@ const LANDING_FALLBACKS = {
 let authStatePromise = null;
 
 function formatSocialProofCount(value, language) {
-  return Math.max(0, Number(value) || 0).toLocaleString(language === "he" ? "he-IL" : "en-US");
+  return Math.max(0, Number(value) || 0).toLocaleString(language || "en");
 }
 
 function renderSocialProofCount(element, nextValue, language) {
@@ -280,6 +291,38 @@ function translateLandingPage() {
       element.setAttribute("aria-label", translation === key ? fallback : translation);
     }
   });
+}
+
+function wireLanguageWelcome() {
+  if (window.__fpLanguageWelcomeRequired !== true) return;
+  const dialog = document.getElementById("languageWelcomeDialog");
+  const select = document.getElementById("welcomeLanguageSelect");
+  const continueButton = document.getElementById("welcomeLanguageContinue");
+  const englishButton = document.getElementById("welcomeLanguageEnglish");
+  if (!(dialog instanceof HTMLDialogElement) || !select || !continueButton || !englishButton) return;
+
+  const localizeDialog = () => {
+    const locale = LANGUAGE_WELCOME[select.value] || LANGUAGE_WELCOME.en;
+    document.getElementById("languageWelcomeTitle").textContent = locale.title;
+    document.getElementById("languageWelcomeDescription").textContent = locale.description;
+    document.querySelector('label[for="welcomeLanguageSelect"]').textContent = locale.label;
+    continueButton.textContent = locale.continue.replace("{language}", LANGUAGE_NATIVE_NAMES[select.value] || LANGUAGE_NATIVE_NAMES.en);
+    englishButton.textContent = locale.english;
+  };
+  const continueWith = (language) => {
+    select.value = language;
+    setLanguage(language);
+    translateLandingPage();
+    loadPublicSocialProof();
+    dialog.close();
+  };
+
+  select.addEventListener("change", localizeDialog);
+  continueButton.addEventListener("click", () => continueWith(select.value));
+  englishButton.addEventListener("click", () => continueWith(select.value === "he" ? "en" : "he"));
+  dialog.addEventListener("cancel", (event) => event.preventDefault());
+  localizeDialog();
+  if (!dialog.open) dialog.showModal();
 }
 
 function toggleBuilderChooser() {
@@ -446,6 +489,7 @@ function wireProductLoopDemo() {
 
 document.addEventListener("DOMContentLoaded", () => {
   translateLandingPage();
+  wireLanguageWelcome();
   wireBuilderChooser();
   wireSmartLoginLinks();
   trackReferralParams();
