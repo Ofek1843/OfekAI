@@ -21,13 +21,17 @@ test("new visitors default to English and can choose any supported landing-page 
   const landingScript = fs.readFileSync(path.join(ROOT, "public", "js", "landing.js"), "utf8");
   const welcomeScript = fs.readFileSync(path.join(ROOT, "public", "js", "language-welcome.js"), "utf8");
   assert.match(welcomeScript, /ofek-ai-language-welcome-complete/);
-  assert.match(LANDING, /language-welcome\.js\?v=20260928-instant-language-1/);
+  assert.match(LANDING, /language-welcome\.js\?v=20260930-language-choice-copy-1/);
   assert.match(welcomeScript, /dialog\.showModal\(\)/);
   assert.ok(LANDING.indexOf("language-welcome.js") < LANDING.indexOf("<main>"), "language chooser should run before page content and the deferred landing module");
   assert.match(welcomeScript, /setItem\(completedKey, "1"\)/);
   assert.match(welcomeScript, /setItem\(languageKey, language\)/);
   assert.doesNotMatch(landingScript, /wireLanguageWelcome/);
-  assert.match(LANDING, /Continue in Hebrew/);
+  assert.match(LANDING, /Choose a different language/);
+  assert.doesNotMatch(LANDING, /Continue in Hebrew/);
+  assert.match(welcomeScript, /alternate: "המשך באנגלית"/);
+  assert.match(welcomeScript, /alternate: "Continuar en inglés"/);
+  assert.match(welcomeScript, /if \(select\.value === "en"\)[\s\S]*?select\.showPicker\(\)/);
   assert.match(I18N, /const current = supported\.includes\(lang\)[\s\S]*?: "en";/);
 });
 
