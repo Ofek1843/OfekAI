@@ -127,6 +127,13 @@ input {
     transition: color 180ms ease, transform 180ms ease;
 }
 
+.language-nav-trigger {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
 .nav-link:hover,
 .nav-link:focus-visible {
     color: var(--text-primary);

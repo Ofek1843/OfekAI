@@ -342,6 +342,23 @@ body.fp-redesign::after,
   opacity: 0.55;
 }
 
+/* The landing language dialog is rendered inside the redesigned site shell.
+   Keep its selected-language action visibly primary even though the global
+   button reset removes gradient backgrounds. */
+.fp-redesign .language-welcome__actions .language-welcome__continue {
+  border: 1px solid var(--fp-brand-primary) !important;
+  background-color: var(--fp-brand-primary) !important;
+  background-image: none !important;
+  color: var(--fp-text-inverse) !important;
+}
+
+.fp-redesign .language-welcome__actions .language-welcome__english {
+  border: 1px solid var(--fp-border-strong) !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: var(--fp-text-primary) !important;
+}
+
 .fp-redesign :where(.badge, .eyebrow, .card-kicker, .section-kicker, .builder-badge, .status, .count-pill, .unread-badge) {
   color: var(--fp-brand-primary) !important;
   font-family: var(--fp-ui);

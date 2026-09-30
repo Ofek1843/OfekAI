@@ -46,7 +46,8 @@ body.fp-v45-deep-ocean {
     radial-gradient(68rem 44rem at 106% 12%, rgba(75, 217, 230, 0.14), transparent 58%),
     radial-gradient(58rem 38rem at 64% 112%, rgba(123, 117, 255, 0.14), transparent 62%),
     linear-gradient(155deg, #030b17 0%, #06162a 44%, #04111f 100%) !important;
-  background-attachment: fixed !important;
+  /* Fixed multi-stop gradients force expensive repaints while scrolling. */
+  background-attachment: scroll !important;
   color: var(--v45-ocean-text);
   color-scheme: dark;
   font-family: var(--v45-ui) !important;
@@ -102,13 +103,12 @@ body.fp-v45-deep-ocean .ocean-depth-layer {
 }
 
 body.fp-v45-deep-ocean .ocean-depth-glow {
-  inset: -20%;
-  opacity: 0.48;
+  inset: 0;
+  opacity: 0.36;
   background:
     radial-gradient(circle at 20% 18%, rgba(57, 159, 255, 0.2), transparent 22%),
     radial-gradient(circle at 78% 38%, rgba(75, 217, 230, 0.11), transparent 20%),
     radial-gradient(circle at 52% 80%, rgba(123, 117, 255, 0.12), transparent 24%);
-  filter: blur(40px);
   animation: v45-ocean-drift 20s ease-in-out 2 alternate;
 }
 
@@ -124,9 +124,10 @@ body.fp-v45-deep-ocean :where(h1, h2, h3, h4, .fp-global-brand) {
 body.fp-v45-deep-ocean .fp-global-nav,
 body.fp-v45-deep-ocean .navbar {
   border-color: rgba(130, 190, 235, 0.16) !important;
-  background: rgba(3, 12, 24, 0.84) !important;
+  background: rgba(3, 12, 24, 0.96) !important;
   box-shadow: 0 16px 42px rgba(0, 5, 14, 0.3) !important;
-  backdrop-filter: blur(18px) saturate(130%) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 body.fp-v45-deep-ocean .fp-global-link,
@@ -685,13 +686,16 @@ body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start:
 .fp-v45-deep-ocean.fp-route-index .hero-panel::after {
   content: "";
   position: absolute;
-  inset: -24%;
+  inset: -8%;
   z-index: 0;
   pointer-events: none;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(75, 217, 230, .16), transparent 60%);
-  filter: blur(20px);
   animation: fp-ocean-drift 12s ease-in-out 2 alternate;
+}
+
+.fp-v45-deep-ocean.fp-route-index .hero-panel::before {
+  filter: none !important;
 }
 
 .fp-v45-deep-ocean.fp-route-index .hero-panel > * {
@@ -746,7 +750,8 @@ body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start:
 .fp-v45-deep-ocean.fp-route-index .hero-panel .system-card {
   background-image: linear-gradient(115deg, rgba(255,255,255,0.025), rgba(255,255,255,0.08), rgba(255,255,255,0.025)) !important;
   background-size: 220% 100%;
-  animation: fp-ocean-sheen 9s ease-in-out 2 alternate;
+  /* Static sheen avoids repainting the card backgrounds during interaction. */
+  animation: none;
 }
 
 .fp-v45-deep-ocean.fp-route-index .hero-panel .system-card-nutrition { animation-delay: -3s; }
@@ -771,7 +776,7 @@ body.fp-v45-deep-ocean.fp-route-index .coach-message small { margin-block-start:
 }
 
 .fp-v45-deep-ocean.fp-route-dashboard .capability-card {
-  animation: fp-card-breathe 8s ease-in-out 2 alternate;
+  animation: none;
 }
 
 .fp-v45-deep-ocean.fp-route-dashboard .capability-card:nth-child(2) { animation-delay: -1.6s; }

@@ -3,7 +3,8 @@
   const select = document.getElementById("welcomeLanguageSelect");
   const continueButton = document.getElementById("welcomeLanguageContinue");
   const alternateButton = document.getElementById("welcomeLanguageEnglish");
-  if (!(dialog instanceof HTMLDialogElement) || !select || !continueButton || !alternateButton) return;
+  const openButton = document.getElementById("openLanguageWelcome");
+  if (!(dialog instanceof HTMLDialogElement) || !select || !continueButton || !alternateButton || !openButton) return;
 
   const completedKey = "ofek-ai-language-welcome-complete";
   const languageKey = "ofek-ai-language";
@@ -19,8 +20,12 @@
   };
 
   let completed = false;
-  try { completed = localStorage.getItem(completedKey) === "1"; } catch {}
-  if (completed) return;
+  let savedLanguage = "en";
+  try {
+    completed = localStorage.getItem(completedKey) === "1";
+    savedLanguage = localStorage.getItem(languageKey) || "en";
+  } catch {}
+  select.value = savedLanguage in copy ? savedLanguage : "en";
 
   const updateCopy = () => {
     const selected = select.value in copy ? select.value : "en";
@@ -42,9 +47,13 @@
   };
 
   select.addEventListener("change", updateCopy);
+  openButton.addEventListener("click", () => {
+    updateCopy();
+    if (!dialog.open) dialog.showModal();
+  });
   continueButton.addEventListener("click", () => choose(select.value in copy ? select.value : "en"));
   alternateButton.addEventListener("click", () => choose(select.value === "he" ? "en" : "he"));
   dialog.addEventListener("cancel", (event) => event.preventDefault());
   updateCopy();
-  dialog.showModal();
+  if (!completed) dialog.showModal();
 })();

@@ -426,8 +426,18 @@ function wireProductLoopDemo() {
   };
 
   steps.forEach((step, stepIndex) => {
-    step.addEventListener("pointerenter", () => setActive(stepIndex));
-    step.addEventListener("focusin", () => setActive(stepIndex));
+    step.addEventListener("pointerenter", () => {
+      stop();
+      setActive(stepIndex);
+    });
+    step.addEventListener("focusin", () => {
+      stop();
+      setActive(stepIndex);
+    });
+  });
+  section.addEventListener("pointerleave", start);
+  section.addEventListener("focusout", (event) => {
+    if (!section.contains(event.relatedTarget)) start();
   });
 
   if (!("IntersectionObserver" in window)) {
