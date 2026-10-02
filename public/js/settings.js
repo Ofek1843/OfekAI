@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { t } from "./i18n.js";
+import { t } from "./i18n.js?v=20261002-brand-quality-1";
 import {
     doc,
     getDoc,

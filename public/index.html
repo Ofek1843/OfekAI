@@ -98,13 +98,14 @@
   <link rel="stylesheet" href="/css/product-polish-v3.css?v=20260811-spectrum-v3">
   <link rel="stylesheet" href="/css/illustrated-v4.css?v=20260914-i18n-dashboard-1">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260929-scroll-performance-1">
-  <script defer src="/js/redesign-shell.js?v=20260928-site-i18n-1"></script>
+  <link rel="stylesheet" href="/css/site-quality.css?v=20261002-brand-quality-1">
+  <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
   <script defer src="/js/athlete-figure.js?v=20260815-real-athlete-v43-complete-5"></script>
   <script defer src="/js/scenes/training.js?v=20260815-real-athlete-v43-complete-5"></script>
   <script defer src="/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5"></script>
   <script defer src="/js/scenes/progress.js?v=20260815-real-athlete-v43-complete-5"></script>
   <script defer src="/js/scenes/coachsocial.js?v=20260815-real-athlete-v43-complete-5"></script>
-    <script defer src="/js/image-sequence-v43.js?v=20260926-curl-webp-1"></script>
+    <script defer src="/js/image-sequence-v43.js?v=20261002-brand-quality-1"></script>
   <script defer src="/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5"></script>
 </head>
 <body>
@@ -115,12 +116,12 @@
         <div class="nav-actions">
             <a href="#features" class="nav-link" data-i18n="landingNavFeatures">Features</a>
             <a href="#results" class="nav-link" data-i18n="landingNavResults">Results</a>
-            <button type="button" class="nav-link language-nav-trigger" id="openLanguageWelcome">Language</button>
+            <button type="button" class="nav-link language-nav-trigger" id="openLanguageWelcome" data-no-auto-translate lang="en" dir="ltr">Language</button>
             <a href="auth.html" class="nav-btn" data-i18n="landingLogin">Login</a>
         </div>
     </nav>
 
-    <dialog class="language-welcome" id="languageWelcomeDialog" aria-labelledby="languageWelcomeTitle" aria-describedby="languageWelcomeDescription">
+    <dialog class="language-welcome" id="languageWelcomeDialog" data-no-auto-translate aria-labelledby="languageWelcomeTitle" aria-describedby="languageWelcomeDescription">
         <div class="language-welcome__content">
             <p class="language-welcome__eyebrow">FuelPhysique</p>
             <h1 id="languageWelcomeTitle">Choose your language</h1>
@@ -222,7 +223,7 @@
                 </section>
 
                 <div class="hero-cta-row">
-                    <button type="button" class="hero-btn primary" id="buildProgramCta" data-i18n="landingPrimaryCta">Build my program</button>
+                    <button type="button" class="hero-btn primary" id="buildProgramCta" data-i18n="landingPrimaryCta" aria-controls="builderChooser" aria-expanded="false">Build my program</button>
                     <a href="auth.html" class="hero-btn secondary" data-i18n="landingSecondaryCta">Log in</a>
                 </div>
                 <a class="landing-plan-guide-link" href="/workout-plan-generator.html" data-i18n="landingWorkoutGuideLink">See how the workout plan generator works</a>
@@ -445,7 +446,7 @@
         </nav>
     </footer>
 
-    <script type="module" src="js/landing.js?v=20260929-scroll-performance-1"></script>
+    <script type="module" src="js/landing.js?v=20261002-brand-quality-1"></script>
     <script type="module" src="/js/site-feedback.js"></script>
     <script type="module" src="/js/pwa-install.js"></script>
 </body>

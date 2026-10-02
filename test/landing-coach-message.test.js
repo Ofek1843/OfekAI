@@ -25,8 +25,8 @@ test("the real-athlete sequence also runs on the Render production hostname", ()
   const landing = read("public/index.html");
   const sw = read("public/sw.js");
   assert.match(engine, /"ofekai\.onrender\.com"/);
-  assert.match(landing, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
-  assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
+  assert.match(landing, /image-sequence-v43\.js\?v=20261002-brand-quality-1/);
+  assert.match(sw, /image-sequence-v43\.js\?v=20261002-brand-quality-1/);
 });
 
 test("the landing uses the intended dumbbell-curl sequence and loops instead of freezing", () => {
@@ -34,7 +34,8 @@ test("the landing uses the intended dumbbell-curl sequence and loops instead of 
   const landing = read("public/index.html");
   assert.match(landing, /data-v43-scene="curl"/);
   assert.match(engine, /curl:\s*Object\.freeze\(\{\s*loop:\s*true,/);
-  assert.match(engine, /frame\("curl", 3, 540, "png"\)/);
+  assert.match(engine, /frame\("curl", 3, 540\)/);
+  assert.match(engine, /extension = "webp"/);
   assert.match(engine, /if \(scene\.loop\) \{/);
   assert.match(engine, /scene\.loopDelay \|\| 900/);
 });

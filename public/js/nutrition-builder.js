@@ -4,6 +4,8 @@ import { setupPlanSharing } from "./plan-sharing.js";
 import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
+import { fetchWithDeadline } from "./request-deadline.mjs";
+const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 // Same reasoning as workout-builder.js: nothing here loads private data on
 // page open, but Generate and Save both call authenticated product
@@ -347,7 +349,7 @@ form.addEventListener("submit", async (event) => {
   };
 
   try {
-    const response = await fetch("/api/nutrition-builder", {
+    const response = await builderFetch("/api/nutrition-builder", {
       method: "POST",
       headers: await authHeaders(),
       body: JSON.stringify(payload)
@@ -862,7 +864,7 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
     rerollButton.textContent = isHebrew ? "מחליף..." : "Replacing...";
 
     try {
-      const response = await fetch("/api/nutrition-builder/reroll-meal", {
+      const response = await builderFetch("/api/nutrition-builder/reroll-meal", {
         method: "POST",
         headers: await authHeaders(),
         body: JSON.stringify({

@@ -1,6 +1,6 @@
 (() => {
   let applyLanguageCopy = null;
-  const languageModuleReady = import("./i18n.js?v=20260928-site-i18n-1")
+  const languageModuleReady = import("./i18n.js?v=20261002-brand-quality-1")
     .then((module) => { applyLanguageCopy = module.applyDocumentTranslations; })
     .catch(() => {});
   const route = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
@@ -20,6 +20,12 @@
     const motionScript = document.createElement("script");
     motionScript.src = "/js/product-motion-v47.js?v=20260908-v47-choice-polish-2";
     document.head.append(motionScript);
+  }
+  if (!document.querySelector('link[href*="site-quality.css"]')) {
+    const qualityStyles = document.createElement("link");
+    qualityStyles.rel = "stylesheet";
+    qualityStyles.href = "/css/site-quality.css?v=20261002-brand-quality-1";
+    document.head.append(qualityStyles);
   }
   const protectedRoutes = new Set([
     "app.html",

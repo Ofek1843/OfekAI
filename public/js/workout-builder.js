@@ -7,7 +7,9 @@ import { derivePriorityFromGoal } from "./workout-priority.js";
 import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
-import { t } from "./i18n.js";
+import { t } from "./i18n.js?v=20261002-brand-quality-1";
+import { fetchWithDeadline } from "./request-deadline.mjs";
+const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 // This builder has no data to load on page open (generation is entirely
 // user-interaction-driven via the Generate button, which reads
@@ -837,7 +839,7 @@ form.addEventListener("submit", async (event) => {
   };
 
   try {
-    const response = await fetch("/api/workout-builder", {
+    const response = await builderFetch("/api/workout-builder", {
       method: "POST",
       headers: await authHeaders(),
       body: JSON.stringify(payload)
@@ -1079,7 +1081,8 @@ const englishWorkoutDisplayTerms = Object.freeze({
 });
 
 function translateWorkoutValue(value = "") {
-  const text = String(value).trim();
+  const original = String(value).trim();
+  const text = MUSCLE_DISPLAY_NAMES[original.toLowerCase()] || original;
 
   if (!text) return text;
   if (!isHebrew) return englishWorkoutDisplayTerms[text] || text;
@@ -1321,7 +1324,7 @@ async function adjustWeeklyVolume(root, muscle, delta) {
   controls.forEach((control) => { control.disabled = true; control.setAttribute("aria-busy", "true"); });
   try {
     const formData = new FormData(form);
-    const response = await fetch("/api/workout-builder/adjust-volume", {
+    const response = await builderFetch("/api/workout-builder/adjust-volume", {
       method: "POST",
       headers: await authHeaders(),
       body: JSON.stringify({
@@ -1537,7 +1540,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
           <section class="muscle-exercise-group">
             <div class="muscle-exercise-group-header">
               <span>${escapeHtml(muscleName)}</span>
-              <strong>${cards.length} ${ui.exercises}</strong>
+              <strong>${cards.length} ${!isHebrew && cards.length === 1 ? "exercise" : ui.exercises}</strong>
             </div>
             <div class="muscle-exercise-group-grid">
               ${cards.join("")}
@@ -1564,7 +1567,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
             </div>
 
             <span class="exercise-count">
-              ${exercises.length} ${ui.exercises}
+              ${exercises.length} ${!isHebrew && exercises.length === 1 ? "exercise" : ui.exercises}
             </span>
           </div>
 
@@ -1674,8 +1677,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
           <label class="plan-day-select-label" for="planDaySelect">${isHebrew ? "בחירת יום" : "Choose a day"}</label>
           <select class="plan-day-select" id="planDaySelect">${dayOptions}</select>
           <details class="plan-volume-disclosure" id="weekly-volume-container">
-            <summary><span>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</span><span class="weekly-volume-open-hint">${isHebrew ? "לחצו כאן להצגה" : "Tap to view"}</span></summary>
-            ${renderWeeklyVolumeSummary(weeklyVolume)}
+            <summary aria-controls="weekly-volume-focus-panel"><span>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</span><span class="weekly-volume-open-hint">${isHebrew ? "לחצו כאן להצגה" : "Tap to view"}</span></summary>
           </details>
         </aside>
         <div class="program-days" aria-live="polite">
@@ -1826,7 +1828,7 @@ try {
     language: currentLanguage
   };
 
-  const response = await fetch(
+  const response = await builderFetch(
     "/api/workout-builder/reroll-exercise",
     {
       method: "POST",

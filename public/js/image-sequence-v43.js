@@ -180,6 +180,8 @@
     let loading = null;
     let dueAt = 0;
     let remaining = 0;
+    let ready = false;
+    let waitingForLoop = false;
     const listeners = [];
 
     const clearTimer = () => {
@@ -210,20 +212,22 @@
       dueAt = performance.now() + delay;
       timer = window.setTimeout(() => {
         timer = null;
-        if (!visible || destroyed) return;
+        if (!visible || document.hidden || destroyed) return;
+        if (waitingForLoop) {
+          waitingForLoop = false;
+          show(0);
+          root.classList.remove("is-v43-complete");
+          root.classList.add("is-v43-playing");
+          schedule();
+          return;
+        }
         const next = frameIndex + 1;
         if (next >= scene.frames.length) {
           if (scene.loop) {
             root.classList.remove("is-v43-playing");
             root.classList.add("is-v43-complete");
-            timer = window.setTimeout(() => {
-              timer = null;
-              if (!visible || destroyed) return;
-              show(0);
-              root.classList.remove("is-v43-complete");
-              root.classList.add("is-v43-playing");
-              schedule();
-            }, scene.loopDelay || 900);
+            waitingForLoop = true;
+            schedule(scene.loopDelay || 900);
             return;
           }
           root.classList.remove("is-v43-playing");
@@ -236,9 +240,10 @@
     };
 
     const play = async ({ replay = false } = {}) => {
-      if (destroyed || reduced || (!replay && played)) return;
+      if (destroyed || document.hidden || reduced || (!replay && played)) return;
       if (replay) {
         clearTimer();
+        waitingForLoop = false;
         show(0);
         root.classList.remove("is-v43-complete");
       }
@@ -251,7 +256,8 @@
         fail();
         return;
       }
-      if (!visible || destroyed) return;
+      ready = true;
+      if (!visible || document.hidden || destroyed) return;
       root.classList.remove("is-v43-loading");
       root.classList.add("is-v43-ready", "is-v43-playing");
       schedule();
@@ -265,7 +271,7 @@
     };
 
     const resume = () => {
-      if (!played || reduced || frameIndex >= scene.frames.length - 1) return;
+      if (!ready || !played || reduced || document.hidden || destroyed || (!scene.loop && frameIndex >= scene.frames.length - 1)) return;
       root.classList.remove("is-v43-paused");
       root.classList.add("is-v43-playing");
       schedule(remaining || scene.frames[frameIndex].duration);
@@ -275,6 +281,13 @@
       target.addEventListener(type, handler, options);
       listeners.push([target, type, handler, options]);
     };
+    on(document, "visibilitychange", () => {
+      if (document.hidden) pause();
+      else if (visible) {
+        if (played) resume();
+        else play();
+      }
+    });
 
     if (reduced) {
       root.dataset.v43ReducedMotion = "true";

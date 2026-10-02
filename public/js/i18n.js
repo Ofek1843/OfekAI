@@ -1477,8 +1477,10 @@ export function setLanguage(lang) {
 const translatedTextNodes = new Map();
 const translatedAttributes = new Map();
 let documentTranslationObserver = null;
+let documentTranslationGeneration = 0;
 
 export function applyDocumentTranslations(lang = getLanguage()) {
+  const generation = ++documentTranslationGeneration;
   const language = translations[lang] ? lang : "en";
   documentTranslationObserver?.disconnect();
   for (const [node, original] of translatedTextNodes) {
@@ -1492,6 +1494,16 @@ export function applyDocumentTranslations(lang = getLanguage()) {
   translatedAttributes.clear();
   document.documentElement.lang = language;
   document.documentElement.dir = isRTL(language) ? "rtl" : "ltr";
+  const skip = (node) => node.closest("script,style,textarea,[contenteditable='true'],.user-content,.user-message,.coach-message,.chat-message,.food-name,.exercise-name-value,[data-no-auto-translate]");
+  // Keyed UI must have a canonical English source. A previous translation
+  // must never be remembered as the original and leak on a switch back to en.
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    if (skip(element)) continue;
+    const source = translations.en[element.dataset.i18n];
+    if (source && element.childNodes.length === 1 && element.firstChild.nodeType === Node.TEXT_NODE) {
+      element.firstChild.nodeValue = source;
+    }
+  }
   if (language === "en") return;
 
   const englishToKey = new Map();
@@ -1507,7 +1519,6 @@ export function applyDocumentTranslations(lang = getLanguage()) {
     const attributes = translatedAttributes.get(element);
     if (!attributes.has(attribute)) attributes.set(attribute, element.getAttribute(attribute));
   };
-  const skip = (node) => node.closest("script,style,textarea,[contenteditable='true'],.user-content,.user-message,.coach-message,.chat-message,.food-name,.exercise-name-value,[data-no-auto-translate]");
   const walk = (root) => {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
@@ -1524,11 +1535,13 @@ export function applyDocumentTranslations(lang = getLanguage()) {
       }
     }
     if (root.querySelectorAll) {
-      for (const element of root.querySelectorAll("[data-i18n], [data-i18n-placeholder], [data-i18n-title], input[placeholder], textarea[placeholder], [aria-label], [title], [alt]")) {
+      const selector = "[data-i18n], [data-i18n-placeholder], [data-i18n-title], input[placeholder], textarea[placeholder], [aria-label], [title], [alt]";
+      const elements = [...(root.matches?.(selector) ? [root] : []), ...root.querySelectorAll(selector)];
+      for (const element of elements) {
         if (skip(element)) continue;
         const key = element.dataset.i18n;
         if (key && translations[language]?.[key] && element.childNodes.length === 1 && element.firstChild.nodeType === Node.TEXT_NODE) {
-          translatedTextNodes.set(element.firstChild, element.firstChild.nodeValue);
+          if (!translatedTextNodes.has(element.firstChild)) translatedTextNodes.set(element.firstChild, translations.en[key] || element.firstChild.nodeValue);
           element.firstChild.nodeValue = translations[language][key];
         }
         const placeholderKey = element.dataset.i18nPlaceholder;
@@ -1556,12 +1569,22 @@ export function applyDocumentTranslations(lang = getLanguage()) {
 
   walk(document.documentElement);
   let scheduled = false;
+  let pendingRecords = [];
   documentTranslationObserver = new MutationObserver((records) => {
+    pendingRecords.push(...records);
     if (scheduled) return;
     scheduled = true;
     queueMicrotask(() => {
+      if (generation !== documentTranslationGeneration) return;
       scheduled = false;
-      for (const record of records) {
+      const batch = pendingRecords;
+      pendingRecords = [];
+      // Disconnect during our writes, then reconnect: translation should not
+      // retrigger itself or lose a second set of mutations in the same batch.
+      documentTranslationObserver.disconnect();
+      for (const [node] of translatedTextNodes) if (!node.isConnected) translatedTextNodes.delete(node);
+      for (const [element] of translatedAttributes) if (!element.isConnected) translatedAttributes.delete(element);
+      for (const record of batch) {
         if (record.type === "attributes") {
           const element = record.target;
           if (!skip(element)) {
@@ -1573,7 +1596,9 @@ export function applyDocumentTranslations(lang = getLanguage()) {
             }
           }
         }
-        if (record.type === "childList") record.addedNodes.forEach((node) => {
+        const changedNodes = record.type === "characterData" ? [record.target] : record.type === "childList" ? record.addedNodes : [];
+        changedNodes.forEach((node) => {
+          if (!node.isConnected) return;
           if (node.nodeType === Node.TEXT_NODE) {
             const parent = node.parentElement;
             if (!parent || skip(parent)) return;
@@ -1586,14 +1611,17 @@ export function applyDocumentTranslations(lang = getLanguage()) {
           } else if (node.nodeType === Node.ELEMENT_NODE && !skip(node)) walk(node);
         });
       }
+      documentTranslationObserver.observe(document.documentElement, observerOptions);
     });
   });
-  documentTranslationObserver.observe(document.documentElement, {
+  const observerOptions = {
     childList: true,
     subtree: true,
+    characterData: true,
     attributes: true,
     attributeFilter: ["placeholder", "aria-label", "title", "alt"]
-  });
+  };
+  documentTranslationObserver.observe(document.documentElement, observerOptions);
 }
 
 export function initializeLanguage() {

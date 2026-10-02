@@ -107,7 +107,7 @@ test("English and Hebrew copies cover logging, ambiguity and unlogged weekly day
   assert.match(copy, /למה התכוונתם\?/);
   assert.match(copy, /not logged/);
   assert.match(copy, /לא תועד/);
-  assert.match(client, /document\.documentElement\.dir = language === "he" \? "rtl" : "ltr"/);
+  assert.match(client, /document\.documentElement\.dir = \["he", "ar"\]\.includes\(language\) \? "rtl" : "ltr"/);
   assert.match(copy, /הוערך כ־\{amount\}/);
   assert.match(copy, /Variable meal estimate/);
   assert.match(copy, /המזונות שזוהו נוספו/);

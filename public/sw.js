@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-v45-language-food-i18n-2';
+const CACHE_NAME = 'fuelphysique-brand-quality-20261002-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -44,6 +44,9 @@ const urlsToCache = [
   '/terms.html',
   '/privacy.html',
   '/css/dashboard.css',
+  '/css/site-quality.css?v=20261002-brand-quality-1',
+  '/js/landing-navigation.mjs',
+  '/js/request-deadline.mjs',
   '/css/redesign-v1.css?v=20260914-i18n-dashboard-1',
   '/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1',
   '/css/daily-nutrition.css?v=20260918-daily-resilience-1',
@@ -56,9 +59,9 @@ const urlsToCache = [
   '/css/pricing.css',
   '/css/social.css',
   '/js/social.js',
-  '/js/redesign-shell.js?v=20260928-site-i18n-1',
-  '/js/redesign-shell.js?v=20260928-site-i18n-1',
-  '/js/i18n.js?v=20260928-site-i18n-1',
+  '/js/redesign-shell.js?v=20261002-brand-quality-1',
+  '/js/redesign-shell.js?v=20261002-brand-quality-1',
+  '/js/i18n.js?v=20261002-brand-quality-1',
   '/js/daily-nutrition.js?v=20260928-language-coverage-1',
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',
   '/images/common/meal.svg',
@@ -72,7 +75,7 @@ const urlsToCache = [
   '/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/progress.js?v=20260815-real-athlete-v43-complete-5',
   '/js/scenes/coachsocial.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/image-sequence-v43.js?v=20260919-hero-message-render-2',
+  '/js/image-sequence-v43.js?v=20261002-brand-quality-1',
   '/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',

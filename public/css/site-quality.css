@@ -1,0 +1,173 @@
+/* Release quality: a single readable surface ramp, immediate feedback and
+   compact public entry point. Real athlete motion remains owned by its player. */
+/* Respect application state even when legacy display:grid/flex rules apply. */
+body.fp-v45-deep-ocean [hidden]:not([hidden="until-found"]) { display: none !important; }
+body.fp-v45-deep-ocean .sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  border: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+}
+body.fp-v45-deep-ocean .ocean-depth-glow,
+body.fp-v45-deep-ocean .ocean-depth-layer {
+  display: none !important;
+}
+body.fp-v45-deep-ocean main :where(.builder-card, .program-card, .plan-card, .meal-card, .exercise-card, .exercise-row, .system-card, .panel, .premium-card, .stats-grid > *) {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.fp-v45-deep-ocean :where(.primary-button, .primary-action, .submit-button, .wizard-button--next, .wizard-button--generate, button[type="submit"]):not(.secondary-button):not(.text-action),
+body.fp-v45-deep-ocean.fp-route-index .hero-btn.primary,
+body.fp-v45-deep-ocean.fp-route-index .nav-btn {
+  background: #47b7ff !important;
+  background-image: none !important;
+  color: #061323 !important;
+  -webkit-text-fill-color: currentColor !important;
+  border-color: #47b7ff !important;
+}
+body.fp-v45-deep-ocean [aria-busy="true"] {
+  cursor: progress;
+}
+body.fp-v45-deep-ocean.fp-route-daily-nutrition .save-now-button { background: #63d7ae !important; color: #061323 !important; }
+body.fp-v45-deep-ocean.fp-route-daily-nutrition .finish-button { background: #47b7ff !important; color: #061323 !important; }
+body.fp-v45-deep-ocean.fp-route-daily-nutrition .date-toolbar { backdrop-filter: none; }
+body.fp-v45-deep-ocean :where(input, textarea, select) {
+  font-size: max(1rem, 16px);
+}
+body.fp-v45-deep-ocean :where(button, a, label, h1, h2, h3, p, td, th) {
+  overflow-wrap: break-word;
+}
+body.fp-v45-deep-ocean :where(.builder-wizard, .program-days, .meal-content, .exercise-card-content, .dashboard-grid) {
+  min-width: 0;
+}
+/* Generated nutrition totals should read as a dashboard, not inline text. */
+body.fp-v45-deep-ocean.fp-route-nutrition-builder .nutrition-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+  gap: 12px;
+  margin-block: 24px;
+}
+body.fp-v45-deep-ocean.fp-route-nutrition-builder .nutrition-summary > div {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid var(--fp-border-strong);
+  border-radius: 12px;
+  background: var(--fp-surface-base, #0b1f31);
+  color: var(--fp-text-primary);
+}
+body.fp-v45-deep-ocean.fp-route-nutrition-builder .nutrition-summary strong { font-size: 1.65rem; line-height: 1.1; }
+body.fp-v45-deep-ocean.fp-route-nutrition-builder .nutrition-summary :where(span, small) { color: var(--fp-text-secondary); font-size: .85rem; }
+body.fp-v45-deep-ocean.fp-route-index .navbar {
+  min-height: 72px;
+}
+body.fp-v45-deep-ocean.fp-route-index .navbar .logo {
+  font-size: 1.15rem;
+  letter-spacing: -.025em;
+  text-transform: none;
+}
+body.fp-v45-deep-ocean.fp-route-index .language-nav-trigger {
+  display: inline-flex !important;
+  align-items: center;
+  padding: 8px 12px;
+  background: transparent !important;
+  border: 1px solid var(--fp-border-strong);
+  color: var(--fp-text-primary) !important;
+}
+body.fp-v45-deep-ocean.fp-route-index .hero {
+  padding-block: 32px 64px !important;
+}
+body.fp-v45-deep-ocean.fp-route-index .hero-shell {
+  width: min(1240px, calc(100% - 40px)) !important;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) !important;
+  grid-template-areas: "social social" "copy visual" "actions visual" "chooser visual" "guide visual" "pills visual" "stats stats";
+  gap: 18px 40px !important;
+  padding: clamp(24px, 3vw, 40px) !important;
+  border-radius: 20px !important;
+  box-shadow: none !important;
+}
+body.fp-v45-deep-ocean.fp-route-index .hero-content { grid-area: copy; text-align: start; }
+body.fp-v45-deep-ocean.fp-route-index .hero-panel { grid-area: visual; min-width: 0; min-height: 500px; align-self: center; }
+body.fp-v45-deep-ocean.fp-route-index .hero-panel > .landing-hero-illustration[data-v43-motion="prototype"] {
+  inset: 160px 0 132px !important;
+}
+body.fp-v45-deep-ocean.fp-route-index .landing-hero-illustration .v43-image-sequence--curl .v43-image-sequence__frame {
+  width: auto !important;
+  height: 100%;
+  max-width: 46% !important;
+  max-height: 100% !important;
+}
+body.fp-v45-deep-ocean.fp-route-index .hero-panel .system-card strong { font-size: .76rem; line-height: 1.4; }
+body.fp-v45-deep-ocean.fp-route-index .hero-cta-row { grid-area: actions; margin: 0; justify-content: start; }
+body.fp-v45-deep-ocean.fp-route-index .builder-chooser { grid-area: chooser; margin: 0; }
+body.fp-v45-deep-ocean.fp-route-index .landing-plan-guide-link { grid-area: guide; margin: 0; text-align: start; }
+body.fp-v45-deep-ocean.fp-route-index .feature-pills { grid-area: pills; justify-content: start; gap: 12px 20px; flex-wrap: wrap; }
+body.fp-v45-deep-ocean.fp-route-index .landing-stats { grid-area: stats; margin-top: 12px; grid-template-columns: 1fr 1fr !important; }
+body.fp-v45-deep-ocean.fp-route-index .hero-meta { display: none; }
+body.fp-v45-deep-ocean.fp-route-index .hero-content .badge { padding: 6px 10px; font-size: .68rem; letter-spacing: .08em; border-radius: 6px !important; }
+body.fp-v45-deep-ocean.fp-route-index .hero-content .eyebrow { margin-block: 18px 0; font-size: .68rem; letter-spacing: .08em; }
+body.fp-v45-deep-ocean.fp-route-index #landingHeroTitle {
+  font-size: clamp(2.65rem, 4.5vw, 4.3rem) !important;
+  line-height: 1.04 !important;
+  letter-spacing: -.045em;
+  margin-block: 18px !important;
+}
+body.fp-v45-deep-ocean.fp-route-index .hero-lede { font-size: 1.08rem !important; line-height: 1.6; margin: 0; }
+body.fp-v45-deep-ocean.fp-route-index .hero-subcopy { font-size: .9rem; }
+body.fp-v45-deep-ocean.fp-route-index .hero-support { display: none; }
+body.fp-v45-deep-ocean.fp-route-index .hero-btn { min-height: 52px; padding: 12px 18px; font-size: .95rem; border-radius: 10px !important; }
+body.fp-v45-deep-ocean.fp-route-index .hero-social-links { position: static; grid-column: 1 / -1; grid-row: 1; justify-self: end; margin-bottom: 0; }
+/* Place social links above the named areas rather than over the coach. */
+body.fp-v45-deep-ocean.fp-route-index .hero-social-links { grid-area: social; }
+body.fp-v45-deep-ocean.fp-route-index .section-heading h2,
+body.fp-v45-deep-ocean.fp-route-index .final-cta h2 { font-size: clamp(1.8rem, 3.5vw, 3rem) !important; line-height: 1.12; letter-spacing: -.025em; }
+body.fp-v45-deep-ocean.fp-route-index .landing-stat strong { font-size: 2.25rem !important; }
+body.fp-v45-deep-ocean.fp-route-index .language-welcome { max-height: min(90dvh, 680px); width: min(520px, calc(100% - 32px)); }
+body.fp-v45-deep-ocean.fp-route-index .language-welcome h1 { font-size: clamp(1.7rem, 5vw, 2.1rem) !important; line-height: 1.15 !important; letter-spacing: -.025em; text-transform: none; }
+body.fp-v45-deep-ocean.fp-route-index .language-welcome::backdrop { backdrop-filter: none; }
+body.fp-v45-deep-ocean.fp-route-index .language-welcome__actions { grid-template-columns: 1fr; }
+body.fp-v45-deep-ocean.fp-route-index .language-welcome__continue { background: #47b7ff !important; color: #061323 !important; }
+
+@media (max-width: 900px) {
+  body.fp-v45-deep-ocean.fp-route-index .hero-shell {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas: "social" "copy" "actions" "chooser" "guide" "pills" "visual" "stats";
+  }
+  body.fp-v45-deep-ocean.fp-route-index .hero-panel { width: 100%; }
+}
+@media (max-width: 560px) {
+  /* Feedback must not obscure the food composer or the wizard actions. */
+  body.fp-v45-deep-ocean .site-feedback-widget { position: static !important; width: fit-content; margin: 24px auto !important; transform: none !important; }
+  body.fp-v45-deep-ocean .site-feedback-panel { position: fixed; inset: auto 16px 72px auto !important; max-height: 75dvh; overflow-y: auto; }
+  body.fp-v45-deep-ocean.fp-route-daily-nutrition .daily-hero { padding-block-start: 22px; }
+  body.fp-v45-deep-ocean.fp-route-daily-nutrition .date-toolbar { grid-template-columns: 44px minmax(0, 1fr) 44px; }
+  body.fp-v45-deep-ocean.fp-route-daily-nutrition .date-toolbar-center { justify-content: center; gap: 8px; }
+  body.fp-v45-deep-ocean.fp-route-daily-nutrition .date-picker-label input { width: 138px; min-width: 0; padding-inline: 6px; }
+  body.fp-v45-deep-ocean.fp-route-index .navbar { min-height: 64px; padding-inline: 16px !important; gap: 10px; }
+  body.fp-v45-deep-ocean.fp-route-index .navbar .logo { font-size: 1rem; }
+  body.fp-v45-deep-ocean.fp-route-index .nav-actions { gap: 6px; }
+  body.fp-v45-deep-ocean.fp-route-index .nav-btn { padding-inline: 10px; }
+  body.fp-v45-deep-ocean.fp-route-index .language-nav-trigger { font-size: .8rem; padding-inline: 8px; }
+  body.fp-v45-deep-ocean.fp-route-index .hero { padding-block: 16px 32px !important; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-shell { width: calc(100% - 24px) !important; padding: 18px !important; gap: 16px !important; }
+  body.fp-v45-deep-ocean.fp-route-index #landingHeroTitle { font-size: clamp(2.3rem, 9.5vw, 3rem) !important; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-lede { font-size: 1rem !important; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-subcopy { display: none; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-panel { min-height: 560px; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-panel > .landing-hero-illustration[data-v43-motion="prototype"] { inset: 130px 0 220px !important; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-panel > .system-card { top: auto !important; bottom: 16px !important; transform: none !important; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-cta-row { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 8px; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-cta-row > * { min-width: 0; width: 100%; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-btn { font-size: .85rem; padding: 10px; }
+  body.fp-v45-deep-ocean.fp-route-index .feature-pills { font-size: .75rem; }
+  body.fp-v45-deep-ocean.fp-route-index .landing-stat-label { font-size: .65rem; }
+  body.fp-v45-deep-ocean.fp-route-index .platform-steps { display: grid; grid-template-columns: minmax(0, 1fr) !important; }
+  body.fp-v45-deep-ocean.fp-route-index .platform-step { min-width: 0; }
+}

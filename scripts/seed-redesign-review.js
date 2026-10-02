@@ -6,7 +6,7 @@ const { Timestamp } = require("firebase-admin/firestore");
 const PROJECT_ID = "demo-fuelphysique";
 const AUTH_HOST = "127.0.0.1:9099";
 const FIRESTORE_HOST = "127.0.0.1:8080";
-const TERMS_VERSION = "2026-08-08";
+const { TERMS_VERSION, PRIVACY_VERSION } = require("../lib/legal-policy");
 
 const USERS = [
   {
@@ -186,7 +186,7 @@ async function seed() {
       language: user.locale,
       termsAccepted: true,
       termsVersion: TERMS_VERSION,
-      privacyVersion: TERMS_VERSION,
+      privacyVersion: PRIVACY_VERSION,
       termsAcceptedAt: daysAgo(1),
       activeWorkoutPlanId: workoutId,
       activeNutritionPlanId: nutritionId,

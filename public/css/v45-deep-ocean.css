@@ -26,6 +26,7 @@
 }
 
 body.fp-v45-deep-ocean {
+  --fp-text-inverse: #061323;
   --fp-bg-deep: var(--v45-ocean-abyss);
   --fp-bg-page: var(--v45-ocean-deep);
   --fp-bg-section: var(--v45-ocean-mid);
@@ -52,6 +53,7 @@ body.fp-v45-deep-ocean {
   color-scheme: dark;
   font-family: var(--v45-ui) !important;
 }
+
 
 html:has(body.fp-v45-deep-ocean),
 body.fp-v45-deep-ocean {

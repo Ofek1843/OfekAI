@@ -138,7 +138,8 @@ test("catalog expansion keeps unique slugs, derived nutrition and imported image
     assert.ok(meal, entry.slug);
     assert.equal(entry.imageKey, entry.slug);
     assert.notEqual(meal.he, meal.en, `${entry.slug} needs Hebrew display copy`);
-    assert.equal(meal.image, `/images/meals/${entry.slug}.png`);
+    assert.equal(meal.image, `/images/meals/${entry.slug}.webp`);
+    assert.ok(fs.existsSync(path.join(ROOT, "public", meal.image)), entry.slug);
     assert.match(entry.expectedPng, new RegExp(entry.slug + "\\.png$"));
     assert.match(entry.expectedWebp, new RegExp(entry.slug + "\\.webp$"));
   }
@@ -147,7 +148,7 @@ test("catalog expansion keeps unique slugs, derived nutrition and imported image
 
 test("manual builder keeps locale direction, saving fields and sharing link", () => {
   assert.match(MANUAL_BUILDER, /document\.documentElement\.lang = state\.language/);
-  assert.match(MANUAL_BUILDER, /document\.documentElement\.dir = state\.language === "he" \? "rtl" : "ltr"/);
+  assert.match(MANUAL_BUILDER, /document\.documentElement\.dir = \["he", "ar"\]\.includes\(state\.language\) \? "rtl" : "ltr"/);
   assert.match(MANUAL_BUILDER, /optionFiberGrams/);
   assert.match(MANUAL_BUILDER, /baseFoods: item\.foods/);
   assert.match(MANUAL_BUILDER, /share=nutrition/);

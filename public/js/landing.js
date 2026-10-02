@@ -1,7 +1,6 @@
-import { t, getLanguage, setLanguage } from "./i18n.js?v=20260928-language-welcome-fix-1";
+import { t, getLanguage, setLanguage } from "./i18n.js?v=20261002-brand-quality-1";
 import { trackPageView, trackClick } from "./analytics.js";
-import { auth } from "./firebase-config.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import { resolveLandingUser } from "./landing-navigation.mjs";
 
 const LANDING_FALLBACKS = {
   en: {
@@ -286,6 +285,8 @@ function toggleBuilderChooser() {
   const chooser = document.getElementById("builderChooser");
   if (!chooser) return;
   chooser.hidden = !chooser.hidden;
+  document.getElementById("buildProgramCta")?.setAttribute("aria-expanded", String(!chooser.hidden));
+  if (!chooser.hidden) chooser.querySelector("a")?.focus({ preventScroll: true });
   trackClick("builder_open", { source: "landing" });
 }
 
@@ -303,13 +304,13 @@ function wireBuilderChooser() {
 }
 
 function waitForAuthState() {
-  if (auth.currentUser) return Promise.resolve(auth.currentUser);
   if (!authStatePromise) {
-    authStatePromise = new Promise(resolve => {
-      const unsubscribe = onAuthStateChanged(auth, user => {
-        unsubscribe();
-        resolve(user);
-      });
+    authStatePromise = resolveLandingUser(async () => {
+      const [{ auth }, { onAuthStateChanged }] = await Promise.all([
+        import("./firebase-config.js"),
+        import("https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js")
+      ]);
+      return { auth, onAuthStateChanged };
     });
   }
   return authStatePromise;
@@ -326,9 +327,14 @@ function destinationFromAuthHref(href) {
 function wireSmartLoginLinks() {
   document.querySelectorAll('a[href^="auth.html"]').forEach((element) => {
     element.addEventListener("click", async (event) => {
+      // Preserve normal new-tab, modified-click and download navigation.
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
+      if (element.getAttribute("aria-busy") === "true") return;
+      element.setAttribute("aria-busy", "true");
       trackClick("signup", { source: "landing" });
       const user = await waitForAuthState();
+      element.removeAttribute("aria-busy");
       window.location.href = user
         ? destinationFromAuthHref(element.getAttribute("href"))
         : element.getAttribute("href");
@@ -454,7 +460,7 @@ function wireProductLoopDemo() {
   observer.observe(section);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function initializeLanding() {
   translateLandingPage();
   wireBuilderChooser();
   wireSmartLoginLinks();
@@ -466,4 +472,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   trackPageView({ page: "landing" });
   trackClick("landing_page_view", { source: "landing" });
-});
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeLanding, { once: true });
+else initializeLanding();
