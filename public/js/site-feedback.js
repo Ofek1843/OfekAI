@@ -40,7 +40,7 @@ function injectFeedbackStyles() {
       position: fixed !important;
       right: 18px;
       bottom: 18px;
-      z-index: 9998;
+      z-index: 10001;
       font-family: inherit;
       direction: ${feedbackLanguage === "he" ? "rtl" : "ltr"};
     }
@@ -60,19 +60,21 @@ function injectFeedbackStyles() {
       backdrop-filter: blur(12px);
     }
     .site-feedback-panel {
-      position: absolute;
-      right: 0;
-      bottom: 58px;
-      width: min(340px, calc(100vw - 32px));
+      position: fixed;
+      inset: auto 16px calc(16px + env(safe-area-inset-bottom));
+      width: min(440px, calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+      max-height: calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow-y: auto;
+      margin: 0 auto;
       padding: 16px;
       border: 1px solid rgba(125, 211, 252, 0.22);
       border-radius: 20px;
-      background: rgba(26, 35, 36, 0.96);
+      background: #0a1626;
       color: #f3f0e8;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
-      transform-origin: bottom right;
+      transform-origin: bottom center;
     }
-    .site-feedback-panel[hidden] { display: none; }
+    .site-feedback-panel::backdrop { background: rgba(2, 8, 18, 0.72); }
     .site-feedback-panel h2 { margin: 0 0 6px; font-size: 20px; }
     .site-feedback-panel p { margin: 0 0 12px; color: #a9bad3; line-height: 1.5; }
     .site-feedback-panel textarea {
@@ -122,34 +124,23 @@ function injectFeedbackStyles() {
       .site-feedback-trigger-label {
         display: inline;
       }
-      .site-feedback-panel {
-        right: 0;
-        bottom: 58px;
-        width: min(320px, calc(100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)));
-      }
       .site-feedback-widget[data-mobile-position$="-start"] {
         right: auto;
         left: max(10px, env(safe-area-inset-left));
       }
-      .site-feedback-widget[data-mobile-position$="-start"] .site-feedback-panel {
-        right: auto;
-        left: 0;
-      }
       .site-feedback-widget[data-mobile-position^="top-"] {
         top: calc(12px + env(safe-area-inset-top));
-        bottom: auto;
-      }
-      .site-feedback-widget[data-mobile-position^="top-"] .site-feedback-panel {
-        top: 58px;
         bottom: auto;
       }
       .site-feedback-widget[data-mobile-position^="mid-"] {
         top: var(--site-feedback-mobile-top, 50vh);
         bottom: auto;
       }
-      .site-feedback-widget[data-mobile-position^="mid-"] .site-feedback-panel {
-        top: 58px;
-        bottom: auto;
+      .site-feedback-panel {
+        inset-inline: max(12px, env(safe-area-inset-left)) max(12px, env(safe-area-inset-right));
+        inset-block-end: calc(12px + env(safe-area-inset-bottom));
+        width: min(440px, 100%);
+        max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       }
     }
   `;
@@ -166,8 +157,8 @@ function initSiteFeedback() {
       <span aria-hidden="true">${feedbackCopy.triggerMobile}</span>
       <span class="site-feedback-trigger-label">${feedbackCopy.trigger}</span>
     </button>
-    <section class="site-feedback-panel" hidden>
-      <h2>${feedbackCopy.title}</h2>
+    <dialog class="site-feedback-panel" aria-labelledby="siteFeedbackTitle">
+      <h2 id="siteFeedbackTitle">${feedbackCopy.title}</h2>
       <p>${feedbackCopy.text}</p>
       <textarea maxlength="1200" placeholder="${feedbackCopy.placeholder}"></textarea>
       <div class="site-feedback-actions">
@@ -175,7 +166,7 @@ function initSiteFeedback() {
         <button class="site-feedback-close" type="button">${feedbackCopy.close}</button>
       </div>
       <div class="site-feedback-error" role="status"></div>
-    </section>
+    </dialog>
   `;
   document.body.append(widget);
 
@@ -282,12 +273,16 @@ function initSiteFeedback() {
   scheduleMobileFeedbackPosition();
 
   trigger.addEventListener("click", () => {
-    panel.hidden = !panel.hidden;
-    if (!panel.hidden) textarea.focus();
+    if (panel.open) {
+      panel.close();
+      return;
+    }
+    panel.showModal();
+    textarea.focus();
   });
 
   widget.querySelector(".site-feedback-close").addEventListener("click", () => {
-    panel.hidden = true;
+    panel.close();
     error.textContent = "";
   });
 
@@ -312,7 +307,7 @@ function initSiteFeedback() {
       .then((response) => {
         if (!response.ok) throw new Error("feedback_failed");
         textarea.value = "";
-        panel.hidden = true;
+        panel.close();
         error.textContent = feedbackCopy.sent;
       })
       .catch(() => {

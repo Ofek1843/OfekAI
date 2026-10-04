@@ -39,9 +39,9 @@ function productionCaptureFixture() {
         exercises: [
           exercise("Barbell Bench Press", "Chest", "Barbell", 4, "8-10", 120),
           exercise("Dumbbell Shoulder Press", "Shoulders", "Dumbbell", 3, "8-12", 90),
-          exercise("Incline Dumbbell Fly", "Chest", "Dumbbell", 3, "10-15", 90),
+          exercise("Incline Dumbbell Bench Press", "Chest", "Dumbbell", 3, "10-15", 90),
           exercise("Cable Lateral Raise", "Shoulders", "Cable", 2, "12-15", 60),
-          exercise("Triceps Rope Pushdown", "Triceps", "Cable", 2, "10-15", 60)
+          exercise("Cable Tricep Pushdown", "Triceps", "Cable", 2, "10-15", 60)
         ]
       },
       {
@@ -176,7 +176,7 @@ test("repairWorkoutProgram preserves exercises that now have dedicated images in
         exercises: [
           { exerciseId: "seated-machine-row", name: "Seated Machine Row", demoName: "Seated Machine Row", muscleGroup: "Back", equipment: "Machine", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3" },
           { exerciseId: "machine-rear-delt-fly", name: "Machine Rear Delt Fly", demoName: "Machine Rear Delt Fly", muscleGroup: "Rear Delts", equipment: "Machine", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" },
-          { exerciseId: "standing-calf-raise", name: "Standing Calf Raise", demoName: "Standing Calf Raise", muscleGroup: "Calves", equipment: "Machine", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" }
+          { exerciseId: "cable-crunch", name: "Cable Crunch", demoName: "Cable Crunch", muscleGroup: "Core", equipment: "Cable", sets: 3, reps: "12-15", restSeconds: 60, rir: "1-3" }
         ]
       }
     ]
@@ -192,7 +192,7 @@ test("repairWorkoutProgram preserves exercises that now have dedicated images in
   const { repairs } = repairWorkoutProgram(program, context);
   const ids = program.sessions[0].exercises.map((exercise) => exercise.exerciseId);
 
-  assert.deepEqual(ids, ["seated-machine-row", "reverse-pec-deck", "standing-calf-raise"]);
+  assert.deepEqual(ids, ["seated-machine-row", "reverse-pec-deck", "cable-crunch"]);
   assert.ok(!repairs.some((repair) => repair.includes("replaced disabled exercise")), "no exercise here is disabled anymore");
 
   const validation = validateWorkoutProgram(program, context);

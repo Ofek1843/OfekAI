@@ -42,7 +42,7 @@ const { EXERCISE_SETCREDITS } = require("./lib/workout-setcredits-map");
 const { MISSING_DEDICATED_IMAGE_EXERCISES, WORKOUT_EXERCISE_CATALOG, canonicalizeExerciseId, getEnabledPublicExerciseIds } = require("./lib/workout-exercise-catalog");
 const { eligibleExerciseCatalog } = require("./lib/exercise-suitability");
 const { derivePriorityFromGoal } = require("./lib/workout-priority");
-const { applyProgramSplitIdentity } = require("./lib/workout-program-identity");
+const { applyProgramSplitIdentity, classifyExplicitSessionSplit } = require("./lib/workout-program-identity");
 const { repairWorkoutProgram: repairGeneratedWorkoutProgram, diagnoseVolumeGateFailure } = require("./lib/workout-repair");
 const { normalizeMuscleFocusContract, primaryMuscleForExerciseId } = require("./lib/workout-focus");
 const {
@@ -2703,6 +2703,7 @@ Training style: ${String(trainingStyle)}
 Days per week: ${parsedDays}
 Language: ${outputLanguage}
 Programming constraints: ${JSON.stringify(buildProgrammingConstraintSummary(volumeProfile))}
+Each session must include a canonical splitType (full, upper, lower, push, pull or legs) consistent with its session name. Never omit this field or change the split to evade an exercise-compatibility error.
 Authoritative effective-volume ledger: ${JSON.stringify(formatLedgerForAiRepair(volumeLedger))}
 
 Original JSON:
@@ -3024,6 +3025,7 @@ The JSON must exactly follow this structure:
     {
       "day": 1,
       "name": "string",
+      "splitType": "full | upper | lower | push | pull | legs",
       "exercises": [
 {
   "exerciseId": "lowercase-hyphenated canonical id",
@@ -3044,6 +3046,9 @@ The JSON must exactly follow this structure:
 
 Programming rules:
 - Match the requested number of training days exactly.
+- Set each session.splitType to the actual intended session split (full, upper, lower, push, pull or legs), consistent with its name. Treat it as a hard programming invariant, not a cosmetic label.
+- Upper days may contain only upper-primary exercises plus core work. Lower/Legs days may contain only lower-primary exercises plus core work. Push days may contain chest/delts/triceps-primary exercises plus core. Pull days may contain back/biceps/rear-delts/traps-primary exercises plus core. Full Body is the only split that may combine upper and lower primary work.
+- Never put a lower-primary exercise on Upper/Push/Pull or an upper-primary exercise on Lower/Legs. Secondary set credits do not change an exercise's primary category.
 - Fit each session within the requested session duration.
 - Use only equipment the user selected.
 - Treat injuries, limitations, favorite exercises, forbidden movements and requested substitutions as hard constraints, not optional suggestions. Reflect each applicable constraint in the actual exercise choice or its notes.
@@ -3272,6 +3277,7 @@ Injuries, limitations or special requests: ${String(limitations)}
       sessionDuration: parsedDuration,
       equipment: equipmentForGeneration,
       availableDayIndexes,
+      requireSplitType: true,
       goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
     });
     let preRetryVolumeLedger = buildVolumeLedger(program, volumeProfile);
@@ -3337,6 +3343,7 @@ Injuries, limitations or special requests: ${String(limitations)}
             sessionDuration: parsedDuration,
             equipment: equipmentForGeneration,
             availableDayIndexes,
+            requireSplitType: true,
             goalProfile: goal.toLowerCase().includes("strength") ? "strength" : "hypertrophy"
           });
           preRetryVolumeLedger = buildVolumeLedger(program, volumeProfile);
@@ -3664,6 +3671,7 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
     }
 
     const currentExercise = session.exercises[exerciseIndex];
+    const sessionSplit = classifyExplicitSessionSplit(session);
 
     if (!currentExercise) {
       return res.status(400).json({
@@ -3697,6 +3705,7 @@ Current exercise:
 ${JSON.stringify(currentExercise, null, 2)}
 
 User constraints:
+- Workout day type: ${sessionSplit || "not explicitly split"}. A replacement must be compatible with this day type.
 - Selected equipment: ${selectedEquipment.join(", ") || "any"}
 - Training style: ${trainingStyle || "any"}
 - Goal: ${goal || "general"}
@@ -3708,6 +3717,7 @@ User constraints:
 
 Rules:
 - Keep the same muscle group.
+- Never replace an exercise with one whose primary training category conflicts with the workout day type.
 - Keep the same training goal.
 - In selected_only mode, the replacement primary muscle must be one of the selected muscles; fractional secondary credits may involve other muscles.
 - Keep similar difficulty.
@@ -3741,7 +3751,8 @@ Required JSON format:
         equipment: selectedEquipment,
         reservedExerciseIds: reservedSiblingExerciseIds,
         limitations,
-        language
+        language,
+        sessionSplit
       })
       : null;
 
@@ -3835,7 +3846,8 @@ Required JSON format:
         equipment: selectedEquipment,
         reservedExerciseIds: reservedSiblingExerciseIds,
         limitations,
-        language
+        language,
+        sessionSplit
       });
     }
     if (rerollRepairs.length > 0) {
@@ -3862,7 +3874,8 @@ Required JSON format:
         equipment: selectedEquipment,
         reservedExerciseIds: [...reservedSiblingExerciseIds, ...rejectedIds],
         limitations,
-        language
+        language,
+        sessionSplit
       });
       if (!candidate) break;
       const candidateId = canonicalizeExerciseId(candidate.exerciseId || candidate.demoName || candidate.name);

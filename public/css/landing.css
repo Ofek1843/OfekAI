@@ -1271,14 +1271,12 @@ html[dir="rtl"] .product-loop-step.is-active {
 }
 
 .reveal-on-scroll {
-    opacity: 0;
-    transform: translateY(24px);
+    opacity: 1;
+    transform: none;
 }
 
 .reveal-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 720ms ease, transform 720ms ease;
+    transition: none;
 }
 
 .feature-card-grid .premium-card,
@@ -1286,8 +1284,8 @@ html[dir="rtl"] .product-loop-step.is-active {
 .platform-steps .platform-step,
 .product-loop-step,
 .product-loop-panel {
-    opacity: 0;
-    transform: translateY(18px);
+    opacity: 1;
+    transform: none;
 }
 
 .is-visible .premium-card,
@@ -1295,9 +1293,7 @@ html[dir="rtl"] .product-loop-step.is-active {
 .is-visible .platform-step,
 .is-visible .product-loop-step,
 .is-visible .product-loop-panel {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 640ms ease, transform 640ms ease;
+    transition: none;
 }
 
 .is-visible .premium-card:nth-child(2),

@@ -102,16 +102,20 @@ function injectStyles() {
   style.textContent = `
     .pwa-install-banner {
       position: fixed;
-      left: 18px;
-      right: 18px;
+      inset-inline: 18px;
       bottom: 18px;
+      inset-block-end: calc(12px + env(safe-area-inset-bottom));
       z-index: 9997;
       margin: 0 auto;
+      width: min(480px, calc(100vw - 36px - env(safe-area-inset-left) - env(safe-area-inset-right)));
       max-width: 480px;
+      max-height: calc(100vh - 32px);
+      max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       display: flex;
       align-items: center;
       gap: 14px;
       padding: 14px 16px;
+      overflow-y: auto;
       border-radius: 14px;
       background: rgba(10, 22, 38, 0.96);
       border: 1px solid rgba(53, 207, 223, 0.22);
@@ -127,11 +131,14 @@ function injectStyles() {
       transform: translateY(0);
       opacity: 1;
     }
+    .pwa-install-banner::backdrop { background: transparent; }
+    .pwa-install-banner.instructional::backdrop { background: rgba(2, 8, 18, 0.62); }
     .pwa-install-banner.instructional {
       flex-direction: column;
       align-items: stretch;
       overflow-y: auto;
       overscroll-behavior: contain;
+      box-sizing: border-box;
     }
     .pwa-install-icon {
       flex-shrink: 0;
@@ -226,18 +233,24 @@ function injectStyles() {
     }
     @media (max-width: 480px) {
       .pwa-install-banner.instructional {
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
-        max-height: 34dvh;
-        padding: 12px;
+        inset-inline: max(10px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right));
+        inset-block-end: calc(8px + env(safe-area-inset-bottom));
+        max-height: min(260px, calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px));
+        padding: 10px 12px;
+        gap: 8px;
       }
       .pwa-install-banner.instructional .pwa-install-actions {
         position: sticky;
         bottom: -1px;
-        padding-top: 8px;
-        background: rgba(10, 22, 38, 0.98);
+        padding-top: 6px;
+        background: #0a1626;
       }
+      .pwa-install-banner.instructional .pwa-install-steps { gap: 5px; margin-top: 8px; }
+      .pwa-install-banner.instructional .pwa-install-steps li { font-size: 12px; line-height: 1.25; }
+      .pwa-install-banner.instructional .pwa-install-row { gap: 9px; }
+      .pwa-install-banner.instructional .pwa-install-copy p { font-size: 12px; }
+      .pwa-install-banner.instructional .pwa-install-icon { width: 34px; height: 34px; }
+      .pwa-install-banner.instructional .pwa-install-btn { min-height: 40px; }
       .pwa-install-banner:not(.instructional) {
         flex-wrap: wrap;
       }
@@ -268,9 +281,8 @@ function renderBanner({ instructional, title, text, steps, primaryLabel, seconda
   injectStyles();
   removeActiveBanner();
 
-  const banner = document.createElement("div");
+  const banner = document.createElement("dialog");
   banner.className = `pwa-install-banner${instructional ? " instructional" : ""}`;
-  banner.setAttribute("role", "dialog");
   banner.setAttribute("aria-label", title);
 
   const stepsHtml = Array.isArray(steps) && steps.length
@@ -290,7 +302,7 @@ function renderBanner({ instructional, title, text, steps, primaryLabel, seconda
     <div class="pwa-install-row">
       <span class="pwa-install-icon">FP</span>
       <div class="pwa-install-copy">
-        <strong>${title}</strong>
+        <strong id="pwaInstallTitle">${title}</strong>
         <p>${text}</p>
       </div>
       ${instructional ? "" : actionsHtml}
@@ -299,8 +311,14 @@ function renderBanner({ instructional, title, text, steps, primaryLabel, seconda
     ${instructional ? actionsHtml : ""}
   `;
 
+  banner.setAttribute("aria-labelledby", "pwaInstallTitle");
   document.body.appendChild(banner);
   activeBanner = banner;
+  // The long iOS walkthrough is modal: it locks page scrolling and dims the
+  // page behind its compact sheet. The short native-install banner remains
+  // non-modal so it behaves like a conventional unobtrusive prompt.
+  if (instructional) banner.showModal();
+  else banner.show();
   requestAnimationFrame(() => banner.classList.add("visible"));
 
   const primaryButton = banner.querySelector('[data-action="install"], [data-action="ack"]');
@@ -313,6 +331,11 @@ function renderBanner({ instructional, title, text, steps, primaryLabel, seconda
   secondaryButton?.addEventListener("click", () => {
     removeActiveBanner();
     onSecondary?.();
+  });
+  banner.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    removeActiveBanner();
+    (onSecondary || onPrimary)?.();
   });
 
   return banner;

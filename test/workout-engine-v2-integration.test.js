@@ -7,6 +7,7 @@ const path = require("node:path");
 const { stopChildProcess } = require("./child-process-cleanup");
 const { primaryMuscleForExerciseId } = require("../lib/workout-focus");
 const { getCatalogExercise } = require("../lib/workout-exercise-catalog");
+const { isExerciseCompatibleWithSplit } = require("../lib/workout-split-policy");
 
 const FIXTURE = {
   programName: "Compound First Diagnostic",
@@ -16,6 +17,7 @@ const FIXTURE = {
   sessions: [1, 2].map((day) => ({
     day,
     name: `Upper ${day}`,
+    splitType: "upper",
     exercises: [
       {
         exerciseId: "barbell-bench-press", name: "Barbell Bench Press", demoName: "Barbell Bench Press",
@@ -66,6 +68,7 @@ const INTEGRATED_RELEASE_FIXTURE = {
   sessions: [1, 2, 3, 4].map((day) => ({
     day,
     name: `Day ${day}`,
+    splitType: "full",
     exercises: RELEASE_TEMPLATE.map(([exerciseId, sets]) => fixtureExercise(exerciseId, sets))
   }))
 };
@@ -184,6 +187,8 @@ test("production-path fixture uses authoritative repair and validates the muscle
   assert.equal(body.program.programName, "Upper Body", "the API names the final program from its actual sessions");
   assert.equal(body.validationSummary.passed, true);
   assert.equal(body.validationSummary.volumePassed, true);
+  assert.ok(body.program.sessions.every((session) => session.splitType === "upper"));
+  assert.ok(body.program.sessions.every((session) => session.exercises.every((exercise) => isExerciseCompatibleWithSplit(exercise, session.splitType))));
   assert.ok(body.weeklyVolume.perMuscle.chest.total >= body.weeklyVolume.perMuscle.chest.preferredMin);
   assert.ok(body.weeklyVolume.perMuscle.chest.total <= body.weeklyVolume.perMuscle.chest.preferredMax);
   assert.ok(body.weeklyVolume.perMuscle.triceps.total >= body.weeklyVolume.perMuscle.triceps.preferredMin);
@@ -233,6 +238,8 @@ test("real frontend payload contract survives every integrated focus mode throug
   assert.equal(legacy.response.status, 200, JSON.stringify(legacy.body));
   assert.equal(legacy.body.program.muscleFocusMode, "balanced");
   assert.deepEqual(legacy.body.program.selectedMuscles, []);
+  assert.ok(legacy.body.program.sessions.every((session) => session.splitType === "full"));
+  assert.ok(legacy.body.program.sessions.every((session) => session.exercises.every((exercise) => isExerciseCompatibleWithSplit(exercise, session.splitType))));
   assertRequiredHardRanges(legacy.body, "legacy");
 
   const balanced = await postWorkout(server, "balanced", integratedFrontendPayload());

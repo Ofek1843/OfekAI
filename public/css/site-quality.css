@@ -144,8 +144,7 @@ body.fp-v45-deep-ocean.fp-route-index .language-welcome__continue { background: 
 }
 @media (max-width: 560px) {
   /* Feedback must not obscure the food composer or the wizard actions. */
-  body.fp-v45-deep-ocean .site-feedback-widget { position: static !important; width: fit-content; margin: 24px auto !important; transform: none !important; }
-  body.fp-v45-deep-ocean .site-feedback-panel { position: fixed; inset: auto 16px 72px auto !important; max-height: 75dvh; overflow-y: auto; }
+  body.fp-v45-deep-ocean .site-feedback-widget { position: fixed !important; width: auto; margin: 0 !important; transform: none !important; }
   body.fp-v45-deep-ocean.fp-route-daily-nutrition .daily-hero { padding-block-start: 22px; }
   body.fp-v45-deep-ocean.fp-route-daily-nutrition .date-toolbar { grid-template-columns: 44px minmax(0, 1fr) 44px; }
   body.fp-v45-deep-ocean.fp-route-daily-nutrition .date-toolbar-center { justify-content: center; gap: 8px; }
