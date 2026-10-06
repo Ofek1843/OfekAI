@@ -89,11 +89,14 @@ test("mobile and Hebrew polish keeps core controls visible and localized", () =>
   assert.match(THEME, /מעבר למצב כהה/);
 });
 
-test("the PWA cache is versioned with the Illustrated V4 assets and private voice remains network-only", () => {
+test("the PWA cache ships the simple workflows while private voice remains network-only", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v45-language-food-i18n-2/);
+  assert.match(sw, /fuelphysique-simple-workflows-20261006-1/);
+  assert.match(sw, /simple-ux\.css\?v=20261006-simple-3/);
+  assert.match(sw, /simple-ux\.js\?v=20261006-simple-3/);
+  assert.match(sw, /dashboard\.js\?v=20261006-simple-3/);
   assert.match(sw, /illustrated-v4\.css\?v=20260914-i18n-dashboard-1/);
-  assert.match(sw, /illustrated-v4\.js\?v=20260815-real-athlete-v43-complete-5/);
+  assert.doesNotMatch(sw, /image-sequence-v43\.js|athlete-figure\.js|js\/scenes\//);
   assert.match(sw, /const NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /event\.request\.destination === 'audio'/);
 });

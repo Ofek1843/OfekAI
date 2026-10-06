@@ -298,6 +298,12 @@ function wireBuilderChooser() {
 
   document.getElementById("finalBuildProgramCta")?.addEventListener("click", (event) => {
     event.preventDefault();
+    const simpleTools = document.getElementById("simpleTools");
+    if (simpleTools) {
+      simpleTools.scrollIntoView({ behavior: "smooth", block: "start" });
+      simpleTools.querySelector("a")?.focus({ preventScroll: true });
+      return;
+    }
     document.getElementById("buildProgramCta")?.scrollIntoView({ behavior: "smooth", block: "center" });
     window.setTimeout(toggleBuilderChooser, 250);
   });
@@ -321,6 +327,7 @@ function destinationFromAuthHref(href) {
   const next = url.searchParams.get("next");
   if (next === "workout-builder.html") return "/workout-builder.html";
   if (next === "nutrition-builder.html") return "/nutrition-builder.html";
+  if (next === "daily-nutrition.html") return "/daily-nutrition.html";
   return "/dashboard.html";
 }
 

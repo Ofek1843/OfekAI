@@ -20,13 +20,16 @@ test("landing coach message is inside the live hero panel and does not mirror in
   assert.doesNotMatch(css, /coach-message[^}]*scaleX\s*\(\s*-1/i);
 });
 
-test("the real-athlete sequence also runs on the Render production hostname", () => {
-  const engine = read("public/js/image-sequence-v43.js");
+test("the lightweight three-tool explanation replaces the heavy landing sequence", () => {
   const landing = read("public/index.html");
+  const simpleUx = read("public/js/simple-ux.js");
   const sw = read("public/sw.js");
-  assert.match(engine, /"ofekai\.onrender\.com"/);
-  assert.match(landing, /image-sequence-v43\.js\?v=20261002-brand-quality-1/);
-  assert.match(sw, /image-sequence-v43\.js\?v=20261002-brand-quality-1/);
+  assert.match(landing, /simple-ux\.js\?v=20261006-simple-3/);
+  assert.doesNotMatch(landing, /image-sequence-v43\.js/);
+  assert.match(sw, /simple-ux\.js\?v=20261006-simple-3/);
+  for (const key of ["workout", "nutrition", "diary"]) assert.match(simpleUx, new RegExp(`'${key}'`));
+  assert.match(simpleUx, /showPreview\(activePreview \+ 1\)/);
+  assert.match(simpleUx, /card\.classList\.toggle\('is-preview-active'/);
 });
 
 test("the landing uses the intended dumbbell-curl sequence and loops instead of freezing", () => {

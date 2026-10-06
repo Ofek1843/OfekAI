@@ -3049,6 +3049,7 @@ Programming rules:
 - Set each session.splitType to the actual intended session split (full, upper, lower, push, pull or legs), consistent with its name. Treat it as a hard programming invariant, not a cosmetic label.
 - Upper days may contain only upper-primary exercises plus core work. Lower/Legs days may contain only lower-primary exercises plus core work. Push days may contain chest/delts/triceps-primary exercises plus core. Pull days may contain back/biceps/rear-delts/traps-primary exercises plus core. Full Body is the only split that may combine upper and lower primary work.
 - Never put a lower-primary exercise on Upper/Push/Pull or an upper-primary exercise on Lower/Legs. Secondary set credits do not change an exercise's primary category.
+- Movement role also constrains the split: upright rows are Pull, rack pulls are lower-body hip hinges, and muscle-ups combine pulling and pressing so belong only to Upper or Full Body, never a pure Push or Pull day. Do not infer a movement's split solely from its largest muscle credit.
 - Fit each session within the requested session duration.
 - Use only equipment the user selected.
 - Treat injuries, limitations, favorite exercises, forbidden movements and requested substitutions as hard constraints, not optional suggestions. Reflect each applicable constraint in the actual exercise choice or its notes.
@@ -3164,7 +3165,7 @@ Session duration: ${parsedDuration} minutes
 Training style: ${String(trainingStyle)}
 Available equipment: ${equipmentForGeneration.join(", ")}
 Choose exerciseId values from this level-and-equipment-compatible catalog:
-${eligibleExerciseCatalog(equipmentForGeneration, experience).map(entry => `${entry.exerciseId}: ${entry.title} (${entry.equipment})`).join("\n")}
+${eligibleExerciseCatalog(equipmentForGeneration, experience).map(entry => `${entry.exerciseId}: ${entry.title} (${entry.equipment}; splitRole=${entry.splitRole})`).join("\n")}
 Priority: ${String(canonicalPriority)}
 Muscle focus mode: ${muscleFocus.muscleFocusMode}
 Selected muscles: ${muscleFocus.selectedMuscles.join(", ") || "none"}
@@ -3812,7 +3813,7 @@ Required JSON format:
     // Same deterministic repair pass used by /api/workout-builder — the
     // reroll prompt already asks the AI for exerciseId, but this is a
     // defensive backstop, not the primary fix for it.
-    const rerollRepairContainer = { sessions: [{ exercises: [newExercise] }] };
+    const rerollRepairContainer = { sessions: [{ name: session.name, splitType: sessionSplit, exercises: [newExercise] }] };
     const { repairs: rerollRepairs } = repairGeneratedWorkoutProgram(
       rerollRepairContainer,
       {
@@ -4046,6 +4047,7 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
     const foodStylePreference = ["mediterranean", "mix", "supermarket"].includes(plan.foodStylePreference)
       ? plan.foodStylePreference
       : "mix";
+    const mealComplexityPreference = plan.mealComplexityPreference === 'simple' ? 'simple' : 'any';
     const avoidTerms = Array.isArray(plan.avoidTerms)
       ? plan.avoidTerms
       : parseFoodPreferenceTerms(plan.foodsToAvoid);
@@ -4060,6 +4062,7 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       mealFormatPreference,
       prepTimePreference,
       foodStylePreference,
+      mealComplexityPreference,
       avoidTerms
     });
 
@@ -4212,6 +4215,7 @@ app.post("/api/nutrition-builder", async (req, res) => {
       mealFormatPreference = "mix",
       prepTimePreference = "any",
       foodStylePreference = "mix",
+      mealComplexityPreference = "any",
       diagnosedConditions = [],
       youthGuardianConsent = false,
       favoriteFoods = "No preference",
@@ -4353,6 +4357,7 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
     const practicalFoodStyle = ["mediterranean", "mix", "supermarket"].includes(foodStylePreference)
       ? foodStylePreference
       : "mix";
+    const practicalComplexity = mealComplexityPreference === 'simple' ? 'simple' : 'any';
     const avoidTerms = parseFoodPreferenceTerms(foodsToAvoid);
     const favoriteTerms = parseFoodPreferenceTerms(favoriteFoods);
     const preferNutrients = safeConditions
@@ -4373,6 +4378,7 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
             mealFormatPreference: practicalMealFormat,
             prepTimePreference: practicalPrepTime,
             foodStylePreference: practicalFoodStyle,
+            mealComplexityPreference: practicalComplexity,
             avoidTerms
           })
         );
@@ -4619,6 +4625,7 @@ ${slots
       mealFormatPreference: practicalMealFormat,
       prepTimePreference: practicalPrepTime,
       foodStylePreference: practicalFoodStyle,
+      mealComplexityPreference: practicalComplexity,
       foodsToAvoid: String(foodsToAvoid),
       favoriteFoods: String(favoriteFoods),
       avoidTerms,
@@ -4663,6 +4670,7 @@ ${slots
             mealFormatPreference: practicalMealFormat,
             prepTimePreference: practicalPrepTime,
             foodStylePreference: practicalFoodStyle,
+            mealComplexityPreference: practicalComplexity,
             avoidTerms
           }),
         buildOption: (mealId, meal) =>

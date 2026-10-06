@@ -745,8 +745,19 @@ function renderNutrition(saved) {
   }
   action.href = "/my-nutrition-plans.html";
   action.textContent = ui.manageNutrition;
-  const plan = saved.plan || {
+  const plan = saved.plan || {};
+  activeNutritionPlanForQuickFood = {
+    name: saved.name || plan.planName || "Nutrition Plan",
+    dailyCalories: Number(plan.dailyCalories) || null,
+    proteinGrams: Number(plan.proteinGrams) || null,
+    carbsGrams: Number(plan.carbsGrams) || null,
+    fatGrams: Number(plan.fatGrams) || null
+  };
+  $("#nutritionPlanName").textContent = saved.name || plan.planName || "Nutrition Plan";
+  $("#caloriesValue").textContent = plan.dailyCalories ? Number(plan.dailyCalories).toLocaleString() : "—";
+  $("#proteinValue").textContent = plan.proteinGrams ? `${plan.proteinGrams}g` : "—";
 }
+
 function renderDailyFocus({ workout, nutrition, logs, weekly, streak }) {
   const title = $("#dailyFocusTitle");
   const text = $("#dailyFocusText");
@@ -773,14 +784,6 @@ function renderDailyFocus({ workout, nutrition, logs, weekly, streak }) {
   action.textContent = dailyFocusUi.start;
   if (workoutStatus) workoutStatus.textContent = dailyFocusUi.workouts(weekly);
   if (streakStatus) streakStatus.textContent = dailyFocusUi.streak(streak);
-}
-;
-  activeNutritionPlanForQuickFood = {
-    name: saved.name || plan.planName || "Nutrition Plan",    dailyCalories: Number(plan.dailyCalories) || null,    proteinGrams: Number(plan.proteinGrams) || null,    carbsGrams: Number(plan.carbsGrams) || null,    fatGrams: Number(plan.fatGrams) || null  }
-;
-  $("#nutritionPlanName").textContent = saved.name || plan.planName || "Nutrition Plan";
-  $("#caloriesValue").textContent = plan.dailyCalories ? Number(plan.dailyCalories).toLocaleString() : "—";
-  $("#proteinValue").textContent = plan.proteinGrams ? `${plan.proteinGrams}g` : "—";
 }
 function renderRecent(log) {
   const details = $("#lastWorkoutDetails");
@@ -1231,6 +1234,9 @@ async function load(user) {
   showAthleteCorePromptIfNeeded(settings);
 }
 localize();
+// Localize the initial empty-state focus as well; network errors must not leave
+// English placeholders visible in a non-English dashboard.
+renderDailyFocus({ workout: null, nutrition: null, logs: [], weekly: 0, streak: 0 });
 initMobileDrawer();
 initDashboardSearch();
 initQuickFood();

@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-brand-quality-20261002-1';
+const CACHE_NAME = 'fuelphysique-simple-workflows-20261006-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -44,6 +44,7 @@ const urlsToCache = [
   '/terms.html',
   '/privacy.html',
   '/css/dashboard.css',
+  '/css/simple-ux.css?v=20261006-simple-3',
   '/css/site-quality.css?v=20261002-brand-quality-1',
   '/js/landing-navigation.mjs',
   '/js/request-deadline.mjs',
@@ -60,8 +61,9 @@ const urlsToCache = [
   '/css/social.css',
   '/js/social.js',
   '/js/redesign-shell.js?v=20261002-brand-quality-1',
-  '/js/redesign-shell.js?v=20261002-brand-quality-1',
   '/js/i18n.js?v=20261002-brand-quality-1',
+  '/js/simple-ux.js?v=20261006-simple-3',
+  '/js/dashboard.js?v=20261006-simple-3',
   '/js/daily-nutrition.js?v=20260928-language-coverage-1',
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',
   '/images/common/meal.svg',
@@ -70,13 +72,6 @@ const urlsToCache = [
   '/js/daily-nutrition-i18n.mjs?v=20260928-language-coverage-1',
   '/js/daily-nutrition-format.mjs?v=20260914-i18n-dashboard-1',
   '/js/product-motion-v47.js?v=20260908-v47-choice-polish-2',
-  '/js/athlete-figure.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/scenes/training.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/scenes/nutrition.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/scenes/progress.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/scenes/coachsocial.js?v=20260815-real-athlete-v43-complete-5',
-  '/js/image-sequence-v43.js?v=20261002-brand-quality-1',
-  '/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5',
   '/images/brand/ultramarine-athlete-hero.png',
   '/images/brand/ultramarine-athlete-hero.webp',
   '/images/brand/fuelphysique-icon-192.png',

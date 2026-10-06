@@ -132,7 +132,7 @@
           <div class="wizard-fields-grid wizard-fields-grid--two">
             <label>
               <span data-en="Age" data-he="גיל">Age</span>
-              <input id="age" name="age" type="number" min="15" max="100" value="21" required />
+              <input id="age" name="age" type="number" min="15" max="100" required />
             </label>
             <label>
               <span data-en="Gender" data-he="מין">Gender</span>
@@ -167,11 +167,11 @@
           <div class="wizard-fields-grid wizard-fields-grid--two">
             <label>
               <span data-en="Height (cm)" data-he="גובה (ס״מ)">Height (cm)</span>
-              <input id="height" name="height" type="number" min="120" max="230" value="175" required />
+              <input id="height" name="height" type="number" min="120" max="230" required />
             </label>
             <label>
               <span data-en="Weight (kg)" data-he="משקל (ק״ג)">Weight (kg)</span>
-              <input id="weight" name="weight" type="number" min="35" max="300" step="0.1" value="75" required />
+              <input id="weight" name="weight" type="number" min="35" max="300" step="0.1" required />
             </label>
           </div>
         </section>
@@ -252,9 +252,9 @@
             <p data-en="Choose one simple preparation level. You can still replace any meal later." data-he="בחרו רמת הכנה פשוטה אחת. אפשר עדיין להחליף כל ארוחה בהמשך.">Choose one simple preparation level. You can still replace any meal later.</p>
             <div class="meal-practicality-options" role="radiogroup" aria-label="Meal practicality">
               <label><input type="radio" name="mealFormatPreference" value="ready"><span><strong data-en="Minimal prep" data-he="מינימום הכנה">Minimal prep</strong><small data-en="Ready-to-eat food or a simple supermarket combination" data-he="מזון מוכן או שילוב פשוט מהסופר">Ready-to-eat food or a simple supermarket combination</small></span></label>
-              <label><input type="radio" name="mealFormatPreference" value="quick"><span><strong data-en="Quick & easy" data-he="מהיר וקל">Quick & easy</strong><small data-en="Straightforward assembly with familiar ingredients" data-he="הרכבה פשוטה עם מצרכים מוכרים">Straightforward assembly with familiar ingredients</small></span></label>
+              <label><input type="radio" name="mealFormatPreference" value="quick" checked><span><strong data-en="Quick & easy" data-he="מהיר וקל">Quick & easy</strong><small data-en="Straightforward assembly with familiar ingredients" data-he="הרכבה פשוטה עם מצרכים מוכרים">Straightforward assembly with familiar ingredients</small></span></label>
               <label><input type="radio" name="mealFormatPreference" value="cook"><span><strong data-en="Simple cooking" data-he="בישול פשוט">Simple cooking</strong><small data-en="Easy recipes that fit a normal routine" data-he="מתכונים קלים שמתאימים לשגרה">Easy recipes that fit a normal routine</small></span></label>
-              <label><input type="radio" name="mealFormatPreference" value="mix" checked><span><strong data-en="No preference" data-he="ללא העדפה">No preference</strong><small data-en="Give me the best-fitting practical meals" data-he="תנו לי את הארוחות הפרקטיות המתאימות ביותר">Give me the best-fitting practical meals</small></span></label>
+              <label><input type="radio" name="mealFormatPreference" value="mix"><span><strong data-en="No preference" data-he="ללא העדפה">No preference</strong><small data-en="Give me the best-fitting practical meals" data-he="תנו לי את הארוחות הפרקטיות המתאימות ביותר">Give me the best-fitting practical meals</small></span></label>
             </div>
           </fieldset>
 
@@ -348,6 +348,8 @@
     </section>
   </div>
 
+  <link rel="stylesheet" href="/css/simple-ux.css?v=20261006-simple-3">
+  <script src="/js/simple-ux.js?v=20261006-simple-3"></script>
   <!-- Wizard navigation script (must run before nutrition-builder.js) -->
   <script type="module">
     const wizardSteps = [...document.querySelectorAll('.wizard-step')];
@@ -399,7 +401,8 @@
     }
 
     function validate(index) {
-      const key = wizardSteps[index]?.dataset.wizardStep;
+      const keys = (wizardSteps[index]?.dataset.wizardStep || '').split(',');
+      for (const key of keys) {
       if (key === 'goal' && !goalSelect?.value) return text('Choose a primary goal to continue.', 'בחרו מטרה כדי להמשיך.');
       if (key === 'about') {
         const age = Number(document.querySelector('#age')?.value);
@@ -415,6 +418,7 @@
         if (!w || w < 35 || w > 300) return text('Enter a valid weight between 35 and 300 kg.', 'הזינו משקל בין 35 ל־300 ק״ג.');
       }
       if (key === 'activity' && !document.querySelector('#activityLevel')?.value) return text('Select your daily activity level.', 'בחרו רמת פעילות יומית.');
+      }
       return '';
     }
 
@@ -424,13 +428,13 @@
       if (progressBar) progressBar.style.width = `${((current + 1) / total) * 100}%`;
       if (stepLabel) stepLabel.textContent = he ? `שלב ${current + 1} מתוך ${total}` : `Step ${current + 1} of ${total}`;
       const step = wizardSteps[current];
-      if (stepTitle) stepTitle.textContent = (he ? step?.dataset.stepTitleHe : step?.dataset.stepTitleEn) || '';
+      if (stepTitle) stepTitle.textContent = window.FuelSimpleUI?.copy(step?.dataset.simpleTitle) || (he ? step?.dataset.stepTitleHe : step?.dataset.stepTitleEn) || '';
       if (backBtn) backBtn.disabled = current === 0;
       const isLast = current === total - 1;
       if (nextBtn) nextBtn.classList.toggle('hidden', isLast);
       if (generateBtn) generateBtn.classList.toggle('hidden', !isLast);
       clearErr();
-      wizardSteps[current]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (current > 0) form.querySelector('.wizard-progress')?.scrollIntoView({ behavior: 'auto', block: 'start' });
     }
 
     nextBtn?.addEventListener('click', () => {
@@ -445,12 +449,13 @@
       render();
     });
 
-    if (backBtn) backBtn.textContent = text('Back', 'חזרה');
-    if (nextBtn) nextBtn.textContent = text('Next', 'המשך');
+    if (backBtn) backBtn.textContent = window.FuelSimpleUI.copy('back');
+    if (nextBtn) nextBtn.textContent = window.FuelSimpleUI.copy('next');
+    if (generateBtn) generateBtn.textContent = window.FuelSimpleUI.copy('createNutrition');
     render();
   </script>
 
-  <script type="module" src="/js/nutrition-builder.js?v=20260928-language-coverage-1"></script>
+  <script type="module" src="/js/nutrition-builder.js?v=20261005-simple-1"></script>
   <script type="module" src="/js/push-notifications.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
   <script src="/js/pwa-install.js"></script>

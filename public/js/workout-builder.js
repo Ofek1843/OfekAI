@@ -225,6 +225,8 @@ const builderPageLabels = {
 const builderLabels = builderPageLabels[currentLanguage] || builderPageLabels.en;
 ui.pageTitle = builderLabels.title;
 ui.pageDescription = builderLabels.description;
+ui.pageTitle = window.FuelSimpleUI?.copy('workout') || ui.pageTitle;
+ui.generate = window.FuelSimpleUI?.copy('createWorkout') || ui.generate;
 ui.primaryGoal = t(currentLanguage, "primaryGoal");
 ui.trainingExperience = t(currentLanguage, "trainingExperience");
 ui.limitations = t(currentLanguage, "limitations");
@@ -698,7 +700,8 @@ function validateMuscleFocus() {
 }
 
 function validateWizardStep(index) {
-  const key = wizardSteps[index]?.dataset.wizardStep;
+  const keys = (wizardSteps[index]?.dataset.wizardStep || '').split(',');
+  for (const key of keys) {
   if (key === "goal" && !document.querySelector("#goal")?.value) return isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
   if (key === "experience" && !document.querySelector("#experience")?.value) return isHebrew ? "בחר את רמת הניסיון שלך." : "Choose your training experience.";
   if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
@@ -712,6 +715,7 @@ function validateWizardStep(index) {
     if (selectedAvailableDays().length !== days) return isHebrew ? `בחר בדיוק ${days} ימים זמינים.` : `Choose exactly ${days} available day${days === 1 ? "" : "s"}.`;
   }
   if (key === "muscleFocus") return validateMuscleFocus();
+  }
   return "";
 }
 
@@ -735,14 +739,14 @@ function renderWizardStep() {
   const total = wizardSteps.length;
   if (wizardProgressBar) wizardProgressBar.style.width = `${((wizardStepIndex + 1) / total) * 100}%`;
   if (wizardStepLabel) wizardStepLabel.textContent = isHebrew ? `שלב ${wizardStepIndex + 1} מתוך ${total}` : `Step ${wizardStepIndex + 1} of ${total}`;
-  if (wizardStepTitle) wizardStepTitle.textContent = isHebrew ? step.dataset.stepTitleHe : step.dataset.stepTitleEn;
+  if (wizardStepTitle) wizardStepTitle.textContent = window.FuelSimpleUI?.copy(step.dataset.simpleTitle) || (isHebrew ? step.dataset.stepTitleHe : step.dataset.stepTitleEn);
   if (wizardBackButton) wizardBackButton.disabled = wizardStepIndex === 0;
   const isLast = wizardStepIndex === total - 1;
   wizardNextButton?.classList.toggle("hidden", isLast);
   button?.classList.toggle("hidden", !isLast);
   if (isLast) renderWizardReview();
   clearWizardError();
-  step?.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (wizardStepIndex > 0) form.querySelector('.wizard-progress')?.scrollIntoView({ behavior: "auto", block: "start" });
 }
 
 wizardNextButton?.addEventListener("click", () => {
@@ -761,6 +765,8 @@ document.querySelector("#daysPerWeek")?.addEventListener("change", updateAvailab
 document.querySelectorAll('input[name="availableDays"]').forEach(input => input.addEventListener("change", updateAvailableDayLimit));
 
 applyBuilderLanguage();
+if (wizardNextButton) wizardNextButton.textContent = window.FuelSimpleUI?.copy('next') || wizardNextButton.textContent;
+if (wizardBackButton) wizardBackButton.textContent = window.FuelSimpleUI?.copy('back') || wizardBackButton.textContent;
 setupVisualSelections();
 setupMuscleFocus();
 updateAvailableDayLimit();
@@ -784,8 +790,11 @@ const goalCardCopy = isHebrew ? {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const currentError = validateWizardStep(wizardStepIndex);
+  const invalid = wizardSteps.findIndex((_,index) => validateWizardStep(index));
+  const currentError = invalid < 0 ? '' : validateWizardStep(invalid);
   if (currentError) {
+    wizardStepIndex = invalid;
+    renderWizardStep();
     showWizardError(currentError);
     return;
   }

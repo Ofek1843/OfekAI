@@ -141,6 +141,8 @@ const ui = isHebrew
       amount: "Amount",
       print: "Print / Save"
     };
+ui.pageTitle = window.FuelSimpleUI?.copy('nutrition') || ui.pageTitle;
+ui.generate = window.FuelSimpleUI?.copy('createNutrition') || ui.generate;
         function setText(selector, text) {
   const element = document.querySelector(selector);
 
@@ -317,7 +319,7 @@ form.addEventListener("submit", async (event) => {
     trainingDays: Number(formData.get("trainingDays")),
     mealsPerDay: Number(formData.get("mealsPerDay")),
     dietaryPreference: formData.get("dietaryPreference"),
-    mealFormatPreference: formData.get("mealFormatPreference") || "mix",
+    mealFormatPreference: formData.get("mealFormatPreference") || "quick",
     // One preparation answer is enough. Keep the legacy server contract so
     // saved plans/rerolls remain compatible, but derive it from the single
     // visible question rather than presenting duplicate time controls.
@@ -325,7 +327,8 @@ form.addEventListener("submit", async (event) => {
     // Food style is intentionally not inferred from location/language. The
     // catalog remains broad; favorites and dietary preference are the user's
     // explicit controls over meal selection.
-    foodStylePreference: "mix",
+    foodStylePreference: formData.get("mealFormatPreference") === "mix" ? "mix" : "supermarket",
+    mealComplexityPreference: formData.get("mealFormatPreference") === "mix" ? "any" : "simple",
     diagnosedConditions: formData.getAll("diagnosedConditions"),
     youthGuardianConsent: formData.get("youthGuardianConsent") === "on",
 

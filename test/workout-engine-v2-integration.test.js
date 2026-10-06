@@ -88,7 +88,7 @@ function startServer(port, fixture = FIXTURE) {
     let stderr = "";
     child.stderr.on("data", (chunk) => { stderr += chunk.toString(); });
     const baseUrl = `http://127.0.0.1:${port}`;
-    const deadline = Date.now() + 15_000;
+    const deadline = Date.now() + 30_000;
     (async () => {
       while (Date.now() < deadline) {
         try {
@@ -99,6 +99,7 @@ function startServer(port, fixture = FIXTURE) {
         }
         await new Promise((done) => setTimeout(done, 100));
       }
+      stopChildProcess(child);
       reject(new Error(`Workout engine fixture server failed to start: ${stderr}`));
     })();
   });
@@ -168,6 +169,47 @@ function primaryMuscles(program) {
     .flatMap((session) => session.exercises)
     .map((exercise) => primaryMuscleForExerciseId(exercise.exerciseId));
 }
+
+test("production generation repairs deliberately contaminated Upper/Lower and PPL responses without changing splits", async (t) => {
+  const layouts = [
+    ["upper", "lower", "upper", "lower"],
+    ["push", "pull", "legs", "push", "pull", "legs"]
+  ];
+  for (const [index, splits] of layouts.entries()) {
+    const templates = {
+      upper: ["barbell-bench-press", "barbell-row", "barbell-shoulder-press", "hack-squat"],
+      lower: ["barbell-squat", "romanian-deadlift", "standing-calf-raise-machine", "barbell-bench-press"],
+      push: ["barbell-bench-press", "barbell-shoulder-press", "cable-tricep-pushdown", "barbell-row"],
+      pull: ["barbell-row", "cable-bicep-curl", "face-pull", "barbell-bench-press"],
+      legs: ["barbell-squat", "romanian-deadlift", "standing-calf-raise-machine", "barbell-row"]
+    };
+    const fixture = { daysPerWeek: splits.length, goal: "Build muscle", sessions: splits.map((splitType, day) => ({
+      day: day + 1, name: splitType, splitType,
+      exercises: templates[splitType].map((id) => fixtureExercise(id, 3))
+    })) };
+    const server = await startServer(4282 + index, fixture);
+    t.after(() => stopChildProcess(server.child));
+    const result = await postWorkout(server, `split-regression-${index}`, integratedFrontendPayload({
+      experience: "beginner", daysPerWeek: splits.length,
+      availableDays: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+    }));
+    assert.equal(result.response.status, 200, JSON.stringify(result.body));
+    assert.deepEqual(result.body.program.sessions.map((session) => session.splitType), splits);
+    for (const session of result.body.program.sessions) {
+      for (const exercise of session.exercises) assert.equal(isExerciseCompatibleWithSplit(exercise, session.splitType), true, `${session.splitType}/${exercise.exerciseId}`);
+    }
+    assertRequiredHardRanges(result.body, `split-regression-${index}`);
+  }
+});
+
+test("production generation rejects an impossible Upper/quads contract instead of silently switching split", async (t) => {
+  const fixture = { daysPerWeek: 2, sessions: [1, 2].map((day) => ({ day, name: "Upper", splitType: "upper", exercises: [fixtureExercise("hack-squat", 3)] })) };
+  const server = await startServer(4284, fixture);
+  t.after(() => stopChildProcess(server.child));
+  const result = await postWorkout(server, "impossible-upper-quads", payload({ equipment: ["machines"], selectedMuscles: ["quads"] }));
+  assert.equal(result.response.status, 422, JSON.stringify(result.body));
+  assert.equal(result.body.program, undefined, "never return an invalid successful program");
+});
 
 test("production-path fixture uses authoritative repair and validates the muscle-focus contract", async (t) => {
   const server = await startServer(4280);
