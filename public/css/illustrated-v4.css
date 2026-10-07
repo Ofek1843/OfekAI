@@ -13,13 +13,13 @@
   --v4-coach-deep: #126849;
   --v4-social: #d94f82;
   --v4-social-deep: #8e2c52;
-  --motion-illustrative-training: 1800ms;
-  --motion-illustrative-nutrition: 1800ms;
-  --motion-illustrative-progress: 1700ms;
-  --motion-illustrative-bench-pr: 1700ms;
-  --motion-illustrative-coach: 1400ms;
-  --motion-illustrative-social: 1600ms;
-  --motion-illustrative-deadlift: 2400ms;
+  --motion-illustrative-training: 1250ms;
+  --motion-illustrative-nutrition: 1250ms;
+  --motion-illustrative-progress: 1200ms;
+  --motion-illustrative-bench-pr: 1250ms;
+  --motion-illustrative-coach: 1000ms;
+  --motion-illustrative-social: 1150ms;
+  --motion-illustrative-deadlift: 1700ms;
   --ease-illustrative: cubic-bezier(.22,.76,.24,1);
 }
 

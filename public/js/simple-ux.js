@@ -11,6 +11,15 @@
     ru: ['Ваш фитнес. Проще.','Создайте тренировку, получите простой план питания или запишите съеденное. Выберите инструмент.','Что вы хотите сделать?','Создать план тренировок','План с учётом цели, опыта и доступного оборудования.','Создать план питания','Знакомые продукты, быстрое приготовление и подходящие порции.','Дневник питания','Запишите съеденное и проверьте итоги. Записи сохраняются автоматически.','Открыть дневник питания','Другие инструменты','Дополнительные настройки','Цель и профиль','Ваш режим','Безопасность и создание','По умолчанию — быстрые блюда из знакомых продуктов. Выбор можно изменить ниже.','Мы предлагаем дни тренировок. Их можно изменить в дополнительных настройках.','Оборудование зала','Только вес тела','Выбрать оборудование','Тренажёры, гантели, штанга и блоки. Выбирайте, только если всё доступно.','Без весов и снарядов. Для турника или колец выберите оборудование.','Только пример — ваш план будет персональным.','Продолжить','Назад','Создать мои тренировки','Создать мой план питания'],
     de: ['Deine Fitness. Ganz einfach.','Erstelle einen Trainingsplan, plane einfache Mahlzeiten oder erfasse dein Essen. Wähle ein Werkzeug.','Was möchtest du tun?','Trainingsplan erstellen','Ein Plan für dein Ziel, deine Erfahrung und deine Ausrüstung.','Ernährungsplan erstellen','Vertraute Lebensmittel, wenig Vorbereitung und passende Portionen.','Ernährungstagebuch','Schreibe auf, was du gegessen hast. Einträge werden automatisch gespeichert.','Ernährungstagebuch öffnen','Weitere Werkzeuge','Optionale Einstellungen','Ziel und Profil','Dein Alltag','Sicherheit und Abschluss','Standardmäßig schnelle Mahlzeiten mit vertrauten Lebensmitteln. Unten kannst du das ändern.','Wir schlagen Trainingstage vor. Du kannst sie in den optionalen Einstellungen ändern.','Fitnessstudio-Ausrüstung','Nur Körpergewicht','Ausrüstung wählen','Geräte, Kurzhanteln, Langhantel und Kabelzüge. Nur wählen, wenn alles verfügbar ist.','Ohne Gewichte oder Geräte. Für Klimmzugstange oder Ringe wähle deine Ausrüstung.','Nur ein Beispiel – dein Plan wird individuell erstellt.','Weiter','Zurück','Meinen Trainingsplan erstellen','Meinen Ernährungsplan erstellen']
   };
+  const disclosureLabels = {
+    en: { focus: 'Choose target muscles (optional)', schedule: 'Change training days or profile (optional)', style: 'Training style: gym, bodyweight, or both', equipment: 'Choose equipment beyond the quick presets', review: 'Review your plan details', foodPreferences: 'Choose favorite foods or foods to avoid (optional)', mealsPerDay: 'Choose how many meals to plan (optional)', notes: 'Add a note for your meal plan (optional)' },
+    he: { focus: 'בחירת שרירים למיקוד (לא חובה)', schedule: 'שינוי ימי האימון או פרטי הפרופיל (לא חובה)', style: 'סגנון אימון: חדר כושר, משקל גוף או שילוב', equipment: 'בחירת ציוד מעבר לאפשרויות המהירות', review: 'בדיקת פרטי התוכנית', foodPreferences: 'מאכלים מועדפים או כאלה להימנע מהם (לא חובה)', mealsPerDay: 'בחירת מספר הארוחות בתפריט (לא חובה)', notes: 'הוספת הערה לתפריט (לא חובה)' },
+    es: { focus: 'Elegir músculos prioritarios (opcional)', schedule: 'Cambiar días de entrenamiento o perfil (opcional)', style: 'Estilo: gimnasio, peso corporal o ambos', equipment: 'Elegir equipo fuera de las opciones rápidas', review: 'Revisar los detalles del plan', foodPreferences: 'Elegir alimentos favoritos o a evitar (opcional)', mealsPerDay: 'Elegir cuántas comidas incluir (opcional)', notes: 'Añadir una nota al plan (opcional)' },
+    fr: { focus: 'Choisir les muscles prioritaires (facultatif)', schedule: 'Modifier les jours ou le profil (facultatif)', style: 'Style : salle, poids du corps ou les deux', equipment: 'Choisir du matériel hors des options rapides', review: 'Vérifier les détails du programme', foodPreferences: 'Aliments préférés ou à éviter (facultatif)', mealsPerDay: 'Choisir le nombre de repas (facultatif)', notes: 'Ajouter une note au plan (facultatif)' },
+    de: { focus: 'Zielmuskeln auswählen (optional)', schedule: 'Trainingstage oder Profil ändern (optional)', style: 'Trainingsstil: Studio, Körpergewicht oder beides', equipment: 'Weitere Geräte außerhalb der Schnellauswahl wählen', review: 'Trainingsplandetails prüfen', foodPreferences: 'Lieblingsspeisen oder zu vermeidende Speisen (optional)', mealsPerDay: 'Anzahl der Mahlzeiten wählen (optional)', notes: 'Eine Notiz zum Ernährungsplan hinzufügen (optional)' },
+    ar: { focus: 'اختيار العضلات المستهدفة (اختياري)', schedule: 'تغيير أيام التدريب أو الملف الشخصي (اختياري)', style: 'الأسلوب: النادي أو وزن الجسم أو كلاهما', equipment: 'اختيار معدات خارج الخيارات السريعة', review: 'مراجعة تفاصيل الخطة', foodPreferences: 'اختيار الأطعمة المفضلة أو التي يجب تجنبها (اختياري)', mealsPerDay: 'اختيار عدد الوجبات (اختياري)', notes: 'إضافة ملاحظة لخطة الطعام (اختياري)' },
+    zh: { focus: '选择重点训练肌群（可选）', schedule: '更改训练日或个人资料（可选）', style: '训练方式：健身房、自重或两者结合', equipment: '选择快捷选项以外的器材', review: '查看计划详情', foodPreferences: '选择喜欢或要避免的食物（可选）', mealsPerDay: '选择计划中的餐数（可选）', notes: '为饮食计划添加备注（可选）' }
+  };
   translations.zh = ['健身，更简单。','创建训练计划、获取简单食谱，或记录今天吃了什么。选择一个工具开始。','你想做什么？','创建训练计划','根据你的目标、经验和器材制定计划。','创建饮食计划','常见食材、简单准备以及适合目标的份量。','饮食日记','写下吃过的食物，查看总量。记录会自动保存。','打开饮食日记','更多工具','可选偏好','目标与个人信息','日常安排','安全与完成','默认选择简单、快速的家常食物。可在下方更改。','我们推荐训练日期。可在可选偏好中修改。','健身房器材','仅自重','选择我的器材','器械、哑铃、杠铃和绳索。仅在全部可用时选择。','无需负重或器械。使用单杠或吊环时，请选择器材。','仅为示例，实际计划会个性化。','继续','返回','创建我的训练计划','创建我的饮食计划'];
   const language = localStorage.getItem('ofek-ai-language') || 'en';
   const copy = key => (translations[language] || translations.en)[keys.indexOf(key)] || key;
@@ -23,7 +32,9 @@
   const details = (nodes, key = 'advanced') => {
     const box = document.createElement('details');
     box.className = 'simple-options';
-    box.append(text('summary', key));
+    const summary = document.createElement('summary');
+    summary.textContent = disclosureLabels[language]?.[key] || copy(key);
+    box.append(summary);
     nodes.filter(Boolean).forEach(node => box.append(node));
     return box;
   };
@@ -89,13 +100,13 @@
   if (workoutForm) {
     groupWizard(workoutForm,[['basics',['goal','experience']],['routine',['style','equipment','schedule']],['safety',['limitations','muscleFocus']]]);
     const focus = workoutForm.querySelector('[data-wizard-step="muscleFocus"]');
-    if (focus) wrap(focus);
+    if (focus) wrap(focus, 'focus');
     const schedule = workoutForm.querySelector('[data-wizard-step="schedule"]');
     const gender = document.querySelector('#gender')?.closest('label');
     const weekdays = schedule.querySelector('.available-days-fieldset');
-    schedule.append(text('p','daysHint','simple-note'),details([gender,weekdays]));
+    schedule.append(text('p','daysHint','simple-note'),details([gender,weekdays],'schedule'));
     const review = document.querySelector('#wizardReview');
-    if (review) wrap(review);
+    if (review) wrap(review,'review');
     const gear = workoutForm.querySelector('[data-wizard-step="equipment"]');
     const gearGrid = gear.querySelector('.visual-choice-grid');
     const cable = document.createElement('label');
@@ -125,9 +136,9 @@
       if (event.isTrusted) presets.querySelectorAll('input').forEach(input => { input.checked = false; });
     }));
     gearGrid.before(presets);
-    const customEquipment = wrap(gearGrid,'custom');
+    const customEquipment = wrap(gearGrid,'equipment');
     const style = workoutForm.querySelector('[data-wizard-step="style"]');
-    const styleOptions = wrap(style);
+    const styleOptions = wrap(style,'style');
     customEquipment.addEventListener('toggle',() => {
       if (customEquipment.open) styleOptions.open = true;
     });
@@ -150,12 +161,12 @@
     const diet = nutritionForm.querySelector('[data-wizard-step="diet"]');
     const mealPrefs = diet.querySelector('.meal-practicality-fieldset');
     mealPrefs.before(text('p','simpleFood','simple-note'));
-    wrap(mealPrefs,'advanced',[document.querySelector('#favoriteFoods')?.parentNode,document.querySelector('#foodsToAvoid')?.parentNode]);
+    wrap(mealPrefs,'foodPreferences',[document.querySelector('#favoriteFoods')?.parentNode,document.querySelector('#foodsToAvoid')?.parentNode]);
     nutritionForm.querySelector('input[name="mealFormatPreference"][value="quick"]').checked = true;
     const activity = nutritionForm.querySelector('[data-wizard-step="activity"]');
-    activity.append(details([document.querySelector('#mealsPerDay')?.closest('label')]));
+    activity.append(details([document.querySelector('#mealsPerDay')?.closest('label')],'mealsPerDay'));
     const notes = document.querySelector('#additionalNotes')?.parentNode;
-    if (notes) wrap(notes);
+    if (notes) wrap(notes,'notes');
   }
   if (document.querySelector('#landingHeroTitle')) {
     document.body.classList.add('landing-page');
@@ -184,18 +195,55 @@
       de:[['Kniebeuge · 3 × 8','Liegestütz · 3 × 10','Rudern · 3 × 10'],['Joghurt + Haferflocken','Eier + Brot','Thunfisch + fertiger Reis'],['150 g Joghurt','1 Banane','✓']],
       zh:[['深蹲 · 3 × 8','俯卧撑 · 3 × 10','划船 · 3 × 10'],['酸奶 + 燕麦','鸡蛋 + 面包','金枪鱼 + 即食米饭'],['150 克酸奶','1 根香蕉','✓']]
     };
+    const workflowStages = {
+      en:[['Goal','Plan','Train'],['Choose','Portion','Prepare'],['Enter','Add','Track']],
+      he:[['מטרה','תוכנית','אימון'],['בחירה','כמות','הכנה'],['הזנה','הוספה','מעקב']],
+      ar:[['الهدف','الخطة','التمرين'],['اختيار','الكمية','التحضير'],['إدخال','إضافة','متابعة']],
+      es:[['Objetivo','Plan','Entrenar'],['Elegir','Porción','Preparar'],['Escribir','Añadir','Registrar']],
+      fr:[['Objectif','Plan','Entraîner'],['Choisir','Portion','Préparer'],['Saisir','Ajouter','Suivre']],
+      de:[['Ziel','Plan','Trainieren'],['Wählen','Portion','Zubereiten'],['Eingeben','Hinzufügen','Verfolgen']],
+      zh:[['目标','计划','训练'],['选择','份量','准备'],['输入','添加','记录']]
+    };
     examples.forEach(([key,...rows],index) => {
-      const card = document.createElement('div'); card.className = 'simple-preview-card';
+      const card = document.createElement('div'); card.className = 'simple-preview-card simple-tool-preview';
       card.dataset.toolIndex = String(index);
-      card.setAttribute('aria-label',copy(key));
+      card.setAttribute('aria-hidden','true');
+      const image = document.createElement('img');
+      image.className = 'simple-preview-image';
+      image.alt = '';
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      image.src = [
+        '/images/workout-builder/goals/build-muscle.webp',
+        '/images/meals/banana-oat-protein-smoothie.webp',
+        '/images/foods/banana.webp'
+      ][index];
+      card.append(image);
       card.append(text('strong',key));
-      (exampleCopy[language]?.[index] || rows).forEach((value,i) => { const row=document.createElement('span'); row.textContent=value; row.className='simple-preview-row'; row.style.setProperty('--row',i); card.append(row); });
+      (exampleCopy[language]?.[index] || rows).forEach((value,i) => {
+        const row=document.createElement('span');
+        row.className='simple-preview-row';
+        row.style.setProperty('--row',i);
+        const stage=document.createElement('small');
+        stage.className='simple-preview-stage';
+        stage.textContent=workflowStages[language]?.[index]?.[i] || workflowStages.en[index][i];
+        const example=document.createElement('span');
+        example.textContent=value;
+        row.append(stage,example);
+        card.append(row);
+      });
       aside.append(card);
     });
     // Tell a literal three-step product story. The selected action and its
     // matching example move together, so this cannot read as decoration.
     const previewCards = [...aside.querySelectorAll('.simple-preview-card')];
     const toolCards = [...hero.querySelectorAll('.simple-tool')];
+    const toolsRegion = hero.querySelector('.simple-tools');
+    previewCards.forEach((card,index) => {
+      const action = toolCards[index]?.querySelector('.simple-tool-action');
+      if (action) action.before(card);
+    });
+    aside.remove();
     let activePreview = 0;
     let previewTimer = 0;
     let previewVisible = true;
@@ -205,9 +253,7 @@
       previewCards.forEach((card,position) => card.classList.toggle('is-active',position === activePreview));
       toolCards.forEach((card,position) => {
         card.classList.toggle('is-preview-active',position === activePreview);
-        card.setAttribute('aria-describedby',`simplePreview${position}`);
       });
-      previewCards.forEach((card,position) => { card.id = `simplePreview${position}`; });
     };
     const stopPreview = () => {
       if (previewTimer) window.clearInterval(previewTimer);
@@ -216,7 +262,7 @@
     const startPreview = () => {
       stopPreview();
       if (!canAnimatePreview || !previewVisible || document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      previewTimer = window.setInterval(() => showPreview(activePreview + 1),3200);
+      previewTimer = window.setInterval(() => showPreview(activePreview + 1),2400);
     };
     toolCards.forEach((card,index) => {
       card.addEventListener('pointerenter',() => { stopPreview(); showPreview(index); });
@@ -227,12 +273,12 @@
     showPreview(0);
     if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
       previewVisible = Boolean(entries[0]?.isIntersecting);
-      aside.classList.toggle('is-playing',previewVisible);
+      toolsRegion?.classList.toggle('is-playing',previewVisible);
       startPreview();
-    },{threshold:.1}).observe(aside);
-    else aside.classList.add('is-playing');
+    },{threshold:.1}).observe(toolsRegion || hero);
+    else toolsRegion?.classList.add('is-playing');
     document.addEventListener('visibilitychange',() => {
-      aside.classList.toggle('is-paused',document.hidden);
+      toolsRegion?.classList.toggle('is-paused',document.hidden);
       startPreview();
     });
     startPreview();

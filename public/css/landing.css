@@ -1640,9 +1640,15 @@ html[data-theme="light"] .transformation-invite {
     min-height: 52px;
     padding: 0 14px;
     color: var(--text-primary);
+    color-scheme: dark;
     background: #071426;
     border: 1px solid rgba(148, 181, 212, 0.42);
     border-radius: 12px;
+}
+
+.language-welcome select option {
+    color: #eef6ff;
+    background-color: #071426;
 }
 
 .language-welcome__actions {

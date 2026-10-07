@@ -224,8 +224,11 @@ function injectStyles() {
       white-space: nowrap;
     }
     .pwa-install-btn.primary {
-      background: linear-gradient(135deg, #2f9bff, #35cfdf);
-      color: #0a0e1a;
+      background: #47b7ff !important;
+      color: #061323 !important;
+      -webkit-text-fill-color: #061323 !important;
+      border: 1px solid #8bd8ff;
+      box-shadow: 0 0 0 2px rgba(71, 183, 255, 0.18);
     }
     .pwa-install-btn.secondary {
       background: transparent;
@@ -235,7 +238,7 @@ function injectStyles() {
       .pwa-install-banner.instructional {
         inset-inline: max(10px, env(safe-area-inset-left)) max(10px, env(safe-area-inset-right));
         inset-block-end: calc(8px + env(safe-area-inset-bottom));
-        max-height: min(260px, calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 16px));
+        max-height: min(230px, calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px));
         padding: 10px 12px;
         gap: 8px;
       }

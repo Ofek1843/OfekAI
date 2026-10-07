@@ -235,31 +235,6 @@ const LANDING_FALLBACKS = {
 
 let authStatePromise = null;
 
-function formatSocialProofCount(value, language) {
-  return Math.max(0, Number(value) || 0).toLocaleString(language || "en");
-}
-
-function renderSocialProofCount(element, nextValue, language) {
-  if (!element) return;
-  const target = Math.max(0, Math.floor(Number(nextValue) || 0));
-  element.dataset.countValue = String(target);
-  // Social proof is a factual counter, not a decorative animation. Rendering
-  // the final value immediately prevents a refresh from showing a different
-  // in-between number while the count-up animation is still running.
-  element.textContent = formatSocialProofCount(target, language);
-}
-
-async function loadPublicSocialProof() {
-  try {
-    const response = await fetch("/api/public-social-proof", { headers: { Accept: "application/json" } });
-    if (!response.ok) return;
-    const socialProof = await response.json();
-    const language = getLanguage();
-    renderSocialProofCount(document.getElementById("publicRegisteredUsers"), socialProof.registeredUsers, language);
-    renderSocialProofCount(document.getElementById("publicWorkoutPlans"), socialProof.savedWorkoutPlans, language);
-  } catch {}
-}
-
 function translateLandingPage() {
   const language = setLanguage(getLanguage());
 
@@ -430,7 +405,7 @@ function wireProductLoopDemo() {
 
   const start = () => {
     if (interval) return;
-    interval = window.setInterval(() => setActive(index + 1), 1800);
+    interval = window.setInterval(() => setActive(index + 1), 1300);
   };
   const stop = () => {
     if (!interval) return;
@@ -475,8 +450,6 @@ function initializeLanding() {
   wireRevealAnimations();
   wireComparisonSliders();
   wireProductLoopDemo();
-  loadPublicSocialProof();
-
   trackPageView({ page: "landing" });
   trackClick("landing_page_view", { source: "landing" });
 }

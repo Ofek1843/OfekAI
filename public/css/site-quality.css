@@ -170,3 +170,52 @@ body.fp-v45-deep-ocean.fp-route-index .language-welcome__continue { background: 
   body.fp-v45-deep-ocean.fp-route-index .platform-steps { display: grid; grid-template-columns: minmax(0, 1fr) !important; }
   body.fp-v45-deep-ocean.fp-route-index .platform-step { min-width: 0; }
 }
+
+/* Small-screen landing-page cards must stay readable instead of inheriting
+   the wider two-column editorial layout from redesign-v1.css. */
+@media (max-width: 640px) {
+  body.fp-v45-deep-ocean.fp-route-index :where(.feature-card-grid, .platform-steps) {
+    display: grid !important;
+    grid-auto-flow: row !important;
+    grid-auto-columns: auto !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  body.fp-v45-deep-ocean.fp-route-index :where(.premium-card, .platform-step) {
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 22px 20px !important;
+    border: 1px solid #29435b !important;
+    border-top: 3px solid var(--fp-brand-secondary, #35cfdf) !important;
+    border-radius: 16px !important;
+    background: #0d2236 !important;
+    color: #eef5ff !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+  body.fp-v45-deep-ocean.fp-route-index :where(.premium-card, .platform-step) :where(h3, strong, p) {
+    max-width: 100%;
+    color: inherit;
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+  }
+  body.fp-v45-deep-ocean.fp-route-index .platform-step p,
+  body.fp-v45-deep-ocean.fp-route-index .premium-card p { color: #b9cbe0 !important; }
+  body.fp-v45-deep-ocean.fp-route-index .hero-social-links {
+    justify-self: end;
+    margin: 0 0 10px auto;
+  }
+  body.fp-v45-deep-ocean.fp-route-index .language-welcome {
+    position: fixed !important;
+    inset: max(12px, env(safe-area-inset-top)) 0 max(12px, env(safe-area-inset-bottom)) !important;
+    width: min(480px, calc(100% - 24px)) !important;
+    max-width: calc(100% - 24px) !important;
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px) !important;
+    margin: auto !important;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}

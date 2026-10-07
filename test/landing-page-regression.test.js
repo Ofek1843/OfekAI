@@ -16,20 +16,61 @@ test("landing page no longer exposes Public Beta copy", () => {
   assert.doesNotMatch(visibleText, />[^<]*Public beta[^<]*</i);
 });
 
-test("landing uses the narrow social-proof contract and keeps the primary CTA hooks", () => {
+test("landing hides low-count social proof and keeps the primary CTA hooks", () => {
   const html = read("public/index.html");
   const landingJs = read("public/js/landing.js");
-  const server = read("server.js");
 
-  assert.match(html, /publicRegisteredUsers|publicWorkoutPlans|landing-stats/);
+  assert.doesNotMatch(html, /publicRegisteredUsers|publicWorkoutPlans|landing-stats|FuelPhysique community totals/i);
   assert.match(html, /id="buildProgramCta"/);
   assert.match(html, /id="builderChooser"/);
-  assert.match(landingJs, /\/api\/public-social-proof/);
-  assert.doesNotMatch(landingJs, /\/api\/public-stats|loadPublicStats/);
-  assert.match(landingJs, /function renderSocialProofCount/);
-  assert.doesNotMatch(landingJs, /function animateSocialProofCount/);
-  assert.match(server, /app\.get\("\/api\/public-social-proof"/);
-  assert.match(server, /res\.json\(toPublicSocialProof\(stats\)\)/);
+  assert.doesNotMatch(landingJs, /\/api\/public-social-proof|publicRegisteredUsers|publicWorkoutPlans|renderSocialProofCount/);
+});
+
+test("landing language choices keep English first and order remaining options consistently", () => {
+  const html = read("public/index.html");
+  const options = [...html.matchAll(/<option value="([a-z]+)"/g)].map((match) => match[1]);
+
+  assert.deepEqual(options, ["en", "ar", "zh", "fr", "de", "he", "es"]);
+  assert.match(html, /<option value="en" selected>English<\/option>/);
+});
+
+test("landing mobile cards are forced into readable single-column layout", () => {
+  const css = read("public/css/site-quality.css");
+  const landing = read("public/index.html");
+
+  assert.match(css, /@media \(max-width: 640px\)/);
+  assert.match(css, /grid-auto-flow: row !important/);
+  assert.match(css, /grid-template-columns: minmax\(0, 1fr\) !important/);
+  assert.match(css, /background: #0d2236 !important/);
+  assert.match(css, /word-break: normal !important/);
+  assert.match(css, /position: fixed !important;[\s\S]*?margin: auto !important/);
+  assert.match(landing, /site-quality\.css\?v=20261007-mobile-clarity-2/);
+});
+
+test("mobile PWA instructions keep their action button legible and bounded", () => {
+  const pwa = read("public/js/pwa-install.js");
+  const html = read("public/index.html");
+
+  assert.match(pwa, /\.pwa-install-btn\.primary\s*\{[\s\S]*?background: #47b7ff !important;[\s\S]*?color: #061323 !important/);
+  assert.match(pwa, /max-height: min\(230px/);
+  assert.match(html, /pwa-install\.js\?v=20261007-install-contrast-1/);
+});
+
+test("landing tool previews explain each workflow with quick localized motion", () => {
+  const ux = read("public/js/simple-ux.js");
+  const css = read("public/css/simple-ux.css");
+  const landing = read("public/js/landing.js");
+  const illustrationCss = read("public/css/illustrated-v4.css");
+
+  for (const language of ["en", "he", "ar", "es", "fr", "de", "zh"]) {
+    assert.match(ux, new RegExp(`${language}:\\[\\[`), `${language} needs translated workflow stage labels`);
+  }
+  assert.match(ux, /simple-preview-stage/);
+  assert.match(ux, /2400\);/);
+  assert.match(css, /simple-row 720ms/);
+  assert.match(landing, /setActive\(index \+ 1\), 1300\)/);
+  assert.match(illustrationCss, /--motion-illustrative-training: 1250ms/);
+  assert.match(illustrationCss, /--motion-illustrative-deadlift: 1700ms/);
 });
 
 test("landing contains both verified transformation stories and comparison labels", () => {

@@ -48,7 +48,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/landing.css?v=20260929-language-reopen-1">
+    <link rel="stylesheet" href="css/landing.css?v=20261007-mobile-clarity-2">
     <!--
       Structured data for the landing page only. Deliberately limited to
       facts the site itself demonstrates: identity, the site URL, its logo,
@@ -95,11 +95,11 @@
     </script>
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260929-language-cta-1">
   <link rel="stylesheet" href="/css/product-polish-v3.css?v=20260811-spectrum-v3">
-  <link rel="stylesheet" href="/css/illustrated-v4.css?v=20260914-i18n-dashboard-1">
+  <link rel="stylesheet" href="/css/illustrated-v4.css?v=20261007-motion-1">
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260929-scroll-performance-1">
-  <link rel="stylesheet" href="/css/site-quality.css?v=20261002-brand-quality-1">
+  <link rel="stylesheet" href="/css/site-quality.css?v=20261007-mobile-clarity-2">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
-  <link rel="stylesheet" href="/css/simple-ux.css?v=20261006-simple-3">
+  <link rel="stylesheet" href="/css/simple-ux.css?v=20261007-motion-1">
 </head>
 <body>
     <div class="ocean-depth-layer" aria-hidden="true"></div>
@@ -122,12 +122,12 @@
             <label for="welcomeLanguageSelect">Language</label>
             <select id="welcomeLanguageSelect">
                 <option value="en" selected>English</option>
-                <option value="he">עברית</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
                 <option value="ar">العربية</option>
                 <option value="zh">中文</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="he">עברית</option>
+                <option value="es">Español</option>
             </select>
             <div class="language-welcome__actions">
                 <button type="button" class="language-welcome__continue" id="welcomeLanguageContinue">Continue in English</button>
@@ -135,7 +135,7 @@
             </div>
         </div>
     </dialog>
-      <script src="/js/language-welcome.js?v=20260930-language-choice-copy-1"></script>
+      <script src="/js/language-welcome.js?v=20261007-language-order-1"></script>
 
     <main>
         <section class="hero" aria-labelledby="landingHeroTitle">
@@ -203,17 +203,6 @@
                         <p data-i18n="landingPreviewProgressText">Measure what changes and adjust the system.</p>
                     </div>
                 </aside>
-
-                <section class="landing-stats" aria-label="FuelPhysique community totals">
-                    <div class="landing-stat landing-stat-users">
-                        <span class="landing-stat-label" data-i18n="landingStatUsers">Registered users</span>
-                        <strong id="publicRegisteredUsers" data-count-value="0">0</strong>
-                    </div>
-                    <div class="landing-stat landing-stat-plans">
-                        <span class="landing-stat-label" data-i18n="landingStatPlans">Saved workout plans</span>
-                        <strong id="publicWorkoutPlans" data-count-value="0">0</strong>
-                    </div>
-                </section>
 
                 <div class="hero-cta-row">
                     <button type="button" class="hero-btn primary" id="buildProgramCta" data-i18n="landingPrimaryCta" aria-controls="builderChooser" aria-expanded="false">Build my program</button>
@@ -439,9 +428,9 @@
         </nav>
     </footer>
 
-    <script src="/js/simple-ux.js?v=20261006-simple-3"></script>
-    <script type="module" src="js/landing.js?v=20261005-simple-1"></script>
+    <script src="/js/simple-ux.js?v=20261007-motion-1"></script>
+    <script type="module" src="js/landing.js?v=20261007-motion-1"></script>
     <script type="module" src="/js/site-feedback.js"></script>
-    <script type="module" src="/js/pwa-install.js"></script>
+    <script type="module" src="/js/pwa-install.js?v=20261007-install-contrast-1"></script>
 </body>
 </html>
