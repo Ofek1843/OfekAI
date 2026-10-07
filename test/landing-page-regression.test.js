@@ -28,10 +28,28 @@ test("landing hides low-count social proof and keeps the primary CTA hooks", () 
 
 test("landing language choices keep English first and order remaining options consistently", () => {
   const html = read("public/index.html");
-  const options = [...html.matchAll(/<option value="([a-z]+)"/g)].map((match) => match[1]);
+  const options = [...html.matchAll(/role="option" id="welcomeLanguageOption-([a-z]+)"/g)].map((match) => match[1]);
 
   assert.deepEqual(options, ["en", "ar", "zh", "fr", "de", "he", "es"]);
-  assert.match(html, /<option value="en" selected>English<\/option>/);
+  assert.match(html, /data-language="en" aria-selected="true"[^>]*>English<\/button>/);
+});
+
+test("landing language menu uses an in-page accessible picker instead of the native OS dropdown", () => {
+  const html = read("public/index.html");
+  const script = read("public/js/language-welcome.js");
+  const css = read("public/css/landing.css");
+
+  assert.doesNotMatch(html, /id="welcomeLanguageSelect"|<select[^>]*welcomeLanguage/);
+  assert.match(html, /aria-haspopup="listbox" aria-expanded="false" aria-controls="welcomeLanguageOptions"/);
+  assert.match(html, /id="welcomeLanguageOptions"[^>]*role="listbox"/);
+  assert.match(script, /event\.key === "ArrowDown"/);
+  assert.match(script, /event\.key === "Escape"/);
+  assert.match(css, /\.language-welcome__options:not\(\[hidden\]\)[\s\S]*?background: #071426/);
+  assert.match(css, /\.language-welcome__options:not\(\[hidden\]\)\s*\{[^}]*position: static/);
+  assert.doesNotMatch(css, /\.language-welcome__options:not\(\[hidden\]\)\s*\{[^}]*overflow-y:\s*auto/);
+  assert.equal((html.match(/role="option" id="welcomeLanguageOption-/g) || []).length, 7);
+  assert.match(html, /landing\.css\?v=20261007-language-picker-3/);
+  assert.match(html, /language-welcome\.js\?v=20261007-language-picker-2/);
 });
 
 test("landing mobile cards are forced into readable single-column layout", () => {

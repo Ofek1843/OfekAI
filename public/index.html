@@ -29,7 +29,7 @@
         }
     </script>
 <link rel="stylesheet" href="/css/theme.css">
-    <link rel="preload" as="script" href="/js/language-welcome.js?v=20260930-language-choice-copy-1">
+    <link rel="preload" as="script" href="/js/language-welcome.js?v=20261007-language-picker-2">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <meta name="theme-color" content="#10131A">
     <link rel="manifest" href="/manifest.json">
@@ -48,7 +48,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/landing.css?v=20261007-mobile-clarity-2">
+    <link rel="stylesheet" href="css/landing.css?v=20261007-language-picker-3">
     <!--
       Structured data for the landing page only. Deliberately limited to
       facts the site itself demonstrates: identity, the site URL, its logo,
@@ -119,23 +119,28 @@
             <p class="language-welcome__eyebrow">FuelPhysique</p>
             <h1 id="languageWelcomeTitle">Choose your language</h1>
             <p id="languageWelcomeDescription">English is selected by default. Choose another language before continuing if you prefer.</p>
-            <label for="welcomeLanguageSelect">Language</label>
-            <select id="welcomeLanguageSelect">
-                <option value="en" selected>English</option>
-                <option value="ar">العربية</option>
-                <option value="zh">中文</option>
-                <option value="fr">Français</option>
-                <option value="de">Deutsch</option>
-                <option value="he">עברית</option>
-                <option value="es">Español</option>
-            </select>
+            <label id="welcomeLanguageLabel" for="welcomeLanguagePicker">Language</label>
+            <div class="language-welcome__picker">
+                <button type="button" id="welcomeLanguagePicker" class="language-welcome__picker-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="welcomeLanguageOptions">
+                    <span id="welcomeLanguageSelected">English</span><span class="language-welcome__picker-chevron" aria-hidden="true"></span>
+                </button>
+                <div id="welcomeLanguageOptions" class="language-welcome__options" role="listbox" aria-labelledby="welcomeLanguageLabel" hidden>
+                    <button type="button" role="option" id="welcomeLanguageOption-en" data-language="en" aria-selected="true" lang="en">English</button>
+                    <button type="button" role="option" id="welcomeLanguageOption-ar" data-language="ar" aria-selected="false" lang="ar" dir="rtl">العربية</button>
+                    <button type="button" role="option" id="welcomeLanguageOption-zh" data-language="zh" aria-selected="false" lang="zh">中文</button>
+                    <button type="button" role="option" id="welcomeLanguageOption-fr" data-language="fr" aria-selected="false" lang="fr">Français</button>
+                    <button type="button" role="option" id="welcomeLanguageOption-de" data-language="de" aria-selected="false" lang="de">Deutsch</button>
+                    <button type="button" role="option" id="welcomeLanguageOption-he" data-language="he" aria-selected="false" lang="he" dir="rtl">עברית</button>
+                    <button type="button" role="option" id="welcomeLanguageOption-es" data-language="es" aria-selected="false" lang="es">Español</button>
+                </div>
+            </div>
             <div class="language-welcome__actions">
                 <button type="button" class="language-welcome__continue" id="welcomeLanguageContinue">Continue in English</button>
                 <button type="button" class="language-welcome__english" id="welcomeLanguageEnglish">Choose a different language</button>
             </div>
         </div>
     </dialog>
-      <script src="/js/language-welcome.js?v=20261007-language-order-1"></script>
+      <script src="/js/language-welcome.js?v=20261007-language-picker-2"></script>
 
     <main>
         <section class="hero" aria-labelledby="landingHeroTitle">
@@ -153,7 +158,6 @@
                 </nav>
                 <div class="hero-content">
                     <span class="badge" data-i18n="landingBadge">EARLY ACCESS · FULL ACCESS FOR NOW</span>
-
                     <div class="hero-meta">
                         <span class="hero-meta-chip" data-i18n="landingBetaNote">Everything is currently unlocked during Early Access</span>
                         <span class="hero-meta-chip hero-meta-chip-muted">FuelPhysique.com</span>

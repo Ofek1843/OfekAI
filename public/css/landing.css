@@ -1635,20 +1635,80 @@ html[data-theme="light"] .transformation-invite {
     font-weight: 700;
 }
 
-.language-welcome select {
+.language-welcome__picker {
+    position: relative;
+    min-width: 0;
+}
+
+.language-welcome__picker-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
     min-height: 52px;
-    padding: 0 14px;
+    padding: 0 16px;
     color: var(--text-primary);
-    color-scheme: dark;
     background: #071426;
     border: 1px solid rgba(148, 181, 212, 0.42);
     border-radius: 12px;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
 }
 
-.language-welcome select option {
+.language-welcome__picker-trigger:hover,
+.language-welcome__picker-trigger[aria-expanded="true"] {
+    border-color: #4dd2e5;
+}
+
+.language-welcome__picker-chevron {
+    width: 10px;
+    height: 10px;
+    margin-inline-start: 12px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 140ms ease;
+}
+
+.language-welcome__picker-trigger[aria-expanded="true"] .language-welcome__picker-chevron {
+    transform: translateY(3px) rotate(225deg);
+}
+
+.language-welcome__options[hidden] {
+    display: none;
+}
+
+.language-welcome__options:not([hidden]) {
+    position: static;
+    display: grid;
+    gap: 2px;
+    margin-top: 6px;
+    padding: 5px;
+    border: 1px solid rgba(77, 210, 229, 0.5);
+    border-radius: 12px;
+    background: #071426;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.48);
+}
+
+.language-welcome__options [role="option"] {
+    min-height: 42px;
+    padding: 9px 11px;
+    border: 0;
+    border-radius: 8px;
     color: #eef6ff;
-    background-color: #071426;
+    background: transparent;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+}
+
+.language-welcome__options [role="option"]:hover,
+.language-welcome__options [role="option"]:focus-visible,
+.language-welcome__options [role="option"][aria-selected="true"] {
+    color: #061323;
+    background: #9bc9ff;
+    outline: none;
 }
 
 .language-welcome__actions {
@@ -1676,7 +1736,7 @@ html[data-theme="light"] .transformation-invite {
 }
 
 .language-welcome__actions button:focus-visible,
-.language-welcome select:focus-visible {
+.language-welcome__picker-trigger:focus-visible {
     outline: 3px solid #4dd2e5;
     outline-offset: 3px;
 }

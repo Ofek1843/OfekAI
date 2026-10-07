@@ -1,10 +1,13 @@
 (() => {
   const dialog = document.getElementById("languageWelcomeDialog");
-  const select = document.getElementById("welcomeLanguageSelect");
+  const picker = document.getElementById("welcomeLanguagePicker");
+  const selectedLabel = document.getElementById("welcomeLanguageSelected");
+  const optionsList = document.getElementById("welcomeLanguageOptions");
+  const options = [...(optionsList?.querySelectorAll('[role="option"][data-language]') || [])];
   const continueButton = document.getElementById("welcomeLanguageContinue");
   const alternateButton = document.getElementById("welcomeLanguageEnglish");
   const openButton = document.getElementById("openLanguageWelcome");
-  if (!(dialog instanceof HTMLDialogElement) || !select || !continueButton || !alternateButton || !openButton) return;
+  if (!(dialog instanceof HTMLDialogElement) || !picker || !selectedLabel || !optionsList || !options.length || !continueButton || !alternateButton || !openButton) return;
 
   const completedKey = "ofek-ai-language-welcome-complete";
   const languageKey = "ofek-ai-language";
@@ -25,14 +28,35 @@
     completed = localStorage.getItem(completedKey) === "1";
     savedLanguage = localStorage.getItem(languageKey) || "en";
   } catch {}
-  select.value = savedLanguage in copy ? savedLanguage : "en";
+  let selectedLanguage = savedLanguage in copy ? savedLanguage : "en";
+
+  const closeOptions = ({ restoreFocus = false } = {}) => {
+    optionsList.hidden = true;
+    picker.setAttribute("aria-expanded", "false");
+    if (restoreFocus) picker.focus();
+  };
+
+  const openOptions = (focusSelected = false) => {
+    optionsList.hidden = false;
+    picker.setAttribute("aria-expanded", "true");
+    if (focusSelected) options.find((option) => option.dataset.language === selectedLanguage)?.focus();
+  };
+
+  const chooseLanguage = (language) => {
+    if (!(language in copy)) return;
+    selectedLanguage = language;
+    selectedLabel.textContent = names[language];
+    for (const option of options) option.setAttribute("aria-selected", String(option.dataset.language === language));
+    closeOptions({ restoreFocus: true });
+    updateCopy();
+  };
 
   const updateCopy = () => {
-    const selected = select.value in copy ? select.value : "en";
+    const selected = selectedLanguage in copy ? selectedLanguage : "en";
     const strings = copy[selected];
     document.getElementById("languageWelcomeTitle").textContent = strings.title;
     document.getElementById("languageWelcomeDescription").textContent = strings.description;
-    document.querySelector('label[for="welcomeLanguageSelect"]').textContent = strings.label;
+    document.getElementById("welcomeLanguageLabel").textContent = strings.label;
     continueButton.textContent = strings.proceed.replace("{language}", names[selected]);
     alternateButton.textContent = strings.alternate;
     dialog.lang = selected;
@@ -46,16 +70,38 @@
     window.location.reload();
   };
 
-  select.addEventListener("change", updateCopy);
+  picker.addEventListener("click", () => {
+    if (optionsList.hidden) openOptions(true);
+    else closeOptions();
+  });
+  options.forEach((option, index) => {
+    option.addEventListener("click", () => chooseLanguage(option.dataset.language));
+    option.addEventListener("keydown", (event) => {
+      let nextIndex = index;
+      if (event.key === "ArrowDown") nextIndex = (index + 1) % options.length;
+      else if (event.key === "ArrowUp") nextIndex = (index - 1 + options.length) % options.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = options.length - 1;
+      else if (event.key === "Escape") {
+        event.preventDefault();
+        closeOptions({ restoreFocus: true });
+        return;
+      } else return;
+      event.preventDefault();
+      options[nextIndex].focus();
+    });
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (!optionsList.hidden && event.target instanceof Element && !event.target.closest(".language-welcome__picker")) closeOptions();
+  });
   openButton.addEventListener("click", () => {
     updateCopy();
     if (!dialog.open) dialog.showModal();
   });
-  continueButton.addEventListener("click", () => choose(select.value in copy ? select.value : "en"));
+  continueButton.addEventListener("click", () => choose(selectedLanguage));
   alternateButton.addEventListener("click", () => {
-    if (select.value === "en") {
-      select.focus();
-      try { select.showPicker(); } catch {}
+    if (selectedLanguage === "en") {
+      openOptions(true);
       return;
     }
     choose("en");
