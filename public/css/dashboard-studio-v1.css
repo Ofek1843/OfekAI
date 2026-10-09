@@ -1,0 +1,305 @@
+/* FuelPhysique dashboard concept: warm neutral surfaces, ink type and one
+   deliberate blue action color. Scoped to the dashboard only. */
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 {
+  --fp-dash-bg: #f4f3ef;
+  --fp-dash-surface: #fffefa;
+  --fp-dash-surface-2: #f8f7f3;
+  --fp-dash-ink: #17191c;
+  --fp-dash-muted: #697079;
+  --fp-dash-line: #deded9;
+  --fp-dash-blue: #2465b5;
+  --fp-dash-blue-dark: #174d91;
+  --fp-dash-blue-wash: #eaf1fa;
+  color: var(--fp-dash-ink) !important;
+  background: var(--fp-dash-bg) !important;
+  font-family: Inter, "Space Grotesk", system-ui, sans-serif;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .ocean-depth-layer,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .ocean-depth-glow,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .daily-focus,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .daily-nutrition-spotlight,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .capability-studio { display: none !important; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-nav {
+  color: var(--fp-dash-ink) !important;
+  background: rgba(255, 254, 250, .97) !important;
+  border-color: var(--fp-dash-line) !important;
+  box-shadow: 0 1px 0 rgba(23, 25, 28, .04) !important;
+  backdrop-filter: none !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-brand,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .brand {
+  display: inline-flex;
+  align-items: baseline;
+  color: var(--fp-dash-ink) !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  font-family: "Space Grotesk", Inter, system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -.065em;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-brand .brand-fuel,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .brand-fuel { color: #16181b !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-brand .brand-physique,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .brand-physique { color: #2465b5 !important; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-link { color: #4f5861 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-link:hover,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-link[aria-current="page"] { color: var(--fp-dash-blue) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-menu-button { color: var(--fp-dash-ink) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-preview-label { margin-inline-start: auto; padding: 5px 8px; border: 1px solid var(--fp-dash-line); color: #737a81; font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-shell {
+  width: min(1560px, 100%);
+  min-height: calc(100vh - 64px);
+  margin: 0 auto;
+  padding: 20px 24px 44px;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar {
+  top: 84px;
+  padding: 18px 12px;
+  border: 1px solid var(--fp-dash-line) !important;
+  border-radius: 8px !important;
+  background: var(--fp-dash-surface) !important;
+  box-shadow: none !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-nav a {
+  min-height: 42px;
+  padding: 9px 11px;
+  border-radius: 5px;
+  color: #434a52 !important;
+  font-size: 14px;
+  font-weight: 600;
+  transition: color .14s ease, background-color .14s ease;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-nav a:hover,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-nav a.active {
+  color: var(--fp-dash-blue) !important;
+  background: var(--fp-dash-blue-wash) !important;
+  box-shadow: inset 3px 0 #2465b5 !important;
+}
+
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-nav a:hover,
+html[dir="rtl"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-nav a.active {
+  box-shadow: inset -3px 0 #2465b5 !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-section-label,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-footer span { color: #77808a !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-logout { color: #454d55 !important; border-color: var(--fp-dash-line) !important; background: transparent !important; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-main { gap: 18px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-compact-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 2px 18px;
+  border: 0 !important;
+  border-bottom: 1px solid var(--fp-dash-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--fp-dash-ink) !important;
+}
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .hero-copy { gap: 4px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .hero-row .eyebrow { color: #59616a !important; font-size: 11px; letter-spacing: .12em; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .hero-row h1 {
+  margin: 5px 0 3px;
+  color: #17191c !important;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  text-shadow: none !important;
+  font-size: clamp(32px, 3vw, 44px) !important;
+  line-height: 1.04;
+  letter-spacing: -.055em !important;
+  font-weight: 700 !important;
+}
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .hero-row p { margin: 0; color: #697079 !important; font-size: 15px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-context-strip { display: flex; align-items: center; gap: 10px; min-width: auto; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-context-item { min-width: 104px; padding: 9px 12px; border: 1px solid var(--fp-dash-line) !important; border-radius: 5px; background: var(--fp-dash-surface) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-context-item span { color: #757d85 !important; font-size: 10px; letter-spacing: .09em; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-context-item strong { color: var(--fp-dash-ink) !important; font-size: 14px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .theme-toggle { border: 1px solid var(--fp-dash-line) !important; border-radius: 5px !important; background: var(--fp-dash-surface) !important; color: #40474f !important; box-shadow: none !important; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 #dashboardStatus { color: #626a72 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 #dashboardContent { gap: 18px; }
+
+/* A compact week summary, not four competing dashboard cards. */
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid { gap: 0; border: 1px solid var(--fp-dash-line); border-radius: 6px; background: var(--fp-dash-surface); }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article {
+  min-height: 84px;
+  padding: 14px 18px;
+  border: 0 !important;
+  border-inline-end: 1px solid var(--fp-dash-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article:last-child { border-inline-end: 0 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article::before { display: none; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid span,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid small { color: #727981 !important; font-size: 11px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid strong,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article:nth-child(n) strong { color: var(--fp-dash-ink) !important; font-size: 26px; letter-spacing: -.04em; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid small a { color: var(--fp-dash-blue) !important; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-card,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid > .card,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .tools-accordion {
+  border: 1px solid var(--fp-dash-line) !important;
+  border-radius: 7px !important;
+  background: var(--fp-dash-surface) !important;
+  box-shadow: none !important;
+  color: var(--fp-dash-ink) !important;
+}
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-card { padding: 18px 20px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-header { gap: 12px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-header h2,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid .card h2,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .tools-accordion h2 { color: var(--fp-dash-ink) !important; text-shadow: none !important; letter-spacing: -.035em; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .card-kicker { color: #747b82 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .muted,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-card p { color: var(--fp-dash-muted) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-shift { color: var(--fp-dash-blue) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .weekly-schedule-board { gap: 0; border-top: 1px solid var(--fp-dash-line); }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-day { min-height: 82px; padding: 12px 8px; border: 0 !important; border-inline-end: 1px solid var(--fp-dash-line) !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-day:last-child { border-inline-end: 0 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-day-label,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-day-number { color: #717981 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-slot { color: #444b53 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-day.is-today { background: var(--fp-dash-blue-wash) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-day.is-today .schedule-day-label { color: var(--fp-dash-blue) !important; }
+
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid > .card { min-height: 0; padding: 18px; transition: border-color .14s ease, background-color .14s ease; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid > .card:hover { transform: none !important; border-color: #a9bfd9 !important; box-shadow: none !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid .card::after { display: none !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature { display: grid; min-width: 0; gap: 18px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature.has-image { grid-template-columns: minmax(180px, .78fr) minmax(0, 1fr); }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature-image { display: block; width: 100%; height: 100%; min-height: 210px; max-height: 260px; object-fit: cover; border-radius: 4px; background: #e8e7e2; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature-image[hidden] { display: none !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature-copy { display: flex; min-width: 0; flex-direction: column; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature-copy .primary-action { margin-top: auto; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature-copy > p { margin: 8px 0 0; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .card-icon { border: 1px solid var(--fp-dash-line); border-radius: 5px !important; background: #f5f5f2 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .card-icon img { filter: grayscale(1) brightness(.42) !important; opacity: .86; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .exercise-preview { gap: 6px; margin: 12px 0; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .exercise-preview span { padding: 6px 8px; border: 1px solid var(--fp-dash-line); border-radius: 4px; background: #f8f8f5; color: #535b63 !important; font-size: 12px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .macro-grid > div { border: 0 !important; border-inline-end: 1px solid var(--fp-dash-line) !important; border-radius: 0 !important; background: transparent !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .macro-grid > div:last-child { border-inline-end: 0 !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .macro-grid strong { color: var(--fp-dash-ink) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .macro-grid span { color: #6d747b !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .primary-action,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid .primary-action {
+  min-height: 44px;
+  border: 1px solid var(--fp-dash-blue) !important;
+  border-radius: 5px !important;
+  background: var(--fp-dash-blue) !important;
+  color: white !important;
+  box-shadow: none !important;
+  text-decoration: none;
+}
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .primary-action:hover { background: var(--fp-dash-blue-dark) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .secondary-action { color: var(--fp-dash-blue) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-create-plan-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-create-tile {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border: 1px dashed #b8c3cf;
+  border-radius: 5px;
+  color: var(--fp-dash-blue) !important;
+  background: #fbfbf9;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color .14s ease, background-color .14s ease;
+}
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-create-tile:hover,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-create-tile:focus-visible { border-color: var(--fp-dash-blue); background: var(--fp-dash-blue-wash); outline: none; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-create-tile > span:first-child { font-size: 22px; font-weight: 500; line-height: 1; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-create-tile[hidden] { display: none !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 #dailyNutritionLink { border: 1px solid var(--fp-dash-line); border-radius: 5px; background: #f8f8f5; color: #363d44 !important; text-align: center; text-decoration: none; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .recent-card,
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .missed-card { min-height: 0; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .recent-details { color: #555e66; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--fp-dash-line); }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-row > div { display: grid; gap: 4px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-row strong { color: var(--fp-dash-ink); font-size: 15px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-row small { color: var(--fp-dash-muted); font-size: 12px; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .tools-accordion { border-radius: 6px !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .tools-accordion-summary { color: var(--fp-dash-ink) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .tools-accordion .card-icon { background: transparent !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .tools-accordion-grid .card { background: #f8f8f5 !important; border-color: var(--fp-dash-line) !important; }
+body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 :where(a, button, input, textarea, summary):focus-visible { outline: 3px solid rgba(36, 101, 181, .5) !important; outline-offset: 2px; }
+
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 {
+  --fp-dash-bg: #242628;
+  --fp-dash-surface: #2d3033;
+  --fp-dash-surface-2: #33373a;
+  --fp-dash-ink: #f3f1eb;
+  --fp-dash-muted: #c0c2c1;
+  --fp-dash-line: #484c4e;
+  --fp-dash-blue: #82b4f2;
+  --fp-dash-blue-dark: #6599d8;
+  --fp-dash-blue-wash: #343f4d;
+}
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 :where(.fp-global-nav, .sidebar, .dashboard-context-item, .stats-grid, .schedule-card, .dashboard-grid > .card, .tools-accordion) { background: var(--fp-dash-surface) !important; color: var(--fp-dash-ink) !important; border-color: var(--fp-dash-line) !important; }
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .hero-row h1,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid .card h2,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-header h2,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid strong,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .macro-grid strong { color: var(--fp-dash-ink) !important; }
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .brand-fuel,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .fp-global-brand .brand-fuel { color: #f3f1eb !important; }
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 :where(.card, .stats-grid article, .schedule-day, .schedule-workout) { background: transparent !important; color: var(--fp-dash-ink) !important; }
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .exercise-preview span,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 #dailyNutritionLink,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .plan-create-tile,
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .card-icon { background: var(--fp-dash-surface-2) !important; border-color: var(--fp-dash-line) !important; color: var(--fp-dash-ink) !important; }
+html[data-theme="dark"] body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar-nav a { color: #d3d3cf !important; }
+
+@media (max-width: 1080px) {
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-shell { grid-template-columns: 190px minmax(0, 1fr); gap: 18px; padding-inline: 16px; }
+}
+
+@media (max-width: 760px) {
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-shell { width: 100%; display: block; padding: 0 0 24px; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .sidebar { top: 0; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-main { padding: 12px 16px 24px; gap: 14px; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-compact-header { align-items: flex-start; flex-direction: column; gap: 12px; padding: 8px 0 14px; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-context-strip { width: 100%; flex-wrap: wrap; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-context-item { flex: 1 1 110px; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature.has-image { grid-template-columns: minmax(0, 1fr); }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .workout-feature-image { min-height: 190px; max-height: 240px; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article { min-height: 72px; border-bottom: 1px solid var(--fp-dash-line) !important; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article:nth-child(even) { border-inline-end: 0 !important; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .stats-grid article:nth-last-child(-n+2) { border-bottom: 0 !important; }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .weekly-schedule-board { grid-auto-columns: minmax(104px, 34vw); }
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 .schedule-card { padding: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 *, body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 *::before, body.fp-v45-deep-ocean.fp-route-dashboard.dashboard-design-v2 *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

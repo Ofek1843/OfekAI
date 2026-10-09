@@ -275,6 +275,36 @@ app.use((req, res, next) => {
   next();
 });
 
+// Local-only visual review route: render the real landing-page markup and its
+// existing interactions with an alternate stylesheet. It is intentionally not
+// exposed in production and never replaces the public homepage.
+app.get("/landing-preview.html", (req, res, next) => {
+  if (process.env.NODE_ENV === "production") return next();
+
+  fs.readFile(path.join(__dirname, "public", "index.html"), "utf8", (error, source) => {
+    if (error) return next(error);
+
+    const preview = source
+      .replace(/<title>[^<]*<\/title>/, "<title>FuelPhysique — local landing preview</title>")
+      .replace("<body>", '<body class="landing-studio-preview">')
+      .replace(
+        '<a href="/" class="logo" aria-label="FuelPhysique home">FuelPhysique</a>',
+        '<a href="/landing-preview.html" class="logo" aria-label="FuelPhysique home"><span class="brand-fuel">Fuel</span><span class="brand-physique">Physique</span></a>'
+      )
+      .replace(
+        "</head>",
+        '  <meta name="robots" content="noindex,nofollow">\n  <link rel="stylesheet" href="/css/landing-studio-v1.css?v=20261009-preview-2">\n</head>'
+      )
+      .replace(
+        "</nav>\n\n    <dialog",
+        '</nav><span class="landing-preview-badge">LOCAL PREVIEW · NOT PUBLISHED</span>\n\n    <dialog'
+      );
+
+    res.setHeader("Cache-Control", "no-store, max-age=0");
+    res.type("html").send(preview);
+  });
+});
+
 app.use(express.static(path.join(__dirname, "public"), {
   maxAge: "1h",
   setHeaders(res, filePath) {

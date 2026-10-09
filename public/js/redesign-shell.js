@@ -272,7 +272,17 @@
     const brand = document.createElement("a");
     brand.className = "fp-global-brand";
     brand.href = "/dashboard.html";
-    brand.textContent = copy.brand;
+    if (route === "dashboard.html") {
+      const fuel = document.createElement("span");
+      fuel.className = "brand-fuel";
+      fuel.textContent = "Fuel";
+      const physique = document.createElement("span");
+      physique.className = "brand-physique";
+      physique.textContent = "Physique";
+      brand.append(fuel, physique);
+    } else {
+      brand.textContent = copy.brand;
+    }
     nav.append(brand);
 
     const list = document.createElement("div");
@@ -433,7 +443,19 @@
     nav.setAttribute("aria-label", copy.navigation);
     nav.dir = isRtlLanguage(safeLanguage) ? "rtl" : "ltr";
     const brand = nav.querySelector(".fp-global-brand");
-    if (brand) brand.textContent = copy.brand;
+    if (brand) {
+      if (route === "dashboard.html") {
+        const fuel = document.createElement("span");
+        fuel.className = "brand-fuel";
+        fuel.textContent = "Fuel";
+        const physique = document.createElement("span");
+        physique.className = "brand-physique";
+        physique.textContent = "Physique";
+        brand.replaceChildren(fuel, physique);
+      } else {
+        brand.textContent = copy.brand;
+      }
+    }
     for (const key of ["dashboard", "workouts", "nutrition", "progress", "messages"]) {
       const link = nav.querySelector(`[data-destination="${key}"]`);
       if (link) link.textContent = copy[key];

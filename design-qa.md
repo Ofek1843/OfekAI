@@ -1,45 +1,44 @@
-**Comparison target**
+# Dashboard and landing-page visual QA
 
-- Source visual truth: `C:\Users\ofek1\AppData\Local\Temp\codex-clipboard-6b08ab38-0e18-46ef-a723-b609ba75f080.png`.
-- Implementation: `http://127.0.0.1:3000/` with the Hebrew landing-page locale active.
-- Viewport: 1280 × 720 CSS px, device scale factor 1. The source is a 1778 × 623 desktop capture; the comparison was normalized to the top-right hero region rather than browser chrome or the unrelated content below it.
-- State: default dark theme, landing hero at its initial scroll position.
+**Source visual truth:** `C:\Users\ofek1\.codex\generated_images\019fbd11-35e0-78b0-ad4d-9be411567942\exec-f37d50d3-b8fe-4e51-91f0-f084c2aa311b.png` (selected concept 2, 1487 x 1058 px).
 
-**Full-view comparison evidence**
+**Implementation screenshot:** Not captured. The in-app browser returned “Offline - page not available” for the local preview URL, so there is no rendered implementation artifact to compare.
 
-The rendered hero keeps the social links in the source’s intentionally empty top-right hero area, above the interactive coach panel. The rest of the hero layout remains unchanged.
+**Viewport and normalization:** Intended desktop review at 1440 x 1024 CSS px. Source is 1487 x 1058 px; no density normalization or crop comparison could be performed without an implementation screenshot.
 
-**Focused region comparison evidence**
+**State:** Local dashboard design preview with sample plans, intended to compare the selected concept's active workout, meal plan, weekly schedule, food-log entry point, and add-plan actions. The authenticated production dashboard uses existing user data; no authentication bypass or production deployment was added.
 
-The source calls for three social marks in the highlighted top-right region. The implementation shows locally bundled Instagram, YouTube, and TikTok icons there, with each logo retaining a direct, keyboard-accessible link. A focused region comparison was required because the source annotation only targets this portion of the page.
+**Full-view comparison evidence:** Blocked because the local page did not render in the in-app browser.
+
+**Focused-region evidence:** Blocked for the same reason.
 
 **Findings**
+- [P1] Visual implementation has not been browser-verified. The target contains a light dashboard with side navigation, a weekly view, a featured workout, and paired plan actions. The implementation CSS and local demo route were created, but without a rendered screenshot it is not possible to verify cascade precedence, spacing, content wrapping, or asset crop.
+  - Fix/next step: Open `http://localhost:3000/dashboard-preview.html` in a browser where the local project server is reachable, capture at 1440 x 1024, and compare against the source before handoff.
 
-- No actionable P0, P1, or P2 differences.
-- [P3] The implementation uses a restrained translucent capsule to keep the icons legible over the animated background; the supplied example showed loose icons on a white background. This is an intentional adaptation to the existing dark hero, not a layout or usability mismatch.
+**Implementation Checklist**
+- Dashboard-local palette and layout overrides added in `public/css/dashboard-studio-v1.css`.
+- Workout and nutrition plan creation links added; absent plans show a create action rather than a dead start action.
+- Workout feature image uses the existing exercise-image resolver.
+- Regression tests and lint checks pass (see conversation handoff).
+- Browser visual QA remains outstanding.
 
-**Required fidelity surfaces**
+**Follow-up Polish**
+- Confirm actual asset crop and responsive behavior at mobile/tablet widths after browser access is available.
+- Review the logged-in dashboard with both active-plan and empty-plan states.
 
-- Fonts and typography: no social-label text remains; accessible names are available to assistive technology.
-- Spacing and layout rhythm: the group occupies the unused hero area without covering the message, athlete, CTAs, or navigation. At 920 px and below it becomes a normal centered grid item rather than overlapping content.
-- Colors and visual tokens: Instagram pink, YouTube red, and TikTok cyan stay readable against the existing dark palette while matching the brand-accent language of the page.
-- Image quality and asset fidelity: the three marks are local vector assets, so they remain crisp at desktop and mobile sizes and do not depend on a third-party CDN.
-- Copy and content: the exact official Instagram, YouTube, and TikTok URLs are preserved; their visible text abbreviations were removed.
+## Landing page preview
 
-**Implementation checklist**
+**Source visual truth:** The previously selected dashboard concept above, used as the visual-language reference (warm off-white surfaces, editorial serif display type, black-and-blue FuelPhysique wordmark, restrained blue actions). The landing-page structure is adapted for three clear first actions rather than copying dashboard-only data widgets.
 
-1. Add the three official social links to the upper hero region.
-2. Replace `IG`, `YT`, and `TT` labels with locally hosted icon assets.
-3. Preserve secure new-tab behavior and responsive placement.
-4. Verify links, assets, syntax, and local rendered hero.
+**Implementation screenshot:** Not captured. Attempted to open `http://localhost:3000/landing-preview.html` in the Codex in-app browser; it returned “Offline - page not available”. The local environment denied binding the temporary server socket, so browser rendering and screenshot comparison are blocked. The route now serves the real `public/index.html` with its existing scripts and interactions plus the preview-only stylesheet, so running `npm start` locally exposes the exact homepage feature set at that path without AUTH.
 
-**Comparison history**
+**Viewport and state:** Intended desktop first view at 1440 x 1000 CSS px, plus responsive review at 390 px mobile. Preview has sample marketing copy and local site assets; production homepage remains unchanged.
 
-1. The earlier footer-only, text-abbreviation implementation did not meet the requested placement or icon treatment.
-2. It was moved to the top-right hero region, converted to local vector social marks, and rendered at the target desktop state. No P0/P1/P2 differences remained.
+**Full-view and focused-region comparison:** Blocked; no implementation screenshot is available.
 
-**Follow-up polish**
+**Static checks:** `test/landing-studio-v1.test.js` checks that the development-only route wraps the real homepage, keeps the language chooser, builder flow, five capability cards, product walkthrough, transformation submission, social links, all before/after images and comparison controls, and loads the responsive preview stylesheet. These do not substitute for rendered visual QA.
 
-- None required for this scoped change.
+**Remaining blocker:** Need a browser-accessible local preview host to verify typography loading, hero image crop, card wrapping, mobile navigation/stacking, and console errors.
 
-final result: passed
+final result: blocked

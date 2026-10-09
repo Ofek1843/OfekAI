@@ -18,6 +18,7 @@ import {
  from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { disassociateCurrentInstallation } from "./push-notifications.js";
+import { exerciseImageUrl } from "./exercise-image.js";
 const $ = selector => document.querySelector(selector);
 const SUPPORTED_DASHBOARD_LANGUAGES = new Set(["en", "he", "es", "fr", "de", "ar", "zh"]);
 const selectedLanguage = localStorage.getItem("ofek-ai-language") || "en";
@@ -708,13 +709,28 @@ function dateText(value) {
 }
 function renderWorkout(planDoc, logs) {
   const action = $("#startWorkoutLink");
+  const createPlan = $("#dashboardCreateWorkoutPlan");
+  const workoutImage = $("#dashboardWorkoutImage");
+  const workoutFeature = $("#workoutFeature");
   if (!planDoc) {
     $("#nextWorkoutName").textContent = ui.noneWorkout;
     $("#workoutPlanName").textContent = "";
     $("#exercisePreview").innerHTML = "";
-    action.href = "/workout-builder.html";
-    action.textContent = he ? "יצירת תוכנית אימון" : "Create workout plan";
+    action.hidden = true;
+    if (workoutImage) workoutImage.hidden = true;
+    workoutFeature?.classList.remove("has-image");
+    if (createPlan) {
+      createPlan.hidden = false;
+      createPlan.href = "/workout-builder.html";
+      createPlan.querySelector("span:last-child").textContent = ui.buildWorkout;
+    }
     return;
+  }
+  action.hidden = false;
+  if (createPlan) {
+    createPlan.hidden = false;
+    createPlan.href = "/workout-builder.html";
+    createPlan.querySelector("span:last-child").textContent = ui.buildWorkout;
   }
   action.href = "/workout-tracker.html";
   action.textContent = ui.start;
@@ -730,18 +746,37 @@ function renderWorkout(planDoc, logs) {
   $("#nextWorkoutName").textContent = session.name || plan.programName || planDoc.name || "Workout";
   $("#workoutPlanName").textContent = planDoc.name || plan.programName || "";
   const exercises = Array.isArray(session.exercises) ? session.exercises : [];
+  if (workoutImage && exercises.length) {
+    workoutImage.src = exerciseImageUrl(exercises[0]);
+    workoutImage.hidden = false;
+    workoutFeature?.classList.add("has-image");
+  } else {
+    if (workoutImage) workoutImage.hidden = true;
+    workoutFeature?.classList.remove("has-image");
+  }
   $("#exercisePreview").innerHTML = exercises.slice(0, 5).map(item => `<span>${esc(item.name || "Exercise")}</span>`).join("") + (exercises.length > 5 ? `<span>+ ${ui.exerciseMore(exercises.length - 5)}</span>` : "");
 }
 function renderNutrition(saved) {
   const action = $("#nutritionLink");
+  const createPlan = $("#dashboardCreateNutritionPlan");
   if (!saved) {
     activeNutritionPlanForQuickFood = null;
     $("#nutritionPlanName").textContent = ui.noneNutrition;
     $("#caloriesValue").textContent = "—";
     $("#proteinValue").textContent = "—";
-    action.href = "/nutrition-builder.html";
-    action.textContent = he ? "יצירת תוכנית תזונה" : "Create nutrition plan";
+    action.hidden = true;
+    if (createPlan) {
+      createPlan.hidden = false;
+      createPlan.href = "/nutrition-builder.html";
+      createPlan.querySelector("span:last-child").textContent = ui.buildNutrition;
+    }
     return;
+  }
+  action.hidden = false;
+  if (createPlan) {
+    createPlan.hidden = false;
+    createPlan.href = "/nutrition-builder.html";
+    createPlan.querySelector("span:last-child").textContent = ui.buildNutrition;
   }
   action.href = "/my-nutrition-plans.html";
   action.textContent = ui.manageNutrition;

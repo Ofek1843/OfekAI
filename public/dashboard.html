@@ -25,7 +25,7 @@
   </script>
   <script>
     try {
-      const t = localStorage.getItem("ofek-ai-theme") || "dark";
+      const t = localStorage.getItem("ofek-ai-theme") || "light";
       document.documentElement.dataset.theme = t === "system"
         ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
         : t;
@@ -44,15 +44,16 @@
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
   <link rel="stylesheet" href="/css/simple-ux.css?v=20261007-motion-1">
+  <link rel="stylesheet" href="/css/dashboard-studio-v1.css?v=20261009-preview-1">
 </head>
-<body>
+<body class="dashboard-design-v2">
   <div class="ocean-depth-layer" aria-hidden="true"></div>
   <div class="ocean-depth-glow" aria-hidden="true"></div>
   <main class="dashboard-shell">
     <button class="mobile-backdrop" id="mobileBackdrop" type="button" aria-hidden="true" tabindex="-1"></button>
     <aside class="sidebar" id="mobileDrawerPanel">
       <div class="sidebar-top">
-        <a class="brand" href="/dashboard.html">FuelPhysique</a>
+        <a class="brand" href="/dashboard.html"><span class="brand-fuel">Fuel</span><span class="brand-physique">Physique</span></a>
         <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close menu">✕</button>
       </div>
       <div class="dashboard-search sidebar-search" data-dashboard-search>
@@ -225,16 +226,22 @@
 
         <section class="dashboard-grid">
           <article class="card next-workout-card">
-            <header>
-              <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/barbell.svg" alt=""></span>
-              <div>
-                <span class="card-kicker" id="nextLabel">NEXT WORKOUT</span>
-                <h2 id="nextWorkoutName">No active plan</h2>
+            <div class="workout-feature" id="workoutFeature">
+              <img id="dashboardWorkoutImage" class="workout-feature-image" alt="" loading="lazy" decoding="async" hidden>
+              <div class="workout-feature-copy">
+                <header>
+                  <span class="card-icon" aria-hidden="true"><img src="/icons/tabler/barbell.svg" alt=""></span>
+                  <div>
+                    <span class="card-kicker" id="nextLabel">NEXT WORKOUT</span>
+                    <h2 id="nextWorkoutName">No active plan</h2>
+                  </div>
+                </header>
+                <p id="workoutPlanName" class="muted"></p>
+                <div id="exercisePreview" class="exercise-preview"></div>
+                <a id="startWorkoutLink" class="primary-action" href="/workout-tracker.html">Start Workout</a>
               </div>
-            </header>
-            <p id="workoutPlanName" class="muted"></p>
-            <div id="exercisePreview" class="exercise-preview"></div>
-            <a id="startWorkoutLink" class="primary-action" href="/workout-tracker.html">Start Workout</a>
+            </div>
+            <a id="dashboardCreateWorkoutPlan" class="plan-create-tile" href="/workout-builder.html" hidden><span aria-hidden="true">+</span><span>Create workout plan</span></a>
           </article>
 
           <article class="card nutrition-card">
@@ -251,6 +258,7 @@
             </div>
             <a id="nutritionLink" class="secondary-action" href="/my-nutrition-plans.html">Manage nutrition plans</a>
             <a id="dailyNutritionLink" class="secondary-action" href="/daily-nutrition.html">Log today’s food</a>
+            <a id="dashboardCreateNutritionPlan" class="plan-create-tile" href="/nutrition-builder.html" hidden><span aria-hidden="true">+</span><span>Create nutrition plan</span></a>
             <a id="manualNutritionLink" class="secondary-action" href="/manual-nutrition-builder.html">Build manually</a>
           </article>
 
