@@ -35,18 +35,11 @@ function sceneRegistry() {
   return window;
 }
 
-test("Landing and Dashboard load each V4.1 browser module exactly once and in dependency order", () => {
-  const expected = [
-    `/js/athlete-figure.js?v=${ASSET_VERSION}`,
-    `/js/scenes/training.js?v=${ASSET_VERSION}`,
-    `/js/scenes/nutrition.js?v=${ASSET_VERSION}`,
-    `/js/scenes/progress.js?v=${ASSET_VERSION}`,
-    `/js/scenes/coachsocial.js?v=${ASSET_VERSION}`,
-    `/js/image-sequence-v43.js?v=${ENGINE_VERSION}`,
-    `/js/illustrated-v4.js?v=${ASSET_VERSION}`,
-  ];
-  assert.deepEqual(illustrationScripts(LANDING), expected);
-  assert.deepEqual(illustrationScripts(DASHBOARD), expected);
+test("editorial pages no longer load the old scene bundle; its assets remain available", () => {
+  assert.deepEqual(illustrationScripts(LANDING), []);
+  assert.deepEqual(illustrationScripts(DASHBOARD), []);
+  assert.ok(fs.existsSync(path.join(ROOT, "public", "js", "scenes", "training.js")));
+  assert.match(read("public", "js", "dashboard-editorial-view.mjs"), /asset\('training'\)/);
 });
 
 test("V4.1 scene CSS is merged into the single illustrated stylesheet without duplicate links", () => {
@@ -56,10 +49,9 @@ test("V4.1 scene CSS is merged into the single illustrated stylesheet without du
       assert.ok(merged.includes(line), `${file} line is absent from illustrated-v4.css: ${line}`);
     }
   }
-  for (const html of [LANDING, DASHBOARD]) {
-    assert.equal((html.match(/illustrated-v4\.css/g) || []).length, 1);
-    assert.doesNotMatch(html, /css\/scenes\//);
-  }
+  assert.equal((LANDING.match(/illustrated-v4\.css/g) || []).length, 1);
+  assert.equal((DASHBOARD.match(/dashboard-editorial\.css/g) || []).length, 1);
+  assert.doesNotMatch(DASHBOARD, /css\/scenes\//);
 });
 
 test("every authored V4.1 scene registers and emits its recognition-critical markup", () => {
@@ -109,12 +101,11 @@ test("bench and deadlift paths encode the reviewed biomechanics", () => {
   assert.match(ILLUSTRATIONS, /A\.torso\(shoulder\.x, shoulder\.y, hip\.x, hip\.y, 1, "profile"\)/);
 });
 
-test("the existing page architecture visibly adopts both progress scenes without adding a sixth card", () => {
+test("landing keeps progress scenes; the new dashboard intentionally replaces its old capability cards", () => {
   assert.match(LANDING, /capability="progress"|journey-card--progress/);
   assert.match(LANDING, /data-v4-illustration="progress"/);
-  assert.match(DASHBOARD, /capability-card--progress/);
-  assert.match(DASHBOARD, /data-v4-illustration="benchPr"/);
-  assert.equal((DASHBOARD.match(/class="capability-card capability-card--/g) || []).length, 5);
+  assert.doesNotMatch(DASHBOARD, /capability-card--progress/);
+  assert.match(DASHBOARD, /dashboard-editorial\.js/);
 });
 
 test("mobile illustration hosts remain inside their cards so people and equipment are not cropped", () => {
@@ -137,7 +128,7 @@ test("runtime diagnostics mark rendered V4.1 sources rather than hiding a fallba
 });
 
 test("the V4.3 prototype service worker cache is synchronized and retains private/auth bypasses", () => {
-  assert.match(SW, /CACHE_NAME = 'fuelphysique-language-picker-20261007-1'/);
+  assert.match(SW, /CACHE_NAME = 'fuelphysique-editorial-dashboard-20261010-1'/);
   assert.doesNotMatch(SW, /20260812-athletic-spectrum|fuelphysique-v13-illustrated-v4/);
   for (const asset of [
     "css/illustrated-v4.css",
@@ -148,7 +139,8 @@ test("the V4.3 prototype service worker cache is synchronized and retains privat
     "js/scenes/coachsocial.js",
     "js/image-sequence-v43.js",
     "js/illustrated-v4.js",
-  ]) assert.match(SW, new RegExp(`${asset.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\?v=${asset.startsWith("css/") ? CSS_VERSION : asset === "js/image-sequence-v43.js" ? ENGINE_VERSION : ASSET_VERSION}`));
+  ]) assert.ok(fs.existsSync(path.join(ROOT, "public", asset)), `${asset} remains available for other pages`);
+  assert.match(SW, /css\/illustrated-v4\.css\?v=20261007-motion-1/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(SW, /https:\/\/apis\.google\.com/);
   assert.match(SW, /https:\/\/accounts\.google\.com/);

@@ -1,92 +1,17 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <title>FuelPhysique dashboard — local design preview</title>
-  <link rel="stylesheet" href="/css/theme.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/css/redesign-v1.css">
-  <link rel="stylesheet" href="/css/v45-deep-ocean.css">
-  <link rel="stylesheet" href="/css/dashboard-studio-v1.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#f8f7f4">
+<title>FuelPhysique — design preview</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="/css/dashboard-editorial.css?v=20261009-1">
 </head>
-<body class="fp-redesign fp-v45-deep-ocean fp-route-dashboard dashboard-design-v2">
-  <nav class="fp-global-nav" aria-label="Main navigation">
-    <a class="fp-global-brand" href="/dashboard-preview.html"><span class="brand-fuel">Fuel</span><span class="brand-physique">Physique</span></a>
-    <div class="fp-global-links">
-      <a class="fp-global-link" aria-current="page" href="/dashboard-preview.html">Home</a>
-      <a class="fp-global-link" href="/my-workout-plans.html">Workout plans</a>
-      <a class="fp-global-link" href="/my-nutrition-plans.html">Nutrition</a>
-    </div>
-    <span class="dashboard-preview-label">DESIGN PREVIEW · SAMPLE DATA</span>
-  </nav>
-  <main class="dashboard-shell">
-    <aside class="sidebar">
-      <div class="sidebar-top"><a class="brand" href="/dashboard-preview.html"><span class="brand-fuel">Fuel</span><span class="brand-physique">Physique</span></a></div>
-      <nav class="sidebar-nav" aria-label="Dashboard sections">
-        <a class="active" href="/dashboard-preview.html">Dashboard</a>
-        <a href="/my-workout-plans.html">Workout plans</a>
-        <a href="/my-nutrition-plans.html">Meal plans</a>
-        <a href="/daily-nutrition.html">Food diary</a>
-        <a href="/progress.html">Progress</a>
-        <a href="/social.html">Friends &amp; messages</a>
-      </nav>
-      <div class="sidebar-footer"><span>Free</span></div>
-    </aside>
-    <section class="dashboard-main">
-      <header class="hero-row dashboard-compact-header">
-        <div class="hero-copy"><span class="eyebrow">MONDAY, JUNE 2</span><h1>Good morning, Ofek</h1><p>Your next workout and plans, all in one place.</p></div>
-        <div class="hero-actions dashboard-context-strip"><div class="dashboard-context-item"><span>THIS WEEK</span><strong>3 sessions</strong></div><div class="dashboard-context-item"><span>STREAK</span><strong>4 days</strong></div></div>
-      </header>
-      <section class="stats-grid" aria-label="Weekly summary">
-        <article><span>Workouts this week</span><strong>3</strong><small>of 4 planned</small></article>
-        <article><span>Current streak</span><strong>4</strong><small>days</small></article>
-        <article><span>Latest weight</span><strong>78.4</strong><small>kg · <a href="/progress.html">Update</a></small></article>
-        <article><span>Sets completed</span><strong>42</strong><small>this week</small></article>
-      </section>
-      <section class="card schedule-card">
-        <header class="schedule-header"><span class="card-icon"><img src="/icons/tabler/chart-line.svg" alt=""></span><div><span class="card-kicker">YOUR WEEK</span><h2>Training schedule</h2></div><a class="text-action" href="/my-workout-plans.html">View plan</a></header>
-        <div class="weekly-schedule-board">
-          <div class="schedule-day"><div class="schedule-day-label">MON <span class="schedule-day-number">2</span></div><div class="schedule-slot">Upper body</div></div>
-          <div class="schedule-day"><div class="schedule-day-label">TUE <span class="schedule-day-number">3</span></div><div class="schedule-slot">Rest day</div></div>
-          <div class="schedule-day is-today"><div class="schedule-day-label">WED <span class="schedule-day-number">4</span></div><div class="schedule-slot">Lower body</div></div>
-          <div class="schedule-day"><div class="schedule-day-label">THU <span class="schedule-day-number">5</span></div><div class="schedule-slot">Rest day</div></div>
-          <div class="schedule-day"><div class="schedule-day-label">FRI <span class="schedule-day-number">6</span></div><div class="schedule-slot">Push</div></div>
-          <div class="schedule-day"><div class="schedule-day-label">SAT <span class="schedule-day-number">7</span></div><div class="schedule-slot">Rest day</div></div>
-          <div class="schedule-day"><div class="schedule-day-label">SUN <span class="schedule-day-number">8</span></div><div class="schedule-slot">Rest day</div></div>
-        </div>
-      </section>
-      <section class="dashboard-grid">
-        <article class="card next-workout-card">
-          <div class="workout-feature has-image" id="workoutFeature">
-            <img class="workout-feature-image" src="/images/exercises/dumbbell-bench-press.webp" alt="Dumbbell bench press demonstration" loading="eager">
-            <div class="workout-feature-copy">
-              <header><span class="card-icon"><img src="/icons/tabler/barbell.svg" alt=""></span><div><span class="card-kicker">NEXT SESSION</span><h2>Upper body</h2></div></header>
-              <p class="muted">Upper Body Strength · Week 2 of 4</p>
-              <div class="exercise-preview"><span>Bench press</span><span>Seated row</span><span>+ 4 exercises</span></div>
-              <a class="primary-action" href="/workout-tracker.html">Start workout →</a>
-            </div>
-          </div>
-          <div class="plan-row"><div><span class="card-kicker">WORKOUT PLAN</span><strong>Upper Body Strength</strong><small>4 weeks · Intermediate</small></div><a class="text-action" href="/my-workout-plans.html">Open</a></div>
-          <a class="plan-create-tile" href="/workout-builder.html"><span aria-hidden="true">+</span><span>Create another workout plan</span></a>
-        </article>
-        <article class="card nutrition-card">
-          <header><span class="card-icon"><img src="/icons/tabler/salad.svg" alt=""></span><div><span class="card-kicker">MEAL PLAN</span><h2>Balanced Performance</h2></div></header>
-          <p class="muted">Built around simple meals and your weekly target.</p>
-          <div class="macro-grid"><div><strong>2,400</strong><span>Calories</span></div><div><strong>155g</strong><span>Protein</span></div></div>
-          <a class="primary-action" href="/my-nutrition-plans.html">Open meal plan →</a>
-          <a class="secondary-action" id="dailyNutritionLink" href="/daily-nutrition.html">Log today’s food</a>
-          <a class="plan-create-tile" href="/nutrition-builder.html"><span aria-hidden="true">+</span><span>Create another meal plan</span></a>
-        </article>
-        <article class="card recent-card workout-history-card"><header><span class="card-icon"><img src="/icons/tabler/chart-line.svg" alt=""></span><div><span class="card-kicker">RECENT ACTIVITY</span><h2>Last workout</h2></div></header><div class="recent-details">Sunday · Pull day · 48 minutes</div><a class="secondary-action" href="/workout-history.html">View workout history →</a></article>
-        <article class="card missed-card"><header><span class="card-icon"><img src="/icons/tabler/plus.svg" alt=""></span><div><span class="card-kicker">NEED A HAND?</span><h2>Log a past workout</h2></div></header><p class="muted">Add a session you forgot to track.</p><a class="secondary-action" href="/log-workout.html">Log workout →</a></article>
-      </section>
-      <details class="card tools-accordion"><summary class="tools-accordion-summary"><span class="card-icon"><img src="/icons/tabler/chevron-right.svg" alt=""></span><div><span class="card-kicker">MORE</span><h2>Other tools</h2></div></summary><p class="muted">Progress, history, manual plan builders and coaching are still one click away in the menu.</p></details>
-    </section>
-  </main>
+<body class="dashboard-editorial">
+<div id="dashboardRoot"><p class="boot-status" role="status">Loading your dashboard…</p></div>
+<script type="module" src="/js/dashboard-editorial-preview.js?v=20261009-1"></script>
 </body>
 </html>

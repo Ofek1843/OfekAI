@@ -1,39 +1,78 @@
-const test = require("node:test");
-const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { pathToFileURL } = require('node:url');
+const { parseHTML } = require('linkedom');
+const root = path.join(__dirname, '..', 'public');
+const html = fs.readFileSync(path.join(root, 'dashboard.html'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'css', 'dashboard-editorial.css'), 'utf8');
+const production = fs.readFileSync(path.join(root, 'js', 'dashboard-editorial.js'), 'utf8');
+const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
+const moduleUrl = pathToFileURL(path.join(root, 'js', 'dashboard-editorial-view.mjs')).href;
 
-const ROOT = path.join(__dirname, "..");
-const HTML = fs.readFileSync(path.join(ROOT, "public", "dashboard.html"), "utf8");
-const JS = fs.readFileSync(path.join(ROOT, "public", "js", "dashboard.js"), "utf8");
-const CSS = fs.readFileSync(path.join(ROOT, "public", "css", "dashboard-studio-v1.css"), "utf8");
-const SHELL = fs.readFileSync(path.join(ROOT, "public", "js", "redesign-shell.js"), "utf8");
+async function render(model = {}, language = 'en') {
+  const { document } = parseHTML('<html><body><div id="dashboardRoot"></div></body></html>');
+  global.document = document;
+  const { mountDashboard } = await import(moduleUrl);
+  const view = mountDashboard(document.querySelector('#dashboardRoot'), model, { language, today: new Date('2025-06-02T09:00:00') });
+  return { document, view };
+}
 
-test("dashboard concept is scoped to the dashboard and keeps the two create-plan routes", () => {
-  assert.match(HTML, /<body class="dashboard-design-v2">/);
-  assert.match(HTML, /dashboard-studio-v1\.css/);
-  assert.match(HTML, /id="dashboardCreateWorkoutPlan"[^>]*href="\/workout-builder\.html"[^>]*hidden/);
-  assert.match(HTML, /id="dashboardCreateNutritionPlan"[^>]*href="\/nutrition-builder\.html"[^>]*hidden/);
-  assert.match(CSS, /\.dashboard-grid\s*\{\s*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
-  assert.match(CSS, /@media\s*\(max-width:\s*760px\)/);
+test('dashboard uses reference layout, blue wordmark and real account data', () => {
+  assert.match(html, /dashboard-editorial\.css/);
+  assert.match(html, /dashboard-editorial\.js/);
+  assert.match(css, /\.overview\{display:grid/);
+  assert.match(css, /\.wordmark span\{color:var\(--blue\)/);
+  assert.match(css, /@media\(max-width:650px\)/);
+  assert.match(production, /collection\(db,'users',user\.uid,'workoutPlans'\)/);
+  assert.match(production, /collection\(db,'users',user\.uid,'nutritionPlans'\)/);
+  assert.match(production, /loadDailyLog\(db,user\.uid,dateKey\(new Date\(\)\)\)/);
+  assert.match(sw, /fuelphysique-editorial-dashboard-20261010-1/);
+  for (const image of ['training', 'workout-1', 'meal-1'])
+    assert.ok(fs.existsSync(path.join(root, 'assets', 'dashboard', `${image}.webp`)));
 });
 
-test("missing plans expose an empty-state create action without a dead start action", () => {
-  assert.match(JS, /if\s*\(!planDoc\)[\s\S]*?action\.hidden\s*=\s*true[\s\S]*?createPlan\.hidden\s*=\s*false[\s\S]*?ui\.buildWorkout/);
-  assert.match(JS, /if\s*\(!saved\)[\s\S]*?action\.hidden\s*=\s*true[\s\S]*?createPlan\.hidden\s*=\s*false[\s\S]*?ui\.buildNutrition/);
+test('empty accounts have create actions and no sample plans', async () => {
+  const { document } = await render({ name: 'New', workouts: [], meals: [], logs: [] });
+  const text = document.body.textContent;
+  assert.match(text, /No workout plan yet/);
+  assert.match(text, /No meal plan yet/);
+  assert.equal(document.querySelectorAll('.plan-row').length, 0);
+  assert.ok(document.querySelectorAll('a[href="/workout-builder.html"]').length >= 2);
+  assert.ok(document.querySelectorAll('a[href="/nutrition-builder.html"]').length >= 1);
+  assert.doesNotMatch(text, /Upper Body Strength|Balanced Performance/);
 });
 
-test("create-plan labels use the dashboard locale and the wordmark is split for the blue brand treatment", () => {
-  assert.match(JS, /createPlan\.querySelector\("span:last-child"\)\.textContent\s*=\s*ui\.buildWorkout/);
-  assert.match(JS, /createPlan\.querySelector\("span:last-child"\)\.textContent\s*=\s*ui\.buildNutrition/);
-  assert.match(SHELL, /brand-fuel/);
-  assert.match(SHELL, /brand-physique/);
-  assert.match(CSS, /\.brand-fuel\s*\{\s*color:\s*#16181b/);
-  assert.match(CSS, /\.brand-physique\s*\{\s*color:\s*#2465b5/);
+test('saved workout and meal plans appear in separate columns', async () => {
+  const model = { name: 'Ofek', activeWorkoutId: 'w1', activeMealId: 'm1',
+    workouts: [{ id: 'w1', name: 'Strength', plan: { sessions: [{ name: 'Upper', exercises: [{ name: 'Press' }] }] } }],
+    meals: [{ id: 'm1', name: 'Everyday food', plan: { dailyCalories: 2400 } }], logs: [] };
+  const { document } = await render(model);
+  assert.match(document.querySelector('.session h2').textContent, /Upper/);
+  assert.match(document.querySelector('.plan-panel').textContent, /Strength/);
+  assert.match(document.querySelector('.meal-panel').textContent, /Everyday food/);
+  assert.equal(document.querySelectorAll('.plan-row').length, 2);
+  assert.equal(document.querySelectorAll('.plan-panel .section-heading a.button').length, 2);
 });
 
-test("workout image is resolved from the existing exercise catalog rather than a placeholder", () => {
-  assert.match(JS, /import \{ exerciseImageUrl \} from "\.\/exercise-image\.js"/);
-  assert.match(JS, /workoutImage\.src\s*=\s*exerciseImageUrl\(exercises\[0\]\)/);
-  assert.match(HTML, /id="dashboardWorkoutImage"[^>]*loading="lazy"[^>]*decoding="async"[^>]*hidden/);
+test('actual workout log schema powers next session and activity', async () => {
+  const { nextSession } = await import(moduleUrl);
+  const plan = { id: 'w1', plan: { sessions: [{ name: 'Upper' }, { name: 'Lower' }] } };
+  const logs = [{ workoutPlanId: 'w1', sessionIndex: 0, completedAt: '2025-06-01',
+    sessionName: 'Upper', durationSeconds: 2700, exercises: [{ name: 'Press' }] }];
+  assert.equal(nextSession(plan, logs).session.name, 'Lower');
+  const { document } = await render({ workouts: [plan], activeWorkoutId: 'w1', meals: [], logs });
+  const row = document.querySelector('.activity-row').textContent;
+  assert.match(row, /Upper/);
+  assert.match(row, /1 exercises/);
+  assert.match(row, /45 min/);
+});
+
+test('Hebrew localizes the dashboard and untrusted plan names are escaped', async () => {
+  const { document } = await render({ workouts: [{ id: 'w1', name: '<script>alert(1)</script>', plan: { sessions: [] } }], meals: [], logs: [] }, 'he');
+  assert.equal(document.documentElement.dir, 'rtl');
+  assert.match(document.querySelector('.plan-panel').textContent, /תוכניות אימון/);
+  assert.equal(document.querySelectorAll('.plan-row script').length, 0);
+  assert.match(document.querySelector('.plan-row h3').textContent, /<script>/);
 });

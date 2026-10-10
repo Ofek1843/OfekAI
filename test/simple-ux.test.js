@@ -95,13 +95,13 @@ test('nutrition phases preserve required profile and visible allergy/medical fie
   assert.equal(document.querySelector('input[name="mealFormatPreference"][value="quick"]').hasAttribute('checked'),true);
   assert.equal(document.querySelector('input[name="mealFormatPreference"][value="mix"]').hasAttribute('checked'),false);
 });
-test('dashboard retains existing tools and their IDs while only three workflows are primary',() => {
+test('dashboard keeps the three primary workflows in its editorial navigation',() => {
   const {document}=render('dashboard.html');
-  assert.equal(document.querySelectorAll('.simple-tool').length,3);
-  for(const id of ['heroWorkoutBuilderLink','heroNutritionBuilderLink','chatLink','heroSocialLink','heroProgressLink']) assert.ok(document.querySelector(`#${id}`).closest('details'),id);
-  const dashboard=fs.readFileSync(path.join(root,'public/js/dashboard.js'),'utf8');
-  assert.match(dashboard,/function renderNutrition\([\s\S]*?\n\}\n\nfunction renderDailyFocus/);
-  assert.ok(dashboard.indexOf('function renderDailyFocus') < dashboard.lastIndexOf('renderDailyFocus({ workout: null'));
+  assert.equal(document.querySelectorAll('.simple-tool').length,0);
+  assert.ok(document.querySelector('script[src*="dashboard-editorial.js"]'));
+  const view=fs.readFileSync(path.join(root,'public/js/dashboard-editorial-view.mjs'),'utf8');
+  for(const route of ['workout-builder.html','nutrition-builder.html','daily-nutrition.html'])
+    assert.ok(view.includes(route),route);
 });
 test('the quick/simple default has at least three distinct valid alternatives in each slot for every diet',() => {
   for(const diet of ['omnivore','vegetarian','vegan','pescatarian']) for(const slot of ['breakfast','lunch','dinner','snack']) {

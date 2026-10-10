@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-language-picker-20261007-1';
+const CACHE_NAME = 'fuelphysique-editorial-dashboard-20261010-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -44,6 +44,11 @@ const urlsToCache = [
   '/terms.html',
   '/privacy.html',
   '/css/dashboard.css',
+  '/css/dashboard-editorial.css?v=20261009-1',
+  '/js/dashboard-editorial.js?v=20261009-1',
+  '/js/dashboard-editorial-view.mjs',
+  '/js/dashboard-editorial-i18n.mjs',
+  '/assets/dashboard/training.webp',
   '/css/simple-ux.css?v=20261007-motion-1',
   '/css/landing.css?v=20261007-language-picker-3',
   '/css/site-quality.css?v=20261007-mobile-clarity-2',
@@ -63,7 +68,7 @@ const urlsToCache = [
   '/js/social.js',
   '/js/redesign-shell.js?v=20261002-brand-quality-1',
   '/js/i18n.js?v=20261002-brand-quality-1',
-  '/js/simple-ux.js?v=20261007-motion-1',
+  '/js/simple-ux.js?v=20261009-dashboard-boundary-1',
   '/js/dashboard.js?v=20261006-simple-3',
   '/js/daily-nutrition.js?v=20260928-language-coverage-1',
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',

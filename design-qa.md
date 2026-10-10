@@ -1,44 +1,42 @@
-# Dashboard and landing-page visual QA
+# Dashboard image-to-code QA
 
-**Source visual truth:** `C:\Users\ofek1\.codex\generated_images\019fbd11-35e0-78b0-ad4d-9be411567942\exec-f37d50d3-b8fe-4e51-91f0-f084c2aa311b.png` (selected concept 2, 1487 x 1058 px).
+final result: passed
 
-**Implementation screenshot:** Not captured. The in-app browser returned “Offline - page not available” for the local preview URL, so there is no rendered implementation artifact to compare.
+## Evidence and normalization
 
-**Viewport and normalization:** Intended desktop review at 1440 x 1024 CSS px. Source is 1487 x 1058 px; no density normalization or crop comparison could be performed without an implementation screenshot.
+- Source visual truth: `C:\Users\ofek1\AppData\Local\Temp\codex-clipboard-3db2e1cd-9eb7-4889-8695-e9e66367a527.png` (1487 × 1058 px).
+- Implementation capture: Codex in-app browser screenshot of `http://localhost:4173/dashboard-preview.html?clean=1` at a 1487 × 1058 CSS-pixel viewport. Browser capture was reviewed in the current task; the live preview URL is the reproducible capture target.
+- Same-input full-view comparison: `http://localhost:4173/__qa/compare.html`, showing the original image and the 1487 × 1058 live page side by side without rescaling either panel.
+- Same-input focused comparison: `http://localhost:4173/__qa/focus.html`, showing the hero image and session card cropped to the same 800 × 350 region (source x=200, y=200; implementation x=200, y=200).
+- State: English, light theme, desktop, illustrative sample data matching the mock. The production page reads the signed-in user's Firestore plans, activity and food log; it does not show the preview's sample plans.
+- Pixel density: source is 1487 × 1058 physical pixels; implementation panels are 1487 × 1058 CSS pixels in the comparison. No additional density scaling was applied to the side-by-side DOM panels. The Codex screenshot display may be downsampled by the tool UI.
 
-**State:** Local dashboard design preview with sample plans, intended to compare the selected concept's active workout, meal plan, weekly schedule, food-log entry point, and add-plan actions. The authenticated production dashboard uses existing user data; no authentication bypass or production deployment was added.
+## Findings
 
-**Full-view comparison evidence:** Blocked because the local page did not render in the in-app browser.
+No actionable P0/P1/P2 visual mismatch remained in the desktop comparison. The sidebar boundary, greeting, hero top and width, photo crop, week area, diary panel, plan columns and activity panel align closely with the reference. Blue replaces the mock's red brand accent intentionally, as requested by the user.
 
-**Focused-region evidence:** Blocked for the same reason.
+Required fidelity surfaces:
 
-**Findings**
-- [P1] Visual implementation has not been browser-verified. The target contains a light dashboard with side navigation, a weekly view, a featured workout, and paired plan actions. The implementation CSS and local demo route were created, but without a rendered screenshot it is not possible to verify cascade precedence, spacing, content wrapping, or asset crop.
-  - Fix/next step: Open `http://localhost:3000/dashboard-preview.html` in a browser where the local project server is reachable, capture at 1440 x 1024, and compare against the source before handoff.
+- Typography: Georgia serif hierarchy closely tracks the mock's display and body styles; the exact source font is not identified, so small glyph-shape differences are P3.
+- Layout and spacing: the 198 px sidebar, two-column overview and lower panels match the major source geometry at 1487 px. At 320, 375 and 768 px, the page stacks without horizontal overflow.
+- Colors and tokens: warm off-white paper, dark ink, subtle borders and deep blue controls match the selected treatment, except for the intentionally blue wordmark/accent.
+- Image quality and assets: the visible athlete, plan and food photos were extracted from the supplied reference and placed in corresponding regions. Icons use the Tabler icon set rather than hand-drawn approximations; minor icon-shape differences are P3.
+- Copy and content: the preview reproduces the mock's English example labels. Real accounts show real saved plan names, food totals and workout logs; empty accounts show create actions rather than fabricated plans.
 
-**Implementation Checklist**
-- Dashboard-local palette and layout overrides added in `public/css/dashboard-studio-v1.css`.
-- Workout and nutrition plan creation links added; absent plans show a create action rather than a dead start action.
-- Workout feature image uses the existing exercise-image resolver.
-- Regression tests and lint checks pass (see conversation handoff).
-- Browser visual QA remains outstanding.
+## Interaction and responsive checks
 
-**Follow-up Polish**
-- Confirm actual asset crop and responsive behavior at mobile/tablet widths after browser access is available.
-- Review the logged-in dashboard with both active-plan and empty-plan states.
+- Browser-rendered preview opened successfully; no browser console errors were present.
+- Tested desktop 1487 × 1058, mobile 375 × 812, narrow mobile 320 × 690, and tablet 768 × 1024.
+- Verified saved-plan and empty-account states, English and Hebrew RTL, mobile menu open/close, and plan-detail dialog open/close.
+- Five dashboard regression tests pass; the repository lint check passes. In the wider auth/PWA/service-worker run, 59 of 61 tests pass. The two remaining failures concern pre-existing landing/PWA assertions outside this dashboard change.
 
-## Landing page preview
+## Comparison history
 
-**Source visual truth:** The previously selected dashboard concept above, used as the visual-language reference (warm off-white surfaces, editorial serif display type, black-and-blue FuelPhysique wordmark, restrained blue actions). The landing-page structure is adapted for three clear first actions rather than copying dashboard-only data widgets.
+- Initial desktop comparison: major regions and reused image assets aligned; production data-field mismatch was found separately in functional testing (workout log `sessionName`, `durationSeconds`, `exercises`).
+- Fix: adapted the dashboard to the actual saved workout-log schema; regression test added.
+- Post-fix full-view and focused comparisons: no actionable P0/P1/P2 visual drift; desktop and mobile responsive checks repeated.
 
-**Implementation screenshot:** Not captured. Attempted to open `http://localhost:3000/landing-preview.html` in the Codex in-app browser; it returned “Offline - page not available”. The local environment denied binding the temporary server socket, so browser rendering and screenshot comparison are blocked. The route now serves the real `public/index.html` with its existing scripts and interactions plus the preview-only stylesheet, so running `npm start` locally exposes the exact homepage feature set at that path without AUTH.
+## Follow-up polish
 
-**Viewport and state:** Intended desktop first view at 1440 x 1000 CSS px, plus responsive review at 390 px mobile. Preview has sample marketing copy and local site assets; production homepage remains unchanged.
-
-**Full-view and focused-region comparison:** Blocked; no implementation screenshot is available.
-
-**Static checks:** `test/landing-studio-v1.test.js` checks that the development-only route wraps the real homepage, keeps the language chooser, builder flow, five capability cards, product walkthrough, transformation submission, social links, all before/after images and comparison controls, and loads the responsive preview stylesheet. These do not substitute for rendered visual QA.
-
-**Remaining blocker:** Need a browser-accessible local preview host to verify typography loading, hero image crop, card wrapping, mobile navigation/stacking, and console errors.
-
-final result: blocked
+- P3: exact font and icon glyphs could be refined if the original design system becomes available.
+- The illustration is a mock. Production data will naturally differ from the sample plan names and dates.

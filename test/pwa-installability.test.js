@@ -84,9 +84,9 @@ test("sw.js exists and is syntactically valid", () => {
 
 test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
-  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-language-picker-20261007-1['"]/);
+  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-editorial-dashboard-20261010-1['"]/);
   assert.match(source, /simple-ux\.css\?v=20261007-motion-1/);
-  assert.match(source, /simple-ux\.js\?v=20261007-motion-1/);
+  assert.match(source, /simple-ux\.js\?v=20261009-dashboard-boundary-1/);
   assert.match(source, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
   assert.match(source, /['"]\/manifest\.json['"]/);
   assert.match(source, /NETWORK_ONLY_PREFIXES\s*=\s*\[['"]\/api\/['"]\]/);
@@ -104,7 +104,7 @@ for (const page of PAGES_WITH_INSTALL_PROMOTION) {
     assert.match(html, /<link rel="manifest" href="\/manifest\.json">/, `${page} must link the manifest`);
     assert.match(html, /navigator\.serviceWorker\.register\(['"]\/sw\.js['"]\)/, `${page} must register the service worker`);
     assert.match(html, /src="\/js\/pwa-install\.js"/, `${page} must load pwa-install.js`);
-    assert.match(html, /theme-color" content="#10131A"/, `${page} theme-color meta must match the ink application shell`);
+    assert.match(html, page === 'dashboard.html' ? /theme-color" content="#f8f7f4"/ : /theme-color" content="#10131A"/, `${page} theme-color meta must match its application shell`);
     assert.match(html, /<meta name="application-name" content="FuelPhysique">/);
     assert.match(html, /<meta name="apple-mobile-web-app-title" content="FuelPhysique">/);
     assert.doesNotMatch(html, /<title>[^<]*(?:AI Fitness|AI Coach|AI Workout|Ofek AI)/i);

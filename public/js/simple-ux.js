@@ -287,7 +287,10 @@
     if (feature) wrap(feature,'more',[loop]);
   }
   const studio = document.querySelector('.dashboard-primary-actions');
-  if (studio) {
+  // The dashboard has its own plan-first layout. The generic three-tool
+  // chooser belongs on the public landing page, not inside the signed-in
+  // dashboard where it pushes the actual plan cards below the fold.
+  if (studio && !document.body.classList.contains('dashboard-design-v2')) {
     const extra = details([...studio.querySelectorAll('.capability-card')],'more');
     const core = tools(false);
     studio.before(core);
