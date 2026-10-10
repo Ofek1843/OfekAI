@@ -17,7 +17,7 @@ const pages = [
 test('product routes share the editorial product surface', () => {
   for (const relative of pages) {
     const source = fs.readFileSync(path.join(root, relative), 'utf8');
-    assert.match(source, /\/css\/product-editorial\.css\?v=20261010-product-editorial-3/, relative);
+    assert.match(source, /\/css\/product-editorial\.css\?v=20261010-product-editorial-(?:3|4)/, relative);
   }
 });
 
@@ -33,6 +33,6 @@ test('product editorial layer removes legacy deep ocean treatment', () => {
 
 test('service worker precaches the shared product editorial layer', () => {
   const sw = fs.readFileSync(path.join(root, 'public/sw.js'), 'utf8');
-  assert.match(sw, /fuelphysique-editorial-landing-20261010-5/);
-  assert.match(sw, /\/css\/product-editorial\.css\?v=20261010-product-editorial-3/);
+  assert.match(sw, /fuelphysique-editorial-landing-20261010-6/);
+  assert.match(sw, /\/css\/product-editorial\.css\?v=20261010-product-editorial-4/);
 });

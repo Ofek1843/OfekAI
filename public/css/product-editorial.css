@@ -407,6 +407,48 @@ body:has(.builder-page) {
   color-scheme: light !important;
 }
 
+/* High-specificity guard: legacy route selectors used to paint the shell
+   navy even after the new card layer was loaded. */
+html body:has(.builder-page),
+html body:has(.plans-page),
+html body:has(.manual-page),
+html body:has(.manual-nutrition-page) {
+  background-color: var(--product-paper) !important;
+  background-image: linear-gradient(rgba(18,20,23,.018) 1px, transparent 1px) !important;
+  color: var(--product-ink) !important;
+}
+.builder-page,
+.builder-page .builder-card,
+.builder-page .builder-wizard,
+.builder-page .wizard-step,
+.plans-page,
+.plans-page .plans-grid,
+.manual-page,
+.manual-nutrition-page,
+.manual-nutrition-page .builder-workspace {
+  background-color: var(--product-paper) !important;
+  background-image: none !important;
+  color: var(--product-ink) !important;
+}
+.builder-page .builder-card,
+.builder-page .builder-wizard,
+.plans-page .plans-grid,
+.manual-nutrition-page .builder-step,
+.manual-nutrition-page .daily-menu-panel { background-color: #fff !important; }
+.builder-page .builder-header h1,
+.builder-page .builder-header p,
+.builder-page .wizard-step-heading h2,
+.builder-page .wizard-step-heading p,
+.builder-page .wizard-progress-topline,
+.builder-page .wizard-progress-topline strong,
+.builder-page .wizard-progress-topline span,
+.builder-page label,
+.builder-page legend,
+.builder-page small { color: var(--product-ink) !important; text-shadow: none !important; }
+.builder-page .builder-header p,
+.builder-page .wizard-step-heading p,
+.builder-page small { color: var(--product-muted) !important; }
+
 .manual-page {
   width: min(1180px, calc(100% - 48px)) !important;
   margin: 0 auto !important;
