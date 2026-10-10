@@ -1,0 +1,333 @@
+/* Shared editorial product UI: the landing/dashboard paper system for tools and plans. */
+:root {
+  --product-paper: #f7f5f1;
+  --product-white: #fff;
+  --product-ink: #121417;
+  --product-muted: #626970;
+  --product-rule: #d9d6cf;
+  --product-blue: #0866bd;
+  --product-blue-soft: #eaf3fb;
+  --product-radius: 4px;
+}
+
+html,
+body {
+  background: var(--product-paper) !important;
+  color: var(--product-ink) !important;
+  color-scheme: light !important;
+}
+
+body.fp-v45-deep-ocean,
+body.builder-page,
+body.daily-nutrition-route {
+  background: var(--product-paper) !important;
+  background-image: linear-gradient(rgba(18,20,23,.018) 1px, transparent 1px) !important;
+  background-size: 100% 44px !important;
+}
+
+.ocean-depth-layer,
+.ocean-depth-glow,
+.v45-noise,
+body::before,
+body::after { display: none !important; }
+
+.builder-page,
+.plans-page,
+.daily-nutrition-shell {
+  width: min(1400px, calc(100% - 48px)) !important;
+  margin: 0 auto !important;
+  padding: 28px 0 72px !important;
+}
+
+.builder-navigation,
+.page-nav,
+.daily-hero {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 30 !important;
+  min-height: 68px !important;
+  padding: 0 20px !important;
+  border: 1px solid var(--product-rule) !important;
+  border-radius: 0 !important;
+  background: rgba(247,245,241,.96) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(14px) !important;
+}
+
+.builder-navigation a,
+.page-nav a,
+.daily-context-links a,
+.builder-links a {
+  color: var(--product-ink) !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+}
+
+.builder-navigation a:hover,
+.page-nav a:hover,
+.daily-context-links a:hover { color: var(--product-blue) !important; }
+
+.builder-navigation .primary-link,
+.page-nav .primary-link,
+.builder-links .primary-link,
+.builder-navigation .nav-cta {
+  border: 1px solid var(--product-blue) !important;
+  border-radius: var(--product-radius) !important;
+  background: var(--product-blue) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.builder-card,
+.plans-page,
+.daily-surface,
+.daily-progress-section,
+.entries-panel,
+.day-history-card,
+.calendar-panel,
+.compact-tool-card {
+  border: 1px solid var(--product-rule) !important;
+  border-radius: var(--product-radius) !important;
+  background: var(--product-white) !important;
+  color: var(--product-ink) !important;
+  box-shadow: none !important;
+}
+
+.builder-card {
+  overflow: hidden !important;
+  padding: clamp(24px, 4vw, 56px) !important;
+}
+
+.builder-header,
+.plans-header,
+.daily-section-heading,
+.section-heading-row {
+  color: var(--product-ink) !important;
+  text-shadow: none !important;
+}
+
+.builder-badge,
+.plans-badge,
+.daily-kicker,
+.metric-eyebrow,
+.plans-status,
+.builder-status {
+  color: var(--product-blue) !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  text-shadow: none !important;
+}
+
+.builder-header h1,
+.plans-header h1,
+.daily-hero h1,
+.wizard-step-heading h2,
+.daily-section-heading h2,
+.section-heading-row h2,
+.plans-header h2 {
+  color: var(--product-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  letter-spacing: -.045em !important;
+  text-shadow: none !important;
+}
+
+.builder-description,
+.plans-header p,
+.section-helper,
+.daily-hero p,
+.daily-page-status,
+.save-guide,
+.metric-note,
+.empty-state {
+  color: var(--product-muted) !important;
+  text-shadow: none !important;
+}
+
+.wizard-progress,
+.wizard-progress-track,
+.wizard-progress-topline {
+  border-color: var(--product-rule) !important;
+  background: transparent !important;
+  color: var(--product-muted) !important;
+}
+
+.wizard-progress-fill { background: var(--product-blue) !important; }
+
+.wizard-step,
+.wizard-review,
+.form-group,
+.limitations-field,
+.meal-practicality-fieldset,
+.condition-options,
+.target-setup,
+.food-examples,
+.clarification-panel {
+  border-color: var(--product-rule) !important;
+  background: var(--product-white) !important;
+  color: var(--product-ink) !important;
+  box-shadow: none !important;
+}
+
+.visual-choice-card,
+.choice-card,
+.equipment-card,
+.meal-practicality-option,
+.condition-option,
+.plan-card,
+.saved-plan-card,
+.plans-grid > article {
+  border: 1px solid var(--product-rule) !important;
+  border-radius: var(--product-radius) !important;
+  background: #fbfaf7 !important;
+  color: var(--product-ink) !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.visual-choice-card:hover,
+.visual-choice-card:focus-within,
+.choice-card:hover,
+.equipment-card:hover,
+.meal-practicality-option:hover,
+.condition-option:hover,
+.plan-card:hover,
+.saved-plan-card:hover {
+  border-color: var(--product-blue) !important;
+  background: var(--product-blue-soft) !important;
+  transform: none !important;
+}
+
+.visual-choice-card.is-selected,
+.visual-choice-card:has(input:checked),
+.choice-card.is-selected,
+.equipment-card.is-selected,
+.meal-practicality-option:has(input:checked),
+.condition-option:has(input:checked) {
+  border-color: var(--product-blue) !important;
+  background: var(--product-blue-soft) !important;
+  box-shadow: inset 0 0 0 1px var(--product-blue) !important;
+}
+
+.visual-choice-content,
+.visual-choice-content strong,
+.visual-choice-content small,
+.choice-card strong,
+.choice-card small,
+.equipment-card strong,
+.equipment-card small,
+.meal-practicality-option strong,
+.meal-practicality-option small,
+.plan-card h3,
+.saved-plan-card h3 {
+  color: var(--product-ink) !important;
+  text-shadow: none !important;
+}
+
+.visual-choice-content small,
+.choice-card small,
+.equipment-card small,
+.meal-practicality-option small,
+.plan-card p,
+.saved-plan-card p { color: var(--product-muted) !important; }
+
+input:not([type="radio"]):not([type="checkbox"]),
+select,
+textarea,
+.food-input,
+.date-picker-label input {
+  border: 1px solid #bfc5ca !important;
+  border-radius: var(--product-radius) !important;
+  background: #fff !important;
+  color: var(--product-ink) !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.food-input:focus {
+  border-color: var(--product-blue) !important;
+  outline: 3px solid rgba(8,102,189,.15) !important;
+}
+
+.wizard-button,
+.primary-action,
+.save-now-button,
+.finish-button,
+.target-setup-primary,
+.shopping-modal__primary,
+.plans-header .primary-link {
+  border: 1px solid var(--product-blue) !important;
+  border-radius: var(--product-radius) !important;
+  background: var(--product-blue) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.wizard-button--back,
+.secondary-button,
+.target-setup-secondary,
+.shopping-modal__secondary,
+.secondary-action {
+  border: 1px solid #aeb8c1 !important;
+  border-radius: var(--product-radius) !important;
+  background: #fff !important;
+  color: var(--product-ink) !important;
+  box-shadow: none !important;
+}
+
+.plans-counter,
+.early-access-note,
+.plans-status { border-color: var(--product-rule) !important; background: var(--product-blue-soft) !important; color: var(--product-ink) !important; }
+.plans-counter strong { color: var(--product-blue) !important; }
+
+.plans-grid,
+.daily-overview-grid,
+.daily-content-grid { gap: 18px !important; }
+.plans-grid { background: transparent !important; }
+
+.food-table,
+.food-table th,
+.food-table td,
+.macro-card,
+.daily-goals-card,
+.nearby-day,
+.calendar-grid,
+.calendar-weekdays { border-color: var(--product-rule) !important; }
+.food-table th,
+.nearby-day,
+.calendar-weekdays { background: #f0eee9 !important; color: var(--product-muted) !important; }
+.food-table td,
+.macro-card,
+.daily-goals-card { background: #fff !important; color: var(--product-ink) !important; }
+.macro-ring { background: conic-gradient(var(--product-blue) var(--macro-progress, 0%), #e2e0db 0) !important; }
+.protein-progress span { background: var(--product-blue) !important; }
+
+.program-result,
+.nutrition-result,
+.workout-result,
+.shopping-modal__panel {
+  border: 1px solid var(--product-rule) !important;
+  border-radius: var(--product-radius) !important;
+  background: #fff !important;
+  color: var(--product-ink) !important;
+  box-shadow: 0 18px 44px rgba(18,20,23,.1) !important;
+}
+
+@media (max-width: 760px) {
+  .builder-page,
+  .plans-page,
+  .daily-nutrition-shell { width: min(100% - 24px, 680px) !important; padding-top: 12px !important; }
+  .builder-navigation,
+  .page-nav,
+  .daily-hero { position: relative !important; padding: 14px !important; }
+  .builder-card { padding: 20px 14px !important; }
+  .plans-grid,
+  .daily-overview-grid,
+  .daily-content-grid { grid-template-columns: 1fr !important; }
+  .visual-choice-grid,
+  .wizard-fields-grid,
+  .plans-grid { gap: 10px !important; }
+  .wizard-actions { position: sticky !important; bottom: 8px !important; z-index: 10 !important; padding: 8px !important; border: 1px solid var(--product-rule) !important; background: rgba(247,245,241,.96) !important; }
+}
