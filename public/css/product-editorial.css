@@ -397,6 +397,112 @@ html[dir="rtl"] .progress-page :where(h1, h2, h3, p, label, button, a, th, td, i
 html[dir="rtl"] .social-shell :where(h1, h2, h3, p, label, button, a, th, td, input, textarea, select, summary) { direction: rtl !important; text-align: start; }
 html[dir="rtl"] .social-brand { direction: ltr !important; text-align: left !important; }
 
+/* Legacy manual-builder and saved-plan markup uses its own class vocabulary. */
+body:has(.manual-page),
+body:has(.plans-page),
+body:has(.builder-page) {
+  background: var(--product-paper) !important;
+  background-image: linear-gradient(rgba(18,20,23,.018) 1px, transparent 1px) !important;
+  color: var(--product-ink) !important;
+  color-scheme: light !important;
+}
+
+.manual-page {
+  width: min(1180px, calc(100% - 48px)) !important;
+  margin: 0 auto !important;
+  padding: 28px 0 72px !important;
+  color: var(--product-ink) !important;
+}
+.manual-page > nav,
+.manual-page > header,
+.manual-page > .panel,
+.manual-page > .day-card,
+.manual-page > .builder-actions,
+.manual-page .exercise-row {
+  color: var(--product-ink) !important;
+  text-shadow: none !important;
+}
+.manual-page > nav { padding: 14px 20px !important; border: 1px solid var(--product-rule) !important; background: rgba(247,245,241,.96) !important; }
+.manual-page nav a { color: var(--product-ink) !important; }
+.manual-page h1 { color: var(--product-ink) !important; font-family: Georgia, "Times New Roman", serif !important; letter-spacing: -.045em !important; }
+.manual-page header p,
+.manual-page #status,
+.manual-page label,
+.manual-page .exercise-row label { color: var(--product-muted) !important; }
+.manual-page .badge { color: var(--product-blue) !important; border-color: var(--product-blue) !important; background: var(--product-blue-soft) !important; }
+.manual-page .panel,
+.manual-page .day-card,
+.manual-page .exercise-row { border: 1px solid var(--product-rule) !important; border-radius: var(--product-radius) !important; background: #fff !important; box-shadow: none !important; }
+.manual-page input,
+.manual-page select { border: 1px solid #bfc5ca !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; }
+.manual-page button { border-radius: var(--product-radius) !important; box-shadow: none !important; }
+.manual-page .primary { border: 1px solid var(--product-blue) !important; color: #fff !important; background: var(--product-blue) !important; }
+.manual-page .secondary,
+.manual-page .duplicate-day,
+.manual-page .remove-day,
+.manual-page .remove-exercise { border-color: #aeb8c1 !important; color: var(--product-ink) !important; background: #fff !important; }
+.manual-page .add-exercise { border-color: var(--product-blue) !important; color: var(--product-blue) !important; background: var(--product-blue-soft) !important; }
+.exercise-suggest { border-color: var(--product-rule) !important; background: #fff !important; box-shadow: 0 18px 44px rgba(18,20,23,.12) !important; }
+.exercise-suggest li { color: var(--product-ink) !important; }
+.exercise-suggest li.is-active,
+.exercise-suggest li:hover { background: var(--product-blue-soft) !important; }
+
+.plans-page .plan-card,
+.plans-page .plan-card.active,
+.plans-page .plan-editor-form,
+.plans-page .plans-grid > article { border-color: var(--product-rule) !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; box-shadow: none !important; }
+.plans-page .plan-card h2,
+.plans-page .plan-card h3,
+.plans-page .plan-card p,
+.plans-page .plan-card strong,
+.plans-page .plan-card span { color: var(--product-ink) !important; text-shadow: none !important; }
+.plans-page .plan-card p,
+.plans-page .plan-meta span { color: var(--product-muted) !important; }
+.plans-page .plan-meta span { background: #f0eee9 !important; }
+.plans-page .active-badge { color: #18885d !important; }
+.plans-page .activate-button,
+.plans-page .start-workout-link { border-color: var(--product-blue) !important; border-radius: var(--product-radius) !important; background: var(--product-blue) !important; color: #fff !important; }
+.plans-page .rename-button,
+.plans-page .edit-button,
+.plans-page .delete-button { border-color: #aeb8c1 !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; }
+.plans-page .delete-button { color: #b4233c !important; }
+
+.manual-nutrition-page {
+  width: min(1240px, calc(100% - 48px)) !important;
+  margin: 0 auto !important;
+  padding: 28px 0 72px !important;
+  color: var(--product-ink) !important;
+}
+.manual-nutrition-page .manual-nav { padding: 14px 20px !important; border: 1px solid var(--product-rule) !important; background: rgba(247,245,241,.96) !important; }
+.manual-nutrition-page .manual-nav a,
+.manual-nutrition-page .manual-hero h1,
+.manual-nutrition-page .manual-hero p,
+.manual-nutrition-page .step-heading h2,
+.manual-nutrition-page .step-heading p,
+.manual-nutrition-page label { color: var(--product-ink) !important; text-shadow: none !important; }
+.manual-nutrition-page .manual-hero h1 { font-family: Georgia, "Times New Roman", serif !important; letter-spacing: -.045em !important; }
+.manual-nutrition-page .manual-status,
+.manual-nutrition-page .step-heading p { color: var(--product-muted) !important; }
+.manual-nutrition-page .panel,
+.manual-nutrition-page .meal-card,
+.manual-nutrition-page .daily-menu-panel,
+.manual-nutrition-page .target-summary,
+.manual-nutrition-page .running-totals { border: 1px solid var(--product-rule) !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; box-shadow: none !important; }
+.manual-nutrition-page input,
+.manual-nutrition-page select,
+.manual-nutrition-page textarea { border: 1px solid #bfc5ca !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; }
+.manual-nutrition-page .primary-action { border: 1px solid var(--product-blue) !important; border-radius: var(--product-radius) !important; background: var(--product-blue) !important; color: #fff !important; box-shadow: none !important; }
+.manual-nutrition-page .secondary-action,
+.manual-nutrition-page .text-action,
+.manual-nutrition-page .drawer-close { border-color: #aeb8c1 !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; }
+.manual-nutrition-page .meal-card:hover,
+.manual-nutrition-page .category-chip.is-active { border-color: var(--product-blue) !important; background: var(--product-blue-soft) !important; }
+
+html[dir="rtl"] .manual-page,
+html[dir="rtl"] .plans-page { direction: rtl !important; }
+html[dir="rtl"] .manual-page :where(h1, h2, h3, p, label, input, select, button, a, span),
+html[dir="rtl"] .plans-page :where(h1, h2, h3, p, label, input, select, button, a, span) { text-align: start; }
+
 @media (max-width: 760px) {
   .builder-page,
   .plans-page,

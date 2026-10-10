@@ -84,7 +84,7 @@ test("sw.js exists and is syntactically valid", () => {
 
 test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
-  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-editorial-landing-20261010-4['"]/);
+  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-editorial-landing-20261010-5['"]/);
   assert.match(source, /simple-ux\.css\?v=20261007-motion-1/);
   assert.match(source, /simple-ux\.js\?v=20261009-dashboard-boundary-1/);
   assert.match(source, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
