@@ -147,8 +147,8 @@ body.fp-route-workout-builder .wizard-actions {
   background: var(--product-paper) !important;
   border-color: var(--product-rule) !important;
 }
-body.fp-route-workout-builder .wizard-button--next,
-body.fp-route-workout-builder .wizard-button--generate {
+.fp-redesign.fp-route-workout-builder .builder-wizard .wizard-button--next,
+.fp-redesign.fp-route-workout-builder .builder-wizard .wizard-button--generate {
   background: var(--product-blue) !important;
   border-color: var(--product-blue) !important;
   color: #fff !important;
