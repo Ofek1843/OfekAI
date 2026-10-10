@@ -103,3 +103,56 @@ body.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero #landingHeroTitle 
 }
 @media(prefers-reduced-motion:reduce) { .simple-preview-row { animation:none; }.simple-tool,.simple-preview-card { transition:none; }.simple-preview-card { display:grid!important; transform:none; } }
 [data-theme="light"] .simple-tools>h2 { color:#112c42; }
+
+/* The compact workout wizard is assembled by simple-ux.js after load. Keep its
+   compact layout, but use the same paper surfaces as the dashboard/landing. */
+body.fp-route-workout-builder .simple-builder .visual-choice-card,
+body.fp-route-workout-builder .simple-builder .visual-choice-card:hover,
+body.fp-route-workout-builder .simple-builder .visual-choice-card:focus-within {
+  background: #fbfaf7 !important;
+  border-color: var(--product-rule) !important;
+}
+body.fp-route-workout-builder .simple-builder .visual-choice-card:has(input:checked) {
+  background: var(--product-blue-soft) !important;
+  border-color: var(--product-blue) !important;
+}
+body.fp-route-workout-builder .simple-builder .visual-choice-content,
+body.fp-route-workout-builder .simple-builder .visual-choice-content strong,
+body.fp-route-workout-builder .simple-equipment-presets label {
+  color: var(--product-ink) !important;
+}
+body.fp-route-workout-builder .simple-builder .visual-choice-content small,
+body.fp-route-workout-builder .simple-equipment-presets small,
+body.fp-route-workout-builder .simple-note {
+  color: var(--product-muted) !important;
+}
+body.fp-route-workout-builder .simple-equipment-presets label,
+body.fp-route-workout-builder .simple-options {
+  background: #fbfaf7 !important;
+  border-color: var(--product-rule) !important;
+  color: var(--product-ink) !important;
+}
+body.fp-route-workout-builder .simple-options > summary { color: var(--product-blue) !important; }
+body.fp-route-workout-builder .simple-tool-nav a {
+  background: #fff !important;
+  border-color: var(--product-rule) !important;
+  color: var(--product-ink) !important;
+}
+body.fp-route-workout-builder .simple-tool-nav a[aria-current] {
+  background: var(--product-blue-soft) !important;
+  border-color: var(--product-blue) !important;
+  color: var(--product-blue) !important;
+}
+body.fp-route-workout-builder .wizard-actions {
+  background: var(--product-paper) !important;
+  border-color: var(--product-rule) !important;
+}
+body.fp-route-workout-builder .wizard-button--next,
+body.fp-route-workout-builder .wizard-button--generate {
+  background: var(--product-blue) !important;
+  border-color: var(--product-blue) !important;
+  color: #fff !important;
+}
+body.fp-route-workout-builder .wizard-progress-track > span {
+  background: var(--product-blue) !important;
+}

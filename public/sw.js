@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-editorial-landing-20261010-6';
+const CACHE_NAME = 'fuelphysique-workout-paper-20261010-7';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -51,12 +51,14 @@ const urlsToCache = [
   '/assets/dashboard/training.webp',
   '/assets/dashboard/landing-training.webp',
   '/css/simple-ux.css?v=20261007-motion-1',
+  '/css/simple-ux.css?v=20261010-workout-paper-1',
   '/css/landing.css?v=20261007-language-picker-3',
   '/css/landing-editorial.css?v=20261010-editorial-2',
   '/css/site-quality.css?v=20261007-mobile-clarity-2',
   '/js/landing-navigation.mjs',
   '/js/request-deadline.mjs',
   '/css/redesign-v1.css?v=20260914-i18n-dashboard-1',
+  '/css/redesign-v1.css?v=20261010-workout-paper-1',
   '/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1',
   '/css/daily-nutrition.css?v=20260918-daily-resilience-1',
   '/css/product-motion-v47.css?v=20260908-v47-choice-polish-2',
@@ -70,6 +72,7 @@ const urlsToCache = [
   '/css/social.css',
   '/js/social.js',
   '/js/redesign-shell.js?v=20261002-brand-quality-1',
+  '/js/redesign-shell.js?v=20261010-workout-paper-1',
   '/js/i18n.js?v=20261002-brand-quality-1',
   '/js/simple-ux.js?v=20261010-landing-hero-2',
   '/js/dashboard.js?v=20261006-simple-3',

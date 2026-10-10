@@ -4,7 +4,9 @@
     .then((module) => { applyLanguageCopy = module.applyDocumentTranslations; })
     .catch(() => {});
   const route = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
-  if (!document.querySelector('link[href*="v45-deep-ocean.css"]')) {
+  // The workout wizard has moved to the paper UI. Loading the legacy ocean
+  // sheet after its editorial sheet restores navy surfaces at equal specificity.
+  if (route !== "workout-builder.html" && !document.querySelector('link[href*="v45-deep-ocean.css"]')) {
     const deepOceanStyles = document.createElement("link");
     deepOceanStyles.rel = "stylesheet";
     deepOceanStyles.href = "/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1";
@@ -60,6 +62,7 @@
   ]);
   const lightCompositionRoutes = new Set([
     "index.html",
+    "workout-builder.html",
     "auth.html",
     "auth-action.html",
     "billing-result.html",
@@ -780,7 +783,8 @@
     document.documentElement.lang = language;
     document.documentElement.dir = isRtlLanguage(language) ? "rtl" : "ltr";
     void languageModuleReady.then(() => applyLanguageCopy?.(language));
-    document.body.classList.add("fp-redesign", "fp-v45-deep-ocean", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
+    document.body.classList.add("fp-redesign", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
+    if (route !== "workout-builder.html") document.body.classList.add("fp-v45-deep-ocean");
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
     if (!protectedRoutes.has(route)) document.body.classList.add("fp-public-route");

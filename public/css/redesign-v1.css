@@ -193,7 +193,7 @@ body.fp-composition-dark {
 /* V4.4 restores the earlier Deep Ocean stage on the public entry and planning
    journeys. The current V4.3 layouts, real-athlete assets and category accents
    remain above this layer; only the formerly paper-flat environment changes. */
-body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manual-nutrition-builder, .fp-route-my-nutrition-plans, .fp-route-workout-builder, .fp-route-my-workout-plans) {
+body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manual-nutrition-builder, .fp-route-my-nutrition-plans, .fp-route-my-workout-plans) {
   --fp-bg-deep: #061222;
   --fp-bg-page: #08182b;
   --fp-bg-section: #0c2139;
@@ -215,7 +215,7 @@ body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manu
   color-scheme: dark;
 }
 
-body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manual-nutrition-builder, .fp-route-my-nutrition-plans, .fp-route-workout-builder, .fp-route-my-workout-plans) :where(.builder-card, .builder-wizard, .plans-page, .nutrition-plan-card, .plan-card, .program-result, .meal-option-card, .meal-option, .meal-options-carousel) {
+body.fp-redesign:is(.fp-route-index, .fp-route-nutrition-builder, .fp-route-manual-nutrition-builder, .fp-route-my-nutrition-plans, .fp-route-my-workout-plans) :where(.builder-card, .builder-wizard, .plans-page, .nutrition-plan-card, .plan-card, .program-result, .meal-option-card, .meal-option, .meal-options-carousel) {
   background-color: rgba(8, 27, 48, 0.8) !important;
   border-color: rgba(147, 197, 253, 0.2) !important;
 }
