@@ -315,6 +315,88 @@ textarea:focus,
   box-shadow: 0 18px 44px rgba(18,20,23,.1) !important;
 }
 
+/* Product routes that were still using the legacy ocean shell. Keep the
+   same paper/ink system as the dashboard, including social and progress. */
+.progress-page,
+.social-shell {
+  color: var(--product-ink) !important;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif !important;
+  text-shadow: none !important;
+}
+
+.progress-page { width: min(1180px, calc(100% - 48px)) !important; margin: 0 auto !important; padding: 28px 0 72px !important; }
+.progress-page .page-nav { background: rgba(247,245,241,.96) !important; border-color: var(--product-rule) !important; }
+.progress-page .page-header h1,
+.progress-page .page-header p,
+.progress-page .entry-card,
+.progress-page .stat-card,
+.progress-page .chart-card,
+.progress-page .history-card,
+.progress-page label,
+.progress-page .status { color: var(--product-ink) !important; text-shadow: none !important; }
+.progress-page .page-header h1 { font-family: Georgia, "Times New Roman", serif !important; letter-spacing: -.045em !important; }
+.progress-page .page-header p,
+.progress-page .status,
+.progress-page .stat-card span,
+.progress-page .chart-card p { color: var(--product-muted) !important; }
+.progress-page .entry-card,
+.progress-page .stat-card,
+.progress-page .chart-card,
+.progress-page .history-card { border: 1px solid var(--product-rule) !important; border-radius: var(--product-radius) !important; background: #fff !important; box-shadow: none !important; }
+.progress-page input { border: 1px solid #bfc5ca !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; }
+.progress-page button { border-radius: var(--product-radius) !important; background: var(--product-blue) !important; color: #fff !important; box-shadow: none !important; }
+
+.social-abyss { display: none !important; }
+.social-shell { width: min(1500px, calc(100% - 28px)) !important; background: transparent !important; }
+.social-topbar,
+.social-app,
+.conversation-rail,
+.social-context-panel,
+.chat-header,
+.social-section,
+.user-search,
+.username-field,
+.social-dialog,
+.composer { border-color: var(--product-rule) !important; background: #fff !important; color: var(--product-ink) !important; box-shadow: none !important; }
+.social-topbar { border-radius: var(--product-radius) !important; }
+.social-app { border-radius: var(--product-radius) !important; overflow: hidden !important; }
+.conversation-rail { background: #f0eee9 !important; }
+.social-brand,
+.social-tab,
+.back-link,
+.icon-button,
+.conversation-card,
+.chat-person h1,
+.social-section h2,
+.social-section h3,
+.chat-empty h1,
+.social-dialog h2,
+.social-dialog label,
+.message-bubble,
+.composer textarea { color: var(--product-ink) !important; text-shadow: none !important; }
+.social-brand { background: none !important; }
+.social-tab.is-active { color: #fff !important; background: var(--product-blue) !important; }
+.social-tab:hover,
+.conversation-card:hover,
+.conversation-card.is-active { color: var(--product-ink) !important; background: var(--product-blue-soft) !important; border-color: var(--product-blue) !important; transform: none !important; }
+.social-top-actions .back-link,
+.icon-button,
+.secondary-button { border-color: #aeb8c1 !important; border-radius: var(--product-radius) !important; background: #fff !important; color: var(--product-ink) !important; }
+.messages-view { background: #fff !important; }
+.chat-header { background: #fff !important; }
+.message-bubble { border-color: var(--product-rule) !important; border-radius: 4px 14px 14px 14px !important; background: var(--product-blue-soft) !important; }
+.composer { background: #f7f5f1 !important; }
+.composer textarea,
+.user-search input,
+.username-field input { background: #fff !important; color: var(--product-ink) !important; }
+.social-shell :where(p, small, .conversation-copy span, .conversation-meta, .section-status, .typing-indicator, .chat-empty p, .social-dialog p) { color: var(--product-muted) !important; text-shadow: none !important; }
+
+html[dir="rtl"] .progress-page,
+html[dir="rtl"] .social-shell { direction: rtl !important; }
+html[dir="rtl"] .progress-page :where(h1, h2, h3, p, label, button, a, th, td, input, textarea, select, summary),
+html[dir="rtl"] .social-shell :where(h1, h2, h3, p, label, button, a, th, td, input, textarea, select, summary) { direction: rtl !important; text-align: start; }
+html[dir="rtl"] .social-brand { direction: ltr !important; text-align: left !important; }
+
 @media (max-width: 760px) {
   .builder-page,
   .plans-page,

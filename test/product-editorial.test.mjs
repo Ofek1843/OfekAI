@@ -11,13 +11,13 @@ const pages = [
   'public/daily-nutrition.html', 'public/workout-tracker.html',
   'public/workout-history.html', 'public/manual-workout-builder.html',
   'public/manual-nutrition-builder.html', 'public/workout-plan-generator.html',
-  'public/log-workout.html'
+  'public/log-workout.html', 'public/progress.html', 'public/social.html'
 ];
 
 test('product routes share the editorial product surface', () => {
   for (const relative of pages) {
     const source = fs.readFileSync(path.join(root, relative), 'utf8');
-    assert.match(source, /\/css\/product-editorial\.css\?v=20261010-product-editorial-1/, relative);
+    assert.match(source, /\/css\/product-editorial\.css\?v=20261010-product-editorial-(?:1|2)/, relative);
   }
 });
 
@@ -31,6 +31,6 @@ test('product editorial layer removes legacy deep ocean treatment', () => {
 
 test('service worker precaches the shared product editorial layer', () => {
   const sw = fs.readFileSync(path.join(root, 'public/sw.js'), 'utf8');
-  assert.match(sw, /fuelphysique-editorial-landing-20261010-3/);
+  assert.match(sw, /fuelphysique-editorial-landing-20261010-4/);
   assert.match(sw, /\/css\/product-editorial\.css\?v=20261010-product-editorial-1/);
 });
