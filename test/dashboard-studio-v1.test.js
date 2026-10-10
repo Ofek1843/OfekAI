@@ -28,7 +28,7 @@ test('dashboard uses reference layout, blue wordmark and real account data', () 
   assert.match(production, /collection\(db,'users',user\.uid,'workoutPlans'\)/);
   assert.match(production, /collection\(db,'users',user\.uid,'nutritionPlans'\)/);
   assert.match(production, /loadDailyLog\(db,user\.uid,dateKey\(new Date\(\)\)\)/);
-  assert.match(sw, /fuelphysique-editorial-dashboard-20261010-1/);
+  assert.match(sw, /fuelphysique-editorial-landing-20261010-1/);
   for (const image of ['training', 'workout-1', 'meal-1'])
     assert.ok(fs.existsSync(path.join(root, 'assets', 'dashboard', `${image}.webp`)));
 });

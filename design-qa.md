@@ -40,3 +40,50 @@ Required fidelity surfaces:
 
 - P3: exact font and icon glyphs could be refined if the original design system becomes available.
 - The illustration is a mock. Production data will naturally differ from the sample plan names and dates.
+
+---
+
+# Landing page editorial redesign QA
+
+final result: passed
+
+## Evidence and normalization
+
+- Source visual truth: the approved editorial dashboard at `http://localhost:4173/dashboard-preview.html?clean=1`, originally grounded in `C:\Users\ofek1\AppData\Local\Temp\codex-clipboard-3db2e1cd-9eb7-4889-8695-e9e66367a527.png`.
+- Implementation capture: Codex in-app browser render of `http://localhost:4173/index.html?editorial=1`.
+- Desktop comparison viewport: 1265 × 710 CSS pixels, device scale 1.
+- Mobile comparison viewport: 390 × 844 CSS pixels, device scale 1.
+- State: English, language dialog closed for the primary comparison; the language dialog and expanded seven-language list were checked separately.
+- Full-view evidence: the browser-rendered landing hero, action cards, secondary tools, results and footer were visually inspected against the dashboard's warm-paper, serif-led, rule-based visual system.
+- Focused evidence: hero/navigation, three primary action cards, mobile hero, and mobile language dialog were inspected at readable scale.
+
+## Findings
+
+No actionable P0/P1/P2 issue remains.
+
+- Typography: the landing page now uses the same Georgia-led editorial hierarchy as the dashboard. Body copy remains readable at desktop and mobile sizes.
+- Spacing and layout rhythm: the desktop hero uses a balanced two-column composition; mobile stacks copy, imagery and tools without horizontal overflow. Rules and square card edges align with the dashboard.
+- Colors and tokens: warm paper, dark ink, restrained blue and fine gray rules replace the deep-ocean presentation. Contrast was checked in the hero, action cards and language dialog.
+- Image quality and asset fidelity: the approved dashboard training image is reused at its native crop quality; existing before/after transformation images remain untouched.
+- Copy and content: all existing localized landing copy and all seven languages remain available. The direct workout plan, meal plan and food diary routes remain the first three actions.
+
+## Interaction and responsive checks
+
+- Language dialog opens, displays all seven languages, and closes correctly.
+- “More tools” expands correctly.
+- Three primary cards retain their real destinations and synchronized visual examples.
+- Social links, transformation comparisons and existing landing scripts remain in the page.
+- Browser console: zero warnings or errors during the verified flow.
+- Focused regression suite: 61/61 passed after rerunning socket-based auth checks outside the restricted sandbox.
+- Repository lint and `git diff --check`: passed.
+
+## Comparison history
+
+- Initial render: legacy deep-ocean selectors overrode the new sheet, causing a dark shell and white-on-light section text.
+- Fix: increased route-scoped specificity, replaced the runtime landing hero composition structurally, and normalized section, dialog and action-card tokens.
+- Mobile pass: the language list displayed every supported language without nested scrolling; faint dialog copy was corrected.
+- Final desktop and mobile passes: no remaining P0/P1/P2 mismatches or overflow.
+
+## Follow-up polish
+
+- P3: the exact proprietary font from the visual reference is unavailable; Georgia remains a close, fast system-font match.

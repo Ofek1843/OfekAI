@@ -28,10 +28,23 @@ test('landing exposes three direct tools before secondary features, without a ch
   assert.doesNotMatch(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/preload" as="image" href="\/assets\/athlete-motion/);
 });
 test('the new landing layout overrides the legacy forced grid and remains visible on mobile',() => {
-  const css=fs.readFileSync(path.join(root,'public/css/simple-ux.css'),'utf8');
-  assert.match(css,/body\.fp-v45-deep-ocean\.fp-route-index \.hero-shell\.simple-hero\s*\{[^}]*display:flex!important/);
-  assert.match(css,/@media\(max-width:640px\)[\s\S]*?\.simple-preview\s*\{\s*display:grid/);
-  assert.doesNotMatch(css,/@media\(max-width:640px\)[\s\S]*?\.simple-preview\s*\{\s*display:none/);
+  const css=fs.readFileSync(path.join(root,'public/css/landing-editorial.css'),'utf8');
+  const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
+  assert.match(css,/body\.landing-page\.fp-v45-deep-ocean\.fp-route-index \.hero-shell\.simple-hero\s*\{[\s\S]*?display: grid !important/);
+  assert.match(css,/@media \(max-width: 900px\)[\s\S]*?grid-template-columns: 1fr !important/);
+  assert.match(css,/\.editorial-landing-media img[\s\S]*?object-fit: cover !important/);
+  assert.match(css,/\.logo,[\s\S]*?\.footer-wordmark\s*\{[\s\S]*?direction: ltr !important/);
+  assert.match(html,/assets\/dashboard\/landing-training\.webp/);
+  assert.match(source,/assets\/dashboard\/landing-training\.webp/);
+  assert.doesNotMatch(source,/editorialPhoto\.src = '\/assets\/dashboard\/training\.webp'/);
+});
+test('editorial landing neutralizes every legacy deep-ocean content surface',() => {
+  const css=fs.readFileSync(path.join(root,'public/css/landing-editorial.css'),'utf8');
+  for(const selector of ['product-loop-panel','result-story','transformation-invite','platform-step']) {
+    assert.match(css,new RegExp(`body\\.landing-page[\\s\\S]{0,180}\\.${selector}\\s*\\{[\\s\\S]{0,260}background(?:-image)?: (?:#fff|var\\(--ed-blue-soft\\)|none) !important`),selector);
+  }
+  assert.match(css,/\.landing-page \.site-feedback-trigger\s*\{[\s\S]{0,260}background: var\(--ed-paper-strong\) !important/);
+  assert.match(css,/\.landing-section \.premium-card\s*\{[\s\S]{0,180}background: var\(--ed-paper-strong\) !important/);
 });
 test('landing animation explicitly links each action to its matching example',() => {
   const {document}=render('index.html');

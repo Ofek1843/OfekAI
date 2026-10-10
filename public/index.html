@@ -31,7 +31,7 @@
 <link rel="stylesheet" href="/css/theme.css">
     <link rel="preload" as="script" href="/js/language-welcome.js?v=20261007-language-picker-2">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <meta name="theme-color" content="#10131A">
+    <meta name="theme-color" content="#f7f5f1">
     <link rel="manifest" href="/manifest.json">
     <script>
         if ('serviceWorker' in navigator) {
@@ -100,12 +100,13 @@
   <link rel="stylesheet" href="/css/site-quality.css?v=20261007-mobile-clarity-2">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
   <link rel="stylesheet" href="/css/simple-ux.css?v=20261007-motion-1">
+  <link rel="stylesheet" href="/css/landing-editorial.css?v=20261010-editorial-2">
 </head>
 <body>
     <div class="ocean-depth-layer" aria-hidden="true"></div>
     <div class="ocean-depth-glow" aria-hidden="true"></div>
     <nav class="navbar" aria-label="Primary">
-        <a href="/" class="logo" aria-label="FuelPhysique home">FuelPhysique</a>
+        <a href="/" class="logo" aria-label="FuelPhysique home"><span>Fuel</span><span>Physique</span></a>
         <div class="nav-actions">
             <a href="#features" class="nav-link" data-i18n="landingNavFeatures">Features</a>
             <a href="#results" class="nav-link" data-i18n="landingNavResults">Results</a>
@@ -185,6 +186,7 @@
                 </div>
 
                 <aside class="hero-panel" aria-label="FuelPhysique platform preview">
+                    <img class="editorial-hero-photo" src="/assets/dashboard/landing-training.webp" width="608" height="648" alt="Athlete performing a standing cable row">
                     <div class="landing-hero-illustration" data-v4-illustration="deadlift" data-v43-scene="curl" tabindex="0"></div>
                     <blockquote class="coach-message" lang="en" dir="ltr">
                         <span>It's a game of</span>
@@ -420,7 +422,7 @@
     </main>
 
     <footer class="landing-footer">
-        <span>FuelPhysique</span>
+        <span class="footer-wordmark"><b>Fuel</b><i>Physique</i></span>
         <nav aria-label="Footer">
             <a href="/about.html">About</a>
             <a href="/exercise-library">Exercise library</a>
@@ -432,7 +434,7 @@
         </nav>
     </footer>
 
-    <script src="/js/simple-ux.js?v=20261007-motion-1"></script>
+    <script src="/js/simple-ux.js?v=20261010-landing-hero-2"></script>
     <script type="module" src="js/landing.js?v=20261007-motion-1"></script>
     <script type="module" src="/js/site-feedback.js"></script>
     <script type="module" src="/js/pwa-install.js?v=20261007-install-contrast-1"></script>

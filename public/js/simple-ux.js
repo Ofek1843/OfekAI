@@ -175,7 +175,19 @@
     hero.querySelector('#landingHeroTitle').replaceChildren(text('span','title'));
     const lede = hero.querySelector('.hero-lede');
     lede.removeAttribute('data-i18n'); lede.textContent = copy('intro');
-    hero.querySelector('.hero-content').after(tools(true));
+    const editorialMedia = document.createElement('figure');
+    editorialMedia.className = 'editorial-landing-media';
+    const editorialPhoto = document.createElement('img');
+    editorialPhoto.src = '/assets/dashboard/landing-training.webp';
+    editorialPhoto.alt = 'Athlete performing a standing cable row';
+    editorialPhoto.width = 608;
+    editorialPhoto.height = 648;
+    editorialPhoto.decoding = 'async';
+    const editorialCaption = document.createElement('figcaption');
+    editorialCaption.textContent = 'Your plan. Your progress.';
+    editorialMedia.append(editorialPhoto, editorialCaption);
+    hero.querySelector('.hero-content').after(editorialMedia);
+    editorialMedia.after(tools(true));
     ['.hero-subcopy','.hero-support','.hero-meta','.hero-cta-row','.feature-pills','.builder-chooser','.eyebrow'].forEach(selector => hero.querySelector(selector)?.remove());
     hero.querySelector('.landing-plan-guide-link')?.remove();
     const aside = hero.querySelector('.hero-panel');
@@ -207,6 +219,7 @@
     examples.forEach(([key,...rows],index) => {
       const card = document.createElement('div'); card.className = 'simple-preview-card simple-tool-preview';
       card.dataset.toolIndex = String(index);
+      card.id = `simpleToolPreview${index + 1}`;
       card.setAttribute('aria-hidden','true');
       const image = document.createElement('img');
       image.className = 'simple-preview-image';
@@ -238,6 +251,7 @@
     // matching example move together, so this cannot read as decoration.
     const previewCards = [...aside.querySelectorAll('.simple-preview-card')];
     const toolCards = [...hero.querySelectorAll('.simple-tool')];
+    toolCards.forEach((card,index) => card.setAttribute('aria-describedby', previewCards[index]?.id || ''));
     const toolsRegion = hero.querySelector('.simple-tools');
     previewCards.forEach((card,index) => {
       const action = toolCards[index]?.querySelector('.simple-tool-action');
