@@ -4,9 +4,15 @@
     .then((module) => { applyLanguageCopy = module.applyDocumentTranslations; })
     .catch(() => {});
   const route = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const paperRoutes = new Set([
+    "workout-builder.html", "workout-plan-generator.html", "manual-workout-builder.html",
+    "my-workout-plans.html", "nutrition-builder.html",
+    "manual-nutrition-builder.html", "my-nutrition-plans.html", "progress.html",
+    "social.html",
+  ]);
   // The workout wizard has moved to the paper UI. Loading the legacy ocean
   // sheet after its editorial sheet restores navy surfaces at equal specificity.
-  if (route !== "workout-builder.html" && !document.querySelector('link[href*="v45-deep-ocean.css"]')) {
+  if (!paperRoutes.has(route) && !document.querySelector('link[href*="v45-deep-ocean.css"]')) {
     const deepOceanStyles = document.createElement("link");
     deepOceanStyles.rel = "stylesheet";
     deepOceanStyles.href = "/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1";
@@ -29,6 +35,12 @@
     qualityStyles.href = "/css/site-quality.css?v=20261002-brand-quality-1";
     document.head.append(qualityStyles);
   }
+  if ((paperRoutes.has(route) || route === "app.html") && !document.querySelector('link[href*="product-paper-routes.css"]')) {
+    const paperStyles = document.createElement("link");
+    paperStyles.rel = "stylesheet";
+    paperStyles.href = "/css/product-paper-routes.css?v=20261011-2";
+    document.head.append(paperStyles);
+  }
   const protectedRoutes = new Set([
     "app.html",
     "daily-nutrition.html",
@@ -41,10 +53,12 @@
     "manual-workout-builder.html",
     "my-nutrition-plans.html",
     "my-workout-plans.html",
+    "my-workout-plans.html",
     "nutrition-builder.html",
     "progress.html",
     "running.html",
     "social.html",
+    "progress.html",
     "transformation-submit.html",
     "workout-builder.html",
     "workout-history.html",
@@ -784,7 +798,8 @@
     document.documentElement.dir = isRtlLanguage(language) ? "rtl" : "ltr";
     void languageModuleReady.then(() => applyLanguageCopy?.(language));
     document.body.classList.add("fp-redesign", `fp-route-${route.replace(/\.html$/, "").replace(/[^a-z0-9]+/g, "-")}`);
-    if (route !== "workout-builder.html") document.body.classList.add("fp-v45-deep-ocean");
+    if (!paperRoutes.has(route)) document.body.classList.add("fp-v45-deep-ocean");
+    if (paperRoutes.has(route)) document.body.classList.add("fp-paper-route");
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
     if (!protectedRoutes.has(route)) document.body.classList.add("fp-public-route");

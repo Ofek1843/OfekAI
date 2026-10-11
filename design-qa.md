@@ -87,3 +87,40 @@ No actionable P0/P1/P2 issue remains.
 ## Follow-up polish
 
 - P3: the exact proprietary font from the visual reference is unavailable; Georgia remains a close, fast system-font match.
+
+---
+
+# Product paper route QA — 2026-10-11
+
+- Source visual truth: `C:/Users/ofek1/AppData/Local/Temp/codex-clipboard-40de7fd2-7905-4e10-857c-d450cace53f7.png` (user's editorial dashboard screenshot).
+- Problem evidence: the four user screenshots supplied with this request (nutrition, progress, social, settings).
+- Implementation screenshots: real local Chrome renders of the actual route HTML/CSS, with auth/data modules suppressed and representative static state injected. Desktop files in the visualization folder are `paper-my-nutrition-plans-verify.png`, `paper-nutrition-builder-verify.png`, `paper-progress-verify.png`, `paper-social-verify.png` and `paper-app-settings-final-v2.png`. Mobile files use `-mobile-final.png` for the four routes and `paper-app-settings-mobile-final.png` for settings.
+- Capture commands: `node scripts/qa-paper-capture.cjs <output-directory> verify`, `node scripts/qa-paper-capture.cjs <output-directory> mobile-final mobile`, and the same command with route filter `app` for the settings modal. Settings and mobile use Chrome device metrics/capture to wait for full rendering.
+- Target viewports: desktop screenshot files at 1855 × 1044 pixels, matching the reference canvas width; Chrome's inner viewport reported 1816 × 889 CSS pixels. Mobile was emulated through Chrome device metrics at an exact 390 × 844 CSS-pixel viewport. All four mobile documents reported `scrollWidth: 390` (no horizontal overflow).
+- Target state: English, light editorial theme, populated nutrition plans, empty progress data, messages empty selection, profile settings open. Auth/data modules are suppressed in the fixture.
+- Full-view comparison evidence: nutrition plans, the nutrition-builder first step, progress top, and messages at desktop size were inspected side by side with the editorial dashboard. The navy canvas and black-on-navy headings in those four views are gone; warm paper, white cards, ink headings, muted secondary text and blue actions render as intended.
+- Focused region comparison evidence: nutrition card actions and the image captions were reviewed at readable scale. The builder image captions initially rendered dark on photos; the route stylesheet was corrected to restore white text and a strong bottom shade, then recaptured. Progress form and social empty-state contrast were also inspected.
+- Mobile comparison: nutrition plans, builder first step, progress entry and messages empty state were captured at 390px. A fixed hamburger initially covered part of the builder navigation and the messages mode rail; spacing was added and both regions were recaptured without overlap.
+- Settings comparison: Chrome's DOM and screenshot showed the profile modal was being forced to `position: relative` by a Deep Ocean `body > *` selector, putting it below the chat. A route-scoped `position: fixed` and top-layer reset was added. Desktop and 390px mobile screenshots now show the modal above the chat with white content, paper sidebar, ink typography and readable fields. A residual white-on-white `h4` and teal avatar fallback were also corrected.
+
+## Findings
+
+- [P1 fixed] Nutrition-builder goal captions were unreadable because the generic editorial ink selector overrode white text on photography. The final capture shows legible white captions on all three goals.
+- [P1 fixed] Settings modal was not actually on screen: the old ocean selector made its direct-child overlay `position: relative` and `z-index: 1`. It is now fixed at viewport level with `z-index: 9999`, confirmed by hit-testing and desktop/mobile captures.
+- [P2 open] The underlying AI chat remains dark. The requested settings dialog is now paper-styled, but the broader chat surface was not redesigned in this pass.
+- [P2 open] Live auth/data rendering, message tabs, settings tab switching, and full progress-page lower panels were not exercised in this visual-only fixture. Do not interpret the desktop/mobile captures as an end-to-end pass.
+- [P3] The nutrition-plan library still has a larger heading and the original top navigation geometry than the editorial dashboard. This is cosmetic; the surface and contrast now align. The static English plan description was corrected to remove a stale mention of green highlighting.
+
+## Verification
+
+- `node --test test/product-editorial.test.mjs test/progress-report.test.js`: 14/14 passed, including a new static regression assertion for the nutrition goal captions.
+- The `package.json` lint command completed with exit status 0 when run directly through `cmd`; `node --check scripts/qa-paper-capture.cjs` also passed.
+- `git diff --check`: passed.
+- Chrome screenshot fixture: four routes and the settings profile modal rendered successfully at desktop and exact 390px mobile widths. The fixture does not load real account data or exercise route handlers.
+- A live signed-in check is still needed before marking the full flow passed.
+
+## Comparison history
+
+The initial source-only review identified navy plan/social/settings surfaces and black-on-navy headings. Browser captures now confirm the four route views have the new light surface. A residual image-caption contrast defect and mobile header overlap were fixed. Direct browser hit-testing uncovered and confirmed the repair of the settings overlay positioning bug; settings was then visually captured at desktop and mobile sizes.
+
+final result: blocked

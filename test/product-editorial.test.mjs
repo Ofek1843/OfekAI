@@ -33,8 +33,9 @@ test('product editorial layer removes legacy deep ocean treatment', () => {
 
 test('service worker precaches the shared product editorial layer', () => {
   const sw = fs.readFileSync(path.join(root, 'public/sw.js'), 'utf8');
-  assert.match(sw, /fuelphysique-workout-paper-20261010-8/);
+  assert.match(sw, /fuelphysique-product-paper-20261011-2/);
   assert.match(sw, /\/css\/product-editorial\.css\?v=20261010-product-editorial-4/);
+  assert.match(sw, /\/css\/product-paper-routes\.css\?v=20261011-2/);
   assert.match(sw, /\/css\/simple-ux\.css\?v=20261010-workout-paper-2/);
 });
 
@@ -45,9 +46,36 @@ test('workout wizard does not reload the legacy ocean skin after editorial CSS',
   const compact = fs.readFileSync(path.join(root, 'public/css/simple-ux.css'), 'utf8');
   assert.match(html, /\/css\/simple-ux\.css\?v=20261010-workout-paper-2/);
   assert.match(html, /\/js\/redesign-shell\.js\?v=20261010-workout-paper-1/);
-  assert.match(shell, /route !== "workout-builder\.html" && !document\.querySelector\('link\[href\*="v45-deep-ocean\.css"\]'\)/);
-  assert.match(shell, /if \(route !== "workout-builder\.html"\) document\.body\.classList\.add\("fp-v45-deep-ocean"\)/);
+  assert.match(shell, /!paperRoutes\.has\(route\) && !document\.querySelector\('link\[href\*="v45-deep-ocean\.css"\]'\)/);
+  assert.match(shell, /if \(!paperRoutes\.has\(route\)\) document\.body\.classList\.add\("fp-v45-deep-ocean"\)/);
   assert.doesNotMatch(redesign.match(/body\.fp-redesign:is\([^\n]+\)/)?.[0] || '', /fp-route-workout-builder/);
   assert.match(compact, /body\.fp-route-workout-builder \.simple-builder \.visual-choice-card/);
   assert.match(compact, /\.fp-redesign\.fp-route-workout-builder \.builder-wizard \.wizard-button--next/);
+});
+
+test('nutrition, progress and social use the paper route layer without the ocean sheet', () => {
+  const shell = fs.readFileSync(path.join(root, 'public/js/redesign-shell.js'), 'utf8');
+  const css = fs.readFileSync(path.join(root, 'public/css/product-paper-routes.css'), 'utf8');
+  const oceanRoutes = [
+    'nutrition-builder.html', 'my-nutrition-plans.html', 'progress.html',
+    'social.html', 'my-workout-plans.html', 'workout-plan-generator.html'
+  ];
+  for (const route of oceanRoutes) assert.ok(shell.includes(`"${route}"`), route);
+  for (const route of ['my-nutrition-plans.html', 'social.html']) {
+    const html = fs.readFileSync(path.join(root, 'public', route), 'utf8');
+    assert.doesNotMatch(html, /<link[^>]+v45-deep-ocean\.css/, route);
+  }
+  for (const selector of ['.fp-route-nutrition-builder', '.fp-route-progress', '.fp-route-social', '.fp-route-app']) {
+    assert.ok(css.includes(selector), selector);
+  }
+  assert.match(css, /--fp-nav-surface: #f7f5f1/);
+  assert.match(css, /\.settings-window \{/);
+  assert.match(css, /body\.fp-route-app #settingsOverlay \{ position: fixed !important; inset: 0 !important; z-index: 9999 !important/);
+});
+
+test('nutrition goal photography keeps readable light captions over its dark shade', () => {
+  const css = fs.readFileSync(path.join(root, 'public/css/product-paper-routes.css'), 'utf8');
+  assert.match(css, /\.fp-route-nutrition-builder \.visual-choice-card \.visual-choice-shade \{ background: linear-gradient/);
+  assert.match(css, /\.fp-route-nutrition-builder \.visual-choice-card \.visual-choice-content strong \{ color: #fff !important/);
+  assert.match(css, /\.fp-route-nutrition-builder \.visual-choice-card \.visual-choice-content small \{ color: #eef1f3 !important/);
 });

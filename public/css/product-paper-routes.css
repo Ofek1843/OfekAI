@@ -1,0 +1,189 @@
+/* The signed-in paper routes share the dashboard's warm canvas, ink and blue.
+   Loaded after legacy route sheets so those sheets cannot repaint them navy. */
+body.fp-paper-route {
+  --fp-bg-deep: #f7f5f1;
+  --fp-bg-page: #f7f5f1;
+  --fp-bg-section: #fff;
+  --fp-surface: #fff;
+  --fp-surface-raised: #fff;
+  --fp-surface-soft: #f0eee9;
+  --fp-surface-input: #fff;
+  --fp-nav-surface: #f7f5f1;
+  --fp-border: #d9d6cf;
+  --fp-border-strong: #aaa69e;
+  --fp-text-primary: #121417;
+  --fp-text-secondary: #333940;
+  --fp-text-muted: #626970;
+  --fp-text-inverse: #fff;
+  --fp-brand-primary: #0866bd;
+  --fp-active-surface: #eaf3fb;
+  --fp-chart-grid: #e5e2dc;
+  --fp-chart-label: #626970;
+  --fp-chart-tooltip-bg: #fff;
+  --fp-chart-tooltip-text: #121417;
+  color-scheme: light !important;
+  color: #121417 !important;
+  background: #f7f5f1 !important;
+}
+body.fp-paper-route .fp-global-nav {
+  background: #f7f5f1 !important;
+  border-bottom: 1px solid #d9d6cf !important;
+  box-shadow: none !important;
+}
+body.fp-paper-route .fp-global-brand {
+  color: #121417 !important;
+  text-shadow: none !important;
+}
+body.fp-paper-route .fp-global-link { color: #333940 !important; }
+body.fp-paper-route .fp-global-link[aria-current="page"] { color: #07559f !important; }
+body.fp-paper-route .fp-global-link[aria-current="page"]::after { background: #0866bd !important; }
+body.fp-paper-route .fp-global-menu-button { border-radius: 4px; background: #fff; color: #121417; }
+
+/* Both plan libraries and the two generators must have an unbroken paper
+   canvas. Their original route CSS uses independent class vocabularies. */
+body.fp-paper-route :is(.builder-page, .plans-page, .manual-nutrition-page, .manual-page, .progress-page) {
+  background: transparent !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+}
+body.fp-paper-route :is(.builder-card, .builder-wizard, .plans-grid, .wizard-step, .nutrition-plan-card, .plan-card, .meal-option-card, .program-result) {
+  border-color: #d9d6cf !important;
+  background: #fff !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+}
+body.fp-paper-route :is(.builder-page, .plans-page) :is(h1, h2, h3, h4, p, label, legend, span, strong, small) {
+  text-shadow: none !important;
+}
+body.fp-paper-route .plans-page :is(.plans-header h1, .plan-card h2, .plan-card h3, .nutrition-plan-card h2, .nutrition-plan-card h3),
+body.fp-paper-route .builder-page :is(.builder-header h1, .wizard-step-heading h2) { color: #121417 !important; }
+body.fp-paper-route .plans-page :is(.plans-header p, .plan-card p, .nutrition-plan-card p),
+body.fp-paper-route .builder-page :is(.builder-description, .wizard-step-heading p) { color: #626970 !important; }
+body.fp-paper-route :is(.plan-card, .nutrition-plan-card) :is(button, a):not(.activate-button):not(.start-workout-link) {
+  border-color: #b8b8b5 !important;
+  background: #fff !important;
+  color: #121417 !important;
+}
+body.fp-paper-route :is(.plan-card, .nutrition-plan-card) :is(.activate-button, .start-workout-link) {
+  background: #0866bd !important;
+  color: #fff !important;
+}
+
+body.fp-route-nutrition-builder :is(.program-card, .meal-card, .meal-options-carousel, .carousel-option, .nutrition-summary, .nutrition-notes, .meal-option-body, .carousel-nav, .nutrition-food-table th, .nutrition-food-table td) {
+  --card-text: #121417;
+  --card-text-secondary: #333940;
+  --card-text-muted: #626970;
+  --card-accent: #0866bd;
+  --card-accent-soft: #eaf3fb;
+  --card-surface: #fff;
+  --card-border: #d9d6cf;
+  border-color: #d9d6cf !important;
+  background: #fff !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+}
+body.fp-route-nutrition-builder :is(.program-card, .meal-card, .meal-options-carousel) :is(h2, h3, h4, strong, label, th, td, .meal-slot-name, .meal-option-name) { color: #121417 !important; text-shadow: none !important; }
+body.fp-route-nutrition-builder :is(.program-card, .meal-card, .meal-options-carousel) :is(p, small, .program-description, .meal-slot-target) { color: #626970 !important; }
+body.fp-route-nutrition-builder :is(.program-eyebrow, .meal-format-badge) { color: #07559f !important; background: #eaf3fb !important; }
+body.fp-route-nutrition-builder :is(.print-program-button, .carousel-nav-btn, .nutrition-reroll-meal-button) { border: 1px solid #bfc5ca !important; border-radius: 4px !important; background: #fff !important; color: #121417 !important; }
+body.fp-route-nutrition-builder :is(.save-program-button, .shopping-list-button) { border-radius: 4px !important; background: #0866bd !important; color: #fff !important; }
+/* Goal photos are intentionally dark; the shared editorial ink rule must not
+   turn their overlaid captions black. Keep the contrast in every state. */
+body.fp-route-nutrition-builder .visual-choice-card .visual-choice-shade { background: linear-gradient(180deg, transparent 12%, rgba(10, 15, 21, .2) 43%, rgba(10, 15, 21, .9) 100%) !important; }
+body.fp-route-nutrition-builder .visual-choice-card .visual-choice-content,
+body.fp-route-nutrition-builder .visual-choice-card .visual-choice-content strong { color: #fff !important; text-shadow: 0 1px 3px rgba(0, 0, 0, .8) !important; }
+body.fp-route-nutrition-builder .visual-choice-card .visual-choice-content small { color: #eef1f3 !important; text-shadow: 0 1px 3px rgba(0, 0, 0, .8) !important; }
+
+/* Progress: the lower measurement/photo panels were missed by the first
+   editorial pass. Use the same card system all the way down the page. */
+body.fp-route-progress .progress-page :is(.entry-card, .stat-card, .chart-card, .history-card, .measurements-card, .photos-card, .measurement-stat, .history-row, .measurement-row, .comparison-column, .photo-set) {
+  border: 1px solid #d9d6cf !important;
+  border-radius: 4px !important;
+  background: #fff !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+}
+body.fp-route-progress .progress-page :is(h1, h2, h3, strong, label, .section-heading h2) { color: #121417 !important; text-shadow: none !important; }
+body.fp-route-progress .progress-page :is(p, .stat-card span, .measurement-stat span, .empty, .status:not(.error)) { color: #626970 !important; }
+body.fp-route-progress .progress-page :is(input, select) { border: 1px solid #bfc5ca !important; border-radius: 4px !important; background: #fff !important; color: #121417 !important; }
+body.fp-route-progress .progress-page :is(#saveWeightButton, #saveMeasurementsButton, #uploadPhotosButton) { border-radius: 4px !important; background: #0866bd !important; color: #fff !important; }
+body.fp-route-progress .chart-grid { stroke: #e5e2dc !important; }
+body.fp-route-progress .axis-label { fill: #626970 !important; }
+body.fp-route-progress .chart-line { stroke: #0866bd !important; }
+body.fp-route-progress .measurement-values span { background: #f0eee9 !important; color: #333940 !important; }
+
+/* Social: its three-column workspace has its own dark token set and a
+   separate sidebar stylesheet, so both need an explicit paper surface. */
+body.fp-route-social {
+  --social-bg: #f7f5f1;
+  --social-panel: #fff;
+  --social-panel-strong: #fff;
+  --social-border: #d9d6cf;
+  --social-border-hot: #0866bd;
+  --social-text: #121417;
+  --social-muted: #626970;
+  --social-blue: #0866bd;
+  --social-cyan: #0866bd;
+  --social-shadow: none;
+  --fp-midnight: #f0eee9;
+  --fp-glacier: #fff;
+  --fp-glacier-surface: #fff;
+  --fp-ink: #121417;
+  --fp-steel-dark: #626970;
+}
+body.fp-route-social .social-shell { color: #121417 !important; }
+body.fp-route-social :is(.social-topbar, .social-app, .social-sidebar, .social-workspace, .social-context-panel, .friends-view, .messages-view, .conversation-rail, .chat-header, .composer, .social-dialog, .view-hero, .social-section) {
+  border-color: #d9d6cf !important;
+  background: #fff !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+}
+body.fp-route-social .social-sidebar { background: #f0eee9 !important; }
+body.fp-route-social .conversation-rail { background: #f0eee9 !important; }
+body.fp-route-social .social-mode-nav { border-color: #d9d6cf !important; }
+body.fp-route-social .social-mode-button { color: #333940 !important; border-radius: 4px !important; }
+body.fp-route-social .social-mode-button:hover,
+body.fp-route-social .social-mode-button.is-active { border-color: #d9d6cf !important; background: #eaf3fb !important; color: #07559f !important; }
+body.fp-route-social .social-mode-button img,
+body.fp-route-social .social-sidebar .icon-button img { filter: none !important; opacity: .8 !important; }
+body.fp-route-social :is(.social-sidebar, .social-workspace, .social-context-panel, .conversation-rail) :is(h1, h2, h3, strong, label, .conversation-card, .chat-empty h1) { color: #121417 !important; text-shadow: none !important; }
+body.fp-route-social :is(.social-sidebar, .social-workspace, .social-context-panel) :is(p, small, .eyebrow, .conversation-meta, .conversation-copy span, .chat-empty p) { color: #626970 !important; }
+body.fp-route-social :is(.social-brand, .back-link, .icon-button, .secondary-button, .person-actions button) { border-color: #bfc5ca !important; background: #fff !important; color: #121417 !important; }
+body.fp-route-social :is(.primary-button, .send-button, .social-tab.is-active) { border-color: #0866bd !important; background: #0866bd !important; color: #fff !important; }
+body.fp-route-social :is(.conversation-card:hover, .conversation-card.is-active, .person-card, .my-identity-card) { border-color: #d9d6cf !important; background: #f7f5f1 !important; color: #121417 !important; }
+body.fp-route-social .social-dialog :is(h2, h3, label) { color: #121417 !important; }
+body.fp-route-social :is(.view-hero h1, .chat-empty h1, .rail-heading h2) { font-family: Georgia, "Times New Roman", serif !important; letter-spacing: -.04em !important; }
+body.fp-route-social .social-shell :is(input, textarea, select) { border-color: #bfc5ca !important; background: #fff !important; color: #121417 !important; }
+body.fp-route-social .social-shell :is(input, textarea)::placeholder { color: #626970 !important; }
+
+/* Settings belongs to app.html, not the new dashboard DOM. Keep its actual
+   tabs/forms functional while giving the overlay the dashboard's system. */
+/* The legacy body > * ocean rule forces direct children to position:relative.
+   Without this reset, the modal sits below the chat instead of over it. */
+body.fp-route-app #settingsOverlay { position: fixed !important; inset: 0 !important; z-index: 9999 !important; background: rgba(18,20,23,.44) !important; backdrop-filter: blur(3px) !important; }
+body.fp-route-app .settings-window { border: 1px solid #d9d6cf !important; border-radius: 4px !important; background: #fff !important; color: #121417 !important; box-shadow: 0 24px 70px rgba(18,20,23,.18) !important; }
+body.fp-route-app .settings-sidebar { border-color: #d9d6cf !important; background: #f0eee9 !important; color: #121417 !important; }
+body.fp-route-app .settings-content { background: #fff !important; color: #121417 !important; }
+body.fp-route-app .settings-window :is(h2, h3, h4, strong, label, .settings-field, .settings-switch-row) { color: #121417 !important; text-shadow: none !important; }
+body.fp-route-app .settings-window :is(h2, h3, h4) { font-family: Georgia, "Times New Roman", serif !important; letter-spacing: -.035em !important; }
+body.fp-route-app .settings-window :is(p, small, .settings-description) { color: #626970 !important; }
+body.fp-route-app .settings-social-photo { border: 1px solid #bfc5ca !important; background: #eaf3fb !important; color: #07559f !important; }
+body.fp-route-app .settings-tab { border-radius: 4px !important; color: #333940 !important; }
+body.fp-route-app .settings-tab:hover,
+body.fp-route-app .settings-tab.active { background: #eaf3fb !important; color: #07559f !important; }
+body.fp-route-app .settings-close,
+body.fp-route-app .cancel-settings { border: 1px solid #bfc5ca !important; border-radius: 4px !important; background: #fff !important; color: #121417 !important; }
+body.fp-route-app .settings-field :is(input, select, textarea) { border: 1px solid #bfc5ca !important; border-radius: 4px !important; background: #fff !important; color: #121417 !important; }
+body.fp-route-app .settings-field :is(input, select, textarea):focus-visible { border-color: #0866bd !important; outline: 3px solid #eaf3fb !important; }
+body.fp-route-app .settings-switch-row { border-color: #d9d6cf !important; }
+body.fp-route-app .save-settings { border-radius: 4px !important; background: #0866bd !important; color: #fff !important; }
+body.fp-route-app .settings-field-error { color: #b4233c !important; }
+
+@media (max-width: 760px) {
+  /* The fixed hamburger occupies the first 44px of these route headers. */
+  body.fp-route-nutrition-builder .builder-navigation { padding-top: 54px !important; }
+  body.fp-route-social .social-mode-nav { padding-top: 48px !important; }
+  body.fp-route-progress .progress-page { width: calc(100% - 24px) !important; }
+  body.fp-route-social .social-shell { width: calc(100% - 24px) !important; }
+  body.fp-route-app .settings-window { width: calc(100% - 20px) !important; max-height: calc(100dvh - 20px) !important; }
+}
