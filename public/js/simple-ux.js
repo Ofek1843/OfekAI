@@ -172,6 +172,13 @@
     document.body.classList.add('landing-page');
     const hero = document.querySelector('.hero-shell');
     hero.classList.add('simple-hero');
+    const social=hero.querySelector('.hero-social-links');
+    if(social){
+      social.classList.add('editorial-social-rail');
+      const desktop=matchMedia('(min-width: 901px)');
+      const placeSocial=()=>desktop.matches?document.body.append(social):hero.prepend(social);
+      placeSocial();desktop.addEventListener('change',placeSocial);
+    }
     hero.querySelector('#landingHeroTitle').replaceChildren(text('span','title'));
     const lede = hero.querySelector('.hero-lede');
     lede.removeAttribute('data-i18n'); lede.textContent = copy('intro');
@@ -193,58 +200,22 @@
     const aside = hero.querySelector('.hero-panel');
     aside.className = 'simple-preview';
     aside.replaceChildren(text('p','example','simple-note'));
-    const examples = [
-      ['workout','Squat · 3 × 8','Push-up · 3 × 10','Row · 3 × 10'],
-      ['nutrition','Yogurt + oats','Eggs + bread','Tuna + ready rice'],
-      ['diary','150 g yogurt','1 banana','✓']
-    ];
-    const exampleCopy = {
-      he:[['סקוואט · 3 × 8','שכיבות סמיכה · 3 × 10','חתירה · 3 × 10'],['יוגורט + שיבולת שועל','ביצים + לחם','טונה + אורז מוכן'],['150 גרם יוגורט','בננה אחת','✓']],
-      ar:[['قرفصاء · 3 × 8','ضغط · 3 × 10','تجديف · 3 × 10'],['زبادي + شوفان','بيض + خبز','تونة + أرز جاهز'],['150 غ زبادي','موزة واحدة','✓']],
-      es:[['Sentadilla · 3 × 8','Flexiones · 3 × 10','Remo · 3 × 10'],['Yogur + avena','Huevos + pan','Atún + arroz preparado'],['150 g de yogur','1 plátano','✓']],
-      fr:[['Squat · 3 × 8','Pompes · 3 × 10','Tirage · 3 × 10'],['Yaourt + avoine','Œufs + pain','Thon + riz prêt'],['150 g de yaourt','1 banane','✓']],
-      ru:[['Присед · 3 × 8','Отжимания · 3 × 10','Тяга · 3 × 10'],['Йогурт + овсянка','Яйца + хлеб','Тунец + готовый рис'],['150 г йогурта','1 банан','✓']],
-      de:[['Kniebeuge · 3 × 8','Liegestütz · 3 × 10','Rudern · 3 × 10'],['Joghurt + Haferflocken','Eier + Brot','Thunfisch + fertiger Reis'],['150 g Joghurt','1 Banane','✓']],
-      zh:[['深蹲 · 3 × 8','俯卧撑 · 3 × 10','划船 · 3 × 10'],['酸奶 + 燕麦','鸡蛋 + 面包','金枪鱼 + 即食米饭'],['150 克酸奶','1 根香蕉','✓']]
-    };
-    const workflowStages = {
-      en:[['Goal','Plan','Train'],['Choose','Portion','Prepare'],['Enter','Add','Track']],
-      he:[['מטרה','תוכנית','אימון'],['בחירה','כמות','הכנה'],['הזנה','הוספה','מעקב']],
-      ar:[['الهدف','الخطة','التمرين'],['اختيار','الكمية','التحضير'],['إدخال','إضافة','متابعة']],
-      es:[['Objetivo','Plan','Entrenar'],['Elegir','Porción','Preparar'],['Escribir','Añadir','Registrar']],
-      fr:[['Objectif','Plan','Entraîner'],['Choisir','Portion','Préparer'],['Saisir','Ajouter','Suivre']],
-      de:[['Ziel','Plan','Trainieren'],['Wählen','Portion','Zubereiten'],['Eingeben','Hinzufügen','Verfolgen']],
-      zh:[['目标','计划','训练'],['选择','份量','准备'],['输入','添加','记录']]
-    };
+    const examples = [['workout'], ['nutrition'], ['diary']];
     examples.forEach(([key,...rows],index) => {
       const card = document.createElement('div'); card.className = 'simple-preview-card simple-tool-preview';
       card.dataset.toolIndex = String(index);
       card.id = `simpleToolPreview${index + 1}`;
       card.setAttribute('aria-hidden','true');
-      const image = document.createElement('img');
-      image.className = 'simple-preview-image';
-      image.alt = '';
-      image.loading = 'lazy';
-      image.decoding = 'async';
-      image.src = [
-        '/images/workout-builder/goals/build-muscle.webp',
-        '/images/meals/banana-oat-protein-smoothie.webp',
-        '/images/foods/banana.webp'
-      ][index];
-      card.append(image);
+      card.classList.add('product-preview');
+      const he=language==='he';
+      const label=(en,hebrew)=>he?hebrew:en;
       card.append(text('strong',key));
-      (exampleCopy[language]?.[index] || rows).forEach((value,i) => {
-        const row=document.createElement('span');
-        row.className='simple-preview-row';
-        row.style.setProperty('--row',i);
-        const stage=document.createElement('small');
-        stage.className='simple-preview-stage';
-        stage.textContent=workflowStages[language]?.[index]?.[i] || workflowStages.en[index][i];
-        const example=document.createElement('span');
-        example.textContent=value;
-        row.append(stage,example);
-        card.append(row);
-      });
+      const demo=document.createElement('div');demo.className='product-preview-body';
+      if(index===0) demo.innerHTML=`<span class="preview-profile">${label('Build muscle · 4 days · Gym','בניית שריר · 4 ימים · חדר כושר')}</span><div class="preview-split"><b>${label('Upper / Lower','פלג גוף עליון / תחתון')}</b><small>${label('8-week plan · Upper A','תוכנית ל־8 שבועות · עליון א׳')}</small></div><div class="preview-exercise"><img src="/images/exercises/bench-press.png" alt="" loading="lazy"><span><b>${label('Bench press','לחיצת חזה')}</b><small>3 × 8–10 · ${label('Rest','מנוחה')} 120s · RIR 2</small></span></div><div class="preview-exercise"><img src="/images/exercises/seated-cable-row.png" alt="" loading="lazy"><span><b>${label('Seated cable row','חתירה בכבל בישיבה')}</b><small>3 × 10–12 · ${label('Rest','מנוחה')} 90s · RIR 2</small></span></div><div class="preview-volume"><span>${label('Chest · weekly sets','חזה · סטים שבועיים')}</span><b>12 <small>${label('Within target','בטווח היעד')}</small></b><i></i></div>`;
+      if(index===1) demo.innerHTML=`<div class="preview-targets"><b>2,400 <small>kcal</small></b><b>150 g <small>${label('protein','חלבון')}</small></b></div><div class="preview-meal"><img src="/images/meals/banana-oat-protein-smoothie.webp" alt="" loading="lazy"><span><b>${label('Breakfast · protein smoothie','בוקר · שייק חלבון')}</b><small>${label('Milk 250 ml · oats 40 g · banana 100 g · protein powder 25 g','חלב 250 מ״ל · שיבולת שועל 40 ג׳ · בננה 100 ג׳ · אבקת חלבון 25 ג׳')}</small></span></div><div class="preview-meal-totals"><b>468 kcal</b><b>37 g ${label('protein','חלבון')}</b><span>5 ${label('min prep','דקות הכנה')}</span></div><div class="preview-alternative"><b>${label('Lunch','צהריים')}</b><span>${label('Chicken 150 g · rice 200 g · vegetables','עוף 150 ג׳ · אורז 200 ג׳ · ירקות')}</span></div><div class="preview-alternative"><b>${label('Dinner','ערב')}</b><span>${label('Eggs · cottage cheese · bread · salad','ביצים · קוטג׳ · לחם · סלט')}</span></div>`;
+      if(index===2) demo.innerHTML=`<div class="preview-diary"><div class="preview-calorie-ring"><div><b>1,650</b><small>${label('kcal eaten','קלוריות שנאכלו')}</small></div></div><div class="preview-diary-stats"><span><i class="eaten-dot"></i>${label('Eaten','נאכלו')} <b>1,650 kcal</b></span><span><i class="remaining-dot"></i>${label('Remaining','נותרו')} <b>750 kcal</b></span><span class="preview-protein">${label('Protein','חלבון')} <b>112 / 150 g</b><i></i></span></div></div><div class="preview-log-entry">${label('“Chicken sandwich and an apple”','״כריך עוף ותפוח״')}<small>${label('Review portions · edit estimates · track your day','בדיקת כמויות · עריכת אומדנים · מעקב יומי')}</small></div>`;
+      card.append(demo);
+      const note=text('small','example','preview-example-note');card.append(note);
       aside.append(card);
     });
     // Tell a literal three-step product story. The selected action and its

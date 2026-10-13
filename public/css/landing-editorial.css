@@ -129,17 +129,22 @@ main { overflow: clip !important; }
   box-shadow: none !important;
 }
 .hero-content { grid-area: content !important; max-width: 700px !important; }
-.hero-social-links {
-  position: absolute !important;
-  inset: 20px 24px auto auto !important;
-  z-index: 4 !important;
+body.landing-page .hero-social-links.editorial-social-rail {
+  position: fixed !important;
+  inset: 50% 16px auto auto !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  z-index: 80 !important;
   padding: 8px 11px !important;
   border: 1px solid var(--ed-rule) !important;
   border-radius: 0 !important;
   background: var(--ed-paper-strong) !important;
   box-shadow: none !important;
 }
-.hero-social-link { filter: grayscale(1) contrast(1.2) !important; opacity: .72 !important; }
+.hero-social-link { filter: none !important; opacity: 1 !important; color: var(--ed-blue) !important; background: var(--ed-blue-soft) !important; width: 42px !important; height: 42px !important; display: grid !important; place-items: center !important; border-radius: 5px !important; }
+.hero-social-link svg { fill: currentColor !important; width: 25px !important; height: 25px !important; }
+.hero-social-link img { opacity: 1 !important; filter: brightness(0) saturate(100%) invert(23%) sepia(86%) saturate(1590%) hue-rotate(181deg) brightness(95%) contrast(99%) !important; }
 .hero-social-link:hover { filter: none !important; opacity: 1 !important; transform: translateY(-1px) !important; }
 .badge {
   display: inline-block !important;
@@ -644,7 +649,7 @@ body.landing-page.fp-v45-deep-ocean.fp-route-index .landing-section.final-cta {
   .simple-tools-grid { grid-template-columns: 1fr !important; }
   .simple-tool { min-height: 0 !important; border-inline-end: 0 !important; border-bottom: 1px solid var(--ed-rule) !important; }
   .simple-tool:last-child { border-bottom: 0 !important; }
-  .hero-social-links { position: static !important; grid-row: 5 !important; margin-top: 24px !important; justify-self: start !important; }
+  body.landing-page .hero-social-links.editorial-social-rail { position: static !important; inset: auto !important; transform: none !important; flex-direction: row !important; grid-row: 5 !important; margin-top: 24px !important; justify-self: start !important; }
   .hero-content h1 { font-size: clamp(50px, 15vw, 78px) !important; margin-top: 22px !important; }
   .hero-lede { font-size: 19px !important; }
   .hero-panel { min-height: 430px !important; margin-top: 34px !important; border-inline-start: 0 !important; }
