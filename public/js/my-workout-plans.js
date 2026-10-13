@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261013-plan-view-1";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import {
@@ -280,6 +281,12 @@ function renderPlanEditor(savedPlan) {
 }
 
 function attachPlanEventListeners() {
+  plansGrid.querySelectorAll(".view-plan-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const saved = workoutPlans.find(plan => plan.id === button.closest(".plan-card").dataset.planId);
+      if (saved) openSavedWorkout(saved, currentUser, currentLanguage);
+    });
+  });
   plansGrid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => {
     if (button.dataset.bound === "true") return;
     button.dataset.bound = "true";
@@ -417,6 +424,7 @@ function renderPlans() {
         <h2>${escapeHtml(name)}</h2>
         <div class="plan-meta">${meta.map((item) => `<span>${item}</span>`).join("")}</div>
         <div class="plan-actions">
+          <button class="view-plan-button" type="button">${isHebrew ? "צפייה בתוכנית ובסטים השבועיים" : "View plan & weekly sets"}</button>
           ${isActive ? `<a class="start-workout-link" href="/workout-tracker.html">🏋️ ${ui.startWorkout}</a>` : ""}
           <button class="activate-button" type="button" ${isActive ? "disabled" : ""}>
             ${isActive ? ui.currentPlan : ui.usePlan}

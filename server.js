@@ -2888,6 +2888,17 @@ function buildPerMuscleWithTargets(perMuscle, profile, mappingIncomplete = false
   return merged;
 }
 
+app.post("/api/workout-plans/review", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  try {
+    const { reviewSavedWorkout } = require("./lib/saved-workout-review");
+    return res.json(reviewSavedWorkout(req.body?.program));
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
 app.post("/api/workout-builder", async (req, res) => {
   let dedupeKey = null;
   try {
