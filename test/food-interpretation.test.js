@@ -14,10 +14,10 @@ const {
 test("AI food interpretation defaults to the app's supported GPT-4-class model and bounds input", () => {
   assert.equal(FOOD_INTERPRETATION_MODEL, "gpt-4.1-mini");
   const messages = foodInterpretationMessages({ text: "אינג'רה ".repeat(100), language: "he" });
-  assert.equal(messages.length, 2);
+  assert.equal(messages.length, 3);
   assert.match(messages[0].content, /regional foods \(for example injera\)/);
-  assert.ok(messages[1].content.length <= 220 + MAX_FOOD_TEXT_LENGTH);
-  assert.match(messages[1].content, /Unknown food text: /);
+  assert.ok(messages.at(-1).content.length <= 220 + MAX_FOOD_TEXT_LENGTH);
+  assert.match(messages.at(-1).content, /Unknown food text: /);
 });
 
 test("food interpretation follows the deployment's available model configuration", () => {
@@ -29,9 +29,9 @@ test("food interpretation follows the deployment's available model configuration
 test("AI food fallback passes the selected supported language and spelled-quantity guidance", () => {
   for (const [language, expected] of [["en", "English"], ["he", "Hebrew"], ["es", "Spanish"], ["fr", "French"], ["de", "German"], ["ar", "Arabic"], ["zh", "Simplified Chinese"]]) {
     const messages = foodInterpretationMessages({ text: "forty grams of an unfamiliar food", language });
-    assert.match(messages[1].content, new RegExp(`interface language: ${expected}`));
-    assert.match(messages[1].content, /quantity may be written in any supported language/);
-    assert.match(messages[1].content, /Preserve any explicit weight/);
+    assert.match(messages.at(-1).content, new RegExp(`interface language: ${expected}`));
+    assert.match(messages.at(-1).content, /quantity may be written in any supported language/);
+    assert.match(messages.at(-1).content, /Preserve any explicit weight/);
   }
 });
 
@@ -75,6 +75,12 @@ test("local food fallback keeps common foods loggable during an AI outage", () =
 
 test("food interpretation does not invent a generic estimate for clearly non-food text", () => {
   assert.equal(heuristicFoodInterpretation("hello there", { language: "en" }), null);
+});
+
+test("keyword outage fallback never substitutes one ingredient for a package or filled meal", () => {
+  for (const text of ["חבילת פריכיות", "באגט עם שניצל", "package of chocolate", "bread with chicken"]) {
+    assert.equal(heuristicFoodInterpretation(text), null, text);
+  }
 });
 
 test("AI food interpretation refuses unsafe, incoherent, or unrecognized data", () => {

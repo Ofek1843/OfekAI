@@ -1,0 +1,36 @@
+import { totalsForEntries } from './daily-nutrition-domain.mjs?v=20260928-multilingual-food-1';
+
+export function withDeadline(promise, ms = 12000) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('TIMEOUT')), ms); })
+  ]).finally(() => clearTimeout(timer));
+}
+
+export function readNutritionDraft(uid, dateKey, storage = globalThis.localStorage) {
+  try {
+    const draft = JSON.parse(storage.getItem(`fp-daily-log-draft-v2:${uid}:${dateKey}`) || 'null');
+    return draft?.token && draft.log?.dateKey === dateKey && Array.isArray(draft.log.entries) ? draft : null;
+  } catch { return null; }
+}
+
+export function preferNutritionDraft(remote, draft) {
+  const updated = remote?.updatedAt;
+  const millis = typeof updated?.toMillis === 'function' ? updated.toMillis()
+    : updated?.seconds != null ? updated.seconds * 1000
+    : typeof updated === 'string' ? Date.parse(updated) : Number(updated) || 0;
+  if (!draft || (remote && draft.savedAt <= millis)) return remote;
+  return { ...draft.log, totals: totalsForEntries(draft.log.entries), pendingSync: true };
+}
+
+export async function loadVisibleNutritionLog(loadRemote, uid, dateKey, storage = globalThis.localStorage) {
+  let remote;
+  try { remote = await withDeadline(loadRemote()); }
+  catch (error) {
+    const draft = readNutritionDraft(uid, dateKey, storage);
+    if (!draft) throw error;
+    return preferNutritionDraft(null, draft);
+  }
+  return preferNutritionDraft(remote, readNutritionDraft(uid, dateKey, storage));
+}

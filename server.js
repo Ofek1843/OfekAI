@@ -1909,7 +1909,7 @@ app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
       taskName: "daily-food-interpretation",
       model: foodModel,
       temperature: 0,
-      maxTokens: 420,
+      maxTokens: 900,
       messages: foodInterpretationMessages({ text, language })
     });
     const interpretation = sanitizeFoodInterpretation(extractJsonObject(reply), { fallbackName: text });

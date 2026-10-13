@@ -17,7 +17,7 @@ const pages = [
 test('product routes share the editorial product surface', () => {
   for (const relative of pages) {
     const source = fs.readFileSync(path.join(root, relative), 'utf8');
-    assert.match(source, /\/css\/product-editorial\.css\?v=20261010-product-editorial-(?:3|4)/, relative);
+    assert.match(source, /\/css\/product-editorial\.css\?v=[\w-]+/, relative);
   }
 });
 

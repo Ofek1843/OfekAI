@@ -9,6 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 import { shiftDateKey, totalsForEntries, weekDateKeys } from "./daily-nutrition-domain.mjs?v=20260928-multilingual-food-1";
+import { withDeadline } from "./daily-nutrition-recovery.mjs";
 
 const MAX_DAILY_ENTRIES = 80;
 
@@ -81,7 +82,7 @@ async function loadDailyLog(db, uid, dateKey) {
 async function saveDailyLog(db, uid, dateKey, log) {
   const value = normalizeLog(dateKey, log);
   const reference = dailyLogRef(db, uid, dateKey);
-  const existing = await getDoc(reference);
+  const existing = await withDeadline(getDoc(reference));
   const payload = {
     schemaVersion: 1,
     dateKey,

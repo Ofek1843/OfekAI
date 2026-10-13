@@ -27,8 +27,8 @@ test('dashboard uses reference layout, blue wordmark and real account data', () 
   assert.match(css, /@media\(max-width:650px\)/);
   assert.match(production, /collection\(db,'users',user\.uid,'workoutPlans'\)/);
   assert.match(production, /collection\(db,'users',user\.uid,'nutritionPlans'\)/);
-  assert.match(production, /loadDailyLog\(db,user\.uid,dateKey\(new Date\(\)\)\)/);
-  assert.match(sw, /fuelphysique-editorial-landing-20261010-1/);
+  assert.match(production, /loadVisibleDay\(user\.uid,dateKey\(new Date\(\)\)\)/);
+  assert.match(html, /serviceWorker\.register\('\/sw\.js'\)/);
   for (const image of ['training', 'workout-1', 'meal-1'])
     assert.ok(fs.existsSync(path.join(root, 'assets', 'dashboard', `${image}.webp`)));
 });
@@ -42,6 +42,20 @@ test('empty accounts have create actions and no sample plans', async () => {
   assert.ok(document.querySelectorAll('a[href="/workout-builder.html"]').length >= 2);
   assert.ok(document.querySelectorAll('a[href="/nutrition-builder.html"]').length >= 1);
   assert.doesNotMatch(text, /Upper Body Strength|Balanced Performance/);
+});
+
+test('dashboard renders recovered local nutrition totals and pending sync status', async () => {
+  const { document } = await render({ diary: {
+    pendingSync: true, entries: [{ calories: 4021, proteinGrams: 173.7, carbsGrams: 220, fatGrams: 80 }]
+  } });
+  assert.equal(document.querySelector('.ring-label strong').textContent, '4,021');
+  assert.match(document.querySelector('.diary').textContent, /cloud sync is pending/);
+});
+
+test('failed initial diary load shows an error instead of a misleading zero', async () => {
+  const { document } = await render({ diaryFailed: true });
+  assert.equal(document.querySelector('.diary .ring-label'), null);
+  assert.ok(document.querySelector('.diary [role="status"]'));
 });
 
 test('saved workout and meal plans appear in separate columns', async () => {

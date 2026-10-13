@@ -28,7 +28,7 @@ const btn=(action,label,name,cls='')=>'<button type="button" class="icon-button 
 export function mountDashboard(root, initial={}, options={}) {
  let model=initial, language=options.language||'en', t=dashboardCopy(language);
  let today=options.today||new Date(), selectedDay=new Date(today), weekOffset=0, dayRequest=0;
- let diary=initial.diary||null, diaryFailed=false;
+ let diary=initial.diary||null, diaryFailed=!!initial.diaryFailed;
  const locale=()=>language==='zh'?'zh-CN':language;
  const number=v=>Math.round(Number(v)||0).toLocaleString(locale());
  const navItems=()=>[
@@ -63,6 +63,7 @@ export function mountDashboard(root, initial={}, options={}) {
   const targets=diary?.targetSnapshot||active||{}, totals=diaryTotals(diary), goal=targets.dailyCalories||targets.calories;
   return '<header class="section-heading"><div class="title-icon">'+icon('tools-kitchen-2')+'<h2>'+t.diary+'</h2></div><div class="diary-nav">'+btn('day-back',t.previousDay,'chevron-right','back')+'<span>'+ (dateKey(selectedDay)===dateKey(today)?t.today:new Intl.DateTimeFormat(locale(),{month:'short',day:'numeric'}).format(selectedDay))+'</span>'+btn('day-next',t.nextDay,'chevron-right')+'</div></header>'+
    (diaryFailed?'<p class="activity-empty" role="status">'+t.error+'</p>':'<div class="diary-data"><div class="ring" role="img" aria-label="'+escapeHTML(number(totals.calories)+(goal?' / '+number(goal):'')+' kcal')+'"><canvas width="256" height="256" aria-hidden="true"></canvas><div class="ring-label"><strong>'+number(totals.calories)+'</strong><small>'+(goal?'/ '+number(goal)+' kcal':t.noTarget)+'</small></div></div><div class="macros">'+[['protein','proteinGrams'],['carbs','carbsGrams'],['fats','fatGrams']].map(([label,key])=>'<div class="macro"><strong>'+number(totals[key])+'g</strong><small>'+t[label]+'</small><progress max="'+Math.max(1,Number(targets[key])||totals[key]||1)+'" value="'+totals[key]+'" aria-label="'+t[label]+'"></progress></div>').join('')+'</div></div>')+
+   (diary?.pendingSync ? '<p role="status">'+(language==='he'?'מוצגים הנתונים שנשמרו במכשיר; הסנכרון לענן ממתין.':'Showing entries saved on this device; cloud sync is pending.')+'</p>' : '')+
    link('/daily-nutrition.html',t.log+icon('arrow-right'),'button primary');
  }
  function paintRing() {
