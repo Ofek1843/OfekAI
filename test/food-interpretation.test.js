@@ -7,24 +7,31 @@ const {
   MAX_FOOD_TEXT_LENGTH,
   foodInterpretationMessages,
   heuristicFoodInterpretation,
+  selectFoodInterpretationModel,
   sanitizeFoodInterpretation
 } = require("../lib/food-interpretation");
 
-test("AI food interpretation defaults to the approved low-cost model and bounds input", () => {
-  assert.equal(FOOD_INTERPRETATION_MODEL, "gpt-4o-mini");
+test("AI food interpretation defaults to the app's supported GPT-4-class model and bounds input", () => {
+  assert.equal(FOOD_INTERPRETATION_MODEL, "gpt-4.1-mini");
   const messages = foodInterpretationMessages({ text: "אינג'רה ".repeat(100), language: "he" });
-  assert.equal(messages.length, 2);
+  assert.equal(messages.length, 3);
   assert.match(messages[0].content, /regional foods \(for example injera\)/);
-  assert.ok(messages[1].content.length <= 220 + MAX_FOOD_TEXT_LENGTH);
-  assert.match(messages[1].content, /Unknown food text: /);
+  assert.ok(messages.at(-1).content.length <= 220 + MAX_FOOD_TEXT_LENGTH);
+  assert.match(messages.at(-1).content, /Unknown food text: /);
+});
+
+test("food interpretation follows the deployment's available model configuration", () => {
+  assert.equal(selectFoodInterpretationModel({ OPENAI_FOOD_MODEL: "gpt-food", OPENAI_CHAT_MODEL: "gpt-chat" }), "gpt-food");
+  assert.equal(selectFoodInterpretationModel({ OPENAI_CHAT_MODEL: "gpt-4.1-mini" }), "gpt-4.1-mini");
+  assert.equal(selectFoodInterpretationModel({}), FOOD_INTERPRETATION_MODEL);
 });
 
 test("AI food fallback passes the selected supported language and spelled-quantity guidance", () => {
   for (const [language, expected] of [["en", "English"], ["he", "Hebrew"], ["es", "Spanish"], ["fr", "French"], ["de", "German"], ["ar", "Arabic"], ["zh", "Simplified Chinese"]]) {
     const messages = foodInterpretationMessages({ text: "forty grams of an unfamiliar food", language });
-    assert.match(messages[1].content, new RegExp(`interface language: ${expected}`));
-    assert.match(messages[1].content, /quantity may be written in any supported language/);
-    assert.match(messages[1].content, /Preserve any explicit weight/);
+    assert.match(messages.at(-1).content, new RegExp(`interface language: ${expected}`));
+    assert.match(messages.at(-1).content, /quantity may be written in any supported language/);
+    assert.match(messages.at(-1).content, /Preserve any explicit weight/);
   }
 });
 
@@ -70,6 +77,12 @@ test("food interpretation does not invent a generic estimate for clearly non-foo
   assert.equal(heuristicFoodInterpretation("hello there", { language: "en" }), null);
 });
 
+test("keyword outage fallback never substitutes one ingredient for a package or filled meal", () => {
+  for (const text of ["חבילת פריכיות", "באגט עם שניצל", "package of chocolate", "bread with chicken"]) {
+    assert.equal(heuristicFoodInterpretation(text), null, text);
+  }
+});
+
 test("AI food interpretation refuses unsafe, incoherent, or unrecognized data", () => {
   assert.equal(sanitizeFoodInterpretation({ recognized: false }), null);
   assert.equal(sanitizeFoodInterpretation({
@@ -91,7 +104,7 @@ test("daily food fallback is authenticated, rate-limited, model-configurable, an
   assert.match(server, /app\.post\("\/api\/daily-nutrition\/interpret-food"/);
   assert.match(server, /requireFirebaseUser\(req, res\)/);
   assert.match(server, /rateLimiters\.ai\(req, user\.uid\)/);
-  assert.match(server, /process\.env\.OPENAI_FOOD_MODEL \|\| FOOD_INTERPRETATION_MODEL/);
+  assert.match(server, /selectFoodInterpretationModel\(process\.env\)/);
   assert.match(server, /SMART_FOOD_UNAVAILABLE/);
   assert.match(server, /heuristicFoodInterpretation/);
   assert.match(server, /if \(localEstimate\) return res\.json\(\{ interpretation: localEstimate \}\)/);

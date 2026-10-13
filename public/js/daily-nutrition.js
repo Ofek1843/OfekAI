@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { withDeadline } from "./daily-nutrition-recovery.mjs";
 import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260928-multilingual-food-1";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
@@ -12,7 +13,7 @@ import {
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
-} from "./daily-nutrition-domain.mjs?v=20260928-multilingual-food-1";
+} from "./daily-nutrition-domain.mjs?v=20261013-nutrition-recovery-1";
 import {
   copyPreviousDay,
   loadCustomFoods,
@@ -22,7 +23,7 @@ import {
   normalizeLog,
   saveDailyLog,
   saveFoodCombination
-} from "./daily-nutrition-store.mjs?v=20260928-multilingual-food-1";
+} from "./daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1";
 import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260928-language-coverage-1";
 import {
   formatNutritionAmount,
@@ -230,7 +231,7 @@ function queueSave() {
   writeDailyDraft(uid, dateKey, log, draftToken);
   const status = $("#autosaveState");
   const setSaveStatus = (message, className) => {
-    if (state.dateKey !== dateKey) return;
+    if (state.dateKey !== dateKey || (readDailyDraft(uid, dateKey)?.token && readDailyDraft(uid, dateKey).token !== draftToken)) return;
     status.textContent = message;
     status.className = `autosave-state ${className || ""}`.trim();
   };
@@ -243,18 +244,19 @@ function queueSave() {
       // transient read failure never drops an existing log.
       if (log.readFailed) {
         try {
-          const fresh = await loadDailyLog(db, uid, dateKey);
+          const fresh = await withDeadline(loadDailyLog(db, uid, dateKey));
           const localOnly = log.entries.filter((entry) => !fresh.entries.some((saved) => saved.id === entry.id));
           log.entries = [...fresh.entries, ...localOnly].slice(0, 80);
           delete log.readFailed;
-          if (state.dateKey === dateKey && state.log?.readFailed) {
+          if (state.dateKey === dateKey && state.log?.readFailed && readDailyDraft(uid, dateKey)?.token === draftToken) {
             state.log.entries = structuredClone(log.entries);
             state.log.readFailed = false;
             render();
             setPageStatus(state.log.completed ? copy.dayFinished : "");
           }
-        } catch {
-          // Still unreachable: save the local log so the explicit action is kept.
+        } catch (error) {
+          // Keep the durable local draft. Never replace an unread cloud log.
+          throw error;
         }
       }
     })
@@ -262,11 +264,14 @@ function queueSave() {
       let lastError;
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
-          const saved = await saveDailyLog(db, uid, dateKey, log);
-          clearDailyDraft(uid, dateKey, draftToken);
+          const saved = await withDeadline(saveDailyLog(db, uid, dateKey, log).then((value) => {
+            clearDailyDraft(uid, dateKey, draftToken);
+            return value;
+          }));
           return saved;
         } catch (error) {
           lastError = error;
+          if (error.message === "TIMEOUT") break;
           if (attempt === 0) await new Promise((resolve) => setTimeout(resolve, 350));
         }
       }
@@ -470,7 +475,7 @@ async function loadDate(dateKey) {
     log = normalizeLog(state.dateKey, localDraft?.log || {});
     log.readFailed = true;
   }
-  const weekLogs = await loadNutritionWeek(db, state.user.uid, state.dateKey).catch(() => [log]);
+  const weekLogs = await withDeadline(loadNutritionWeek(db, state.user.uid, state.dateKey)).catch(() => [log]);
   state.log = log;
   if (!state.log.targetSnapshot && state.targets.complete) {
     state.log.targetSnapshot = { ...state.targets };
@@ -478,8 +483,13 @@ async function loadDate(dateKey) {
   }
   state.weekLogs = weekLogs;
   render();
+  if (readDailyDraft(state.user.uid, state.dateKey)) {
+    $("#autosaveState").textContent = copy.savedOnDevice;
+    $("#autosaveState").className = "autosave-state error";
+  }
   if (state.log.readFailed) setPageStatus(copy.logLoadFailed, true, { retry: () => loadDate(state.dateKey) });
   else setPageStatus(state.log.completed ? copy.dayFinished : "");
+  if (navigator.onLine && readDailyDraft(state.user.uid, state.dateKey)) queueSave();
 }
 
 function addEntries(entries) {
@@ -543,7 +553,9 @@ function renderClarification(result) {
   const choices = ambiguity.choices.map((choice, index) =>
     `<button type="button" class="clarification-choice${choice.isEstimateFallback ? " clarification-choice--estimate" : ""}" data-food-choice-index="${index}">${esc(clarificationChoiceLabel(ambiguity, choice))}</button>`
   ).join("");
-  panel.innerHTML = `<h3>${esc(title)}</h3><p>${esc(hint)}</p>${brandForm}<div class="clarification-choices">${choices}</div>${advanced}`;
+  const weightForm = ambiguity.kind === "smart-food"
+    ? `<form data-weight-form><label>${language === "he" ? "יודעים כמה אכלתם בגרמים? הזינו את המשקל הכולל" : "Know the weight? Enter total grams eaten"}<input name="grams" type="number" min="1" max="1500" step="0.1" required></label><button type="submit">${esc(copy.add || "Add")}</button></form>` : "";
+  panel.innerHTML = `<h3>${esc(title)}</h3><p>${esc(ambiguity.segment)}</p><p>${esc(hint)}</p>${brandForm}${weightForm}<div class="clarification-choices">${choices}</div>${advanced}`;
   panel.querySelector("[data-brand-input]")?.focus();
 }
 
@@ -561,8 +573,6 @@ function finishClarification(resolvedEntries, note = "") {
 
 function smartFoodFromInterpretation(interpretation, rawText) {
   const normalized = String(rawText || "food").toLowerCase().replace(/[^a-z0-9\u0590-\u05ff]+/giu, "-").replace(/^-+|-+$/g, "").slice(0, 42) || "food";
-  const existing = state.smartFoods.find((food) => food.lookupKey === String(rawText || "").trim().toLowerCase());
-  if (existing) return existing;
   const nutrition = interpretation.nutritionPer100g;
   const food = {
     id: `ai-food-${normalized}-${Date.now().toString(36)}`,
@@ -625,6 +635,7 @@ async function requestSmartFoodInterpretation(segment) {
   if (!token) throw new Error("AUTH_REQUIRED");
   const response = await fetch("/api/daily-nutrition/interpret-food", {
     method: "POST",
+    signal: AbortSignal.timeout(30000),
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ text: segment, language })
   });
@@ -638,7 +649,9 @@ async function requestSmartFoodInterpretation(segment) {
 }
 
 async function submitFoodText(value) {
-  let result = parseFoodText(value, { customFoods: availableFoods() });
+  // AI foods are per-100g compositions, not remembered serving sizes.
+  // Reinterpret their portions instead of silently defaulting to 100g.
+  let result = parseFoodText(value, { customFoods: state.customFoods });
   let lookupUnavailable = false;
   if (result.ambiguities.length === 1) {
     const remembered = localStorage.getItem(`fp-daily-choice-${result.ambiguities[0].segment.replace(/\d+/g, "").trim()}`);
@@ -727,6 +740,18 @@ function bindEvents() {
     finishClarification([resolved], resolved.estimated ? copy.estimateAddedNote : "");
   });
   $("#clarificationPanel").addEventListener("submit", (event) => {
+    if (event.target.matches("[data-weight-form]") && state.pendingClarification) {
+      event.preventDefault();
+      const grams = Number(new FormData(event.target).get("grams"));
+      if (!(grams >= 1 && grams <= 1500)) return;
+      const ambiguity = state.pendingClarification.ambiguities[0];
+      const resolved = resolveFoodChoice(ambiguity.foodId, {
+        amount: grams, unit: "g", rawText: ambiguity.segment, customFoods: availableFoods(),
+        estimate: { confidence: "low", reason: "ai-food-estimate", count: 1 }
+      });
+      finishClarification([resolved], copy.estimateAddedNote);
+      return;
+    }
     const form = event.target.closest("[data-brand-form]");
     if (!form || !state.pendingClarification) return;
     event.preventDefault();
@@ -830,6 +855,7 @@ function bindEvents() {
     button.disabled = true;
     try {
       await queueSave();
+      setComposerMessage(state.lastSaveOk ? copy.saveStatus : copy.savedOnDevice, !state.lastSaveOk);
     } finally {
       button.disabled = false;
     }
@@ -885,11 +911,14 @@ function bindFoodComposer() {
 async function init(user) {
   state.user = user;
   bindEvents();
+  window.addEventListener("online", () => {
+    if (state.log && readDailyDraft(state.user.uid, state.dateKey)) queueSave();
+  });
   try {
     const optional = await Promise.allSettled([
-      loadTargets(),
-      loadCustomFoods(db, user.uid),
-      loadSavedCombinations(db, user.uid)
+      withDeadline(loadTargets()),
+      withDeadline(loadCustomFoods(db, user.uid)),
+      withDeadline(loadSavedCombinations(db, user.uid))
     ]);
     state.customFoods = optional[1].status === "fulfilled" ? optional[1].value : [];
     state.combinations = optional[2].status === "fulfilled" ? optional[2].value : [];

@@ -304,6 +304,69 @@ textarea:focus,
 .macro-ring { background: conic-gradient(var(--product-blue) var(--macro-progress, 0%), #e2e0db 0) !important; }
 .protein-progress span { background: var(--product-blue) !important; }
 
+/* The Daily Nutrition components were originally authored for the dark ocean
+   shell. The editorial theme changes their surfaces to white, so override the
+   remaining light-on-dark text tokens as a complete light-surface set. */
+body.daily-nutrition-route .daily-section-heading p,
+body.daily-nutrition-route .macro-breakdown dt,
+body.daily-nutrition-route .goal-stat p,
+body.daily-nutrition-route .goal-stat-value .nutrition-unit,
+body.daily-nutrition-route .goal-stat-remaining span,
+body.daily-nutrition-route .day-history-card h2,
+body.daily-nutrition-route .nearby-day small,
+body.daily-nutrition-route .calendar-panel summary small,
+body.daily-nutrition-route .saved-combinations-card summary small,
+body.daily-nutrition-route .calendar-weekdays {
+  color: var(--product-muted) !important;
+  text-shadow: none !important;
+}
+
+body.daily-nutrition-route .macro-heading h2,
+body.daily-nutrition-route .macro-breakdown dd,
+body.daily-nutrition-route .goal-stat-value,
+body.daily-nutrition-route #calorieConsumed,
+body.daily-nutrition-route #proteinConsumed,
+body.daily-nutrition-route .food-name strong,
+body.daily-nutrition-route .food-name small,
+body.daily-nutrition-route .food-name .estimate-note,
+body.daily-nutrition-route .goal-stat .nutrition-number,
+body.daily-nutrition-route .goal-stat p b,
+body.daily-nutrition-route .day-history-card h2,
+body.daily-nutrition-route .nearby-day b,
+body.daily-nutrition-route .calendar-panel summary b,
+body.daily-nutrition-route .saved-combinations-card summary b,
+body.daily-nutrition-route .calendar-controls strong,
+body.daily-nutrition-route .calendar-day {
+  color: var(--product-ink) !important;
+  text-shadow: none !important;
+}
+
+body.daily-nutrition-route .goal-stat-remaining strong,
+body.daily-nutrition-route .nearby-day > strong,
+body.daily-nutrition-route .entry-count {
+  color: var(--product-blue) !important;
+  text-shadow: none !important;
+}
+
+body.daily-nutrition-route .nearby-day {
+  background: #f0eee9 !important;
+}
+
+body.daily-nutrition-route .nearby-day.is-selected {
+  border-color: var(--product-blue) !important;
+  background: var(--product-blue-soft) !important;
+}
+
+body.daily-nutrition-route .calendar-nav {
+  border-color: var(--product-rule) !important;
+  background: #f0eee9 !important;
+}
+
+body.daily-nutrition-route .calendar-nav img,
+body.daily-nutrition-route .details-icon {
+  filter: none !important;
+}
+
 .program-result,
 .nutrition-result,
 .workout-result,

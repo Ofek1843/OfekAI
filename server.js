@@ -92,6 +92,7 @@ const {
   MAX_FOOD_TEXT_LENGTH,
   foodInterpretationMessages,
   heuristicFoodInterpretation,
+  selectFoodInterpretationModel,
   sanitizeFoodInterpretation
 } = require("./lib/food-interpretation");
 
@@ -1884,6 +1885,7 @@ function applyQuickFoodRealityFloor(foodText, totals) {
 
 app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
   let dedupeKey = null;
+  const foodModel = selectFoodInterpretationModel(process.env);
   try {
     const user = await requireFirebaseUser(req, res);
     if (!user) return;
@@ -1905,9 +1907,9 @@ app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
 
     const reply = await createChatCompletion({
       taskName: "daily-food-interpretation",
-      model: String(process.env.OPENAI_FOOD_MODEL || FOOD_INTERPRETATION_MODEL).trim() || FOOD_INTERPRETATION_MODEL,
+      model: foodModel,
       temperature: 0,
-      maxTokens: 420,
+      maxTokens: 900,
       messages: foodInterpretationMessages({ text, language })
     });
     const interpretation = sanitizeFoodInterpretation(extractJsonObject(reply), { fallbackName: text });
@@ -1923,7 +1925,7 @@ app.post("/api/daily-nutrition/interpret-food", async (req, res) => {
       status: error.upstreamStatus || error.status || null,
       upstreamType: error.upstreamType || null,
       upstreamCode: error.upstreamCode || null,
-      model: String(process.env.OPENAI_FOOD_MODEL || FOOD_INTERPRETATION_MODEL).trim() || FOOD_INTERPRETATION_MODEL
+      model: foodModel
     });
     const fallbackText = String(req.body?.text || "").replace(/\s+/g, " ").trim().slice(0, MAX_FOOD_TEXT_LENGTH);
     const fallbackLanguage = String(req.body?.language || "en").toLowerCase() === "he" ? "he" : "en";

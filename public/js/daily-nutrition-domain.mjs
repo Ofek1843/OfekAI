@@ -594,6 +594,13 @@ function parseFoodText(value, { customFoods = [] } = {}) {
 
   segments.forEach((segment, segmentIndex) => {
     const parsed = parseAmountPrefix(segment);
+    // Packaging and filled meals describe the whole consumed portion, not
+    // whichever catalog ingredient happens to have the longest matching name.
+    const needsWholeFoodInterpretation = /(?:חביל[הת]|חבילות|אריז[הת]|שקית|שקיות|מארז|\b(?:pack|packet|package|bag|box|bottle)s?\b|\bwith\b|(?:^|\s)עם\s|באגט|באגטים|\bbaguette\b)/iu.test(segment);
+    if (needsWholeFoodInterpretation) {
+      errors.push({ segment, segmentIndex, code: "UNKNOWN_FOOD", reason: "whole-portion" });
+      return;
+    }
     const matches = catalog
       .map((food) => ({ food, match: foodMatches(food, parsed.foodText) }))
       .filter((candidate) => candidate.match)

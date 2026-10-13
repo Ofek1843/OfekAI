@@ -3,8 +3,9 @@ import { guardProtectedPage } from './verification-gate.js';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js';
 import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
 import { disassociateCurrentInstallation } from './push-notifications.js';
-import { loadDailyLog } from './daily-nutrition-store.mjs?v=20260928-multilingual-food-1';
-import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs';
+import { loadDailyLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
+import { loadVisibleNutritionLog } from './daily-nutrition-recovery.mjs';
+import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261013-nutrition-recovery-1';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
 import { trackPageView } from './analytics.js';
 let language='en';
@@ -13,13 +14,14 @@ const copy=dashboardCopy(language);
 const root=document.querySelector('#dashboardRoot');
 root.querySelector('[role="status"]').textContent=copy.loading;
 let dashboard;
+const loadVisibleDay = (uid, key) => loadVisibleNutritionLog(() => loadDailyLog(db, uid, key), uid, key);
 async function load(user) {
  const tasks=[
   getDoc(doc(db,'users',user.uid)),getDoc(doc(db,'users',user.uid,'settings','main')),
   getDocs(query(collection(db,'users',user.uid,'workoutPlans'),limit(30))),
   getDocs(query(collection(db,'users',user.uid,'nutritionPlans'),limit(30))),
   getDocs(query(collection(db,'users',user.uid,'workoutLogs'),orderBy('completedAt','desc'),limit(30))),
-  loadDailyLog(db,user.uid,dateKey(new Date()))
+  loadVisibleDay(user.uid,dateKey(new Date()))
  ];
  const results=await Promise.allSettled(tasks);
  if(auth.currentUser?.uid!==user.uid)return;
@@ -35,7 +37,7 @@ async function load(user) {
   try{const snap=await getDoc(doc(db,'users',user.uid,folder,id));if(snap.exists())model[key].unshift({...snap.data(),id:snap.id});}catch{model.error=copy.error;}
  }));
  if(auth.currentUser?.uid!==user.uid)return;
- const options={language,loadDay:key=>loadDailyLog(db,user.uid,key),onLogout:async()=>{
+ const options={language,loadDay:key=>loadVisibleDay(user.uid,key),onLogout:async()=>{
   try{await disassociateCurrentInstallation();await signOut(auth);window.location.assign('/auth.html');}
   catch{root.querySelector('.status').textContent=copy.error;}
  }};

@@ -156,8 +156,8 @@ test("Daily Nutrition localizes structural accessibility labels in Hebrew", () =
 });
 
 test("dashboard and global drawer expose one unambiguous Daily Nutrition route", () => {
-  assert.match(dashboard, /id="studioDailyNutritionLink" href="\/daily-nutrition\.html"/);
-  assert.match(dashboard, /id="dailyNutritionLink" class="secondary-action" href="\/daily-nutrition\.html"/);
+  const view = read("public/js/dashboard-editorial-view.mjs");
+  assert.match(view, /link\('\/daily-nutrition\.html',t\.log/);
   assert.match(shell, /"daily-nutrition\.html"/);
   assert.match(shell, /href: "\/daily-nutrition\.html"/);
 });
