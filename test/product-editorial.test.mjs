@@ -79,3 +79,11 @@ test('nutrition goal photography keeps readable light captions over its dark sha
   assert.match(css, /\.fp-route-nutrition-builder \.visual-choice-card \.visual-choice-content strong \{ color: #fff !important/);
   assert.match(css, /\.fp-route-nutrition-builder \.visual-choice-card \.visual-choice-content small \{ color: #eef1f3 !important/);
 });
+
+test('daily nutrition uses dark readable text on editorial white surfaces', () => {
+  const css = fs.readFileSync(path.join(root, 'public/css/product-editorial.css'), 'utf8');
+  assert.match(css, /body\.daily-nutrition-route \.macro-heading h2[\s\S]*?color: var\(--product-ink\) !important/);
+  assert.match(css, /body\.daily-nutrition-route \.goal-stat-value[\s\S]*?color: var\(--product-ink\) !important/);
+  assert.match(css, /body\.daily-nutrition-route \.day-history-card h2[\s\S]*?color: var\(--product-(?:muted|ink)\) !important/);
+  assert.match(css, /body\.daily-nutrition-route \.nearby-day b[\s\S]*?color: var\(--product-ink\) !important/);
+});
