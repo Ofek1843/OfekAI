@@ -34,11 +34,10 @@ const server=http.createServer((req,res)=>{
       await page.goto(origin+'/__qa');
       await page.evaluate(async ({program,language})=>{
         const {mountDashboard}=await import('/js/dashboard-editorial-view.mjs');
-        const {openSavedWorkout}=await import('/js/saved-workout-view.mjs');
         const user={getIdToken:async()=>'qa-token'};
         const saved={id:'manual',name:'Manual Upper / Lower',plan:{...program,description:'A longer description that must remain readable and allow both workout actions to fit beneath the exercise count. '.repeat(3)}};
         window.qaSaved=saved;window.qaUser=user;
-        window.qaView=mountDashboard(document.querySelector('#dashboardRoot'),{name:'Daniel',photoURL:'/missing-photo.png',workouts:[saved],activeWorkoutId:'manual',meals:[],logs:[]},{language,openWorkout:s=>openSavedWorkout(s,user,language)});
+        window.qaView=mountDashboard(document.querySelector('#dashboardRoot'),{name:'Daniel',photoURL:'/missing-photo.png',workouts:[saved],activeWorkoutId:'manual',meals:[],logs:[]},{language,workoutUser:user});
       },{program,language});
       await page.waitForSelector('.avatar-placeholder');
       const dashboard=await page.evaluate(()=>{const card=document.querySelector('.session').getBoundingClientRect(),actions=document.querySelector('.session-actions').getBoundingClientRect();return{overflow:document.documentElement.scrollWidth>innerWidth,clipped:actions.bottom>card.bottom,placeholder:document.querySelector('.avatar-placeholder').textContent};});
@@ -54,14 +53,65 @@ const server=http.createServer((req,res)=>{
       const view=await page.evaluate(()=>({first:document.querySelector('.saved-workout-content').firstElementChild.className,repLabels:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>/^(Reps|חזרות)$/.test(e.textContent)).length,rir:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>e.textContent==='RIR').length}));
       assert.equal(view.first,'saved-volume');assert.equal(view.repLabels,0);assert.equal(view.rir,3);
       await page.locator('[data-close]').click();
+      await page.locator('.plan-panel [data-plan-id="manual"]').click();
+      await page.waitForSelector('.saved-volume-row');
+      assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','the plan-list button opens the same full viewer');
+      await page.locator('[data-close]').click();
       await page.route('**/api/workout-plans/review',route=>route.abort());
       await page.evaluate(async language=>{const{openSavedWorkout}=await import('/js/saved-workout-view.mjs');await openSavedWorkout(window.qaSaved,window.qaUser,language);},language);
       assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','local counts survive an unavailable review API');
+      await page.locator('[data-close]').click();
+      await page.evaluate(language=>{const saved=window.qaSaved;window.qaView=undefined;const fresh=document.createElement('div');fresh.id='dashboardRoot';document.querySelector('#dashboardRoot').replaceWith(fresh);return import('/js/dashboard-editorial-view.mjs').then(({mountDashboard})=>mountDashboard(fresh,{name:'Daniel',workouts:[saved],activeWorkoutId:saved.id,meals:[],logs:[]},{language}));},language);
+      await page.locator('.session [data-plan-id]').click();
+      await page.waitForSelector('.saved-volume-row');
+      assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','dashboard viewer also works without an injected opener or user');
       await page.locator('#savedWorkoutDialog').screenshot({path:path.join(output,`plan-${language}-${width}.png`)});
       assert.deepEqual(errors,[],`Browser errors: ${errors.join('; ')}`);
       console.log(JSON.stringify({language,width,landing,dashboard,review:'passed'}));
       await context.close();
     }
+    // Exercise the actual production controller and its Firestore boundaries,
+    // rather than giving mountDashboard a custom plan-opening callback.
+    const controllerContext=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
+    const controllerPage=await controllerContext.newPage();
+    const controllerErrors=[];controllerPage.on('pageerror',e=>controllerErrors.push(e.message));
+    const savedFixture={id:'manual',name:'QA manual Upper/Lower',plan:program};
+    const stubs={
+      '/js/firebase-config.js':`export const auth={currentUser:{uid:'qa',displayName:'Daniel',getIdToken:async()=>'qa-token'}};export const db={};`,
+      '/js/verification-gate.js':`import{auth}from './firebase-config.js';export function guardProtectedPage({onAuthenticated}){onAuthenticated(auth.currentUser);}`,
+      '/js/analytics.js':`export function trackPageView(){};export function trackEvent(){}`,
+      '/js/push-notifications.js':`export async function disassociateCurrentInstallation(){}`,
+      '/js/daily-nutrition-store.mjs':`export async function loadDailyLog(){return {entries:[]}}`
+    };
+    const firestoreStub=`const saved=${JSON.stringify(savedFixture)};export const collection=(db,...p)=>({path:p.join('/')});export const doc=collection;export const query=p=>p;export const limit=()=>{};export const orderBy=()=>{};export async function getDoc(ref){return{exists:()=>true,data:()=>ref.path==='users/qa'?{activeWorkoutPlanId:'manual'}:{}}};export async function getDocs(ref){return{docs:ref.path.endsWith('workoutPlans')?[{id:'manual',data:()=>saved}]:[]}}`;
+    await controllerPage.route('**/*',route=>{
+      const url=new URL(route.request().url()),body=stubs[url.pathname];
+      if(url.origin===origin&&body)return route.fulfill({contentType:'text/javascript',body});
+      if(url.pathname.endsWith('firebase-firestore.js'))return route.fulfill({contentType:'text/javascript',body:firestoreStub});
+      if(url.pathname.endsWith('firebase-auth.js'))return route.fulfill({contentType:'text/javascript',body:'export async function signOut(){}'});
+      if(url.pathname==='/api/social/identity')return route.fulfill({contentType:'application/json',body:'{}'});
+      return url.origin===origin?route.continue():route.abort();
+    });
+    await controllerPage.goto(origin+'/dashboard.html');
+    await controllerPage.waitForSelector('.session [data-plan-id="manual"]');
+    await controllerPage.locator('.session [data-plan-id="manual"]').click();
+    await controllerPage.waitForSelector('#savedWorkoutDialog .saved-volume');
+    assert.equal(await controllerPage.locator('#savedWorkoutDialog select').count(),0);
+    assert.equal(await controllerPage.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12');
+    await controllerPage.locator('[data-close]').click();
+    await controllerPage.locator('.plan-panel [data-plan-id="manual"]').click();
+    await controllerPage.waitForSelector('#savedWorkoutDialog .saved-volume');
+    assert.equal(await controllerPage.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12');
+    await controllerPage.locator('[data-close]').click();
+    await controllerPage.route('**/api/workout-plans/review',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({program,weeklyVolume:{totalHardSets:999,perMuscle:{chest:{direct:999,total:999}}}})}));
+    const staleResponse=controllerPage.waitForResponse(response=>response.url().endsWith('/api/workout-plans/review'));
+    await controllerPage.locator('.session [data-plan-id="manual"]').click();
+    await (await staleResponse).finished();
+    await controllerPage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    assert.equal(await controllerPage.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','a stale server summary cannot overwrite actual saved-plan counts');
+    assert.deepEqual(controllerErrors,[]);
+    console.log('Production dashboard controller: both plan buttons show weekly sets; stale server totals cannot replace them.');
+    await controllerContext.close();
     console.log(`Screenshots: ${output}`);
   } finally {await browser.close();server.close();}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});

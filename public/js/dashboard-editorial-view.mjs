@@ -109,12 +109,15 @@ export function mountDashboard(root, initial={}, options={}) {
   const el=root.querySelector('dialog');el.innerHTML='<div class="section-heading"><span></span>'+btn('dialog-close',t.close,'plus')+'</div>'+content;
   el.showModal();el.querySelector('input,select,button')?.focus();
  }
- function showPlan(kind,id) {
+ async function showPlan(kind,id) {
   const saved=(model[kind==='workout'?'workouts':'meals']||[]).find(p=>p.id===id);if(!saved)return;
-  if(kind==='workout'&&options.openWorkout){options.openWorkout(saved,language);return;}
+  if(kind==='workout'){
+   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261014-dashboard-view-2');
+   await openSavedWorkout(saved,options.workoutUser,language);
+   return;
+  }
   const p=saved.plan||{};
-  const details=kind==='workout'?(p.sessions||[]).map(s=>'<section class="plan-detail-session"><h3>'+escapeHTML(s.name||s.title||t.workouts)+'</h3><ul>'+(s.exercises||[]).map(e=>'<li>'+escapeHTML(e.name||e.exerciseName||t.exercises)+(e.sets?' · '+escapeHTML(e.sets)+' '+(language==='he'?'סטים':'sets')+' · RIR '+escapeHTML(e.rir??'1–3'):'')+'</li>').join('')+'</ul></section>').join(''):
-   '<p>'+number(p.dailyCalories)+' kcal · '+number(p.proteinGrams)+'g '+t.protein+'</p><p>'+escapeHTML(p.description||'')+'</p>';
+  const details='<p>'+number(p.dailyCalories)+' kcal · '+number(p.proteinGrams)+'g '+t.protein+'</p><p>'+escapeHTML(p.description||'')+'</p>';
   dialog('<h2>'+escapeHTML(planName(saved,kind))+'</h2><div class="plan-detail">'+details+'</div>'+link(kind==='workout'?'/my-workout-plans.html':'/my-nutrition-plans.html',t.viewAll,'button')+(kind==='workout'&&saved.id===model.activeWorkoutId?link('/workout-tracker.html',t.start,'button primary'):''));
  }
  root.addEventListener('click',async event=>{
