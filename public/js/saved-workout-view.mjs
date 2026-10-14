@@ -42,7 +42,12 @@ export async function openSavedWorkout(saved, user, language = 'en') {
     const response = await fetch('/api/workout-plans/review', {method:'POST', headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({program}),signal:AbortSignal.timeout(15000)});
     if(!response.ok) throw new Error('Review unavailable');
     const data = await response.json();
-    if(dialog.isConnected&&id===requestId) dialog.querySelector('[data-content]').innerHTML = workoutReviewMarkup(data.program,data.weeklyVolume,language);
+    // The program's own counts stay authoritative even if an older API or
+    // incomplete response supplies different metadata. The API only adds ranges.
+    const weeklyVolume={...data.weeklyVolume,...local.weeklyVolume,perMuscle:Object.fromEntries(
+      Object.entries(local.weeklyVolume.perMuscle).map(([key,counts])=>[key,{...data.weeklyVolume?.perMuscle?.[key],...counts}])
+    )};
+    if(dialog.isConnected&&id===requestId) dialog.querySelector('[data-content]').innerHTML = workoutReviewMarkup(local.program,weeklyVolume,language);
   } catch {
     if(dialog.isConnected&&id===requestId){
       dialog.querySelector('[data-content]').innerHTML=workoutReviewMarkup(local.program,local.weeklyVolume,language);

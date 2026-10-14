@@ -5,10 +5,9 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-aut
 import { disassociateCurrentInstallation } from './push-notifications.js';
 import { loadDailyLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
 import { loadVisibleNutritionLog } from './daily-nutrition-recovery.mjs';
-import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261014-rir-1';
+import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261014-dashboard-view-2';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
 import { trackPageView } from './analytics.js';
-import { openSavedWorkout } from './saved-workout-view.mjs?v=20261014-rir-1';
 let language='en';
 try { const saved=localStorage.getItem('ofek-ai-language');if(dashboardLanguages.includes(saved))language=saved; } catch {}
 const copy=dashboardCopy(language);
@@ -43,7 +42,7 @@ async function load(user) {
   if(response.ok){const social=await response.json();model.photoURL=social.profile?.photoURL||model.photoURL;}
  } catch {}
  if(auth.currentUser?.uid!==user.uid)return;
- const options={language,openWorkout:(saved,code)=>openSavedWorkout(saved,user,code),loadDay:key=>loadVisibleDay(user.uid,key),onLogout:async()=>{
+ const options={language,workoutUser:user,loadDay:key=>loadVisibleDay(user.uid,key),onLogout:async()=>{
   try{await disassociateCurrentInstallation();await signOut(auth);window.location.assign('/auth.html');}
   catch{root.querySelector('.status').textContent=copy.error;}
  }};

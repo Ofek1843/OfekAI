@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-rir-weekly-volume-20261014-1';
+const CACHE_NAME = 'fuelphysique-dashboard-weekly-volume-20261014-2';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -45,8 +45,8 @@ const urlsToCache = [
   '/privacy.html',
   '/css/dashboard.css',
   '/css/dashboard-editorial.css?v=20261013-plan-view-1',
-  '/js/dashboard-editorial.js?v=20261014-rir-1',
-  '/js/dashboard-editorial-view.mjs?v=20261014-rir-1',
+  '/js/dashboard-editorial.js?v=20261014-dashboard-view-2',
+  '/js/dashboard-editorial-view.mjs?v=20261014-dashboard-view-2',
   '/js/dashboard-editorial-i18n.mjs',
   '/assets/dashboard/training.webp',
   '/assets/dashboard/landing-training.webp',
@@ -56,7 +56,7 @@ const urlsToCache = [
   '/css/landing-editorial.css?v=20261013-product-preview-1',
   '/css/landing-product-previews.css?v=20261013-product-preview-1',
   '/css/saved-workout-view.css?v=20261014-rir-1',
-  '/js/saved-workout-view.mjs?v=20261014-rir-1',
+  '/js/saved-workout-view.mjs?v=20261014-dashboard-view-2',
   '/js/saved-workout-volume.mjs?v=20261014-rir-1',
   '/js/workout-volume-data.mjs',
   '/css/site-quality.css?v=20261007-mobile-clarity-2',
