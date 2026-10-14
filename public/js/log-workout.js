@@ -59,6 +59,7 @@ function buildSetList(session) {
         setNumber: s + 1,
         totalSets: count,
         targetReps: String(ex.reps || "—"),
+        targetRir: String(ex.rir ?? "1–3"),
         totalExercises: session.exercises.length
       });
     }
@@ -78,7 +79,7 @@ function localize() {
   $("#exitLogBtn").textContent = ui.exit;
   $("#currentSetKicker").textContent = ui.currentSet;
   $("#weightLabel").textContent = ui.weightKg;
-  $("#targetRepsLabel").textContent = ui.targetReps;
+  $("#targetRepsLabel").textContent = "RIR";
   $("#actualRepsLabel").textContent = ui.actualReps;
   $("#rpeLabel").innerHTML = `${ui.rpe} <span class="optional">${ui.optional}</span>`;
   $("#backSetBtn").textContent = ui.backSet;
@@ -142,7 +143,7 @@ function renderSet() {
     `${ui.exerciseOf} ${exNum} ${ui.of} ${s.totalExercises} · ${ui.setOf} ${currentIdx + 1} ${ui.of} ${setList.length}`;
   $("#exerciseName").textContent = s.exerciseName;
   $("#setOfSets").textContent = `Set ${s.setNumber} of ${s.totalSets}`;
-  $("#targetRepsValue").textContent = s.targetReps;
+  $("#targetRepsValue").textContent = s.targetRir;
 
   // restore saved data if going back
   const saved = setData[currentIdx];
@@ -165,7 +166,7 @@ function renderSet() {
   const nextDifferentEx = setList.slice(currentIdx + 1).find(x => x.exerciseIndex !== s.exerciseIndex);
   if (nextDifferentEx) {
     $("#nextPreview").classList.remove("hidden");
-    $("#nextPreviewText").textContent = `${nextDifferentEx.exerciseName} · ${nextDifferentEx.totalSets} sets · ${nextDifferentEx.targetReps} reps`;
+    $("#nextPreviewText").textContent = `${nextDifferentEx.exerciseName} · ${nextDifferentEx.totalSets} ${he?"סטים":"sets"} · RIR ${nextDifferentEx.targetRir}`;
   } else {
     $("#nextPreview").classList.add("hidden");
   }
@@ -212,6 +213,7 @@ async function saveWorkout() {
       .map(({ s, i }) => ({
         setNumber: s.setNumber,
         targetReps: s.targetReps,
+        targetRir: s.targetRir,
         weightKg: setData[i].weightKg,
         reps: setData[i].actualReps,
         rpe: setData[i].rpe,

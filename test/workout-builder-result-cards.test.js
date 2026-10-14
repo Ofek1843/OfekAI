@@ -81,16 +81,16 @@ test("workout days unload inactive exercise images instead of trusting lazy load
   );
 });
 
-test("each exercise card exposes sets, reps, rest and RIR plus an optional note", () => {
+test("each exercise card exposes sets, rest and RIR without a prescribed rep count", () => {
   assert.match(workoutBuilderJs, /\$\{ui\.sets\}/);
   // The rep tile is labelled "Target reps" (ui.targetReps), not the bare
   // "Reps" (ui.reps), so the range cannot be read as a stop-at-this-number
   // instruction. Same tile, same value -- see test/workout-guidance-ux.test.js.
-  assert.match(workoutBuilderJs, /\$\{ui\.targetReps\}/);
+  assert.doesNotMatch(workoutBuilderJs, /\$\{ui\.targetReps\}/);
   assert.match(workoutBuilderJs, /\$\{ui\.rest\}/);
   // RIR now renders as an "Effort" tile carrying its unit.
   assert.match(workoutBuilderJs, /exercise-stat--effort/);
-  assert.match(workoutBuilderJs, /ui\.rirUnit\(String\(exercise\.rir\)\)/);
+  assert.match(workoutBuilderJs, /ui\.rirUnit\(String\(exercise\.rir \?\?/);
   assert.match(workoutBuilderJs, /class="exercise-stat-value"/);
   assert.match(workoutBuilderJs, /class="exercise-note"/);
 });

@@ -48,9 +48,15 @@ const server=http.createServer((req,res)=>{
       await page.waitForSelector('.saved-volume-row');
       assert.equal(await page.locator('.saved-exercise').count(),3);
       assert.equal(await page.locator('.saved-exercise img').count(),3);
-      const before=await page.locator('.saved-volume-row').first().innerText();
-      await page.locator('[data-review-level]').selectOption('beginner');
-      await page.waitForFunction(previous=>document.querySelector('.saved-volume-row').innerText!==previous,before);
+      assert.equal(await page.locator('#savedWorkoutDialog select').count(),0);
+      assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12');
+      assert.equal(await page.locator('[data-muscle="triceps"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'6');
+      const view=await page.evaluate(()=>({first:document.querySelector('.saved-workout-content').firstElementChild.className,repLabels:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>/^(Reps|חזרות)$/.test(e.textContent)).length,rir:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>e.textContent==='RIR').length}));
+      assert.equal(view.first,'saved-volume');assert.equal(view.repLabels,0);assert.equal(view.rir,3);
+      await page.locator('[data-close]').click();
+      await page.route('**/api/workout-plans/review',route=>route.abort());
+      await page.evaluate(async language=>{const{openSavedWorkout}=await import('/js/saved-workout-view.mjs');await openSavedWorkout(window.qaSaved,window.qaUser,language);},language);
+      assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','local counts survive an unavailable review API');
       await page.locator('#savedWorkoutDialog').screenshot({path:path.join(output,`plan-${language}-${width}.png`)});
       assert.deepEqual(errors,[],`Browser errors: ${errors.join('; ')}`);
       console.log(JSON.stringify({language,width,landing,dashboard,review:'passed'}));

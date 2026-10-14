@@ -5,7 +5,7 @@ const foodName=item=>typeof item==="string"?item:(item?.name||item?.food||item?.
 function planText(plan,type){
   if(type==="workout"){
     const title=plan.programName||"My FuelPhysique Workout Plan";
-    const days=(plan.sessions||[]).map((session,index)=>{const exercises=(session.exercises||[]).map(item=>`• ${item.name||"Exercise"} — ${item.sets||"-"} sets × ${item.reps||"-"}${item.restSeconds?` · ${item.restSeconds}s rest`:""}`).join("\n");return `\nDAY ${session.day||index+1}: ${session.name||"Workout"}\n${exercises}`;}).join("\n");
+    const days=(plan.sessions||[]).map((session,index)=>{const exercises=(session.exercises||[]).map(item=>`• ${item.name||"Exercise"} — ${item.sets||"-"} sets · RIR ${item.rir??"1–3"}${item.restSeconds?` · ${item.restSeconds}s rest`:""}`).join("\n");return `\nDAY ${session.day||index+1}: ${session.name||"Workout"}\n${exercises}`;}).join("\n");
     return `I created a workout plan with FuelPhysique 💪\n\n${title}${days}\n\nCreate your own plan with FuelPhysique:\n${SITE_URL}`;
   }
   const title=plan.planName||"My FuelPhysique Nutrition Plan",summary=[plan.dailyCalories?`${plan.dailyCalories} calories`:"",plan.proteinGrams?`${plan.proteinGrams}g protein`:""].filter(Boolean).join(" · ");
@@ -15,7 +15,7 @@ function planText(plan,type){
 
 function planDocument(plan,type){
   const workout=type==="workout",title=workout?(plan.programName||"FuelPhysique Workout Plan"):(plan.planName||"FuelPhysique Nutrition Plan");
-  const sections=workout?(plan.sessions||[]).map(session=>`<section><h2>${esc(session.name||"Workout")}</h2><table><tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Rest</th></tr>${(session.exercises||[]).map(item=>`<tr><td>${esc(item.name)}</td><td>${esc(item.sets)}</td><td>${esc(item.reps)}</td><td>${esc(item.restSeconds)}s</td></tr>`).join("")}</table></section>`).join(""):(plan.meals||[]).map(meal=>`<section><h2>${esc(meal.name||meal.meal||"Meal")}</h2><ul>${(meal.items||meal.foods||[]).map(item=>`<li>${esc(foodName(item))}</li>`).join("")}</ul></section>`).join("");
+  const sections=workout?(plan.sessions||[]).map(session=>`<section><h2>${esc(session.name||"Workout")}</h2><table><tr><th>Exercise</th><th>Sets</th><th>RIR</th><th>Rest</th></tr>${(session.exercises||[]).map(item=>`<tr><td>${esc(item.name)}</td><td>${esc(item.sets)}</td><td>${esc(item.rir??"1–3")}</td><td>${esc(item.restSeconds)}s</td></tr>`).join("")}</table></section>`).join(""):(plan.meals||[]).map(meal=>`<section><h2>${esc(meal.name||meal.meal||"Meal")}</h2><ul>${(meal.items||meal.foods||[]).map(item=>`<li>${esc(foodName(item))}</li>`).join("")}</ul></section>`).join("");
   return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>body{font:16px Arial;max-width:900px;margin:40px auto;color:#1a2324}h1{color:#167fdc}table{width:100%;border-collapse:collapse}th,td{padding:10px;border:1px solid #dbe2ea;text-align:left}section{margin:28px 0}.credit{margin-top:35px;color:#64748b}</style></head><body><h1>${esc(title)}</h1>${sections}<p class="credit">Created with FuelPhysique · ${SITE_URL}</p></body></html>`;
 }
 

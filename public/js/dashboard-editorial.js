@@ -5,10 +5,10 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-aut
 import { disassociateCurrentInstallation } from './push-notifications.js';
 import { loadDailyLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
 import { loadVisibleNutritionLog } from './daily-nutrition-recovery.mjs';
-import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261013-plan-view-1';
+import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261014-rir-1';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
 import { trackPageView } from './analytics.js';
-import { openSavedWorkout } from './saved-workout-view.mjs?v=20261013-plan-view-1';
+import { openSavedWorkout } from './saved-workout-view.mjs?v=20261014-rir-1';
 let language='en';
 try { const saved=localStorage.getItem('ofek-ai-language');if(dashboardLanguages.includes(saved))language=saved; } catch {}
 const copy=dashboardCopy(language);
