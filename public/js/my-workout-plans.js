@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261013-plan-view-1";
+import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261014-rir-1";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import {
@@ -217,8 +217,8 @@ function renderExerciseRow(exercise = {}, index = 0) {
         <input class="editor-exercise-sets" type="number" min="1" max="20" value="${escapeHtml(exercise.sets || 3)}" />
       </label>
       <label>
-        <span>${ui.reps}</span>
-        <input class="editor-exercise-reps" value="${escapeHtml(exercise.reps || "8-12")}" />
+        <span>RIR</span>
+        <input class="editor-exercise-rir" maxlength="7" value="${escapeHtml(exercise.rir ?? "1-3")}" />
       </label>
       <label>
         <span>${ui.rest}</span>
@@ -377,7 +377,7 @@ function attachEditorRowListeners(root) {
         row.querySelectorAll("input").forEach(input => {
           input.value = input.classList.contains("editor-exercise-sets") ? "3" : "";
         });
-        row.querySelector(".editor-exercise-reps").value = "8-12";
+        row.querySelector(".editor-exercise-rir").value = "1-3";
         row.querySelector(".editor-exercise-rest").value = "90";
         return;
       }
@@ -556,15 +556,18 @@ function readEditedExercises(sessionElement, existingSession = {}) {
       if (!name) return null;
 
       const sets = Math.max(1, Math.min(20, Number(row.querySelector(".editor-exercise-sets").value) || Number(existingExercise.sets) || 3));
-      const reps = row.querySelector(".editor-exercise-reps").value.trim() || existingExercise.reps || "8-12";
+      const reps = existingExercise.reps || "8-12";
+      const rir = row.querySelector(".editor-exercise-rir").value.trim() || "1-3";
       const restSeconds = Math.max(0, Math.min(600, Number(row.querySelector(".editor-exercise-rest").value) || getExerciseRestSeconds(existingExercise)));
 
       return {
         ...existingExercise,
+        ...(name !== (existingExercise.name || existingExercise.exercise || "") ? { exerciseId: "", demoName: name, muscleGroup: "" } : {}),
         name,
         exercise: name,
         sets,
         reps,
+        rir,
         restSeconds,
         rest: `${restSeconds}s`
       };

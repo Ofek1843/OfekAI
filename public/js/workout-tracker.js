@@ -264,7 +264,7 @@ function localize() {
   if (panel) panel.classList.toggle("quick-mode", quickModeEnabled);
   $("#trackerStatus").textContent = ui.loading;
   const targetLabel = $("#targetRepsLabel");
-if (targetLabel) targetLabel.textContent = ui.targetReps;
+if (targetLabel) targetLabel.textContent = "RIR";
 
 const completionTitle = $("#setCompletionTitle");
 if (completionTitle) completionTitle.textContent = ui.setCompleted;
@@ -603,7 +603,7 @@ function renderExercise(exercise, index) {
   const rows = Array.from({ length: count }, (_, setIndex) => `
     <tr class="set-row" data-exercise-index="${index}" data-set-index="${setIndex}">
       <td><strong>${setIndex + 1}</strong></td>
-      <td>${esc(exercise.reps || "-")}</td>
+      <td>${esc(exercise.rir ?? "1–3")}</td>
       <td><input class="weight-input" type="number" min="0" max="1000" step="0.25" inputmode="decimal" aria-label="${ui.weight}"></td>
       <td><input class="reps-input" type="number" min="0" max="999" step="1" inputmode="numeric" aria-label="${ui.actualReps}"></td>
       <td><input class="rpe-input" type="number" min="1" max="10" step="0.5" inputmode="decimal" aria-label="${ui.rpe}"></td>
@@ -617,9 +617,8 @@ function renderExercise(exercise, index) {
           <h3>${esc(name)}</h3>
           <div class="prescription">
             <span>${count} ${ui.sets}</span>
-            <span>${esc(exercise.reps || "-")} ${ui.prescriptionTargetReps}</span>
             <span>${esc(exercise.restSeconds || 0)}s ${ui.rest}</span>
-            ${exercise.rir !== undefined ? `<span>${esc(ui.effortRir(exercise.rir))}</span>` : ""}
+            <span>${esc(ui.effortRir(exercise.rir ?? "1–3"))}</span>
           </div>
           ${exercise.rir !== undefined ? `<p class="exercise-effort-guidance">${esc(ui.rirGuidance)}</p>` : ""}
           ${exercise.notes ? `<p class="exercise-note">${esc(exercise.notes)}</p>` : ""}
@@ -630,7 +629,7 @@ function renderExercise(exercise, index) {
         <thead>
           <tr>
             <th>#</th>
-            <th>${ui.target}</th>
+            <th>RIR</th>
             <th>${ui.weight}</th>
             <th>${ui.actualReps}</th>
             <th>${ui.rpe}</th>
@@ -673,7 +672,7 @@ function renderNextSetPreview() {
   if (nextSetNumber <= currentTotal) {
     preview.innerHTML = `
       <strong>${he ? "הסט הבא" : "Next set"}</strong>
-      <span>${esc(currentExercise?.name || `${ui.exercise} ${focus.exerciseIndex + 1}`)} · ${he ? "סט" : "set"} ${nextSetNumber} · ${esc(currentExercise?.reps || "-")} ${ui.reps} · ${esc(currentExercise?.restSeconds || 0)}s ${ui.rest}</span>
+      <span>${esc(currentExercise?.name || `${ui.exercise} ${focus.exerciseIndex + 1}`)} · ${he ? "סט" : "set"} ${nextSetNumber} · RIR ${esc(currentExercise?.rir ?? "1–3")} · ${esc(currentExercise?.restSeconds || 0)}s ${ui.rest}</span>
     `;
     return;
   }
@@ -681,7 +680,7 @@ function renderNextSetPreview() {
     const total = Math.max(1, Math.min(20, parseInt(nextExercise.sets, 10) || 1));
     preview.innerHTML = `
       <strong>${he ? "התרגיל הבא" : "Next exercise"}</strong>
-      <span>${esc(nextExercise.name || `${ui.exercise} ${focus.exerciseIndex + 2}`)} · ${total} ${ui.sets} · ${esc(nextExercise.reps || "-")} ${ui.reps}</span>
+      <span>${esc(nextExercise.name || `${ui.exercise} ${focus.exerciseIndex + 2}`)} · ${total} ${ui.sets} · RIR ${esc(nextExercise.rir ?? "1–3")}</span>
     `;
     return;
   }
@@ -878,7 +877,7 @@ function syncFocusFromRow() {
 
   if (target) {
     target.textContent = String(
-      exercise?.reps || "5-15"
+      exercise?.rir ?? "1-3"
     ).replace("-", "–");
   }
 
@@ -959,6 +958,7 @@ function collect(session) {
     sets: [...card.querySelectorAll(".set-row")].map((row, setIndex) => ({
       setNumber: setIndex + 1,
       targetReps: String(session.exercises?.[index]?.reps || ""),
+      targetRir: String(session.exercises?.[index]?.rir ?? "1-3"),
       weightKg: read(row.querySelector(".weight-input")),
       reps: read(row.querySelector(".reps-input")),
       rpe: read(row.querySelector(".rpe-input")),

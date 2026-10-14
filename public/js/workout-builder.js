@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView } from "./analytics.js";
-import { setupPlanSharing } from "./plan-sharing.js";
+import { setupPlanSharing } from "./plan-sharing.js?v=20261014-rir-1";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
 import { derivePriorityFromGoal } from "./workout-priority.js";
@@ -85,7 +85,7 @@ const ui = isHebrew
       rirHelpBody: [
         "RIR הוא ראשי תיבות של Reps In Reserve — כמה חזרות נקיות נשארו לכם בסיום הסט.",
         "RIR 2 אומר שבסיום הסט אתם מעריכים שיכולתם לבצע עוד כשתי חזרות נקיות.",
-        "אל תעצרו רק בגלל שהגעתם לתחתית טווח החזרות. אם היעד הוא 10–12 והגעתם ל-12 בזמן שנותרו לכם עוד כמה חזרות נקיות — העלו משקל בפעם הבאה.",
+        "יעד ה-RIR מתאר את המאמץ בסיום הסט. מספר חזרות קבוע אינו סימן לסיום הסט.",
         "חזרה שבה הטכניקה מתקלקלת אינה נחשבת חזרה נקייה במלאי.",
         "לבניית שריר, סיימו כל סט עבודה קרוב לכשל תוך שמירה על טכניקה טובה. אין צורך להגיע לכשל מוחלט בכל סט."
       ],
@@ -168,7 +168,7 @@ const ui = isHebrew
       rirHelpBody: [
         "RIR stands for Reps In Reserve — how many clean reps you have left when you end the set.",
         "RIR 2 means that when you finish the set, you estimate you could have completed about 2 more clean repetitions.",
-        "Do not stop solely because you reached the bottom of the rep range. If your target is 10–12 reps and you reach 12 while still being able to perform several more clean repetitions, use a more challenging load next time.",
+        "The RIR target describes your effort at the end of the set. A fixed repetition count is not a cue to stop.",
         "If your form breaks down, that repetition should not be counted as a clean reserve rep.",
         "For muscle growth, finish each working set close to failure while keeping good form. You do not need to train to complete failure on every set."
       ],
@@ -1503,10 +1503,6 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
                     <span class="exercise-stat-value">${escapeHtml(String(exercise.sets))}</span>
                   </div>
                   <div class="exercise-stat">
-                    <span class="exercise-stat-label">${ui.targetReps}</span>
-                    <span class="exercise-stat-value">${escapeHtml(String(exercise.reps))}</span>
-                  </div>
-                  <div class="exercise-stat">
                     <span class="exercise-stat-label">${ui.rest}</span>
                     <span class="exercise-stat-value">${escapeHtml(String(exercise.restSeconds))}s</span>
                   </div>
@@ -1523,7 +1519,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
                       >i</button>
                     </span>
                     <span class="exercise-stat-value">${
-                      exercise.rir ? escapeHtml(ui.rirUnit(String(exercise.rir))) : "—"
+                      escapeHtml(ui.rirUnit(String(exercise.rir ?? "1–3")))
                     }</span>
                   </div>
                 </div>
@@ -1910,9 +1906,8 @@ try {
 
     const stats = card.querySelectorAll(".exercise-stat-value");
     if (stats[0]) stats[0].textContent = String(data.exercise.sets);
-    if (stats[1]) stats[1].textContent = String(data.exercise.reps);
-    if (stats[2]) stats[2].textContent = `${data.exercise.restSeconds}s`;
-    if (stats[3]) stats[3].textContent = String(data.exercise.rir || "—");
+    if (stats[1]) stats[1].textContent = `${data.exercise.restSeconds}s`;
+    if (stats[2]) stats[2].textContent = ui.rirUnit(String(data.exercise.rir ?? "1–3"));
 
     let note = card.querySelector(".exercise-note");
     if (data.exercise.notes) {

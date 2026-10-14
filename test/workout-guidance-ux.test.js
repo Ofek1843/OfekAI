@@ -163,10 +163,9 @@ test("the not-a-medical-optimum disclaimer is retained", () => {
 
 // --- 4. Reps and effort labelling --------------------------------------
 
-test("the rep range is labelled as a target, not a stopping point", () => {
-  assert.match(BUILDER_JS, /targetReps: "Target reps"/);
-  assert.match(BUILDER_JS, /targetReps: "חזרות יעד"/);
-  assert.match(BUILDER_JS, /exercise-stat-label">\$\{ui\.targetReps\}/, "the card must render the target-reps label");
+test("prescribed repetition counts are absent from the exercise cards", () => {
+  assert.doesNotMatch(BUILDER_JS, /exercise-stat-label">\$\{ui\.targetReps\}/);
+  assert.doesNotMatch(BUILDER_JS, /escapeHtml\(String\(exercise\.reps\)\)/);
 });
 
 test("RIR is presented as effort with its unit", () => {
@@ -200,11 +199,10 @@ test("the help explains RIR 2 concretely", () => {
 test("the help explicitly prevents stopping just because the rep number was reached", () => {
   assert.match(
     BUILDER_JS,
-    /Do not stop solely because you reached the bottom of the rep range/i,
+    /A fixed repetition count is not a cue to stop/i,
     "the anti-auto-stop sentence is the whole point of this change"
   );
-  assert.match(BUILDER_JS, /use a more challenging load next time/i);
-  assert.match(BUILDER_JS, /אל תעצרו רק בגלל שהגעתם לתחתית טווח החזרות/);
+  assert.match(BUILDER_JS, /מספר חזרות קבוע אינו סימן לסיום הסט/);
 });
 
 test("broken form is excluded from reserve reps", () => {
@@ -275,14 +273,14 @@ test("shared-plan previews use the same wording", () => {
   assert.match(SOCIAL_CORE, /targetReps: "target reps"/);
   assert.match(SOCIAL_CORE, /targetReps: "חזרות יעד"/);
   assert.match(SOCIAL_CORE, /effortRir: \(value\) => `effort \$\{value\} RIR`/);
-  assert.match(SOCIAL_JS, /\$\{ui\.targetReps\}/);
-  assert.match(SOCIAL_JS, /ui\.effortRir\(exercise\.rir\)/);
+  assert.doesNotMatch(SOCIAL_JS, /\$\{ui\.targetReps\}/);
+  assert.match(SOCIAL_JS, /ui\.effortRir\(exercise\.rir \?\?/);
   assert.ok(!/· RIR \$\{escapeHtml\(exercise\.rir\)\}/.test(SOCIAL_JS), "bare RIR label must be gone");
 });
 
-test("the Manual Builder labels its rep input consistently", () => {
-  assert.match(MANUAL_JS, /reps:"Target reps"/);
-  assert.match(MANUAL_JS, /reps:"חזרות יעד"/);
+test("the Manual Builder exposes an editable RIR instead of target reps", () => {
+  assert.match(MANUAL_JS, /<label>RIR<input class="rir"/);
+  assert.doesNotMatch(MANUAL_JS, /<input class="reps"/);
 });
 
 test("every surface ships both English and Hebrew copy", () => {
@@ -302,8 +300,8 @@ test("every surface ships both English and Hebrew copy", () => {
 test("this branch changed no workout generation input", () => {
   // The prescribed values are rendered straight from the response object;
   // nothing here recomputes or rounds them.
-  assert.match(BUILDER_JS, /escapeHtml\(String\(exercise\.reps\)\)/, "reps must be rendered verbatim");
+  assert.doesNotMatch(BUILDER_JS, /escapeHtml\(String\(exercise\.reps\)\)/, "prescribed reps must not be displayed");
   assert.match(BUILDER_JS, /escapeHtml\(String\(exercise\.sets\)\)/, "sets must be rendered verbatim");
   assert.match(BUILDER_JS, /escapeHtml\(String\(exercise\.restSeconds\)\)/, "rest must be rendered verbatim");
-  assert.match(BUILDER_JS, /ui\.rirUnit\(String\(exercise\.rir\)\)/, "RIR must be rendered verbatim");
+  assert.match(BUILDER_JS, /ui\.rirUnit\(String\(exercise\.rir \?\?/, "RIR must be displayed including zero");
 });

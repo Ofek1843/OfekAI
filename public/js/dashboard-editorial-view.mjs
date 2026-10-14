@@ -113,7 +113,7 @@ export function mountDashboard(root, initial={}, options={}) {
   const saved=(model[kind==='workout'?'workouts':'meals']||[]).find(p=>p.id===id);if(!saved)return;
   if(kind==='workout'&&options.openWorkout){options.openWorkout(saved,language);return;}
   const p=saved.plan||{};
-  const details=kind==='workout'?(p.sessions||[]).map(s=>'<section class="plan-detail-session"><h3>'+escapeHTML(s.name||s.title||t.workouts)+'</h3><ul>'+(s.exercises||[]).map(e=>'<li>'+escapeHTML(e.name||e.exerciseName||t.exercises)+(e.sets?' · '+escapeHTML(e.sets)+' × '+escapeHTML(e.reps||''):'')+'</li>').join('')+'</ul></section>').join(''):
+  const details=kind==='workout'?(p.sessions||[]).map(s=>'<section class="plan-detail-session"><h3>'+escapeHTML(s.name||s.title||t.workouts)+'</h3><ul>'+(s.exercises||[]).map(e=>'<li>'+escapeHTML(e.name||e.exerciseName||t.exercises)+(e.sets?' · '+escapeHTML(e.sets)+' '+(language==='he'?'סטים':'sets')+' · RIR '+escapeHTML(e.rir??'1–3'):'')+'</li>').join('')+'</ul></section>').join(''):
    '<p>'+number(p.dailyCalories)+' kcal · '+number(p.proteinGrams)+'g '+t.protein+'</p><p>'+escapeHTML(p.description||'')+'</p>';
   dialog('<h2>'+escapeHTML(planName(saved,kind))+'</h2><div class="plan-detail">'+details+'</div>'+link(kind==='workout'?'/my-workout-plans.html':'/my-nutrition-plans.html',t.viewAll,'button')+(kind==='workout'&&saved.id===model.activeWorkoutId?link('/workout-tracker.html',t.start,'button primary'):''));
  }
