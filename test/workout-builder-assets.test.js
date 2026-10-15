@@ -136,7 +136,7 @@ test("exercise image resolver maps newly imported images to existing files", asy
     const url = imageModule.exerciseImageUrl(exerciseName);
     assert.equal(
       url,
-      `/images/exercises/${expectedFile}`,
+      `/images/exercises/${expectedFile}` + (expectedFile === "seated-leg-curl.png" ? "?v=20261015-curl-2" : ""),
       `${exerciseName} should resolve to ${expectedFile}`
     );
     assert.ok(fs.existsSync(publicFile(url)), `Missing resolved demo image: ${url}`);
