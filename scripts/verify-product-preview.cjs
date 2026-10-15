@@ -44,25 +44,35 @@ const server=http.createServer((req,res)=>{
       assert.equal(dashboard.overflow,false,JSON.stringify(dashboard));assert.equal(dashboard.clipped,false,JSON.stringify(dashboard));
       await page.screenshot({path:path.join(output,`dashboard-${language}-${width}.png`),fullPage:true});
       await page.locator('.session [data-plan-id]').click();
-      await page.waitForSelector('.saved-volume-row');
-      assert.equal(await page.locator('.saved-exercise').count(),3);
-      assert.equal(await page.locator('.saved-exercise img').count(),3);
+      await page.waitForSelector('.saved-exercise');
+      assert.equal(await page.locator('.saved-exercise').count(),2);
+      assert.equal(await page.locator('.saved-exercise img').count(),2);
+      assert.equal(await page.locator('.saved-volume').count(),0,'weekly summary is a separate view');
+      assert.equal(await page.locator('.saved-exercise dt').filter({hasText:/^RIR$/}).count(),2);
+      assert.equal(await page.evaluate(()=>{const d=document.querySelector('#savedWorkoutDialog');return d.scrollWidth>d.clientWidth;}),false);
+      await page.locator('#savedWorkoutDialog').screenshot({path:path.join(output,`plan-day-${language}-${width}.png`)});
+      await page.locator('[data-workout-tab="day-0"]').press('ArrowDown');
+      assert.equal(await page.locator('.saved-exercise').count(),1);
+      await page.locator('[data-workout-tab="day-1"]').press('End');
       assert.equal(await page.locator('#savedWorkoutDialog select').count(),0);
       assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12');
       assert.equal(await page.locator('[data-muscle="triceps"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'6');
-      const view=await page.evaluate(()=>({first:document.querySelector('.saved-workout-content').firstElementChild.className,repLabels:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>/^(Reps|חזרות)$/.test(e.textContent)).length,rir:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>e.textContent==='RIR').length}));
-      assert.equal(view.first,'saved-volume');assert.equal(view.repLabels,0);assert.equal(view.rir,3);
+      const view=await page.evaluate(()=>({first:document.querySelector('.saved-workout-pane').firstElementChild.className,repLabels:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>/^(Reps|חזרות)$/.test(e.textContent)).length,rir:[...document.querySelectorAll('.saved-exercise dt')].filter(e=>e.textContent==='RIR').length}));
+      assert.equal(view.first,'saved-volume');assert.equal(view.repLabels,0);assert.equal(view.rir,0);
       await page.locator('[data-close]').click();
       await page.locator('.plan-panel [data-plan-id="manual"]').click();
+      await page.locator('[data-workout-tab="volume"]').click();
       await page.waitForSelector('.saved-volume-row');
       assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','the plan-list button opens the same full viewer');
       await page.locator('[data-close]').click();
       await page.route('**/api/workout-plans/review',route=>route.abort());
       await page.evaluate(async language=>{const{openSavedWorkout}=await import('/js/saved-workout-view.mjs');await openSavedWorkout(window.qaSaved,window.qaUser,language);},language);
+      await page.locator('[data-workout-tab="volume"]').click();
       assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','local counts survive an unavailable review API');
       await page.locator('[data-close]').click();
       await page.evaluate(language=>{const saved=window.qaSaved;window.qaView=undefined;const fresh=document.createElement('div');fresh.id='dashboardRoot';document.querySelector('#dashboardRoot').replaceWith(fresh);return import('/js/dashboard-editorial-view.mjs').then(({mountDashboard})=>mountDashboard(fresh,{name:'Daniel',workouts:[saved],activeWorkoutId:saved.id,meals:[],logs:[]},{language}));},language);
       await page.locator('.session [data-plan-id]').click();
+      await page.locator('[data-workout-tab="volume"]').click();
       await page.waitForSelector('.saved-volume-row');
       assert.equal(await page.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','dashboard viewer also works without an injected opener or user');
       await page.locator('#savedWorkoutDialog').screenshot({path:path.join(output,`plan-${language}-${width}.png`)});
@@ -83,7 +93,7 @@ const server=http.createServer((req,res)=>{
       '/js/push-notifications.js':`export async function disassociateCurrentInstallation(){}`,
       '/js/daily-nutrition-store.mjs':`export async function loadDailyLog(){return {entries:[]}}`
     };
-    const firestoreStub=`const saved=${JSON.stringify(savedFixture)};export const collection=(db,...p)=>({path:p.join('/')});export const doc=collection;export const query=p=>p;export const limit=()=>{};export const orderBy=()=>{};export async function getDoc(ref){return{exists:()=>true,data:()=>ref.path==='users/qa'?{activeWorkoutPlanId:'manual'}:{}}};export async function getDocs(ref){return{docs:ref.path.endsWith('workoutPlans')?[{id:'manual',data:()=>saved}]:[]}}`;
+    const firestoreStub=`const saved=${JSON.stringify(savedFixture)};export const serverTimestamp=()=>({qa:true});export async function addDoc(ref,data){globalThis.qaManualSave=data;return{id:'qa-manual'}};export const collection=(db,...p)=>({path:p.join('/')});export const doc=collection;export const query=p=>p;export const limit=()=>{};export const orderBy=()=>{};export async function getDoc(ref){return{exists:()=>true,data:()=>ref.path==='users/qa'?{activeWorkoutPlanId:'manual'}:{}}};export async function getDocs(ref){return{docs:ref.path.endsWith('workoutPlans')?[{id:'manual',data:()=>saved}]:[]}}`;
     await controllerPage.route('**/*',route=>{
       const url=new URL(route.request().url()),body=stubs[url.pathname];
       if(url.origin===origin&&body)return route.fulfill({contentType:'text/javascript',body});
@@ -95,22 +105,47 @@ const server=http.createServer((req,res)=>{
     await controllerPage.goto(origin+'/dashboard.html');
     await controllerPage.waitForSelector('.session [data-plan-id="manual"]');
     await controllerPage.locator('.session [data-plan-id="manual"]').click();
+    await controllerPage.locator('[data-workout-tab="volume"]').click();
     await controllerPage.waitForSelector('#savedWorkoutDialog .saved-volume');
     assert.equal(await controllerPage.locator('#savedWorkoutDialog select').count(),0);
     assert.equal(await controllerPage.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12');
     await controllerPage.locator('[data-close]').click();
     await controllerPage.locator('.plan-panel [data-plan-id="manual"]').click();
+    await controllerPage.locator('[data-workout-tab="volume"]').click();
     await controllerPage.waitForSelector('#savedWorkoutDialog .saved-volume');
     assert.equal(await controllerPage.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12');
     await controllerPage.locator('[data-close]').click();
     await controllerPage.route('**/api/workout-plans/review',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({program,weeklyVolume:{totalHardSets:999,perMuscle:{chest:{direct:999,total:999}}}})}));
     const staleResponse=controllerPage.waitForResponse(response=>response.url().endsWith('/api/workout-plans/review'));
     await controllerPage.locator('.session [data-plan-id="manual"]').click();
+    await controllerPage.locator('[data-workout-tab="volume"]').click();
     await (await staleResponse).finished();
     await controllerPage.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     assert.equal(await controllerPage.locator('[data-muscle="chest"] [data-weekly-sets]').getAttribute('data-weekly-sets'),'12','a stale server summary cannot overwrite actual saved-plan counts');
     assert.deepEqual(controllerErrors,[]);
     console.log('Production dashboard controller: both plan buttons show weekly sets; stale server totals cannot replace them.');
+    await controllerPage.route('**/js/site-feedback.js',route=>route.fulfill({contentType:'text/javascript',body:''}));
+    await controllerPage.goto(origin+'/manual-workout-builder.html');
+    await controllerPage.waitForSelector('.exercise-name');
+    const choices=[['incline chest press','Incline Chest Press Machine','incline-chest-press-machine'],['sit','Sit-ups','sit-up'],['back extension','Back Extension','back-extension']];
+    for(let index=0;index<choices.length;index++){
+      const [query,name,image]=choices[index];
+      const input=controllerPage.locator('.exercise-name').nth(index);
+      await input.fill(query);
+      const option=controllerPage.locator('#exerciseSuggest li').filter({hasText:name});
+      await option.waitFor();
+      assert.ok((await option.locator('img').getAttribute('src')).endsWith('/'+image+'.png'));
+      await option.click();
+      assert.equal(await input.inputValue(),name);
+    }
+    await controllerPage.locator('#planName').fill('QA manual additions');
+    await controllerPage.locator('#savePlan').click();
+    await controllerPage.waitForFunction(()=>!!globalThis.qaManualSave);
+    const manual=await controllerPage.evaluate(()=>globalThis.qaManualSave);
+    assert.deepEqual(manual.plan.sessions.map(s=>s.exercises[0].name),choices.map(choice=>choice[1]));
+    assert.equal(reviewSavedWorkout(manual.plan).weeklyVolume.unknownExercises,0);
+    console.log('Manual builder: all three movements found, exact thumbnails selected and saved through a synthetic Firestore boundary.');
+    assert.deepEqual(controllerErrors,[]);
     await controllerContext.close();
     console.log(`Screenshots: ${output}`);
   } finally {await browser.close();server.close();}

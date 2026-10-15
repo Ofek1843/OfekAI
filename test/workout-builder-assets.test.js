@@ -245,7 +245,7 @@ test("neutral wording differences resolve to the same demo without inventing a m
     ["Machine Lat Pulldown", "Lat Pulldown"],
     ["Leg Press Machine", "Leg Press"],
     ["Barbell Chest Press", "Barbell Bench Press"],
-    ["Incline Chest Press", "Incline Bench Press"],
+    ["Incline Chest Press", "Incline Chest Press Machine"],
     ["Dumbbell Overhead Tricep Extension", "Dumbbell Overhead Triceps Extension"],
     ["Barbell Bent Over Row", "Bent Over Barbell Row"]
   ];

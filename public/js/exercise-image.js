@@ -15,6 +15,9 @@ export const EXERCISE_FALLBACK_IMAGE_URL =
   "/images/exercises/fuelphysique-demo-fallback.svg";
 
 export const KNOWN_EXERCISE_IMAGE_SLUGS = new Set([
+  "back-extension",
+  "incline-chest-press-machine",
+  "sit-up",
   "dumbbell-floor-press",
   "dumbbell-reverse-lunge",
   "cable-overhead-triceps-extension",
@@ -316,8 +319,17 @@ const ALIASES = {
   "pendlay-row": "barbell-row",
   "conventional-deadlift": "conventional-deadlift",
   "straight-arm-pulldown": "close-grip-lat-pulldown",
-  "back-extension": "good-morning",
-  hyperextension: "good-morning",
+  "back-extension": "back-extension",
+  hyperextension: "back-extension",
+  "roman-chair-back-extension": "back-extension",
+  "incline-chest-press": "incline-chest-press-machine",
+  "machine-incline-chest-press": "incline-chest-press-machine",
+  "incline-machine-press": "incline-chest-press-machine",
+  "incline-chest-press-machine": "incline-chest-press-machine",
+  "sit-ups": "sit-up",
+  situp: "sit-up",
+  situps: "sit-up",
+  "bodyweight-sit-up": "sit-up",
 
   // --- Shoulders ---
   "overhead-press": "barbell-shoulder-press",
@@ -493,6 +505,12 @@ function exerciseImageSource(exercise = {}) {
     return { sourceField: "string", sourceValue: exercise };
   }
 
+  // Repair only the historical Back Extension -> Good Morning surrogate.
+  const named = [exercise.name, exercise.exerciseName, exercise.exercise].map(value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''));
+  if (named.some(name => name === "back-extension" || name === "hyperextension") &&
+      (!exercise.exerciseId || exercise.exerciseId === "good-morning")) {
+    return { sourceField: "name", sourceValue: "back-extension" };
+  }
   // Canonical identity first, display text only as a recovery path.
   const candidates = [
     ["exerciseId", exercise.exerciseId],
