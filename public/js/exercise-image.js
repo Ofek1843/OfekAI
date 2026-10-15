@@ -587,7 +587,8 @@ export function exerciseImageResolutionDetails(exercise = {}) {
 export function exerciseImageUrl(exercise = {}) {
   const details = exerciseImageResolutionDetails(exercise);
   if (!details.usedFallback) {
-    return details.imageUrl;
+    // The corrected roller position must bypass the previous week-long image cache.
+    return details.imageUrl + (details.attemptedSlug === "seated-leg-curl" ? "?v=20261015-curl-2" : "");
   }
 
   if (details.attemptedSlug) {
