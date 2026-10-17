@@ -17,6 +17,19 @@ test('serialized cloud timestamps and SDK timestamps have identical freshness se
   assert.equal(nutritionTimestampMillis('invalid'),0);
 });
 
+test('server fallback requests only the signed-in user day with a bearer token',async()=>{
+  let request;
+  const ctx={state:{user:{getIdToken:async()=> 'token-for-user'}},
+    withTimeout:p=>p,fetch:async(url,options)=>{request={url,options};return {ok:true,json:async()=>({log:{entries:[{id:'server-food'}]}})};},
+    normalizeLog:(date,log)=>({dateKey:date,...log})};
+  vm.createContext(ctx);vm.runInContext(body('async function loadDailyLogFromServer(','function sameSavedLog'),ctx);
+  const log=await ctx.loadDailyLogFromServer('2026-10-16');
+  assert.equal(request.url,'/api/daily-nutrition/day/2026-10-16');
+  assert.equal(request.options.headers.Authorization,'Bearer token-for-user');
+  assert.equal(request.options.cache,'no-store');
+  assert.equal(log.entries[0].id,'server-food');
+});
+
 test('a timed-out write stays serialized; a late old save cannot overtake a newer save',async()=>{
   const drafts=new Map(),writes=[],node={},state={user:{uid:'u'},dateKey:'2026-10-16',log:{entries:[{calories:100}]},saveChain:Promise.resolve()};
   const ctx={state,structuredClone,Date,Math,db:{},console:{error(){}},$:()=>node,copy:{savingStatus:'saving',saveStatus:'saved',savedOnDevice:'local',saveError:'failed'},
@@ -52,6 +65,42 @@ test('rapid day navigation discards a stale read and never exposes an old log un
   loads.get('2026-10-15').resolve({dateKey:'2026-10-15',entries:[{calories:100}]});await first;
   assert.deepEqual(renders,[{date:'2026-10-16',log:'2026-10-16'}]);
   assert.equal(state.log.entries[0].calories,200);
+});
+
+test('a failed browser read uses the authenticated server copy instead of claiming the day is unsaved',async()=>{
+  const status={};let pageStatus;
+  const state={user:{uid:'u'},saveChain:Promise.resolve(),targets:{complete:false}};
+  const ctx={state,db:{},console:{warn(){}},$:selector=>selector==='#autosaveState'?status:{hidden:false},copy:{loading:'loading',saveStatus:'saved',logLoadFailed:'failed'},navigator:{onLine:false},
+    withDeadline:p=>p,withTimeout:p=>p,LOG_LOAD_TIMEOUT_MS:10,readDailyDraft:()=>null,
+    loadDailyLog:async()=>{throw Error('browser stream stalled');},
+    loadDailyLogFromServer:async date=>({dateKey:date,entries:[{id:'cloud'}],completed:false}),
+    loadNutritionWeek:async()=>[],normalizeLog:(date,log={})=>({dateKey:date,entries:[],...log}),
+    setComposerMessage(){},setPageStatus(message,error){pageStatus={message,error};},render(){}};
+  vm.createContext(ctx);vm.runInContext(body('async function loadDate(','function addEntries'),ctx);
+  await ctx.loadDate('2026-10-16');
+  assert.equal(state.log.entries[0].id,'cloud');
+  assert.equal(state.log.readFailed,undefined);
+  assert.equal(pageStatus.message,'');
+  assert.equal(status.textContent,'saved');
+});
+
+test('a server-confirmed completed write clears its stale local warning without resaving',async()=>{
+  const status={},entry={id:'food-1',calories:100},draft={token:'old',savedAt:200,log:{entries:[entry],completed:false,targetSnapshot:null}};
+  let cleared=0,saved=0;
+  const state={user:{uid:'u'},saveChain:Promise.resolve(),targets:{complete:false}};
+  const ctx={state,db:{},console:{warn(){}},$:selector=>selector==='#autosaveState'?status:{hidden:false},copy:{loading:'loading',saveStatus:'saved',savedOnDevice:'pending'},navigator:{onLine:true},
+    withDeadline:p=>p,withTimeout:p=>p,LOG_LOAD_TIMEOUT_MS:10,
+    readDailyDraft:()=>cleared?null:draft,clearDailyDraft:()=>{cleared++;},
+    loadDailyLog:async date=>({dateKey:date,entries:[entry],completed:false,targetSnapshot:null,updatedAt:100}),
+    loadDailyLogFromServer:async date=>({dateKey:date,entries:[entry],completed:false,targetSnapshot:null,updatedAt:300}),
+    sameSavedLog:(a,b)=>JSON.stringify(a.entries)===JSON.stringify(b.entries),
+    loadNutritionWeek:async()=>[],normalizeLog:(date,log={})=>({dateKey:date,entries:[],completed:false,targetSnapshot:null,...log}),
+    timestampMillis:value=>Number(value)||0,setComposerMessage(){},setPageStatus(){},render(){},queueSave(){saved++;}};
+  vm.createContext(ctx);vm.runInContext(body('async function loadDate(','function addEntries'),ctx);
+  await ctx.loadDate('2026-10-16');
+  assert.equal(cleared,1);
+  assert.equal(saved,0);
+  assert.equal(status.textContent,'saved');
 });
 
 test('a food interpretation requested for a previous day cannot add to the newly selected day',async()=>{

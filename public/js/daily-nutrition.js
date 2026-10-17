@@ -97,6 +97,26 @@ function timestampMillis(value) {
   return nutritionTimestampMillis(value);
 }
 
+async function loadDailyLogFromServer(dateKey) {
+  const token = await state.user.getIdToken();
+  const response = await withTimeout(fetch(`/api/daily-nutrition/day/${encodeURIComponent(dateKey)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store"
+  }), 7000);
+  if (!response.ok) throw new Error(`DAILY_LOG_SERVER_${response.status}`);
+  const payload = await withTimeout(response.json(), 7000);
+  return normalizeLog(dateKey, payload.log || {});
+}
+
+function sameSavedLog(first, second) {
+  // The server read is authoritative; timestamps are intentionally ignored.
+  // A false negative only leaves the draft available for retry, never loses it.
+  return first.completed === second.completed
+    && JSON.stringify(first.entries) === JSON.stringify(second.entries)
+    && JSON.stringify(first.targetSnapshot) === JSON.stringify(second.targetSnapshot)
+    && first.maintenanceSnapshot === second.maintenanceSnapshot;
+}
+
 const state = {
   user: null,
   dateKey: localDateKey(),
@@ -475,17 +495,39 @@ async function loadDate(dateKey) {
   // queueSave() then re-reads and merges the saved day before the next write,
   // so an unread saved log is never silently overwritten with new-only entries.
   let log;
+  let serverConfirmed = false;
   const localDraft = readDailyDraft(uid, dateKey);
   try {
     log = await withTimeout(loadDailyLog(db, uid, dateKey), LOG_LOAD_TIMEOUT_MS);
-    if (localDraft && localDraft.savedAt > timestampMillis(log.updatedAt)) {
-      log = normalizeLog(dateKey, localDraft.log);
-      log.readFailed = false;
-    }
   } catch (error) {
-    console.warn("Daily nutrition: today's log did not load; starting a local working log.", error);
-    log = normalizeLog(dateKey, localDraft?.log || {});
-    log.readFailed = true;
+    try {
+      log = await loadDailyLogFromServer(dateKey);
+      serverConfirmed = true;
+    } catch (serverError) {
+      console.warn("Daily nutrition: today's log could not be confirmed by the browser or server.", error, serverError);
+      log = normalizeLog(dateKey, localDraft?.log || {});
+      log.readFailed = true;
+    }
+  }
+  if (localDraft) {
+    // A timed-out browser write may actually have completed. Verify against an
+    // uncached server read before continuing to show an alarming pending badge.
+    if (!serverConfirmed) {
+      try {
+        log = await loadDailyLogFromServer(dateKey);
+        serverConfirmed = true;
+      } catch {
+        // Keep the draft and its pending indicator until cloud confirmation.
+      }
+    }
+    const draftLog = normalizeLog(dateKey, localDraft.log);
+    if (serverConfirmed && sameSavedLog(log, draftLog)) {
+      clearDailyDraft(uid, dateKey, localDraft.token);
+    } else if (log.readFailed || localDraft.savedAt > timestampMillis(log.updatedAt)) {
+      const readFailed = log.readFailed;
+      log = draftLog;
+      if (readFailed) log.readFailed = true;
+    }
   }
   if (request !== state.dateLoadRequest || state.user?.uid !== uid) return;
   const weekLogs = await withDeadline(loadNutritionWeek(db, uid, dateKey)).catch(() => [log]);
@@ -500,6 +542,9 @@ async function loadDate(dateKey) {
   if (readDailyDraft(state.user.uid, state.dateKey)) {
     $("#autosaveState").textContent = copy.savedOnDevice;
     $("#autosaveState").className = "autosave-state error";
+  } else {
+    $("#autosaveState").textContent = copy.saveStatus;
+    $("#autosaveState").className = "autosave-state";
   }
   if (state.log.readFailed) setPageStatus(copy.logLoadFailed, true, { retry: () => loadDate(state.dateKey) });
   else setPageStatus(state.log.completed ? copy.dayFinished : "");

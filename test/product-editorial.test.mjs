@@ -33,7 +33,7 @@ test('product editorial layer removes legacy deep ocean treatment', () => {
 
 test('service worker precaches the shared product editorial layer', () => {
   const sw = fs.readFileSync(path.join(root, 'public/sw.js'), 'utf8');
-  assert.match(sw, /fuelphysique-workout-paper-20261017-1/);
+  assert.match(sw, /fuelphysique-legal-paper-diary-20261017-2/);
   assert.match(sw, /\/css\/product-editorial\.css\?v=20261010-product-editorial-4/);
   assert.match(sw, /\/css\/product-paper-routes\.css\?v=20261017-nutrition-nav-1/);
   assert.match(sw, /\/css\/simple-ux\.css\?v=20261010-workout-paper-2/);
@@ -71,6 +71,18 @@ test('nutrition, progress and social use the paper route layer without the ocean
   assert.match(css, /--fp-nav-surface: #f7f5f1/);
   assert.match(css, /\.settings-window \{/);
   assert.match(css, /body\.fp-route-app #settingsOverlay \{ position: fixed !important; inset: 0 !important; z-index: 9999 !important/);
+});
+
+test('FAQ, contact and legal pages use the dashboard paper palette', () => {
+  const shell = fs.readFileSync(path.join(root, 'public/js/redesign-shell.js'), 'utf8');
+  const paper = fs.readFileSync(path.join(root, 'public/css/product-paper-routes.css'), 'utf8');
+  const legal = fs.readFileSync(path.join(root, 'public/css/legal.css'), 'utf8');
+  for (const route of ['faq.html', 'contact.html', 'terms.html', 'privacy.html', 'refund-policy.html']) {
+    assert.ok(shell.includes(`"${route}"`), route);
+  }
+  assert.match(paper, /body\.fp-paper-route\s*\{[\s\S]*?background:\s*#f7f5f1\s*!important/);
+  assert.match(legal, /body\s*\{[\s\S]*?--text:\s*var\(--fp-text-primary\)/);
+  assert.doesNotMatch(legal, /\.legal-section strong\s*\{\s*color:\s*#f1f5f9/);
 });
 
 test('nutrition goal photography keeps readable light captions over its dark shade', () => {

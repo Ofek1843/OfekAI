@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-workout-paper-20261017-1';
+const CACHE_NAME = 'fuelphysique-legal-paper-diary-20261017-2';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -87,17 +87,17 @@ const urlsToCache = [
   '/css/workout-builder.css?v=20261014-rir-1',
   '/css/workout-result-paper.css?v=20261017-1',
   '/css/nutrition-builder.css',
-  '/css/legal.css',
+  '/css/legal.css?v=20261017-paper-1',
   '/css/pricing.css',
   '/css/social.css',
   '/js/social.js?v=20261014-rir-1',
   '/js/redesign-shell.js?v=20261002-brand-quality-1',
   '/js/redesign-shell.js?v=20261010-workout-paper-1',
-  '/js/redesign-shell.js?v=20261011-paper-1',
+  '/js/redesign-shell.js?v=20261017-legal-paper-1',
   '/js/i18n.js?v=20261002-brand-quality-1',
   '/js/simple-ux.js?v=20261017-nutrition-nav-1',
   '/js/dashboard.js?v=20261006-simple-3',
-  '/js/daily-nutrition.js?v=20260928-language-coverage-1',
+  '/js/daily-nutrition.js?v=20261017-server-confirm-1',
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',
   '/images/common/meal.svg',
   '/js/daily-nutrition-domain.mjs?v=20260928-multilingual-food-1',

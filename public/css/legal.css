@@ -1,6 +1,6 @@
 * { box-sizing: border-box; }
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --bg: var(--fp-bg-page);
   --surface: var(--fp-surface);
   --border: var(--fp-border);
@@ -13,6 +13,20 @@
 body {
   margin: 0; min-height: 100vh;
   font-family: Inter, system-ui, sans-serif;
+  --fp-bg-page: #f7f5f1;
+  --fp-surface: #ffffff;
+  --fp-border: #d9d6cf;
+  --fp-text-primary: #121417;
+  --fp-text-muted: #626970;
+  --fp-brand-primary: #0866bd;
+  --fp-text-inverse: #ffffff;
+  --bg: var(--fp-bg-page);
+  --surface: var(--fp-surface);
+  --border: var(--fp-border);
+  --text: var(--fp-text-primary);
+  --muted: var(--fp-text-muted);
+  --accent: var(--fp-brand-primary);
+  --accent2: #07559f;
   color: var(--text);
   background: var(--bg);
   line-height: 1.65;
@@ -29,8 +43,7 @@ button, input, select, textarea { font: inherit; }
 }
 .legal-nav-brand {
   font-size: 22px; font-weight: 900; letter-spacing: -.03em;
-  background: linear-gradient(90deg, #f3f0e8 5%, #93c5fd 50%, #78d9ff 95%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  color: #121417;
   text-decoration: none;
 }
 .legal-nav-links { display: flex; gap: 24px; }
@@ -48,8 +61,8 @@ button, input, select, textarea { font: inherit; }
 .legal-hero { margin-bottom: 48px; }
 .legal-badge {
   display: inline-block; padding: 5px 14px;
-  border: 1px solid rgba(53, 207, 223,.35); border-radius: 999px;
-  color: var(--accent2); background: rgba(53, 207, 223,.1);
+  border: 1px solid #bed8f0; border-radius: 999px;
+  color: var(--accent2); background: #eaf3fb;
   font-size: 12px; font-weight: 800; letter-spacing: .06em;
   text-transform: uppercase; margin-bottom: 16px;
 }
@@ -82,7 +95,7 @@ button, input, select, textarea { font: inherit; }
 .legal-section p { margin: 0 0 14px; color: var(--text); }
 .legal-section ul, .legal-section ol { margin: 0 0 14px; padding-left: 22px; }
 .legal-section li { margin-bottom: 7px; color: var(--text); }
-.legal-section strong { color: #f1f5f9; }
+.legal-section strong { color: var(--text); }
 
 /* ── FAQ ── */
 .faq-list { display: grid; gap: 12px; }
@@ -108,7 +121,7 @@ button, input, select, textarea { font: inherit; }
 /* ── Contact form ── */
 .contact-grid { display: grid; gap: 18px; }
 .contact-field { display: grid; gap: 7px; }
-.contact-field label { font-size: 14px; font-weight: 700; color: #bcc6c2; }
+.contact-field label { font-size: 14px; font-weight: 700; color: var(--text); }
 .contact-field input, .contact-field textarea, .contact-field select {
   width: 100%; padding: 12px 16px;
   border: 1px solid var(--border); border-radius: 12px;
@@ -121,7 +134,7 @@ button, input, select, textarea { font: inherit; }
 }
 .contact-submit {
   min-height: 52px; width: 100%; border: 0; border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), #28b8c8);
+  background: var(--accent);
   color: var(--fp-text-inverse); font-size: 16px; font-weight: 800; cursor: pointer;
   transition: transform .15s ease, box-shadow .15s ease;
 }
@@ -151,8 +164,7 @@ button, input, select, textarea { font: inherit; }
   align-items: start;
 }
 .site-footer-brand { font-size: 20px; font-weight: 900; letter-spacing: -.03em;
-  background: linear-gradient(90deg, #f3f0e8, #93c5fd);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
+  color: var(--text);
   margin-bottom: 8px;
 }
 .site-footer-tagline { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
@@ -166,8 +178,8 @@ button, input, select, textarea { font: inherit; }
 /* ── Highlight box ── */
 .legal-highlight {
   padding: 16px 20px; border-radius: 14px;
-  background: rgba(53, 207, 223,.08); border: 1px solid rgba(53, 207, 223,.2);
-  font-size: 14px; color: #9d8fc7; margin-bottom: 18px;
+  background: #eaf3fb; border: 1px solid #bed8f0;
+  font-size: 14px; color: var(--text); margin-bottom: 18px;
 }
 
 .legal-language-copy[hidden] { display: none; }

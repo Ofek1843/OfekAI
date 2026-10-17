@@ -8,7 +8,10 @@
     "workout-builder.html", "workout-plan-generator.html", "manual-workout-builder.html",
     "my-workout-plans.html", "nutrition-builder.html",
     "manual-nutrition-builder.html", "my-nutrition-plans.html", "progress.html",
-    "social.html",
+    "social.html", "faq.html", "contact.html", "about.html",
+    "accessibility.html", "community-guidelines.html", "copyright.html",
+    "privacy.html", "refund-policy.html", "subprocessors.html",
+    "subscription-policy.html", "terms.html",
   ]);
   // The workout wizard has moved to the paper UI. Loading the legacy ocean
   // sheet after its editorial sheet restores navy surfaces at equal specificity.
