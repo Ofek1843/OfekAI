@@ -21,6 +21,17 @@
 const DISMISS_KEY_PREFIX = "fuelphysique-pwa-install-dismissed-until";
 const DISMISS_DAYS = 14;
 const IOS_INSTRUCTION_DELAY_MS = 6000;
+const DASHBOARD_AUTH_EVENT = "fuelphysique:dashboard-authenticated";
+
+// The install walkthrough is a post-signup tip, not a landing-page prompt.
+// Keep the script on other pages so it can suppress Chromium's automatic
+// install promotion there, but never render our banner outside the dashboard.
+function isDashboardRoute() {
+  return window.location.pathname === "/dashboard.html";
+}
+
+let dashboardAuthenticated = false;
+let pendingNativePrompt = null;
 
 const isHebrew = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 
@@ -281,6 +292,7 @@ function removeActiveBanner() {
 // with a numbered steps list and a single acknowledgement button (iOS, which
 // has no scriptable install flow).
 function renderBanner({ instructional, title, text, steps, primaryLabel, secondaryLabel, onPrimary, onSecondary }) {
+  if (!isDashboardRoute() || !dashboardAuthenticated || isStandalone()) return null;
   injectStyles();
   removeActiveBanner();
 
@@ -347,30 +359,39 @@ function renderBanner({ instructional, title, text, steps, primaryLabel, seconda
 // --- A. Android Chrome / supported Chromium browsers, and desktop Chrome/Edge ---
 // Both rely on the real `beforeinstallprompt` event; only the dismissal key
 // differs so they don't share a suppression window with iOS or each other.
+function showNativeInstallPrompt(event, platformSlug) {
+  if (!dashboardAuthenticated || isStandalone() || isDismissed(platformSlug)) return;
+  const copy = isHebrew
+    ? { title: "התקן את FuelPhysique", text: "הוסף למסך הבית לגישה מהירה ולחוויה במסך מלא, כמו אפליקציה.", install: "התקנה", dismiss: "לא עכשיו" }
+    : { title: "Install FuelPhysique", text: "Add to your home screen for quick, full-screen access — just like an app.", install: "Install", dismiss: "Not now" };
+
+  renderBanner({
+    instructional: false,
+    title: copy.title,
+    text: copy.text,
+    primaryLabel: copy.install,
+    secondaryLabel: copy.dismiss,
+    onPrimary: async () => {
+      event.prompt();
+      const choice = await event.userChoice;
+      // A user who explicitly declines the native dialog should not be
+      // re-prompted immediately on the next page load either.
+      if (choice?.outcome !== "accepted") setDismissed(platformSlug);
+    },
+    onSecondary: () => setDismissed(platformSlug)
+  });
+}
+
 function initNativePromptFlow(platformSlug) {
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
-    if (isDismissed(platformSlug)) return;
-
-    const copy = isHebrew
-      ? { title: "התקן את FuelPhysique", text: "הוסף למסך הבית לגישה מהירה ולחוויה במסך מלא, כמו אפליקציה.", install: "התקנה", dismiss: "לא עכשיו" }
-      : { title: "Install FuelPhysique", text: "Add to your home screen for quick, full-screen access — just like an app.", install: "Install", dismiss: "Not now" };
-
-    renderBanner({
-      instructional: false,
-      title: copy.title,
-      text: copy.text,
-      primaryLabel: copy.install,
-      secondaryLabel: copy.dismiss,
-      onPrimary: async () => {
-        event.prompt();
-        const choice = await event.userChoice;
-        // A user who explicitly declines the native dialog should not be
-        // re-prompted immediately on the next page load either.
-        if (choice?.outcome !== "accepted") setDismissed(platformSlug);
-      },
-      onSecondary: () => setDismissed(platformSlug)
-    });
+    // Chromium may emit this while Firebase is still resolving auth. Retain
+    // the event so the real install action remains available after the guard.
+    if (!dashboardAuthenticated) {
+      pendingNativePrompt = event;
+      return;
+    }
+    showNativeInstallPrompt(event, platformSlug);
   });
 
   window.addEventListener("appinstalled", () => {
@@ -450,18 +471,34 @@ function init() {
   // D. Never promote installation once already running as an installed app.
   if (isStandalone()) return;
 
-  if (isIOS()) {
-    if (isIOSSafari()) {
-      window.setTimeout(showIOSSafariInstructions, IOS_INSTRUCTION_DELAY_MS);
-    } else {
-      window.setTimeout(showIOSOtherBrowserNotice, IOS_INSTRUCTION_DELAY_MS);
-    }
+  if (!isDashboardRoute()) {
+    window.addEventListener("beforeinstallprompt", (event) => event.preventDefault());
     return;
   }
 
-  // Android Chrome/Chromium and desktop Chrome/Edge both use the real
-  // event; the dismissal key is the only thing that differs between them.
-  initNativePromptFlow(isAndroid() ? "android" : "desktop");
+  const platformSlug = isAndroid() ? "android" : "desktop";
+  if (!isIOS()) initNativePromptFlow(platformSlug);
+
+  function enableAfterAuthentication() {
+    if (dashboardAuthenticated || document.documentElement.dataset.pwaInstallAllowed !== "true") return;
+    dashboardAuthenticated = true;
+
+    if (isIOS()) {
+      if (isIOSSafari()) {
+        window.setTimeout(showIOSSafariInstructions, IOS_INSTRUCTION_DELAY_MS);
+      } else {
+        window.setTimeout(showIOSOtherBrowserNotice, IOS_INSTRUCTION_DELAY_MS);
+      }
+    } else if (pendingNativePrompt) {
+      const event = pendingNativePrompt;
+      pendingNativePrompt = null;
+      showNativeInstallPrompt(event, platformSlug);
+    }
+  }
+
+  window.addEventListener(DASHBOARD_AUTH_EVENT, enableAfterAuthentication, { once: true });
+  // The auth callback can win the race against this deferred script.
+  enableAfterAuthentication();
 }
 
 init();

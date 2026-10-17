@@ -71,6 +71,11 @@ async function load(user) {
  if(dashboard)dashboard.update(model);else dashboard=mountDashboard(root,model,options);
 }
 guardProtectedPage({onAuthenticated:async(user)=>{
- try{await load(user);}catch{root.textContent=copy.error;}
+ try{
+  await load(user);
+  if(auth.currentUser?.uid!==user.uid||!dashboard)return;
+  document.documentElement.dataset.pwaInstallAllowed='true';
+  window.dispatchEvent(new Event('fuelphysique:dashboard-authenticated'));
+ }catch{root.textContent=copy.error;}
 }});
 trackPageView({page:'dashboard'});

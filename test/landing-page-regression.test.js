@@ -71,7 +71,7 @@ test("mobile PWA instructions keep their action button legible and bounded", () 
 
   assert.match(pwa, /\.pwa-install-btn\.primary\s*\{[\s\S]*?background: #47b7ff !important;[\s\S]*?color: #061323 !important/);
   assert.match(pwa, /max-height: min\(230px/);
-  assert.match(html, /pwa-install\.js\?v=20261007-install-contrast-1/);
+  assert.match(html, /pwa-install\.js\?v=20261017-dashboard-only-1/);
 });
 
 test("current landing previews show exercise prescriptions, meal quantities and diary progress", () => {

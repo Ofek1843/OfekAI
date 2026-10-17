@@ -45,7 +45,7 @@ const urlsToCache = [
   '/privacy.html',
   '/css/dashboard.css',
   '/css/dashboard-editorial.css?v=20261013-plan-view-1',
-  '/js/dashboard-editorial.js?v=20261017-diary-fallback-1',
+  '/js/dashboard-editorial.js?v=20261017-pwa-after-auth-1',
   '/js/dashboard-editorial-view.mjs?v=20261015-plan-tabs-1',
   '/js/dashboard-editorial-i18n.mjs',
   '/js/plan-sidebar.mjs',

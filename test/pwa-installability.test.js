@@ -20,6 +20,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 const { spawn } = require("node:child_process");
 const { stopChildProcess } = require("./child-process-cleanup");
 
@@ -156,6 +157,85 @@ test("pwa-install.js implements distinct platform detection, not a single generi
 
   // D. Standalone -- never promoted.
   assert.match(source, /if \(isStandalone\(\)\) return;/);
+});
+
+test("install guidance waits for an authenticated dashboard and never schedules on the landing page", () => {
+  const source = fs.readFileSync(path.join(PUBLIC, "js", "pwa-install.js"), "utf8");
+  const run = (pathname) => {
+    const listeners = new Map();
+    const timers = [];
+    const dataset = {};
+    const window = {
+      location: { pathname, search: "" },
+      navigator: { standalone: false },
+      matchMedia: () => ({ matches: false }),
+      addEventListener: (name, callback) => listeners.set(name, callback),
+      setTimeout: (callback, delay) => timers.push({ callback, delay })
+    };
+    vm.runInNewContext(source, {
+      window,
+      document: { documentElement: { dataset } },
+      navigator: { userAgent: "Mozilla/5.0 (iPhone) AppleWebKit/605.1.15 Safari/604.1", platform: "iPhone" },
+      localStorage: { getItem: () => null, removeItem() {}, setItem() {} },
+      URLSearchParams
+    });
+    return { listeners, timers, dataset };
+  };
+
+  const visitor = run("/");
+  assert.equal(visitor.timers.length, 0);
+  assert.equal(visitor.listeners.has("fuelphysique:dashboard-authenticated"), false);
+
+  const dashboard = run("/dashboard.html");
+  assert.equal(dashboard.timers.length, 0, "auth has not resolved yet");
+  dashboard.dataset.pwaInstallAllowed = "true";
+  dashboard.listeners.get("fuelphysique:dashboard-authenticated")();
+  assert.equal(dashboard.timers.length, 1);
+  assert.equal(dashboard.timers[0].delay, 6000);
+
+  const dashboardSource = fs.readFileSync(path.join(PUBLIC, "js", "dashboard-editorial.js"), "utf8");
+  assert.match(dashboardSource, /guardProtectedPage\(\{onAuthenticated:[\s\S]*?pwaInstallAllowed='true';[\s\S]*?dispatchEvent\(new Event\('fuelphysique:dashboard-authenticated'\)\)/);
+});
+
+test("Chromium install event is held until dashboard authentication, not shown to visitors", () => {
+  const source = fs.readFileSync(path.join(PUBLIC, "js", "pwa-install.js"), "utf8");
+  const run = (pathname) => {
+    const listeners = new Map();
+    const dataset = {};
+    let shown = 0;
+    const element = () => ({
+      classList: { add() {} }, setAttribute() {}, addEventListener() {}, remove() {},
+      querySelector: () => ({ addEventListener() {} }), show: () => { shown += 1; }
+    });
+    const window = {
+      location: { pathname, search: "" }, navigator: { standalone: false },
+      matchMedia: () => ({ matches: false }),
+      addEventListener: (name, callback) => listeners.set(name, callback)
+    };
+    vm.runInNewContext(source, {
+      window, document: {
+        documentElement: { dataset }, getElementById: () => null,
+        createElement: element, head: { appendChild() {} }, body: { appendChild() {} }
+      },
+      navigator: { userAgent: "Mozilla/5.0 Chrome/130", platform: "Win32" },
+      localStorage: { getItem: () => null, removeItem() {}, setItem() {} },
+      URLSearchParams, requestAnimationFrame: (callback) => callback()
+    });
+    return { listeners, dataset, get shown() { return shown; } };
+  };
+
+  const visitor = run("/");
+  visitor.listeners.get("beforeinstallprompt")({ preventDefault() {} });
+  assert.equal(visitor.shown, 0);
+
+  const dashboard = run("/dashboard.html");
+  let prevented = false;
+  dashboard.listeners.get("beforeinstallprompt")({ preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.equal(dashboard.shown, 0);
+  dashboard.dataset.pwaInstallAllowed = "true";
+  dashboard.listeners.get("fuelphysique:dashboard-authenticated")();
+  assert.equal(dashboard.shown, 1);
 });
 
 test("pwa-install.js: dismissal is namespaced per platform", () => {
