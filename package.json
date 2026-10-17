@@ -35,13 +35,19 @@
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "firebase-admin": "^14.2.0",
-    "http-proxy-middleware": "^3.0.7"
+    "http-proxy": "^1.18.1"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^3.0.4",
+    "@firebase/rules-unit-testing": "^5.0.2",
     "autocannon": "^8.0.0",
-    "firebase": "^10.14.1",
+    "firebase": "^12.19.0",
     "linkedom": "^0.18.12",
     "sharp": "^0.35.3"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.14.6",
+    "hyperid": {
+      "uuid": "^11.1.1"
+    }
   }
 }

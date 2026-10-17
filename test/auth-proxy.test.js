@@ -290,7 +290,7 @@ test("a redirect produced mid-flow by the upstream is rewritten end-to-end throu
 
 test("the proxy's error handler logs only the error class/code, never the request URL (which may carry an OAuth code or state)", () => {
   const source = fs.readFileSync(path.join(ROOT, "lib", "auth-proxy.js"), "utf8");
-  const errorHandler = source.match(/error:\s*\(err, req, res\) => \{[\s\S]*?\n      \}/);
+  const errorHandler = source.match(/proxy\.on\("error", \(err, req, res\) => \{[\s\S]*?\n  \}\);/);
   assert.ok(errorHandler, "expected an error handler");
   assert.doesNotMatch(errorHandler[0], /req\.url|req\.originalUrl|req\.query/, "the error handler must never log the request URL/query");
 });

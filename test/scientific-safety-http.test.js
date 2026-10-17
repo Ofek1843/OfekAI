@@ -64,7 +64,7 @@ test("HTTP food-log fallback returns only the authenticated user's saved day",{
     assert.equal((await own.json()).log.entries[0].calories,787);
     const other=await fetch(base+"/api/daily-nutrition/day/2026-10-17",{headers:{Authorization:"Bearer another-diary-user"}});
     assert.equal(other.status,200);
-    assert.deepEqual((await other.json()).log,{});
+    assert.deepEqual((await other.json()).log,{updatedAt:null,createdAt:null,completedAt:null});
   } finally {await ref.delete();}
 });
 test("HTTP ordinary workout still passes final volume/equipment validation and preserves age",async()=>{

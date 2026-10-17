@@ -2,7 +2,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 // Never point this fixture test at production or clear a shared test database.
-if (process.env.FIRESTORE_EMULATOR_HOST !== "127.0.0.1:8080" || process.env.FIREBASE_PROJECT_ID !== "demo-fuelphysique") {
+if (process.env.FIRESTORE_EMULATOR_HOST !== "127.0.0.1:8082" || process.env.GCLOUD_PROJECT !== "demo-fuelphysique") {
   throw new Error("Use the loopback demo-fuelphysique Firestore emulator for this test.");
 }
 const { getFuelPhysiqueFirestore } = require("../lib/firebase-admin");
