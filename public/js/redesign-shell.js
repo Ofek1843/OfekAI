@@ -38,7 +38,7 @@
   if ((paperRoutes.has(route) || route === "app.html") && !document.querySelector('link[href*="product-paper-routes.css"]')) {
     const paperStyles = document.createElement("link");
     paperStyles.rel = "stylesheet";
-    paperStyles.href = "/css/product-paper-routes.css?v=20261011-2";
+    paperStyles.href = "/css/product-paper-routes.css?v=20261017-nutrition-nav-1";
     document.head.append(paperStyles);
   }
   const protectedRoutes = new Set([

@@ -50,7 +50,7 @@ test("workout and meal replacement controls remain visible, stateful, and scoped
   assert.match(server, /app\.post\("\/api\/workout-builder\/reroll-exercise"/);
   assert.match(server, /app\.post\("\/api\/nutrition-builder\/reroll-meal"/);
   assert.match(server, /reservedSiblingExerciseIds/);
-  assert.match(server, /exclude:\s*\[\.\.\.usedMealIds\]/);
+  assert.match(server, /exclude:\s*\[\.\.\.usedMealIds,\s*\.\.\.rerollHistory\]/);
 });
 
 test("Save Workout has an explicit high-contrast and keyboard-visible state", () => {

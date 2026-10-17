@@ -44,6 +44,29 @@ test("HTTP blocks an explicit movement restriction before model generation",asyn
 test("HTTP serves new client modules locally",async()=>{
   for(const url of ["/js/health-screening.mjs","/js/nutrition-selection.mjs"]){const r=await fetch(base+url);assert.equal(r.status,200);assert.match(await r.text(),/export function/);}
 });
+test("HTTP food-log fallback requires auth and rejects invalid dates",async()=>{
+  assert.equal((await fetch(base+"/api/daily-nutrition/day/2026-10-17")).status,401);
+  assert.equal((await fetch(base+"/api/daily-nutrition/day/not-a-date",{headers:{Authorization:"Bearer diary-date-check"}})).status,400);
+});
+test("HTTP food-log fallback returns only the authenticated user's saved day",{
+  skip: !process.env.FIRESTORE_EMULATOR_HOST
+},async()=>{
+  const {getFuelPhysiqueFirestore}=require("../lib/firebase-admin");
+  const db=getFuelPhysiqueFirestore();
+  const token=`diary-${Date.now()}`;
+  const uid=`mock-${token.slice(0,24)}`;
+  const ref=db.doc(`users/${uid}/dailyNutritionLogs/2026-10-17`);
+  await ref.set({dateKey:"2026-10-17",entries:[{id:"meal-a",calories:787,proteinGrams:33}]});
+  try {
+    const own=await fetch(base+"/api/daily-nutrition/day/2026-10-17",{headers:{Authorization:`Bearer ${token}`}});
+    assert.equal(own.status,200);
+    assert.match(own.headers.get("cache-control"),/no-store/);
+    assert.equal((await own.json()).log.entries[0].calories,787);
+    const other=await fetch(base+"/api/daily-nutrition/day/2026-10-17",{headers:{Authorization:"Bearer another-diary-user"}});
+    assert.equal(other.status,200);
+    assert.deepEqual((await other.json()).log,{});
+  } finally {await ref.delete();}
+});
 test("HTTP ordinary workout still passes final volume/equipment validation and preserves age",async()=>{
   const r=await post("/api/workout-builder",W);assert.equal(r.status,200,JSON.stringify(r.body));
   assert.equal(r.body.validationSummary.passed,true);assert.equal(r.body.validationSummary.volumePassed,true);assert.equal(r.body.program.age,22);

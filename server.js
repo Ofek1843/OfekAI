@@ -848,6 +848,32 @@ app.use("/api/notifications", createPushRouter({
   rateLimit: rateLimiters.push
 }));
 
+// Dashboard fallback for a stalled browser Firestore read. The identity comes
+// only from the verified bearer token; a missing day is a real empty day.
+app.get("/api/daily-nutrition/day/:dateKey", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  const { dateKey } = req.params;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return res.status(400).json({ error: "Invalid date." });
+  try {
+    const snapshot = await getFuelPhysiqueFirestore()
+      .doc(`users/${user.uid}/dailyNutritionLogs/${dateKey}`).get();
+    const log = snapshot.exists ? snapshot.data() : {};
+    res.set("Cache-Control", "private, no-store");
+    res.json({
+      log: {
+        ...log,
+        updatedAt: log.updatedAt?.toMillis?.() ?? null,
+        createdAt: log.createdAt?.toMillis?.() ?? null,
+        completedAt: log.completedAt?.toMillis?.() ?? null
+      }
+    });
+  } catch (error) {
+    console.error("Daily nutrition read failed:", error?.code || error?.message);
+    res.status(503).json({ error: "Today's food log is temporarily unavailable." });
+  }
+});
+
 app.get("/api/imagekit/upload-auth", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
@@ -4147,6 +4173,11 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
         if (entryOption?.mealId) usedMealIds.add(entryOption.mealId);
       }
     }
+    // Remember previously replaced meals in this slot. Without this, the
+    // highest-ranked former choice wins the next request and A/B toggles.
+    const rerollHistory = Array.isArray(meal.rerollHistory)
+      ? meal.rerollHistory.filter(id => typeof id === "string").slice(-80)
+      : [];
 
     const candidateIds = selectMeals({
       pool,
@@ -4156,8 +4187,10 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       targetCarbsGrams: meal.targetCarbsGrams,
       targetFatGrams: meal.targetFatGrams,
       macroAware: true,
-      count: Math.min(pool.length, 12),
-      exclude: [...usedMealIds],
+      // A strict macro/safety check below can reject many candidates; a
+      // 12-meal shortlist hid valid alternatives later in the catalog.
+      count: pool.length,
+      exclude: [...usedMealIds, ...rerollHistory],
       mealFormatPreference,
       foodStylePreference,
       favoriteTerms
@@ -4192,6 +4225,7 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       });
       if (!replacement) continue;
       candidateMeal.options[candidateIndex] = replacement;
+      candidateMeal.rerollHistory = [...new Set([...rerollHistory, option.mealId].filter(Boolean))].slice(-80);
 
       // Replacing the opening card changes the active daily plan, so rebalance
       // portions before returning anything. Replacing an alternative is checked

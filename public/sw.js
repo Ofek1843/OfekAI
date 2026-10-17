@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-meal-photos-20261017-1';
+const CACHE_NAME = 'fuelphysique-nutrition-fixes-20261017-2';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -45,15 +45,17 @@ const urlsToCache = [
   '/privacy.html',
   '/css/dashboard.css',
   '/css/dashboard-editorial.css?v=20261013-plan-view-1',
-  '/js/dashboard-editorial.js?v=20261015-plan-tabs-1',
+  '/js/dashboard-editorial.js?v=20261017-diary-fallback-1',
   '/js/dashboard-editorial-view.mjs?v=20261015-plan-tabs-1',
   '/js/dashboard-editorial-i18n.mjs',
   '/js/plan-sidebar.mjs',
   '/css/plan-sidebar.css?v=20261016-1',
   '/js/dashboard-load.mjs',
+  '/js/dashboard-diary.mjs',
   '/js/saved-nutrition-view.mjs',
   '/js/meal-photo.mjs',
   '/css/saved-nutrition-view.css',
+  '/css/saved-nutrition-improvements.css?v=20261017-1',
   '/my-nutrition-plans.html',
   '/manual-nutrition-builder.html',
   '/js/my-nutrition-plans.js',
@@ -81,7 +83,7 @@ const urlsToCache = [
   '/css/product-polish-v3.css?v=20260811-spectrum-v3',
   '/css/illustrated-v4.css?v=20261007-motion-1',
   '/css/product-editorial.css?v=20261010-product-editorial-4',
-  '/css/product-paper-routes.css?v=20261011-2',
+  '/css/product-paper-routes.css?v=20261017-nutrition-nav-1',
   '/css/workout-builder.css?v=20261014-rir-1',
   '/css/nutrition-builder.css',
   '/css/legal.css',
@@ -92,7 +94,7 @@ const urlsToCache = [
   '/js/redesign-shell.js?v=20261010-workout-paper-1',
   '/js/redesign-shell.js?v=20261011-paper-1',
   '/js/i18n.js?v=20261002-brand-quality-1',
-  '/js/simple-ux.js?v=20261014-rir-1',
+  '/js/simple-ux.js?v=20261017-nutrition-nav-1',
   '/js/dashboard.js?v=20261006-simple-3',
   '/js/daily-nutrition.js?v=20260928-language-coverage-1',
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',

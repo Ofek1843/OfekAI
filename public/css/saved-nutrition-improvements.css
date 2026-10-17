@@ -1,0 +1,11 @@
+/* Show the entire prepared dish in saved-plan previews, not a 150px strip. */
+.saved-nutrition-dialog .saved-meal-image {
+  display: block;
+  width: 100%;
+  height: clamp(260px, 42vw, 460px);
+  object-fit: contain;
+  object-position: center;
+  margin: 0 auto 18px;
+  border-radius: 10px;
+  background: #f2f0ea;
+}

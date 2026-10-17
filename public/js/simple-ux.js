@@ -286,7 +286,9 @@
     document.querySelector('.daily-nutrition-spotlight')?.remove();
   }
   // A stable three-tool navigation also makes it easy to switch workflows.
-  if (workoutForm || nutritionForm || document.querySelector('.daily-nutrition-route')) {
+  // The nutrition builder already has destination links above its wizard.
+  // Avoid a second three-tool strip that duplicates them and crowds the page.
+  if (workoutForm || document.querySelector('.daily-nutrition-route')) {
     const nav = document.createElement('nav'); nav.className='simple-tool-nav';
     nav.setAttribute('aria-label',copy('choose'));
     toolDefinitions.forEach(([key,,href]) => { const link=text('a',key);link.href=`/${href}`; if (location.pathname.endsWith(href)) link.setAttribute('aria-current','page');nav.append(link); });

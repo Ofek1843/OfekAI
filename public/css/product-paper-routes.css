@@ -187,9 +187,70 @@ body.fp-route-app .save-settings { border-radius: 4px !important; background: #0
 body.fp-route-app .settings-footer { background: #fff !important; color: #121417 !important; border-block-start: 1px solid #d9d6cf !important; padding-block: 16px 0; flex-wrap: wrap; }
 body.fp-route-app .settings-field-error { color: #b4233c !important; }
 
+/* Nutrition builder: three clear, centered destinations instead of scattered text links. */
+body.fp-route-nutrition-builder .builder-navigation {
+  display: flex !important;
+  align-items: center;
+  justify-content: center !important;
+  flex-wrap: wrap;
+  gap: 10px !important;
+  max-width: 880px;
+  min-height: auto !important;
+  margin: 0 auto 24px !important;
+  padding: 12px !important;
+  border: 0 !important;
+  background: transparent !important;
+  position: static !important;
+}
+body.fp-route-nutrition-builder .builder-navigation a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 18px;
+  border: 1px solid #9dc3e5 !important;
+  border-radius: 6px !important;
+  background: #eaf3fb !important;
+  color: #07559f !important;
+  font-weight: 750;
+  text-decoration: none !important;
+  text-align: center;
+}
+body.fp-route-nutrition-builder .builder-navigation a:first-child {
+  background: #0866bd !important;
+  border-color: #0866bd !important;
+  color: #fff !important;
+}
+body.fp-route-nutrition-builder .builder-navigation a:hover {
+  background: #d6eaf9 !important;
+  border-color: #0866bd !important;
+  color: #064c8d !important;
+}
+body.fp-route-nutrition-builder .builder-navigation a:first-child:hover {
+  background: #07559f !important;
+  color: #fff !important;
+}
+body.fp-route-nutrition-builder .builder-navigation a:focus-visible,
+body.fp-route-nutrition-builder .share-program-button:focus-visible {
+  outline: 3px solid #0866bd !important;
+  outline-offset: 3px;
+}
+body.fp-route-nutrition-builder .share-program-button {
+  border: 1px solid #0866bd !important;
+  border-radius: 4px !important;
+  background: #eaf3fb !important;
+  color: #07559f !important;
+  font-weight: 800;
+}
+body.fp-route-nutrition-builder .share-program-button:hover {
+  background: #d6eaf9 !important;
+  color: #064c8d !important;
+}
+
 @media (max-width: 760px) {
-  /* The fixed hamburger occupies the first 44px of these route headers. */
+  /* The global mobile menu overlays the top edge of the builder. */
   body.fp-route-nutrition-builder .builder-navigation { padding-top: 54px !important; }
+  body.fp-route-nutrition-builder .builder-navigation a { flex: 1 1 180px; }
   body.fp-route-social .social-mode-nav { padding-top: 48px !important; }
   body.fp-route-progress .progress-page { width: calc(100% - 24px) !important; }
   body.fp-route-social .social-shell { width: calc(100% - 24px) !important; }

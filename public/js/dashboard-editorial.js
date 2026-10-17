@@ -3,8 +3,8 @@ import { guardProtectedPage } from './verification-gate.js';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js';
 import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
 import { disassociateCurrentInstallation } from './push-notifications.js';
-import { loadDailyLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
-import { loadVisibleNutritionLog } from './daily-nutrition-recovery.mjs';
+import { loadDailyLog, normalizeLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
+import { loadDashboardDay } from './dashboard-diary.mjs';
 import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261015-plan-tabs-1';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
 import { trackPageView } from './analytics.js';
@@ -16,7 +16,22 @@ const root=document.querySelector('#dashboardRoot');
 root.querySelector('[role="status"]').textContent=copy.loading;
 let dashboard;
 let dashboardRequest=0;
-const loadVisibleDay = (uid, key) => loadVisibleNutritionLog(() => loadDailyLog(db, uid, key), uid, key);
+const loadVisibleDay = (uid, key) => loadDashboardDay({
+  uid, dateKey: key,
+  loadClient: () => loadDailyLog(db, uid, key),
+  loadServer: async () => {
+    const user = auth.currentUser;
+    if (user?.uid !== uid) throw new Error('User changed during food-log read.');
+    const response = await fetch(`/api/daily-nutrition/day/${key}`, {
+      headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(6000)
+    });
+    if (!response.ok) throw new Error(`DIARY_HTTP_${response.status}`);
+    const { log } = await response.json();
+    return normalizeLog(key, log);
+  }
+});
 async function load(user) {
  const request=++dashboardRequest;
  const results=await loadDashboardSections({
