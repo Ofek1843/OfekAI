@@ -75,7 +75,11 @@ function injectFeedbackStyles() {
       transform-origin: bottom center;
     }
     .site-feedback-panel::backdrop { background: rgba(2, 8, 18, 0.72); }
-    .site-feedback-panel h2 { margin: 0 0 6px; font-size: 20px; }
+    .site-feedback-panel h2 {
+      margin: 0 0 6px;
+      color: #ffffff !important;
+      font-size: 20px;
+    }
     .site-feedback-panel p { margin: 0 0 12px; color: #a9bad3; line-height: 1.5; }
     .site-feedback-panel textarea {
       width: 100%;
@@ -98,7 +102,12 @@ function injectFeedbackStyles() {
       font-weight: 900;
       cursor: pointer;
     }
-    .site-feedback-send { color: #06111f; background: linear-gradient(135deg, #35cfdf, #167fdc); }
+    .site-feedback-panel .site-feedback-send {
+      border-color: #167fdc !important;
+      background: #0866bd !important;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff !important;
+    }
     .site-feedback-close { color: #bcc6c2; background: rgba(255, 255, 255, 0.06); }
     .site-feedback-error {
       min-height: 18px;

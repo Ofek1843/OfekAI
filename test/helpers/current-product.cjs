@@ -6,7 +6,7 @@ const publicRoot=path.join(__dirname,'../../public');
 const read=p=>fs.readFileSync(path.join(publicRoot,p),'utf8');
 const editorialPages=new Set(['dashboard.html','dashboard-preview.html']);
 function assertCurrentCache(source) {
-  assert.equal(source.match(/const CACHE_NAME = ['"]([^'"]+)['"]/)[1],'fuelphysique-nutrition-fixes-20261017-2');
+  assert.equal(source.match(/const CACHE_NAME = ['"]([^'"]+)['"]/)[1],'fuelphysique-workout-paper-20261017-1');
   assert.match(source,/NETWORK_ONLY_PREFIXES/);
   assert.match(source,/AUTH_PROXY_PREFIX/);
 }

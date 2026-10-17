@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-nutrition-fixes-20261017-2';
+const CACHE_NAME = 'fuelphysique-workout-paper-20261017-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -85,6 +85,7 @@ const urlsToCache = [
   '/css/product-editorial.css?v=20261010-product-editorial-4',
   '/css/product-paper-routes.css?v=20261017-nutrition-nav-1',
   '/css/workout-builder.css?v=20261014-rir-1',
+  '/css/workout-result-paper.css?v=20261017-1',
   '/css/nutrition-builder.css',
   '/css/legal.css',
   '/css/pricing.css',
