@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-legal-paper-diary-20261017-2';
+const CACHE_NAME = 'fuelphysique-ga-consent-20261017-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -43,6 +43,8 @@ const urlsToCache = [
   '/contact.html',
   '/terms.html',
   '/privacy.html',
+  '/js/google-analytics-consent.js?v=20261017-1',
+  '/css/google-analytics-consent.css?v=20261017-1',
   '/css/dashboard.css',
   '/css/dashboard-editorial.css?v=20261013-plan-view-1',
   '/js/dashboard-editorial.js?v=20261017-pwa-after-auth-1',
@@ -97,7 +99,7 @@ const urlsToCache = [
   '/js/i18n.js?v=20261002-brand-quality-1',
   '/js/simple-ux.js?v=20261017-nutrition-nav-1',
   '/js/dashboard.js?v=20261006-simple-3',
-  '/js/daily-nutrition.js?v=20261017-server-confirm-1',
+  '/js/daily-nutrition.js?v=20261017-server-save-1',
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',
   '/images/common/meal.svg',
   '/js/daily-nutrition-domain.mjs?v=20260928-multilingual-food-1',
@@ -223,6 +225,15 @@ self.addEventListener('fetch', event => {
   // helper responses. The project Firebase domain is included for local/dev
   // authDomain fallback; production helper traffic uses /__/auth/* below.
   if (AUTH_INFRASTRUCTURE_ORIGINS.has(requestUrl.origin)) {
+    return;
+  }
+
+  // Google Analytics must never be cached or served from an offline fallback.
+  // The consent loader is local, but the tag and its measurement requests are
+  // fetched only after the visitor accepts optional analytics.
+  if (requestUrl.hostname === 'www.googletagmanager.com' ||
+      requestUrl.hostname === 'www.google-analytics.com' ||
+      requestUrl.hostname.endsWith('.google-analytics.com')) {
     return;
   }
 

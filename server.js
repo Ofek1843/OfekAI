@@ -31,6 +31,7 @@ const { voiceMessageConfig } = require("./lib/voice-message-domain");
 const { cleanupAccountVoiceMessages: cleanupVoiceMessages } = require("./lib/voice-account-lifecycle");
 const { hasAcceptedCurrentTerms, publicLegalPolicy } = require("./lib/legal-policy");
 const { getFuelPhysiqueFirestore } = require("./lib/firebase-admin");
+const { normalizeDailyNutritionWrite } = require("./lib/daily-nutrition-write");
 const { FirestorePushStore } = require("./lib/push-store");
 const { PushNotificationService } = require("./lib/push-service");
 const { createDisabledPushTransport, createFirebasePushTransport } = require("./lib/push-transport");
@@ -143,7 +144,8 @@ const rateLimiters = {
   socialArtifacts: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_ARTIFACTS_PER_UID_PER_MINUTE || 8), keyPrefix: "social-artifact" }),
   socialReports: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_REPORTS_PER_UID_PER_MINUTE || 3), keyPrefix: "social-report" }),
   push: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUSH_API_PER_UID_PER_MINUTE || 30), keyPrefix: "push" }),
-  account: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ACCOUNT_API_PER_UID_PER_MINUTE || 4), keyPrefix: "account" })
+  account: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ACCOUNT_API_PER_UID_PER_MINUTE || 4), keyPrefix: "account" }),
+  dailyNutrition: createRateLimiter({ windowMs: 60_000, max: 30, keyPrefix: "daily-nutrition" })
 };
 const aiQueue = createTaskQueue({ concurrency: AI_MAX_CONCURRENT, maxQueue: AI_MAX_QUEUE });
 const inFlight = createDeduper({ ttlMs: 20_000, maxEntries: 100 });
@@ -167,6 +169,9 @@ const cspConnectSources = [
   "https://*.firebaseio.com",
   "https://*.imagekit.io",
   "https://upload.imagekit.io",
+  "https://www.googletagmanager.com",
+  "https://*.google-analytics.com",
+  "https://www.google.com",
   // Local demo mode is explicit and server-controlled. These precise
   // loopback origins let the browser SDK reach the Auth and Firestore
   // emulators; they are never present in the production response policy.
@@ -194,10 +199,10 @@ app.use((req, res, next) => {
     "object-src 'none'",
     getFrameAncestorsDirective(req.path, AUTH_PROXY_PATH),
     "form-action 'self'",
-    "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com",
+    "script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.googletagmanager.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
-    "img-src 'self' data: blob: https://ik.imagekit.io https://lh3.googleusercontent.com https://img.spoonacular.com",
+    "img-src 'self' data: blob: https://ik.imagekit.io https://lh3.googleusercontent.com https://img.spoonacular.com https://www.googletagmanager.com https://*.google-analytics.com",
     `media-src 'self' ${configuredImageKitOrigin}`,
     `connect-src ${cspConnectSources}`,
     "worker-src 'self' blob:",
@@ -874,6 +879,40 @@ app.get("/api/daily-nutrition/day/:dateKey", async (req, res) => {
   }
 });
 
+// Use the authenticated app connection when the browser's Firestore stream is
+// unreliable. The server accepts only the diary's bounded, normalized fields;
+// user identity and timestamps are never taken from the request body.
+app.put("/api/daily-nutrition/day/:dateKey", async (req, res) => {
+  const user = await requireFirebaseUser(req, res);
+  if (!user) return;
+  const { dateKey } = req.params;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return res.status(400).json({ error: "Invalid date." });
+  let log;
+  try {
+    rateLimiters.dailyNutrition(req, user.uid);
+    log = normalizeDailyNutritionWrite(req.body?.log);
+  } catch (error) {
+    if (error.status === 429) return res.status(429).json({ error: "Too many diary saves. Please retry shortly." });
+    return res.status(400).json({ error: "Invalid food log." });
+  }
+  try {
+    const reference = getFuelPhysiqueFirestore().doc(`users/${user.uid}/dailyNutritionLogs/${dateKey}`);
+    const existing = await reference.get();
+    await reference.set({
+      ...log,
+      dateKey,
+      completedAt: log.completed ? (existing.data()?.completedAt || FieldValue.serverTimestamp()) : null,
+      updatedAt: FieldValue.serverTimestamp(),
+      ...(!existing.exists ? { createdAt: FieldValue.serverTimestamp() } : {})
+    }, { merge: true });
+    res.set("Cache-Control", "private, no-store");
+    res.json({ saved: true });
+  } catch (error) {
+    console.error("Daily nutrition write failed:", error?.code || error?.message);
+    res.status(503).json({ error: "Food log could not be saved online." });
+  }
+});
+
 app.get("/api/imagekit/upload-auth", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
@@ -1251,7 +1290,7 @@ app.get("/exercise-library", (req, res) => {
   <meta name="description" content="${escapeHtml(description)}"><link rel="canonical" href="https://fuelphysique.com/exercise-library">
   <meta property="og:type" content="website"><meta property="og:site_name" content="FuelPhysique"><meta property="og:title" content="Exercise Library: Browse by Muscle and Equipment | FuelPhysique"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="https://fuelphysique.com/exercise-library">
   <meta name="twitter:card" content="summary"><meta name="twitter:title" content="Exercise Library | FuelPhysique"><meta name="twitter:description" content="${escapeHtml(description)}">
-  <title>Exercise Library: Browse by Muscle and Equipment | FuelPhysique</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/legal.css"><link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1"><script defer src="/js/exercise-library.js"></script>
+  <title>Exercise Library: Browse by Muscle and Equipment | FuelPhysique</title><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/legal.css"><link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1"><script defer src="/js/google-analytics-consent.js?v=20261017-1"></script><script defer src="/js/exercise-library.js"></script>
   <style>
     .exercise-library{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:24px 0 80px}.exercise-library .legal-nav{margin-bottom:36px}.library-intro{max-width:850px;margin:0 auto 32px;text-align:center}.library-intro h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin:16px 0}.library-intro>p{color:var(--fp-text-muted);font-size:18px}.library-tools{position:sticky;top:8px;z-index:2;display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:16px;align-items:center;padding:14px;background:var(--fp-surface);border:1px solid var(--fp-border);border-radius:16px;margin:28px 0}.library-tools input{width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--fp-border);border-radius:10px;background:var(--fp-bg-page);color:var(--fp-text-primary)}.muscle-jumps{display:flex;flex-wrap:wrap;gap:8px}.muscle-jumps a{padding:7px 10px;border:1px solid var(--fp-border);border-radius:999px;font-size:13px}.muscle-section{scroll-margin-top:110px;margin:44px 0}.muscle-section>h2{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--fp-border);padding-bottom:12px}.muscle-section>h2 span{font-size:13px;color:var(--fp-text-muted);font-weight:500}.exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.exercise-card{overflow:hidden;border:1px solid var(--fp-border);border-radius:14px;background:var(--fp-surface)}.exercise-card[hidden],.muscle-section[hidden]{display:none}.exercise-card img{display:block;width:100%;height:180px;object-fit:cover;background:#091526}.exercise-card-copy{padding:14px}.exercise-card h3{font-size:18px;margin:0 0 12px}.exercise-card p{font-size:14px;margin:6px 0;color:var(--fp-text-muted)}.library-note{padding:16px;border-inline-start:3px solid var(--fp-brand-primary);background:var(--fp-surface);border-radius:8px;color:var(--fp-text-muted)}.library-cta{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0}.library-cta a{display:inline-block;padding:12px 18px;border-radius:10px;background:var(--fp-brand-primary);color:#06111c;font-weight:800}.library-cta a.secondary{background:transparent;color:var(--fp-text-primary);border:1px solid var(--fp-border)}@media(max-width:720px){.library-tools{position:static;grid-template-columns:1fr}.muscle-jumps{max-height:126px;overflow:auto}.exercise-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.exercise-card img{height:130px}.exercise-card-copy{padding:10px}.exercise-card h3{font-size:15px}}
   </style>

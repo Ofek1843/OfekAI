@@ -1,0 +1,40 @@
+.fp-analytics-consent {
+  position: fixed;
+  z-index: 2147483000;
+  inset: auto 16px 16px auto;
+  width: min(420px, calc(100vw - 32px));
+  box-sizing: border-box;
+  padding: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  background: #fff;
+  color: #142333;
+  box-shadow: 0 12px 40px #0b19334d;
+  font: 15px/1.5 system-ui, sans-serif;
+  direction: inherit;
+}
+
+.fp-analytics-consent strong { display: block; font-size: 17px; }
+.fp-analytics-consent p { margin: 8px 0 16px; color: #3c4d60; }
+.fp-analytics-consent-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.fp-analytics-consent button,
+.fp-analytics-settings button {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #0869bd;
+  border-radius: 8px;
+  background: #0869bd;
+  color: #fff;
+  font: 700 14px/1.2 system-ui, sans-serif;
+  cursor: pointer;
+}
+.fp-analytics-consent .fp-analytics-decline { background: #fff; color: #12314c; border-color: #9dadbd; }
+.fp-analytics-consent a { color: #075496; font-size: 13px; text-decoration: underline; }
+.fp-analytics-consent :focus-visible,
+.fp-analytics-settings :focus-visible { outline: 3px solid #57b8f8; outline-offset: 2px; }
+.fp-analytics-settings { margin: 16px 0; padding: 16px; border: 1px solid #cbd5e1; border-radius: 12px; background: #f7fafc; color: #142333; }
+.fp-analytics-settings h4 { margin: 0 0 8px; }
+.fp-analytics-settings p { margin: 0 0 12px; }
+@media (max-width: 480px) {
+  .fp-analytics-consent { inset: auto 12px 12px 12px; width: auto; }
+}

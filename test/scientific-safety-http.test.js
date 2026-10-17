@@ -47,6 +47,8 @@ test("HTTP serves new client modules locally",async()=>{
 test("HTTP food-log fallback requires auth and rejects invalid dates",async()=>{
   assert.equal((await fetch(base+"/api/daily-nutrition/day/2026-10-17")).status,401);
   assert.equal((await fetch(base+"/api/daily-nutrition/day/not-a-date",{headers:{Authorization:"Bearer diary-date-check"}})).status,400);
+  assert.equal((await fetch(base+"/api/daily-nutrition/day/2026-10-17",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({log:{entries:[],completed:false}})})).status,401);
+  assert.equal((await fetch(base+"/api/daily-nutrition/day/2026-10-17",{method:"PUT",headers:{Authorization:"Bearer diary-date-check","Content-Type":"application/json"},body:JSON.stringify({log:{entries:[{id:"bad",calories:-1}],completed:false}})})).status,400);
 });
 test("HTTP food-log fallback returns only the authenticated user's saved day",{
   skip: !process.env.FIRESTORE_EMULATOR_HOST
@@ -66,6 +68,24 @@ test("HTTP food-log fallback returns only the authenticated user's saved day",{
     assert.equal(other.status,200);
     assert.deepEqual((await other.json()).log,{updatedAt:null,createdAt:null,completedAt:null});
   } finally {await ref.delete();}
+});
+test("HTTP food-log write stores only the authenticated user's validated day",{
+  skip: !process.env.FIRESTORE_EMULATOR_HOST
+},async()=>{
+  const {getFuelPhysiqueFirestore}=require("../lib/firebase-admin");
+  const token=`diary-write-${Date.now()}`;
+  const uid=`mock-${token.slice(0,24)}`;
+  const reference=getFuelPhysiqueFirestore().doc(`users/${uid}/dailyNutritionLogs/2026-10-17`);
+  const entry={id:"meal-a",name:{en:"Oats",he:"שיבולת שועל"},amount:100,unit:"g",calories:389,proteinGrams:17,carbsGrams:66,fatGrams:7};
+  try {
+    const saved=await fetch(base+"/api/daily-nutrition/day/2026-10-17",{method:"PUT",headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json"},body:JSON.stringify({log:{entries:[entry],completed:false,totals:{calories:99999}}})});
+    assert.equal(saved.status,200,await saved.text());
+    const snapshot=await reference.get();
+    assert.equal(snapshot.data().totals.calories,389);
+    assert.equal(snapshot.data().entries[0].id,"meal-a");
+    const other=await fetch(base+"/api/daily-nutrition/day/2026-10-17",{headers:{Authorization:"Bearer another-diary-user"}});
+    assert.deepEqual((await other.json()).log,{updatedAt:null,createdAt:null,completedAt:null});
+  } finally {await reference.delete();}
 });
 test("HTTP ordinary workout still passes final volume/equipment validation and preserves age",async()=>{
   const r=await post("/api/workout-builder",W);assert.equal(r.status,200,JSON.stringify(r.body));

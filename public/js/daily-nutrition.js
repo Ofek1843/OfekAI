@@ -97,8 +97,8 @@ function timestampMillis(value) {
   return nutritionTimestampMillis(value);
 }
 
-async function loadDailyLogFromServer(dateKey) {
-  const token = await state.user.getIdToken();
+async function loadDailyLogFromServer(dateKey, user = state.user) {
+  const token = await user.getIdToken();
   const response = await withTimeout(fetch(`/api/daily-nutrition/day/${encodeURIComponent(dateKey)}`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store"
@@ -108,12 +108,32 @@ async function loadDailyLogFromServer(dateKey) {
   return normalizeLog(dateKey, payload.log || {});
 }
 
+async function saveDailyLogToServer(dateKey, log, user = state.user) {
+  const token = await user.getIdToken();
+  const response = await fetch(`/api/daily-nutrition/day/${encodeURIComponent(dateKey)}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ log }),
+    cache: "no-store"
+  });
+  if (!response.ok) throw new Error(`DAILY_LOG_SERVER_SAVE_${response.status}`);
+  if ((await response.json()).saved !== true) throw new Error("DAILY_LOG_SERVER_SAVE_UNCONFIRMED");
+}
+
+function stableLogValue(value) {
+  if (Array.isArray(value)) return value.map(stableLogValue);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stableLogValue(value[key])]));
+  }
+  return value;
+}
+
 function sameSavedLog(first, second) {
   // The server read is authoritative; timestamps are intentionally ignored.
   // A false negative only leaves the draft available for retry, never loses it.
   return first.completed === second.completed
-    && JSON.stringify(first.entries) === JSON.stringify(second.entries)
-    && JSON.stringify(first.targetSnapshot) === JSON.stringify(second.targetSnapshot)
+    && JSON.stringify(stableLogValue(first.entries)) === JSON.stringify(stableLogValue(second.entries))
+    && JSON.stringify(stableLogValue(first.targetSnapshot)) === JSON.stringify(stableLogValue(second.targetSnapshot))
     && first.maintenanceSnapshot === second.maintenanceSnapshot;
 }
 
@@ -244,6 +264,7 @@ function queueSave() {
   updateWeekLog();
   // Capture this day now, not when an earlier asynchronous save finishes.
   const uid = state.user.uid;
+  const user = state.user;
   const dateKey = state.dateKey;
   const log = structuredClone(state.log);
   const draftToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -263,7 +284,12 @@ function queueSave() {
       // transient read failure never drops an existing log.
       if (log.readFailed) {
         try {
-          const fresh = await withDeadline(loadDailyLog(db, uid, dateKey));
+          let fresh;
+          try {
+            fresh = await withDeadline(loadDailyLog(db, uid, dateKey));
+          } catch {
+            fresh = await loadDailyLogFromServer(dateKey, user);
+          }
           const localOnly = log.entries.filter((entry) => !fresh.entries.some((saved) => saved.id === entry.id));
           log.entries = [...fresh.entries, ...localOnly].slice(0, 80);
           delete log.readFailed;
@@ -281,6 +307,13 @@ function queueSave() {
     })
     .then(async () => {
       let lastError;
+      try {
+        await saveDailyLogToServer(dateKey, log, user);
+        clearDailyDraft(uid, dateKey, draftToken);
+        return true;
+      } catch (error) {
+        lastError = error;
+      }
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
           // A UI deadline cannot cancel a Firestore write. Keep the real

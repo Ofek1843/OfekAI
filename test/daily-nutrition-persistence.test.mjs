@@ -30,6 +30,38 @@ test('server fallback requests only the signed-in user day with a bearer token',
   assert.equal(log.entries[0].id,'server-food');
 });
 
+test('server diary write uses the signed-in token and serialized day snapshot',async()=>{
+  let request;
+  const ctx={state:{user:{getIdToken:async()=> 'token-for-user'}},fetch:async(url,options)=>{request={url,options};return {ok:true,json:async()=>({saved:true})};}};
+  vm.createContext(ctx);vm.runInContext(body('async function saveDailyLogToServer(','function stableLogValue'),ctx);
+  await ctx.saveDailyLogToServer('2026-10-16',{entries:[],completed:false});
+  assert.equal(request.url,'/api/daily-nutrition/day/2026-10-16');
+  assert.equal(request.options.method,'PUT');
+  assert.equal(request.options.headers.Authorization,'Bearer token-for-user');
+  assert.equal(JSON.parse(request.options.body).log.completed,false);
+});
+
+test('equivalent diary snapshots compare equal regardless of property order',()=>{
+  const ctx={};vm.createContext(ctx);vm.runInContext(body('function stableLogValue(','const state ='),ctx);
+  assert.equal(ctx.sameSavedLog(
+    {entries:[{id:'one',name:{en:'Oats',he:'שיבולת שועל'}}],targetSnapshot:{source:'plan',dailyCalories:2000},maintenanceSnapshot:null,completed:false},
+    {entries:[{name:{he:'שיבולת שועל',en:'Oats'},id:'one'}],targetSnapshot:{dailyCalories:2000,source:'plan'},maintenanceSnapshot:null,completed:false}
+  ),true);
+});
+
+test('successful server diary save clears the local draft without a second browser write',async()=>{
+  const drafts=new Map(),node={},state={user:{uid:'u'},dateKey:'2026-10-16',log:{entries:[],completed:false},saveChain:Promise.resolve()};
+  let serverWrites=0,browserWrites=0;
+  const ctx={state,structuredClone,Date,Math,db:{},console:{error(){}},$:()=>node,copy:{savingStatus:'saving',saveStatus:'saved',savedOnDevice:'local'},
+    updateWeekLog(){},writeDailyDraft(uid,date,log,token){drafts.set(date,{log,token});},readDailyDraft:(uid,date)=>drafts.get(date),
+    clearDailyDraft(uid,date,token){if(drafts.get(date)?.token===token)drafts.delete(date);},
+    saveDailyLogToServer:async()=>{serverWrites++;},saveDailyLog:async()=>{browserWrites++;},withDeadline:p=>p,setTimeout};
+  vm.createContext(ctx);vm.runInContext(body('function queueSave()','function renderTargets'),ctx);
+  assert.equal(await ctx.queueSave(),true);
+  assert.equal(serverWrites,1);assert.equal(browserWrites,0);assert.equal(drafts.size,0);
+  assert.equal(node.textContent,'saved');
+});
+
 test('a timed-out write stays serialized; a late old save cannot overtake a newer save',async()=>{
   const drafts=new Map(),writes=[],node={},state={user:{uid:'u'},dateKey:'2026-10-16',log:{entries:[{calories:100}]},saveChain:Promise.resolve()};
   const ctx={state,structuredClone,Date,Math,db:{},console:{error(){}},$:()=>node,copy:{savingStatus:'saving',saveStatus:'saved',savedOnDevice:'local',saveError:'failed'},
