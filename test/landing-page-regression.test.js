@@ -90,6 +90,27 @@ test("current landing previews show exercise prescriptions, meal quantities and 
   assert.match(read('public/js/simple-ux.js'),/prefers-reduced-motion: reduce/);
 });
 
+test("mobile landing gives distinct entry actions and clearly labels every plan preview as a sample", () => {
+  for (const language of ['en','he','ar','es','fr','de','zh']) {
+    const doc = require('./helpers/current-product.cjs').landing(language);
+    const actions = doc.querySelector('.landing-entry-actions');
+    assert.ok(actions, `${language}: missing entry actions`);
+    assert.match(actions.querySelector('.landing-entry-link--primary').getAttribute('href'), /auth\.html\?mode=signup$/);
+    assert.match(actions.querySelector('.landing-entry-link--secondary').getAttribute('href'), /auth\.html$/);
+    for (const preview of doc.querySelectorAll('.simple-preview-card')) {
+      assert.equal(preview.firstElementChild.className, 'preview-example-note');
+      assert.ok(preview.querySelector(':scope > strong').textContent.length > 0);
+    }
+  }
+  const html = read('public/index.html');
+  const css = read('public/css/landing-mobile-clarity.css');
+  const auth = read('public/js/auth.js');
+  assert.match(html, /landing-mobile-clarity\.css/);
+  assert.match(css, /@media \(max-width: 640px\)/);
+  assert.match(css, /\.site-feedback-widget\s*\{[\s\S]*?position: static !important/);
+  assert.match(auth, /get\("mode"\) === "signup"/);
+});
+
 test("landing contains both verified transformation stories and comparison labels", () => {
   const html = read("public/index.html");
 

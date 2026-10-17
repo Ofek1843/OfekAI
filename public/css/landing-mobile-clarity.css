@@ -1,0 +1,180 @@
+/* A clear entry point and genuinely sample-looking previews on the public landing page. */
+body.landing-page .landing-entry-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  gap: 10px;
+  margin-top: 24px;
+}
+body.landing-page .landing-entry-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 11px 20px;
+  border: 1px solid #0866bd;
+  border-radius: 8px;
+  font: 700 16px/1.25 Arial, sans-serif;
+  text-align: center;
+  text-decoration: none;
+}
+body.landing-page .landing-entry-link--primary { background: #0866bd; color: #fff; }
+body.landing-page .landing-entry-link--secondary { background: #fff; color: #064d91; }
+body.landing-page .landing-entry-link:focus-visible { outline: 3px solid #5bdcea; outline-offset: 3px; }
+body.landing-page .landing-entry-hint {
+  grid-column: 1 / -1;
+  color: #5f6368;
+  font: 13px/1.5 Arial, sans-serif;
+}
+body.landing-page .product-preview .preview-example-note {
+  display: inline-block;
+  align-self: flex-start;
+  margin: 0;
+  padding: 6px 9px;
+  border-radius: 5px;
+  background: #eaf3fb;
+  color: #064d91 !important;
+  font: 700 12px/1.35 Arial, sans-serif !important;
+}
+body.landing-page .product-preview > strong {
+  font: 700 20px/1.25 Georgia, serif !important;
+}
+
+@media (min-width: 901px) {
+  /* In RTL the hero copy sits on the right; keep the social rail off its text. */
+  html[dir="rtl"] body.landing-page .hero-social-links.editorial-social-rail {
+    inset: 50% auto auto 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Keep bug reporting available without covering the primary entry actions. */
+  body.landing-page .site-feedback-widget {
+    position: static !important;
+    width: max-content;
+    max-width: calc(100% - 32px);
+    margin: 16px 16px 24px auto;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .hero {
+    padding: 8px 10px 20px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero {
+    min-height: 0 !important;
+    padding: 26px 17px 18px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-areas: "content" "media" "tools" !important;
+    row-gap: 0 !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero #landingHeroTitle {
+    max-width: 100% !important;
+    margin: 16px 0 12px !important;
+    font-size: clamp(36px, 9.7vw, 43px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -.045em !important;
+    text-wrap: balance;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero .hero-lede {
+    max-width: 36ch !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+    text-wrap: pretty;
+  }
+  body.landing-page .landing-entry-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 20px;
+  }
+  body.landing-page .landing-entry-link { min-width: 0; padding-inline: 10px; font-size: 15px; }
+  body.landing-page .landing-entry-hint { font-size: 12px; }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .editorial-landing-media {
+    min-height: 0 !important;
+    margin-top: 26px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .editorial-landing-media img {
+    height: 210px !important;
+    object-position: center 37% !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .editorial-landing-media figcaption {
+    padding: 10px 14px !important;
+    font-size: 18px !important;
+    line-height: 1.2 !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero .simple-tools {
+    margin: 24px -1px -1px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tools > h2 {
+    padding: 18px 18px 14px !important;
+    font-size: 26px !important;
+    line-height: 1.16 !important;
+    text-wrap: balance;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tool {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 9px !important;
+    min-height: 0 !important;
+    padding: 20px 17px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tool-icon {
+    align-self: flex-start !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tool h3 {
+    margin: 0 !important;
+    font-size: clamp(22px, 6vw, 26px) !important;
+    line-height: 1.2 !important;
+    text-wrap: balance;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tool > p {
+    min-height: 0 !important;
+    margin: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tool-action {
+    align-self: stretch !important;
+    min-height: 46px !important;
+    margin-top: 3px !important;
+    padding: 10px !important;
+    font-size: 15px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-tool .product-preview {
+    display: flex !important;
+    min-height: 0 !important;
+    margin: 8px 0 4px !important;
+    padding: 13px !important;
+    gap: 8px !important;
+    border-radius: 9px !important;
+  }
+  body.landing-page .product-preview-body { gap: 9px; font-size: 13px; }
+  body.landing-page .preview-profile { padding: 7px; line-height: 1.35; }
+  body.landing-page .preview-exercise img { width: 72px; height: 56px; }
+  body.landing-page .preview-exercise + .preview-exercise,
+  body.landing-page .preview-volume,
+  body.landing-page .preview-alternative,
+  body.landing-page .preview-diary-stats { display: none !important; }
+  body.landing-page .preview-targets { gap: 16px; padding-bottom: 8px; }
+  body.landing-page .preview-targets > b { font-size: 19px; }
+  body.landing-page .preview-meal img { width: 70px; height: 66px; }
+  body.landing-page .preview-calorie-ring { width: 100px; height: 100px; }
+  body.landing-page .preview-calorie-ring > div { width: 78px; height: 78px; }
+  body.landing-page .preview-calorie-ring b { font-size: 21px; }
+  body.landing-page .preview-diary { padding: 2px 0; justify-content: flex-start; }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .landing-section {
+    padding-block: 50px !important;
+  }
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .section-heading h2,
+  body.landing-page.fp-v45-deep-ocean.fp-route-index .final-cta h2 {
+    font-size: clamp(31px, 8.5vw, 38px) !important;
+    line-height: 1.12 !important;
+    text-wrap: balance;
+  }
+  body.landing-page .section-heading p { font-size: 16px !important; line-height: 1.55 !important; }
+}
+
+@media (max-width: 360px) {
+  body.landing-page .landing-entry-actions { grid-template-columns: 1fr; }
+}

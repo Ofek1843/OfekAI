@@ -9,6 +9,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const sharp = require("sharp");
 const {
   FOOD_IMAGE_MAP,
   FOOD_PLACEHOLDER_IMAGE,
@@ -109,6 +110,25 @@ test("catalog meals prefer existing exact WebP plates and expose a truthful fall
     if (!fs.existsSync(webpPath) || !signature(webpPath).webp) failures.push(`${meal.id}: WebP`);
   }
   assert.deepEqual(failures, []);
+});
+
+test("catalog meal photos have enough source detail for the large meal view", async () => {
+  const tooSmall = [];
+  for (const meal of CATALOG) {
+    if (!meal.image) continue;
+    const pngPath = path.join(ROOT, "public", "images", "meals", `${meal.id}.png`);
+    const webpPath = path.join(ROOT, "public", "images", "meals", `${meal.id}.webp`);
+    if (!fs.existsSync(pngPath) || !fs.existsSync(webpPath)) continue; // Missing pairs are reported above.
+    const source = fs.readFileSync(pngPath);
+    const width = source.readUInt32BE(16);
+    const height = source.readUInt32BE(20);
+    const displayed = await sharp(webpPath).metadata();
+    if (Math.min(width, height) < 500 || Math.min(displayed.width, displayed.height) < 500) {
+      tooSmall.push(`${meal.id}: PNG ${width}x${height}, WebP ${displayed.width}x${displayed.height}`);
+    }
+    if (fs.statSync(webpPath).size < 35 * 1024) tooSmall.push(`${meal.id}: suspiciously small WebP`);
+  }
+  assert.deepEqual(tooSmall, []);
 });
 
 test("no catalog meal ingredient reaches the unexpected placeholder", () => {

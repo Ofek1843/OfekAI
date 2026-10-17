@@ -679,6 +679,12 @@ signupTab.addEventListener("click", () => {
   trackEvent("signup_started", { method: "email_password" });
 });
 
+// Public "Get started" links open the account-creation tab directly. Other
+// values (including a missing mode) retain the regular login default.
+if (new URLSearchParams(window.location.search).get("mode") === "signup") {
+  changeMode("signup");
+}
+
 googleButton?.addEventListener("click", () => {
   trackEvent("signup_started", { method: "google" });
   startGoogleSignIn();

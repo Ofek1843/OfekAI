@@ -179,9 +179,41 @@
       const placeSocial=()=>desktop.matches?document.body.append(social):hero.prepend(social);
       placeSocial();desktop.addEventListener('change',placeSocial);
     }
-    hero.querySelector('#landingHeroTitle').replaceChildren(text('span','title'));
+    const heroTitle = hero.querySelector('#landingHeroTitle');
+    heroTitle.replaceChildren(text('span','title'));
+    if (language === 'en') heroTitle.textContent = 'Your fitness, made simple.';
+    if (language === 'he') heroTitle.textContent = 'הכושר שלך, פשוט יותר.';
     const lede = hero.querySelector('.hero-lede');
-    lede.removeAttribute('data-i18n'); lede.textContent = copy('intro');
+    lede.removeAttribute('data-i18n');
+    lede.textContent = language === 'en'
+      ? 'Build a workout or meal plan, log food, and track progress in one place.'
+      : language === 'he'
+        ? 'בונים תוכנית אימון או תפריט, רושמים ארוחות ועוקבים אחרי ההתקדמות במקום אחד.'
+        : copy('intro');
+    const entryCopy = {
+      en: ['Get started', 'Log in', 'New here? Create an account to build your own plan.'],
+      he: ['מתחילים כאן', 'כניסה לחשבון', 'חדשים כאן? פתחו חשבון כדי ליצור תוכנית משלכם.'],
+      ar: ['ابدأ الآن', 'تسجيل الدخول', 'أنشئ حسابًا لتبني خطتك الخاصة.'],
+      es: ['Empezar', 'Iniciar sesión', 'Crea una cuenta para construir tu propio plan.'],
+      fr: ['Commencer', 'Se connecter', 'Créez un compte pour créer votre programme.'],
+      de: ['Jetzt starten', 'Anmelden', 'Erstelle ein Konto für deinen eigenen Plan.'],
+      zh: ['开始使用', '登录', '创建账户，制定属于你的计划。']
+    }[language] || ['Get started', 'Log in', 'Create an account to build your own plan.'];
+    const entryActions = document.createElement('div');
+    entryActions.className = 'landing-entry-actions';
+    const startLink = document.createElement('a');
+    startLink.className = 'landing-entry-link landing-entry-link--primary';
+    startLink.href = 'auth.html?mode=signup';
+    startLink.textContent = entryCopy[0];
+    const loginLink = document.createElement('a');
+    loginLink.className = 'landing-entry-link landing-entry-link--secondary';
+    loginLink.href = 'auth.html';
+    loginLink.textContent = entryCopy[1];
+    const entryHint = document.createElement('small');
+    entryHint.className = 'landing-entry-hint';
+    entryHint.textContent = entryCopy[2];
+    entryActions.append(startLink, loginLink, entryHint);
+    lede.after(entryActions);
     const editorialMedia = document.createElement('figure');
     editorialMedia.className = 'editorial-landing-media';
     const editorialPhoto = document.createElement('img');
@@ -191,7 +223,7 @@
     editorialPhoto.height = 648;
     editorialPhoto.decoding = 'async';
     const editorialCaption = document.createElement('figcaption');
-    editorialCaption.textContent = 'Your plan. Your progress.';
+    editorialCaption.textContent = language === 'he' ? 'התוכנית שלך. ההתקדמות שלך.' : 'Your plan. Your progress.';
     editorialMedia.append(editorialPhoto, editorialCaption);
     hero.querySelector('.hero-content').after(editorialMedia);
     editorialMedia.after(tools(true));
@@ -209,13 +241,25 @@
       card.classList.add('product-preview');
       const he=language==='he';
       const label=(en,hebrew)=>he?hebrew:en;
-      card.append(text('strong',key));
+      const previewTitles = {
+        en: ['Sample workout plan', 'Sample meal plan', 'Sample food diary'],
+        he: ['דוגמה לתוכנית אימון', 'דוגמה לתפריט', 'דוגמה ליומן תזונה'],
+        ar: ['مثال لخطة تمارين', 'مثال لخطة وجبات', 'مثال لسجل الطعام'],
+        es: ['Ejemplo de entrenamiento', 'Ejemplo de comidas', 'Ejemplo de diario'],
+        fr: ['Exemple de programme', 'Exemple de repas', 'Exemple de journal'],
+        de: ['Beispiel-Trainingsplan', 'Beispiel-Ernährungsplan', 'Beispiel-Ernährungstagebuch'],
+        zh: ['训练计划示例', '饮食计划示例', '饮食日记示例']
+      }[language] || ['Sample workout plan', 'Sample meal plan', 'Sample food diary'];
+      const note=text('small','example','preview-example-note');
+      card.append(note);
+      const previewTitle = document.createElement('strong');
+      previewTitle.textContent = previewTitles[index];
+      card.append(previewTitle);
       const demo=document.createElement('div');demo.className='product-preview-body';
       if(index===0) demo.innerHTML=`<span class="preview-profile">${label('Build muscle · 4 days · Gym','בניית שריר · 4 ימים · חדר כושר')}</span><div class="preview-split"><b>${label('Upper / Lower','פלג גוף עליון / תחתון')}</b><small>${label('8-week plan · Upper A','תוכנית ל־8 שבועות · עליון א׳')}</small></div><div class="preview-exercise"><img src="/images/exercises/bench-press.png" alt="" loading="lazy"><span><b>${label('Bench press','לחיצת חזה')}</b><small>3 ${label('sets','סטים')} · ${label('Rest','מנוחה')} 120s · RIR 2</small></span></div><div class="preview-exercise"><img src="/images/exercises/seated-cable-row.png" alt="" loading="lazy"><span><b>${label('Seated cable row','חתירה בכבל בישיבה')}</b><small>3 ${label('sets','סטים')} · ${label('Rest','מנוחה')} 90s · RIR 2</small></span></div><div class="preview-volume"><span>${label('Chest · weekly sets','חזה · סטים שבועיים')}</span><b>12 <small>${label('Within target','בטווח היעד')}</small></b><i></i></div>`;
       if(index===1) demo.innerHTML=`<div class="preview-targets"><b>2,400 <small>kcal</small></b><b>150 g <small>${label('protein','חלבון')}</small></b></div><div class="preview-meal"><img src="/images/meals/banana-oat-protein-smoothie.webp" alt="" loading="lazy"><span><b>${label('Breakfast · protein smoothie','בוקר · שייק חלבון')}</b><small>${label('Milk 250 ml · oats 40 g · banana 100 g · protein powder 25 g','חלב 250 מ״ל · שיבולת שועל 40 ג׳ · בננה 100 ג׳ · אבקת חלבון 25 ג׳')}</small></span></div><div class="preview-meal-totals"><b>468 kcal</b><b>37 g ${label('protein','חלבון')}</b><span>5 ${label('min prep','דקות הכנה')}</span></div><div class="preview-alternative"><b>${label('Lunch','צהריים')}</b><span>${label('Chicken 150 g · rice 200 g · vegetables','עוף 150 ג׳ · אורז 200 ג׳ · ירקות')}</span></div><div class="preview-alternative"><b>${label('Dinner','ערב')}</b><span>${label('Eggs · cottage cheese · bread · salad','ביצים · קוטג׳ · לחם · סלט')}</span></div>`;
       if(index===2) demo.innerHTML=`<div class="preview-diary"><div class="preview-calorie-ring"><div><b>1,650</b><small>${label('kcal eaten','קלוריות שנאכלו')}</small></div></div><div class="preview-diary-stats"><span><i class="eaten-dot"></i>${label('Eaten','נאכלו')} <b>1,650 kcal</b></span><span><i class="remaining-dot"></i>${label('Remaining','נותרו')} <b>750 kcal</b></span><span class="preview-protein">${label('Protein','חלבון')} <b>112 / 150 g</b><i></i></span></div></div><div class="preview-log-entry">${label('“Chicken sandwich and an apple”','״כריך עוף ותפוח״')}<small>${label('Review portions · edit estimates · track your day','בדיקת כמויות · עריכת אומדנים · מעקב יומי')}</small></div>`;
       card.append(demo);
-      const note=text('small','example','preview-example-note');card.append(note);
       aside.append(card);
     });
     // Tell a literal three-step product story. The selected action and its
