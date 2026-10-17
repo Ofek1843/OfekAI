@@ -11,7 +11,7 @@ function exercise(exerciseId, name, muscleGroup, equipment, reps, restSeconds) {
   return { exerciseId, name, demoName: name, muscleGroup, equipment, sets: 4, reps, restSeconds, rir: "1-3", notes: "" };
 }
 
-test("fat-loss repair applies recoverable rests and slightly higher working rep ranges", () => {
+test("fat-loss repair preserves intentional strength work and does not shorten rest just for cutting", () => {
   const program = {
     goal: "loseFat",
     sessions: [{
@@ -33,10 +33,10 @@ test("fat-loss repair applies recoverable rests and slightly higher working rep 
   });
 
   const [bench, curl] = program.sessions[0].exercises;
-  assert.equal(bench.reps, "8-12");
-  assert.equal(bench.restSeconds, 90);
-  assert.equal(curl.reps, "10-15");
-  assert.equal(curl.restSeconds, 75);
+  assert.equal(bench.reps, "4-6");
+  assert.equal(bench.restSeconds, 180);
+  assert.equal(curl.reps, "6-10");
+  assert.equal(curl.restSeconds, 150);
   assert.ok(program.sessions[0].exercises.every((item) => item.sets <= 4));
 });
 

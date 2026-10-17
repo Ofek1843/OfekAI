@@ -27,18 +27,12 @@ test("Illustrated V4 uses the exact Athletic Spectrum tokens without gradients o
   assert.doesNotMatch(CSS, /(?:linear|radial|conic)-gradient|\bglow\b/i);
 });
 
-test("the dashboard is a varied five-capability studio with compact context", () => {
-  assert.match(DASHBOARD, /class="hero-row dashboard-compact-header"/);
-  assert.match(DASHBOARD, /class="dashboard-primary-actions capability-studio"/);
-  for (const domain of ["training", "nutrition", "progress", "coach", "social"]) {
-    assert.match(DASHBOARD, new RegExp(`capability-card--${domain}`));
-  }
-  for (const scene of ["training", "nutrition", "benchPr", "coach", "social"]) {
-    assert.match(DASHBOARD, new RegExp(`data-v4-illustration="${scene}"`));
-  }
-  assert.equal((DASHBOARD.match(/class="capability-card capability-card--/g) || []).length, 5);
-  assert.match(CSS, /grid-template-columns:\s*repeat\(12,minmax\(0,1fr\)\)/);
-  assert.doesNotMatch(DASHBOARD, /🏋|🥗|📈|🧠/u);
+test("editorial dashboard exposes current capabilities without legacy animated hosts", async () => {
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  assert.equal(document.querySelectorAll('main').length,1);
+  assert.ok(document.querySelector('.overview'));
+  for(const url of ['/my-workout-plans.html','/my-nutrition-plans.html','/daily-nutrition.html','/progress.html','/social.html']) assert.ok(document.querySelector('a[href="'+url+'"]'),url);
+  assert.equal(document.querySelectorAll('[data-v43-motion]').length,0);
 });
 
 test("landing uses one continuous canvas and five original illustrated journeys", () => {
@@ -91,11 +85,11 @@ test("mobile and Hebrew polish keeps core controls visible and localized", () =>
 
 test("the PWA cache ships the simple workflows while private voice remains network-only", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-simple-workflows-20261006-1/);
-  assert.match(sw, /simple-ux\.css\?v=20261006-simple-3/);
-  assert.match(sw, /simple-ux\.js\?v=20261006-simple-3/);
-  assert.match(sw, /dashboard\.js\?v=20261006-simple-3/);
-  assert.match(sw, /illustrated-v4\.css\?v=20260914-i18n-dashboard-1/);
+  require("./helpers/current-product.cjs").assertCurrentCache(sw);
+  require("./helpers/current-product.cjs").assertCachedAsset(sw, "/css/simple-ux.css");
+  require("./helpers/current-product.cjs").assertCachedAsset(sw, "/js/simple-ux.js");
+  require("./helpers/current-product.cjs").assertCachedAsset(sw, "/js/dashboard.js");
+  require("./helpers/current-product.cjs").assertCachedAsset(sw, "/css/illustrated-v4.css");
   assert.doesNotMatch(sw, /image-sequence-v43\.js|athlete-figure\.js|js\/scenes\//);
   assert.match(sw, /const NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /event\.request\.destination === 'audio'/);

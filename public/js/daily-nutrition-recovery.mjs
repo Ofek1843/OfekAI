@@ -15,11 +15,15 @@ export function readNutritionDraft(uid, dateKey, storage = globalThis.localStora
   } catch { return null; }
 }
 
-export function preferNutritionDraft(remote, draft) {
-  const updated = remote?.updatedAt;
+export function nutritionTimestampMillis(updated) {
   const millis = typeof updated?.toMillis === 'function' ? updated.toMillis()
-    : updated?.seconds != null ? updated.seconds * 1000
-    : typeof updated === 'string' ? Date.parse(updated) : Number(updated) || 0;
+    : updated?.seconds != null ? updated.seconds * 1000 + (Number(updated.nanoseconds) || 0) / 1e6
+    : typeof updated === 'string' ? Date.parse(updated) : Number(updated);
+  return Number.isFinite(millis) ? millis : 0;
+}
+
+export function preferNutritionDraft(remote, draft) {
+  const millis = nutritionTimestampMillis(remote?.updatedAt);
   if (!draft || (remote && draft.savedAt <= millis)) return remote;
   return { ...draft.log, totals: totalsForEntries(draft.log.entries), pendingSync: true };
 }

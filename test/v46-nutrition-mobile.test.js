@@ -15,8 +15,10 @@ function wizard(he = false) {
   }));
   const get = (key) => { if (!elements.has(key)) elements.set(key, el()); return elements.get(key); };
   const html = read("public/nutrition-builder.html");
+  const form=get('#nutrition-builder-form');form.querySelector=()=>null;
   const script = html.match(/<script type="module">([\s\S]*?)<\/script>/)[1];
   vm.runInNewContext(script, {
+    window: {FuelSimpleUI:{copy:key=>({back:he?'חזרה':'Back',next:he?'המשך':'Continue',createNutrition:he?'יצירת תפריט':'Create my meal plan'})[key]}},
     localStorage: { getItem: () => he ? "he" : "en" },
     document: { querySelector: get, querySelectorAll: s => s === ".wizard-step" ? steps : [] }
   });
@@ -68,7 +70,7 @@ test("optional daily data failure still loads the mandatory saved day without an
   const state = {};
   let loaded = false, warning = "";
   await vm.runInNewContext(init + "\ninit({uid:'test'})", {
-    state, db: {}, language: "en", bindEvents() {}, console,
+    state, db: {}, language: "en", bindEvents() {}, console, window:{addEventListener(){}},withDeadline:p=>p,
     loadTargets: async () => { throw Error("unavailable"); },
     loadCustomFoods: async () => [], loadSavedCombinations: async () => [],
     loadDate: async () => { loaded = true; },
@@ -83,7 +85,7 @@ test("queued daily save captures its day and immutable entries", async () => {
   const fn = js.slice(js.indexOf("function queueSave()"), js.indexOf("function renderTargets"));
   const state = { user: {uid:"test"}, dateKey:"2026-09-07", log: {entries:[{calories:100}]}, saveChain:Promise.resolve() };
   let saved;
-  const ctx = { state, structuredClone, writeDailyDraft() {}, clearDailyDraft() {}, updateWeekLog() {}, $: () => ({}), copy: { savingStatus: "Saving", saveStatus: "Saved", savedOnDevice: "Saved locally" }, console,
+  const ctx = { state, structuredClone, writeDailyDraft() {}, readDailyDraft(){return null;}, clearDailyDraft() {}, withDeadline:p=>p, updateWeekLog() {}, $: () => ({}), copy: { savingStatus: "Saving", saveStatus: "Saved", savedOnDevice: "Saved locally" }, console,
     db: {}, saveDailyLog: async (...args) => { saved = args; } };
   vm.runInNewContext(fn + "\nqueueSave()", ctx);
   state.dateKey = "2026-09-08"; state.log.entries[0].calories = 200;

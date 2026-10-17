@@ -121,9 +121,9 @@ test("Social mobile Messages exposes the conversation rail until a thread is sel
   assert.match(CSS, /\.social-app\.show-conversations\s+\.conversation-rail\s*\{[^}]*display:\s*block/s);
 });
 
-test("social navigation and plan share discovery are present", () => {
-  assert.match(DASHBOARD, /href="\/social\.html"/);
-  assert.match(DASHBOARD, /socialUnreadBadge/);
+test("social navigation and plan share discovery are present", async () => {
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  assert.ok(document.querySelector('.sidebar a[href="/social.html"]'));
   assert.match(WORKOUTS, /share=workout/);
   assert.match(NUTRITION, /share=nutrition/);
 });

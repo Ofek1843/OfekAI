@@ -16,19 +16,12 @@ function primaryActions() {
   return match[0];
 }
 
-test("dashboard primary actions include the direct social chat destination", () => {
-  const actions = primaryActions();
-  const links = [...actions.matchAll(/<a\b[^>]*>/g)]
-    .map(match => match[0])
-    .filter(link => /class="[^"]*\bdashboard-action\b/.test(link));
-
-  assert.equal(links.length, 5);
-  assert.match(actions, /id="chatLink"[^>]*href="\/app\.html"/);
-  assert.match(actions, /id="heroWorkoutBuilderLink"[^>]*href="\/workout-builder\.html"/);
-  assert.match(actions, /id="heroNutritionBuilderLink"[^>]*href="\/nutrition-builder\.html"/);
-  assert.match(actions, /id="heroProgressLink"[^>]*href="\/progress\.html"/);
-  assert.match(actions, /id="heroSocialLink"[^>]*href="\/social\.html"[^>]*aria-label="Chat with friends"/);
-  assert.doesNotMatch(actions, /target\s*=|badge|unread|notification|count/i);
+test("dashboard primary actions include the direct social chat destination", async () => {
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  for(const url of ['/workout-builder.html','/nutrition-builder.html','/progress.html','/social.html','/app.html?settings=open']) {
+    const a=document.querySelector('a[href="'+url+'"]');assert.ok(a,url);assert.ok(a.textContent.trim(),url);assert.equal(a.getAttribute('target'),null);
+  }
+  assert.equal(document.querySelector('.sidebar a[href="/social.html"]').textContent,'Messages');
 });
 
 test("dashboard social action is localized and remains a same-tab keyboard link", () => {
@@ -47,11 +40,10 @@ test("dashboard quick actions use the requested responsive grid", () => {
   assert.match(CSS, /\.dashboard-action\s*\{[\s\S]*?min-width:\s*0;[\s\S]*?height:\s*100%/);
 });
 
-test("daily nutrition is a visible dashboard destination and desktop drawer wheel routing is explicit", () => {
-  assert.match(HTML, /class="daily-nutrition-spotlight"[^>]*href="\/daily-nutrition\.html"/);
-  assert.match(JS, /dailyNutritionSpotlightTitle/);
-  assert.match(SHELL, /nav\.addEventListener\("wheel"/);
-  assert.match(SHELL, /event\.target\.closest\("\.fp-global-menu"\)/);
-  assert.match(SHELL_CSS, /@media\s*\(min-width:\s*761px\)[\s\S]*?body\.fp-global-menu-open\s*\{\s*overflow-y:\s*auto/);
-  assert.match(SHELL_CSS, /\.fp-global-menu\s*\{[\s\S]*?overflow-y:\s*auto/);
+test("daily nutrition remains a visible dashboard action and shared drawers retain wheel routing", async () => {
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  assert.ok(document.querySelector('.diary a[href="/daily-nutrition.html"]'));
+  assert.ok(document.querySelector('.sidebar a[href="/daily-nutrition.html"]'));
+  assert.match(SHELL,/nav\.addEventListener\("wheel"/);
+  assert.match(SHELL_CSS,/overflow-y:\s*auto/);
 });

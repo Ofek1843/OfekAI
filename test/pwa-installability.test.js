@@ -84,10 +84,10 @@ test("sw.js exists and is syntactically valid", () => {
 
 test("the service worker never caches authenticated APIs or SSE and refreshes the release cache", () => {
   const source = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
-  assert.match(source, /CACHE_NAME\s*=\s*['"]fuelphysique-editorial-landing-20261010-6['"]/);
-  assert.match(source, /simple-ux\.css\?v=20261007-motion-1/);
-  assert.match(source, /simple-ux\.js\?v=20261009-dashboard-boundary-1/);
-  assert.match(source, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
+  require("./helpers/current-product.cjs").assertCurrentCache(source);
+  require("./helpers/current-product.cjs").assertCachedAsset(source, "/css/simple-ux.css");
+  require("./helpers/current-product.cjs").assertCachedAsset(source, "/js/simple-ux.js");
+  require("./helpers/current-product.cjs").assertCachedAsset(source, "/css/product-polish-v3.css");
   assert.match(source, /['"]\/manifest\.json['"]/);
   assert.match(source, /NETWORK_ONLY_PREFIXES\s*=\s*\[['"]\/api\/['"]\]/);
   assert.match(source, /requestPath\.startsWith\(prefix\)/);
@@ -103,8 +103,9 @@ for (const page of PAGES_WITH_INSTALL_PROMOTION) {
     const html = fs.readFileSync(path.join(PUBLIC, page), "utf8");
     assert.match(html, /<link rel="manifest" href="\/manifest\.json">/, `${page} must link the manifest`);
     assert.match(html, /navigator\.serviceWorker\.register\(['"]\/sw\.js['"]\)/, `${page} must register the service worker`);
-    assert.match(html, /src="\/js\/pwa-install\.js"/, `${page} must load pwa-install.js`);
-    assert.match(html, page === 'dashboard.html' ? /theme-color" content="#f8f7f4"/ : /theme-color" content="#10131A"/, `${page} theme-color meta must match its application shell`);
+    assert.match(html, /src="\/js\/pwa-install\.js(?:\?[^"]+)?"/, `${page} must load pwa-install.js`);
+    const color=page==='dashboard.html'?'#f8f7f4':page==='index.html'?'#f7f5f1':'#10131A';
+    assert.ok(html.includes(`theme-color" content="${color}"`),`${page} theme-color must match its shell`);
     assert.match(html, /<meta name="application-name" content="FuelPhysique">/);
     assert.match(html, /<meta name="apple-mobile-web-app-title" content="FuelPhysique">/);
     assert.doesNotMatch(html, /<title>[^<]*(?:AI Fitness|AI Coach|AI Workout|Ofek AI)/i);
@@ -190,7 +191,7 @@ test("iOS install guidance waits for the first page view and is viewport-safe on
   assert.match(source, /IOS_INSTRUCTION_DELAY_MS\s*=\s*6000/);
   assert.match(source, /setTimeout\(showIOSSafariInstructions, IOS_INSTRUCTION_DELAY_MS\)/);
   assert.match(source, /setTimeout\(showIOSOtherBrowserNotice, IOS_INSTRUCTION_DELAY_MS\)/);
-  assert.match(source, /\.pwa-install-banner\.instructional\s*\{[\s\S]*?max-height:\s*min\(260px, calc\(100svh/);
+  assert.match(source, /\.pwa-install-banner\.instructional\s*\{[\s\S]*?max-height:\s*min\(230px, calc\(100svh/);
   assert.match(source, /env\(safe-area-inset-bottom\)/);
   assert.match(source, /banner\.show\(\)/, "install prompt must use the browser top-layer dialog mechanism");
   assert.match(source, /\.pwa-install-banner\.instructional \.pwa-install-actions\s*\{[\s\S]*?position:\s*sticky/);

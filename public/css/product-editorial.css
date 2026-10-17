@@ -153,6 +153,22 @@ body::after { display: none !important; }
 
 .wizard-progress-fill { background: var(--product-blue) !important; }
 
+/* The food clarification uses the paper surface, not the legacy navy palette. */
+.daily-nutrition-route .clarification-panel :is(h3, p, label) {
+  color: #121417 !important;
+  text-shadow: none !important;
+}
+.daily-nutrition-route .clarification-choices button {
+  color: #fff !important;
+  background: #0866bd !important;
+  border-color: #07559f !important;
+  white-space: normal;
+  padding-block: 10px;
+}
+.daily-nutrition-route .clarification-choices button:disabled { opacity: 0.65; cursor: wait; }
+.daily-nutrition-route .clarification-choices button:focus-visible { outline: 3px solid #121417; outline-offset: 3px; }
+.daily-nutrition-route .composer-message.error { color: #b42318 !important; }
+
 .wizard-step,
 .wizard-review,
 .form-group,

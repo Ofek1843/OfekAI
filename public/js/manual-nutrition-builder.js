@@ -1,4 +1,5 @@
 import { db } from "./firebase-config.js";
+import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
 import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
 
@@ -29,10 +30,13 @@ async function api(path, options = {}) {
   if (!response.ok) throw new Error(data.error || "The manual nutrition action failed.");
   return data;
 }
-function targetInput() { return { age: number($("#age").value), gender: $("#gender").value, height: number($("#height").value), weight: number($("#weight").value), activityLevel: $("#activityLevel").value, goal: $("#goal").value }; }
+function targetInput() { return { ...healthScreeningPayload($("#targetForm")), age: number($("#age").value), gender: $("#gender").value, height: number($("#height").value), weight: number($("#weight").value), activityLevel: $("#activityLevel").value, goal: $("#goal").value }; }
 function targetsMarkup(targets) {
-  return [["BMR", targets.bmr, "kcal"], ["TDEE", targets.tdee, "kcal"], ["Daily calories", targets.dailyCalories, "kcal"], ["Protein", targets.proteinGrams, "g"], ["Carbohydrates", targets.carbsGrams, "g"], ["Fat", targets.fatGrams, "g"]]
-    .map(item => '<div class="target-stat"><span>' + item[0] + '</span><strong>' + Math.round(item[1]) + ' ' + item[2] + '</strong></div>').join("");
+  const he=state.language==='he';
+  const goals=he?{loseFat:'חיטוב',maintainWeight:'שמירה על המשקל',buildMuscle:'עלייה במסת שריר'}:{loseFat:'Fat loss',maintainWeight:'Maintenance',buildMuscle:'Muscle gain'};
+  return '<div class="target-stat"><span>'+ (he?'המטרה שחושבה':'Calculated goal')+'</span><strong>'+esc(goals[targets.goal]||'—')+'</strong></div>'+
+    [[he?'אומדן מנוחה (BMR)':'Resting estimate (BMR)',targets.bmr,'kcal'],[he?'אומדן תחזוקה (TDEE)':'Maintenance estimate (TDEE)',targets.tdee,'kcal'],[he?'היעד הקלורי לפי המטרה':'Goal calorie target',targets.dailyCalories,'kcal'],[he?'התאמה מול תחזוקה':'Adjustment from maintenance',targets.energyAdjustment,'kcal'],[he?'חלבון':'Protein',targets.proteinGrams,'g'],[he?'פחמימות':'Carbohydrates',targets.carbsGrams,'g'],[he?'שומן':'Fat',targets.fatGrams,'g']]
+    .map(item => '<div class="target-stat"><span>' + item[0] + '</span><strong>' + (Number.isFinite(item[1])?Math.round(item[1]):'—') + ' ' + item[2] + '</strong></div>').join("");
 }
 function discoveryHasInput() { return $("#mealQuery").value.trim().length >= 2 || state.activeCategories.length > 0 || Boolean($("#mealSlot").value); }
 function renderDiscoveryPrompt() {
@@ -96,14 +100,22 @@ function renderRunningTotals() {
   const total = currentTotals();
   if (!state.selected.length) { $("#runningTotals").hidden = true; return; }
   $("#runningTotals").hidden = false;
+  if (!state.targets) {
+    $("#runningTotals").innerHTML='<p class="manual-target-note" role="status">'+(state.language==='he'?'יש לחשב יעד תקף עבור הנתונים והמטרה הנוכחיים. הארוחות שבחרתם לא שונו.':'Calculate a valid target for the current profile and goal. Your selected meals have not changed.')+'</p>';
+    return;
+  }
   const rows = [["Calories", total.calories, state.targets?.dailyCalories || 0, "kcal"], ["Protein", total.proteinGrams, state.targets?.proteinGrams || 0, "g"], ["Carbohydrates", total.carbsGrams, state.targets?.carbsGrams || 0, "g"], ["Fat", total.fatGrams, state.targets?.fatGrams || 0, "g"]];
-  $("#runningTotals").innerHTML = rows.map(item => {
+  $("#runningTotals").innerHTML = '<p class="manual-target-note">'+(state.language==='he'?'כמויות התפריט ידניות. שינוי מטרה מעדכן את היעד, לא את המאכלים או גודל המנות. מוצג: תפריט / יעד.':'Portions are manual. Changing your goal updates the target, not the foods or serving sizes. Shown: menu / target.')+'</p>'+rows.map(item => {
     const delta = Math.round(item[2] - item[1]);
     const guidance = delta > 0 ? "Add approximately " + Math.abs(delta) + " " + item[3] + " " + item[0].toLowerCase() : delta < 0 ? Math.abs(delta) + " " + item[3] + " above target" : "Close to target";
     return '<div class="running-stat"><span><strong>' + item[0] + '</strong> ' + Math.round(item[1]) + ' / ' + Math.round(item[2]) + ' ' + item[3] + '</span><b>' + (delta > 0 ? Math.abs(delta) + " " + item[3] + " left" : delta < 0 ? Math.abs(delta) + " " + item[3] + " over" : "On target") + '</b><div class="progress-track" role="progressbar" aria-label="' + esc(item[0]) + ' progress" aria-valuemin="0" aria-valuemax="' + Math.max(1, Math.round(item[2])) + '" aria-valuenow="' + Math.max(0, Math.round(item[1])) + '"><i style="--progress:' + Math.min(100, item[2] ? item[1] / item[2] * 100 : 0) + '%"></i></div><span>' + esc(guidance) + '</span></div>';
   }).join("");
 }
 function renderSelected() {
+  // Any edit/recalculation invalidates the old "saved" confirmation; the saved
+  // snapshot still exists, but it must not imply the current changes are saved.
+  $("#saveStatus").textContent = '';
+  $("#shareSavedPlan").hidden = true;
   $("#selectedMeals").innerHTML = state.selected.length ? state.selected.map((item, index) => {
     const meal = scaledMeal(item);
     return '<article class="selected-meal" data-index="' + index + '"><img src="' + esc(item.image || "/images/food-placeholder.png") + '" alt="" loading="lazy" onerror="this.src=\'/images/food-placeholder.png\'"><div class="selected-meal-body"><h3>' + (index + 1) + '. ' + esc(item.title) + '</h3><p>' + esc(meal.foods.map(food => food.name + " · " + food.amount).join(", ")) + '</p><div class="meal-meta"><span><strong>Calories</strong> ' + meal.calories + ' kcal</span><span><strong>Protein</strong> ' + meal.proteinGrams + 'g</span><span><strong>Carbohydrates</strong> ' + meal.carbsGrams + 'g</span><span><strong>Fat</strong> ' + meal.fatGrams + 'g</span></div><div class="selected-controls"><label>Servings <input type="number" min="0.25" max="8" step="0.25" value="' + item.servings + '" data-portion></label><button type="button" data-up' + (index === 0 ? " disabled" : "") + '>↑ Move up</button><button type="button" data-down' + (index === state.selected.length - 1 ? " disabled" : "") + '>↓ Move down</button><button type="button" data-remove>Remove</button></div></div></article>';
@@ -145,8 +157,10 @@ async function calculateTargets(event) {
   const requestId = ++targetRequestId;
   state.targets = null;
   $("#targetSummary").hidden = true;
+  $("#targetSummary").innerHTML = '';
   renderSelected();
   if (!state.user || !$("#targetForm").checkValidity()) return;
+  status(state.language==='he'?'מחשב יעד חדש לפי הנתונים והמטרה…':'Calculating a new target for this profile and goal…');
   try {
     const data = await api("/api/nutrition/manual/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(targetInput()) });
     if (requestId !== targetRequestId) return;
@@ -156,7 +170,7 @@ async function calculateTargets(event) {
     renderSelected();
     status(data.estimateNotice);
   } catch (error) {
-    if (requestId === targetRequestId) status(error.message, true);
+    if (requestId === targetRequestId) status((state.language==='he'?'לא חושב יעד חדש. אין להשתמש בתוצאה קודמת למטרה הזאת. ':'No new target was calculated. Do not use an earlier result for this goal. ')+error.message, true);
   }
 }
 async function savePlan() {
@@ -172,6 +186,8 @@ async function savePlan() {
 }
 function toggleMenu(open = !state.menuOpen) { state.menuOpen = open; $("#dailyMenuPanel").classList.toggle("open", open); $("#dailyMenuPanel").setAttribute("aria-hidden", String(!open)); $("#mobileMenuToggle").setAttribute("aria-expanded", String(open)); }
 
+mountHealthScreening($("#targetForm"),state.language);
+$("#targetForm").addEventListener("change",calculateTargets);
 $("#targetForm").addEventListener("submit", calculateTargets);
 for (const id of ["goal", "age", "gender", "height", "weight", "activityLevel"]) {
   $("#" + id).addEventListener("input", calculateTargets);

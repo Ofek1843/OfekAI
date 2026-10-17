@@ -1,0 +1,11 @@
+node --test --test-concurrency=1 audit/scientific-safety-20261015/audit.test.cjs test/scientific-safety-fixes.test.js test/scientific-safety-http.test.js test/daily-nutrition-persistence.test.mjs test/daily-nutrition-store.test.mjs test/food-provenance.test.js test/current-product-contract.test.js
+
+Filtered summary from run on 2026-10-16:
+ℹ tests 144
+ℹ suites 0
+ℹ pass 144
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ duration_ms 1750.0623
+AUDIT_EXIT_CODE=0

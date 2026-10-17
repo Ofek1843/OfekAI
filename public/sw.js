@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
 // deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-seated-curl-20261015-2';
+const CACHE_NAME = 'fuelphysique-meal-photos-20261017-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -48,6 +48,17 @@ const urlsToCache = [
   '/js/dashboard-editorial.js?v=20261015-plan-tabs-1',
   '/js/dashboard-editorial-view.mjs?v=20261015-plan-tabs-1',
   '/js/dashboard-editorial-i18n.mjs',
+  '/js/plan-sidebar.mjs',
+  '/css/plan-sidebar.css?v=20261016-1',
+  '/js/dashboard-load.mjs',
+  '/js/saved-nutrition-view.mjs',
+  '/js/meal-photo.mjs',
+  '/css/saved-nutrition-view.css',
+  '/my-nutrition-plans.html',
+  '/manual-nutrition-builder.html',
+  '/js/my-nutrition-plans.js',
+  '/js/manual-nutrition-builder.js',
+  '/css/manual-nutrition-builder.css',
   '/assets/dashboard/training.webp',
   '/assets/dashboard/landing-training.webp',
   '/css/simple-ux.css?v=20261007-motion-1',
@@ -87,6 +98,8 @@ const urlsToCache = [
   '/js/daily-food-visuals.mjs?v=20260928-multilingual-food-1',
   '/images/common/meal.svg',
   '/js/daily-nutrition-domain.mjs?v=20260928-multilingual-food-1',
+  '/js/food-reference-data.mjs',
+  '/js/food-preparation.mjs',
   '/js/daily-nutrition-store.mjs?v=20260928-multilingual-food-1',
   '/js/daily-nutrition-i18n.mjs?v=20260928-language-coverage-1',
   '/js/daily-nutrition-format.mjs?v=20260914-i18n-dashboard-1',
@@ -99,7 +112,14 @@ const urlsToCache = [
   '/js/voice-message-client.mjs',
   '/css/push-notifications.css',
   '/js/push-notifications.js',
-  '/js/push-client-core.mjs'
+  '/js/push-client-core.mjs',
+  '/js/daily-nutrition.js?v=20261013-nutrition-recovery-1',
+  '/js/daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1',
+  '/js/daily-nutrition-domain.mjs?v=20261013-nutrition-recovery-1',
+  '/js/daily-nutrition-recovery.mjs',
+  '/js/health-screening.mjs',
+  '/js/nutrition-selection.mjs',
+  '/js/equipment-i18n.mjs'
 ];
 
 const NOTIFICATION_PATHS = new Set([

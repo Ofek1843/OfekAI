@@ -5,6 +5,9 @@ import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "http
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 import { fetchWithDeadline } from "./request-deadline.mjs";
+import { prepareNutritionPlanForSave } from "./nutrition-selection.mjs";
+import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
+import { mealPhotoFor } from "./meal-photo.mjs";
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 // Same reasoning as workout-builder.js: nothing here loads private data on
@@ -298,6 +301,7 @@ trackPageView({ page: "nutrition-builder" });
 trackEvent("builder_open", { builder: "nutrition" });
 
 document.documentElement.lang = currentLanguage;
+mountHealthScreening(form, currentLanguage);
 document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : "ltr";
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -310,6 +314,7 @@ form.addEventListener("submit", async (event) => {
   const formData = new FormData(form);
 
   const payload = {
+    ...healthScreeningPayload(form),
     goal: formData.get("goal"),
     age: Number(formData.get("age")),
     gender: formData.get("gender"),
@@ -409,12 +414,13 @@ function setStatus(message, isError = false) {
 async function saveNutritionPlan(plan) {
   const user = auth.currentUser;
   if (!user) throw new Error("USER_NOT_SIGNED_IN");
+  const snapshot = prepareNutritionPlanForSave(plan);
   const plansRef = collection(db, "users", user.uid, "nutritionPlans");
   const existingPlans = await getDocs(query(plansRef, limit(5)));
   if (existingPlans.size >= 5) throw new Error("NUTRITION_PLAN_LIMIT_REACHED");
   return addDoc(plansRef, {
-    name: plan.planName || "Nutrition Plan",
-    plan,
+    name: snapshot.planName || "Nutrition Plan",
+    plan: snapshot,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   });
@@ -597,6 +603,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
         .map((option, idx) => {
           const foods = Array.isArray(option.foods) ? option.foods : [];
           const mealName = option.mealName || meal.name || "";
+          const mealPhoto = mealPhotoFor(option, meal);
           const isInitiallyActive = idx === 0;
           // Native `loading="lazy"` is only a hint: Chromium can still fetch
           // images in the absolutely positioned, inactive carousel slides.
@@ -624,10 +631,10 @@ function renderNutritionPlan(plan, activeOptions = null) {
           return `
             <div class="carousel-option ${idx === 0 ? "active" : ""}" data-option-number="${option.optionNumber}" data-keeps-plan-valid="${option.keepsPlanValid === false ? "false" : "true"}">
               <div class="meal-option-media">
-                <div class="meal-photo${option.mealImage ? "" : " no-image"}">
+                <div class="meal-photo${mealPhoto ? "" : " no-image"}">
                   ${
-                    option.mealImage
-                      ? `<img ${imageAttributes(option.mealImage)} alt="${escapeHtml(mealName)}"
+                    mealPhoto
+                      ? `<img ${imageAttributes(mealPhoto)} alt="${escapeHtml(mealName)}"
                            onerror="this.parentElement.classList.add('no-image');this.remove();" />`
                       : ""
                   }
@@ -819,7 +826,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
 
   const saveButton = resultElement.querySelector("#save-nutrition-button");
   const shoppingListButton = resultElement.querySelector("#shopping-list-button");
-  setupPlanSharing(resultElement.querySelector("#share-nutrition-button"), { type: "nutrition", getPlan: () => window.currentNutritionPlan });
+  setupPlanSharing(resultElement.querySelector("#share-nutrition-button"), { type: "nutrition", getPlan: () => prepareNutritionPlanForSave(window.currentNutritionPlan) });
   shoppingListButton?.addEventListener("click", () => renderShoppingList(window.currentNutritionPlan));
   saveButton?.addEventListener("click", async () => {
     saveButton.disabled = true;
@@ -849,8 +856,11 @@ function captureActiveOptions() {
   const map = new Map();
   resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
     const options = [...carousel.querySelectorAll(".carousel-option")];
-    const index = options.findIndex((option) => option.classList.contains("active"));
-    map.set(Number(carousel.dataset.mealNumber), Math.max(0, index));
+    const active = options.find(option=>option.classList.contains("active"));
+    const number=Number(carousel.dataset.mealNumber);
+    const meal=meals.find(m=>Number(m.mealNumber)===number);
+    const originalIndex=meal?.options.findIndex(o=>Number(o.optionNumber)===Number(active?.dataset.optionNumber)) ?? 0;
+    map.set(number,Math.max(0,originalIndex));
   });
   return map;
 }
@@ -873,6 +883,7 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
         body: JSON.stringify({
           mealNumber,
           optionNumber,
+          ...healthScreeningPayload(form),
           language: currentLanguage,
           plan: window.currentNutritionPlan
         })
@@ -975,7 +986,11 @@ resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
     if (currentCounter) currentCounter.textContent = wrappedIndex + 1;
     if (prevBtn) prevBtn.disabled = false;
     if (nextBtn) nextBtn.disabled = false;
-    visibleSelection.set(mealNumber, wrappedIndex);
+    const selectedNumber = Number(options[wrappedIndex].dataset.optionNumber);
+    const originalIndex = meals.find(m=>Number(m.mealNumber)===mealNumber)?.options.findIndex(o=>Number(o.optionNumber)===selectedNumber) ?? 0;
+    visibleSelection.set(mealNumber, originalIndex);
+    window.currentNutritionPlan.selectedOptionNumbers ||= {};
+    window.currentNutritionPlan.selectedOptionNumbers[mealNumber] = selectedNumber;
     refreshVisibleTotals();
   };
 
@@ -988,7 +1003,10 @@ resultElement.querySelectorAll(".meal-options-carousel").forEach((carousel) => {
     if (event.key === "ArrowRight") showOption(currentIndex + 1);
   });
 
-  showOption(activeOptions?.get(mealNumber) ?? 0);
+  const requestedIndex = activeOptions?.get(mealNumber);
+  const requestedNumber = meals.find(m=>Number(m.mealNumber)===mealNumber)?.options[requestedIndex]?.optionNumber;
+  const restoredIndex = requestedNumber == null ? 0 : options.findIndex(o=>Number(o.dataset.optionNumber)===Number(requestedNumber));
+  showOption(Math.max(0,restoredIndex));
 });
 
 }

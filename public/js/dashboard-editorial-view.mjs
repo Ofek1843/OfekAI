@@ -24,7 +24,7 @@ function safeImage(value) { return typeof value==='string' && (/^https:\/\//.tes
 const asset=name=>'/assets/dashboard/'+name+'.webp';
 const icon=(name,cls='')=>'<img class="icon '+cls+'" src="/icons/tabler/'+name+'.svg" alt="" aria-hidden="true">';
 const link=(url,label,cls='')=>'<a class="'+cls+'" href="'+escapeHTML(url)+'">'+label+'</a>';
-const btn=(action,label,name,cls='')=>'<button type="button" class="icon-button '+cls+'" data-action="'+action+'" aria-label="'+escapeHTML(label)+'">'+icon(name)+'</button>';
+const btn=(action,label,name,cls='')=>'<button type="button" class="icon-button '+cls+'" data-action="'+action+'"'+(action==='menu'?' aria-controls="dashboardSidebar" aria-expanded="false"':'')+' aria-label="'+escapeHTML(label)+'">'+icon(name)+'</button>';
 export function mountDashboard(root, initial={}, options={}) {
  let model=initial, language=options.language||'en', t=dashboardCopy(language);
  let today=options.today||new Date(), selectedDay=new Date(today), weekOffset=0, dayRequest=0;
@@ -34,7 +34,7 @@ export function mountDashboard(root, initial={}, options={}) {
  const navItems=()=>[
   ['dashboard','/dashboard.html','home'],['workouts','/my-workout-plans.html','barbell'],
   ['meals','/my-nutrition-plans.html','tools-kitchen-2'],['diary','/daily-nutrition.html','clipboard'],
-  ['exercises','/exercise-library','player-play'],['progress','/progress.html','chart-bar'],['guides','/faq.html','book']
+  ['exercises','/exercise-library','player-play'],['progress','/progress.html','chart-bar'],['messages','/social.html','message-circle'],['guides','/faq.html','book']
  ];
  function planName(saved,kind) {return saved.name||saved.plan?.programName||saved.plan?.planName||t[kind==='workout'?'workouts':'meals'];}
  function level(value) {return t[String(value).toLowerCase()]||value||'';}
@@ -88,9 +88,11 @@ export function mountDashboard(root, initial={}, options={}) {
   const safePhoto=safeImage(model.photoURL);
   const addPhoto=language==='he'?'הוספת תמונת פרופיל':'Add profile picture';
   const avatar='<span class="avatar avatar-placeholder">'+escapeHTML(addPhoto)+'</span>';
+  const failedSections=(model.loadFailures||[]).map(f=>({workouts:t.workouts,meals:t.meals,logs:t.recent,diary:t.diary,profile:t.settings,settings:t.settings}[f.section]||t.dashboard));
+  const failureMessage=failedSections.length?`${t.loadFailurePrefix}: ${[...new Set(failedSections)].join(', ')}.`:model.error||'';
   root.innerHTML='<header class="topbar">'+btn('menu',t.more,'menu-2','menu-toggle')+link('/dashboard.html','Fuel<span>Physique</span>','wordmark')+'<nav class="top-links" aria-label="'+t.home+'">'+[['home','/dashboard.html'],['plans','#plans'],['exercises','/exercise-library'],['nutrition','/daily-nutrition.html'],['guides','/faq.html']].map(([key,url])=>link(url,t[key])).join('')+btn('search',t.search,'search')+'</nav><div class="account-area">'+link('/app.html?settings=open',safePhoto?'<img class="avatar" src="'+safePhoto+'" alt="'+escapeHTML(addPhoto)+'" data-profile-photo>':avatar,'avatar-link')+'<details class="account"><summary><span class="account-name">'+escapeHTML(name)+'</span>'+icon('chevron-right','chevron')+'</summary><div class="account-menu">'+link('/app.html?settings=open',t.settings)+link('/social.html',t.more)+'<button data-action="language">Language</button><button data-action="logout">'+t.logout+'</button></div></details></div></header>'+
   '<button class="mobile-backdrop" data-action="menu-close" tabindex="-1" aria-label="'+t.close+'"></button><aside class="sidebar" id="dashboardSidebar"><nav aria-label="'+t.dashboard+'">'+navItems().map(([key,url,ic])=>link(url,icon(ic)+t[key],'side-link '+(key==='dashboard'?'active':''))).join('')+'<div class="side-divider"></div>'+link('/app.html?settings=open',icon('settings')+t.settings,'side-link')+'</nav><p class="side-motto">'+escapeHTML(t.motto).replaceAll(' ','<br>')+'</p></aside>'+
-  '<main class="dashboard-main"><div class="status" role="status">'+escapeHTML(model.error||'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header><section class="week" aria-label="'+t.week+'">'+weekHTML()+'</section>'+
+  '<main class="dashboard-main"><div class="status" role="status">'+escapeHTML(failureMessage)+(failureMessage?'<button class="button" data-action="retry-dashboard">'+t.retry+'</button>':'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header><section class="week" aria-label="'+t.week+'">'+weekHTML()+'</section>'+
   '<article class="session '+(!next?'empty':'')+'"><img class="session-photo" src="'+asset('training')+'" alt="" width="305" height="324" fetchpriority="high"><div class="session-copy"><div class="session-topline"><span class="eyebrow">'+t.next+'</span>'+(plan.durationWeeks?link('/my-workout-plans.html',escapeHTML(plan.durationWeeks)+' '+t.weeks+icon('chevron-right'),'session-week'):'')+'</div><h2>'+escapeHTML(title)+'</h2><p class="session-description">'+escapeHTML(next?detail:t.setup)+'</p><div class="session-meta">'+(duration?'<span>'+icon('clock')+escapeHTML(duration)+' '+t.minutes+'</span>':'')+(plan.experienceLevel||plan.level?'<span>'+icon('chart-bar')+escapeHTML(level(plan.experienceLevel||plan.level))+'</span>':'')+(session?'<span>'+icon('barbell')+(session.exercises||[]).length+' '+t.exerciseCount+'</span>':'')+'</div><div class="session-actions">'+link(tracking,t[next?'start':'createNow']+icon('arrow-right'),'button primary')+(next?'<button class="button" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':'')+'</div></div></article>'+
   '<section class="diary" aria-label="'+t.diary+'">'+diaryHTML()+'</section></div>'+
   '<section class="plans" id="plans"><header class="section-heading"><h2>'+t.yourPlans+'</h2>'+link('/my-workout-plans.html',t.viewAll+icon('arrow-right'),'text-link')+'</header><div class="plan-columns">'+panel('workout')+panel('meal')+'</div></section>'+
@@ -116,15 +118,19 @@ export function mountDashboard(root, initial={}, options={}) {
    await openSavedWorkout(saved,options.workoutUser,language);
    return;
   }
-  const p=saved.plan||{};
-  const details='<p>'+number(p.dailyCalories)+' kcal · '+number(p.proteinGrams)+'g '+t.protein+'</p><p>'+escapeHTML(p.description||'')+'</p>';
-  dialog('<h2>'+escapeHTML(planName(saved,kind))+'</h2><div class="plan-detail">'+details+'</div>'+link(kind==='workout'?'/my-workout-plans.html':'/my-nutrition-plans.html',t.viewAll,'button')+(kind==='workout'&&saved.id===model.activeWorkoutId?link('/workout-tracker.html',t.start,'button primary'):''));
+  const {openSavedNutrition}=await import('./saved-nutrition-view.mjs');
+  openSavedNutrition(saved,language);
  }
  root.addEventListener('click',async event=>{
-  const planButton=event.target.closest('[data-plan-id]');if(planButton){showPlan(planButton.dataset.planKind,planButton.dataset.planId);return;}
+  const planButton=event.target.closest('[data-plan-id]');if(planButton){try{await showPlan(planButton.dataset.planKind,planButton.dataset.planId);}catch{root.querySelector('.status').textContent=t.error;}return;}
   const action=event.target.closest('[data-action]')?.dataset.action;if(!action)return;
   if(action==='menu'){const opened=root.querySelector('.sidebar').classList.toggle('open');root.querySelector('.mobile-backdrop').classList.toggle('open',opened);event.target.closest('button').setAttribute('aria-expanded',String(opened));}
   if(action==='menu-close')closeMenu();
+  if(action==='retry-dashboard'){
+   const button=event.target.closest('button');button.disabled=true;button.textContent=t.loading;
+   try{await options.onRetry?.();}catch{root.querySelector('.status').textContent=t.error;}
+   finally{button.disabled=false;button.textContent=t.retry;}
+  }
   if(action==='dialog-close')root.querySelector('dialog').close();
   if(action==='logout')options.onLogout?.();
   if(action==='search'){dialog('<h2>'+t.search+'</h2><input type="search" aria-label="'+t.search+'" placeholder="'+t.search+'"><nav class="search-results">'+navItems().map(([key,url])=>link(url,t[key])).join('')+'</nav>');root.querySelector('input').addEventListener('input',e=>{const q=e.target.value.toLocaleLowerCase();root.querySelectorAll('.search-results a').forEach(a=>a.hidden=!a.textContent.toLocaleLowerCase().includes(q));});}

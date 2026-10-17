@@ -89,7 +89,7 @@ test("every exercise retains its Effort value and accessible RIR control", () =>
   const cardEnd = JS.indexOf("</article>", cardStart);
   const card = JS.slice(cardStart, cardEnd);
   assert.match(card, /exercise-stat--effort/);
-  assert.match(card, /ui\.rirUnit\(String\(exercise\.rir\)\)/);
+  assert.match(card, /ui\.rirUnit\(String\(exercise\.rir \?\? "1–3"\)\)/);
   assert.match(card, /class="rir-help-trigger"/);
   assert.match(card, /data-rir-help/);
   assert.match(card, /aria-haspopup="dialog"/);
@@ -127,7 +127,7 @@ test("desktop cards stay two-column while the narrow tablet edge cannot clip", (
 });
 
 test("Hebrew uses logical layout, readable RIR and the shared RTL direction", () => {
-  assert.match(JS, /document\.documentElement\.dir = isHebrew \? "rtl" : "ltr"/);
+  assert.match(JS, /document\.documentElement\.dir = \["he", "ar"\]\.includes\(currentLanguage\) \? "rtl" : "ltr"/);
   assert.match(JS, /rirUnit: \(value\) => `\$\{value\} RIR`/);
   assert.match(JS, /עצימות האימון/);
   assert.match(MOBILE, /margin-inline-start/);
@@ -137,6 +137,6 @@ test("Hebrew uses logical layout, readable RIR and the shared RTL direction", ()
 });
 
 test("the versioned page loads the mobile result assets", () => {
-  assert.match(HTML, /workout-builder\.css\?v=20260918-volume-reroll-1/);
-  assert.match(HTML, /workout-builder\.js\?v=20260918-volume-reroll-1/);
+  assert.match(HTML, /workout-builder\.css\?v=20261014-rir-1/);
+  assert.match(HTML, /workout-builder\.js\?v=20261014-rir-1/);
 });

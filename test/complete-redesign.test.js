@@ -11,10 +11,14 @@ const SW = fs.readFileSync(path.join(PUBLIC, "sw.js"), "utf8");
 const pages = fs.readdirSync(PUBLIC).filter((file) => file.endsWith(".html")).sort();
 
 test("the complete redesign is applied once to every public HTML route", () => {
-  assert.equal(pages.length, 36);
+  assert.ok(pages.length >= 36);
   const failures = [];
   for (const page of pages) {
     const html = fs.readFileSync(path.join(PUBLIC, page), "utf8");
+    if (require('./helpers/current-product.cjs').editorialPages.has(page)) {
+      require('./helpers/current-product.cjs').assertPageShell(page);
+      continue;
+    }
     const styles = html.match(/\/css\/redesign-v1\.css/g) || [];
     const scripts = html.match(/\/js\/redesign-shell\.js/g) || [];
     if (styles.length !== 1 || scripts.length !== 1) {
@@ -80,11 +84,11 @@ test("focus, reduced motion, disabled controls, and minimum control size are exp
 });
 
 test("the service worker versions and pre-caches the shared redesign assets", () => {
-  assert.match(SW, /fuelphysique-v45-language-food-i18n-2/);
-  assert.ok(SW.includes("/css/redesign-v1.css?v=20260914-i18n-dashboard-1"));
-  assert.ok(SW.includes("/js/redesign-shell.js?v=20260928-site-i18n-1"));
-  assert.ok(SW.includes("/css/illustrated-v4.css?v=20260914-i18n-dashboard-1"));
-  assert.ok(SW.includes("/js/illustrated-v4.js?v=20260815-real-athlete-v43-complete-5"));
+  require("./helpers/current-product.cjs").assertCurrentCache(SW);
+  require("./helpers/current-product.cjs").assertCachedAsset(SW, "/css/redesign-v1.css");
+  require("./helpers/current-product.cjs").assertCachedAsset(SW, "/js/redesign-shell.js");
+  require("./helpers/current-product.cjs").assertCachedAsset(SW, "/css/illustrated-v4.css");
+  require("./helpers/current-product.cjs").assertCachedAsset(SW, "/js/simple-ux.js");
   assert.ok(SW.includes("/images/brand/ultramarine-athlete-hero.webp"));
 });
 

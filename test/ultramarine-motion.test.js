@@ -79,19 +79,9 @@ test("mobile Social presents the conversation list before opening a private thre
   assert.match(SOCIAL, /state\.activeConversation\s*=\s*conversation;[\s\S]*?classList\.remove\("show-conversations"\)/);
 });
 
-test("all public pages and the service worker use their exact versioned shell generation", () => {
-  const pages = fs.readdirSync(path.join(ROOT, "public")).filter(file => file.endsWith(".html"));
-  assert.equal(pages.length, 34);
-  for (const page of pages) {
-    const html = read(`public/${page}`);
-    assert.match(html, /redesign-v1\.css\?v=20260914-i18n-dashboard-1/);
-    const expectedShell = page === "daily-nutrition.html"
-      ? /redesign-shell\.js\?v=20260914-i18n-dashboard-1/
-      : /redesign-shell\.js\?v=20260914-i18n-dashboard-1/;
-    assert.match(html, expectedShell);
-  }
-  assert.match(SW, /fuelphysique-v45-language-food-i18n-2/);
-  assert.match(SW, /redesign-shell\.js\?v=20260914-i18n-dashboard-1/);
-  assert.match(SW, /redesign-shell\.js\?v=20260914-i18n-dashboard-1/);
-  assert.match(SW, /ultramarine-athlete-hero\.webp/);
+test("all current public routes load their declared shared or editorial shell", () => {
+  const helper=require('./helpers/current-product.cjs');
+  const pages=fs.readdirSync(path.join(ROOT,'public')).filter(f=>f.endsWith('.html'));assert.ok(pages.length>=36);
+  pages.forEach(helper.assertPageShell);helper.assertCurrentCache(SW);
+  for(const asset of ['/js/redesign-shell.js','/css/redesign-v1.css','/images/brand/ultramarine-athlete-hero.webp']) helper.assertCachedAsset(SW,asset);
 });

@@ -106,7 +106,7 @@ test("targeted builder UX uses anatomy visuals, a real mutation endpoint, option
   assert.match(nutritionMarkup, /name="mealFormatPreference"/);
   assert.doesNotMatch(nutritionMarkup, /name="prepTimePreference"/);
   assert.doesNotMatch(nutritionMarkup, /name="foodStylePreference"/);
-  assert.match(nutritionClient, /foodStylePreference: "mix"/);
+  assert.match(nutritionClient, /foodStylePreference: formData\.get\("mealFormatPreference"\) === "mix" \? "mix" : "supermarket"/);
   assert.match(theme, /html\[data-theme="light"\] body\.fp-v45-deep-ocean/);
   assert.match(theme, /--v45-ocean-deep: #f7fbff/);
 });

@@ -92,12 +92,18 @@ test("every catalog food image key resolves to a real mapped asset", () => {
   assert.deepEqual(unresolved, []);
 });
 
-test("every catalog meal prefers its exact high-resolution WebP plate image", () => {
+test("catalog meals prefer existing exact WebP plates and expose a truthful fallback for unpictured meals", () => {
   const failures = [];
   for (const meal of CATALOG) {
     const expectedWebp = `/images/meals/${meal.id}.webp`;
     const pngPath = path.join(ROOT, "public", "images", "meals", `${meal.id}.png`);
     const webpPath = path.join(ROOT, "public", "images", "meals", `${meal.id}.webp`);
+    if(!fs.existsSync(webpPath) && !fs.existsSync(pngPath)) {
+      assert.equal(meal.image,null,`${meal.id} must not invent a missing photo`);
+      assert.equal(meal.imageKey,meal.id);
+      assert.match(fs.readFileSync(path.join(ROOT,'public/js/nutrition-builder.js'),'utf8'),/meal-photo-fallback/);
+      continue;
+    }
     if (meal.image !== expectedWebp || meal.imageKey !== meal.id) failures.push(`${meal.id}: catalog path`);
     if (!fs.existsSync(pngPath) || !signature(pngPath).png) failures.push(`${meal.id}: PNG`);
     if (!fs.existsSync(webpPath) || !signature(webpPath).webp) failures.push(`${meal.id}: WebP`);

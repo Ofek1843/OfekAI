@@ -32,7 +32,7 @@
   if (!document.querySelector('link[href*="site-quality.css"]')) {
     const qualityStyles = document.createElement("link");
     qualityStyles.rel = "stylesheet";
-    qualityStyles.href = "/css/site-quality.css?v=20261002-brand-quality-1";
+    qualityStyles.href = "/css/site-quality.css?v=20261007-mobile-clarity-2";
     document.head.append(qualityStyles);
   }
   if ((paperRoutes.has(route) || route === "app.html") && !document.querySelector('link[href*="product-paper-routes.css"]')) {
@@ -803,7 +803,12 @@
     document.body.classList.add(lightCompositionRoutes.has(route) ? "fp-composition-light" : "fp-composition-dark");
     if (legalRoutes.has(route)) document.body.classList.add("fp-legal-route");
     if (!protectedRoutes.has(route)) document.body.classList.add("fp-public-route");
-    addProductNavigation(copy, language);
+    if (route === "my-workout-plans.html") {
+      import("./plan-sidebar.mjs").then(module => module.mountPlanSidebar(language))
+        .catch(() => addProductNavigation(copy, language));
+    } else {
+      addProductNavigation(copy, language);
+    }
     exposeIconActions();
     window.setTimeout(exposeIconActions, 500);
     window.setTimeout(exposeIconActions, 1500);

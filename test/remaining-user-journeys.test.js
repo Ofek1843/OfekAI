@@ -17,7 +17,7 @@ function includes(source, fragment, label) {
 
 test("remaining journeys expose complete protected route shells", () => {
   const routes = [
-    ["dashboard", "dashboard", "dashboardStatus"],
+    ["dashboard", "dashboard-editorial", "dashboardRoot"],
     ["social", "social", "globalStatus"],
     ["workout-builder", "workout-builder", "wizardError"],
     ["workout-tracker", "workout-tracker", "trackerStatus"],
@@ -69,14 +69,15 @@ test("Hebrew RTL behavior is deterministic across the main journeys", () => {
   assert.match(read("public/js/social-core.mjs"), /[\u0590-\u05FF]/, "social strings include Hebrew localization");
 });
 
-test("keyboard and accessibility contracts cover navigation, forms, dialogs and status", () => {
-  const dashboard = html("dashboard");
-  includes(dashboard, 'id="mobileMenuButton"', "dashboard menu button");
-  includes(dashboard, 'aria-controls="mobileDrawerPanel"', "dashboard drawer relationship");
+test("keyboard and accessibility contracts cover navigation, forms, dialogs and status", async () => {
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  const dashboard=document.body.innerHTML;
+  includes(dashboard, 'data-action="menu"', "dashboard menu button");
+  includes(dashboard, 'aria-controls="dashboardSidebar"', "dashboard drawer relationship");
   includes(dashboard, 'aria-expanded="false"', "dashboard drawer state");
-  includes(dashboard, 'data-dashboard-search', "dashboard search");
+  includes(dashboard, 'data-action="search"', "dashboard search");
   includes(dashboard, 'role="status"', "dashboard live status");
-  includes(js("dashboard"), "event.key === \"Escape\"", "dashboard Escape handling");
+  includes(read('public/js/dashboard-editorial-view.mjs'), "e.key==='Escape'", "dashboard Escape handling");
 
   const social = html("social");
   for (const id of ["userSearchInput", "messageInput", "shareConversationSelect", "shareSourceSelect"]) {

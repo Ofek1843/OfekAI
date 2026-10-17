@@ -1,3 +1,6 @@
+import { foodReferenceData } from './food-reference-data.mjs';
+import { preparationAmbiguity } from './food-preparation.mjs';
+
 const round = (value, precision = 1) => {
   const factor = 10 ** precision;
   return Math.round((Number(value) || 0) * factor) / factor;
@@ -8,6 +11,8 @@ const round = (value, precision = 1) => {
 // unit is explicitly part of the food definition. Commodity references follow
 // the FoodData Central 100 g edible-portion model; cooked foods are named as
 // cooked so a normal "what I ate" entry does not silently use a raw value.
+// Only the versioned records marked source-matched below have pinned external
+// composition evidence. Other legacy references remain unverified estimates.
 const FOOD_CATALOG = Object.freeze([
   { id: "oats", name: { en: "Oats (generic, dry)", he: "שיבולת שועל (גנרית, יבשה)" }, aliases: ["oats", "oatmeal", "rolled oats", "porridge oats", "שיבולת שועל", "שיבולת שועל יבשה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 375, protein: 13.2, carbs: 67.7, fat: 6.5 }, reference: { source: "curated generic commodity reference", ediblePortion: true, state: "dry", policy: "representative-not-brand" } },
   { id: "oats-quaker-original", name: { en: "Quaker original oats", he: "שיבולת שועל קוואקר מקורית" }, aliases: ["quaker original oats", "quaker oats", "שיבולת שועל קוואקר", "קוואקר מקורי"], baseAmount: 100, baseUnit: "g", specificity: "brand", macros: { calories: 375, protein: 12.5, carbs: 67.5, fat: 7.5 }, reference: { source: "known-product reference", ediblePortion: true, state: "dry", policy: "specific-product" } },
@@ -105,6 +110,18 @@ const FOOD_CATALOG = Object.freeze([
   { id: "granola", name: { en: "Granola", he: "גרנולה" }, aliases: ["granola", "גרנולה"], baseAmount: 100, baseUnit: "g", specificity: "generic", macros: { calories: 471, protein: 10, carbs: 64, fat: 20 }, reference: { source: "generic oat-and-nut granola", ediblePortion: true, state: "ready-to-eat", policy: "representative-not-brand" } },
   { id: "chocolate-granola-bar", name: { en: "Chocolate granola bar", he: "חטיף שוקולד גרנולה" }, aliases: ["chocolate granola bar", "granola bar", "granola snack bar", "חטיף גרנולה", "חטיף גרנולה שוקולד", "חטיף שוקולד גרנולה", "חטיף שוקולד גרנול", "חטיף שוקולד גרנל", "חטיף גרנול"], baseAmount: 1, baseUnit: "item", gramsPerItem: 40, specificity: "generic", macros: { calories: 180, protein: 3, carbs: 27, fat: 7 }, reference: { source: "representative generic chocolate granola bar (~40 g)", ediblePortion: true, state: "ready-to-eat", policy: "variable-product-average" } }
 ]);
+
+// Apply only explicit generic 100g matches. Product/brand and counted-food
+// entries keep their own definitions; saved log entries are never rehydrated
+// through this catalog when loaded.
+for (const food of FOOD_CATALOG) {
+  const record = foodReferenceData.foods[food.id === 'carrot' ? 'carrots' : food.id];
+  if (!record || food.baseUnit !== 'g' || food.baseAmount !== 100 || food.specificity === 'brand') continue;
+  const n=record.nutrientsPer100g;
+  food.name={...record.name};
+  food.macros={calories:n.calories,protein:n.proteinGrams,carbs:n.carbsGrams,fat:n.fatGrams};
+  food.reference={...record.reference};
+}
 
 const PORTION_REFERENCES = Object.freeze({
   "sweet-potato": Object.freeze({ unit: "g", default: 180, sizes: Object.freeze({ small: 130, medium: 180, large: 250 }), portions: Object.freeze({ serving: 180, plate: 250 }), confidence: "medium", ediblePortion: true }),
@@ -594,6 +611,11 @@ function parseFoodText(value, { customFoods = [] } = {}) {
 
   segments.forEach((segment, segmentIndex) => {
     const parsed = parseAmountPrefix(segment);
+    const preparation = preparationAmbiguity(parsed, segment);
+    if (preparation) {
+      ambiguities.push({ ...preparation, segmentIndex });
+      return;
+    }
     // Packaging and filled meals describe the whole consumed portion, not
     // whichever catalog ingredient happens to have the longest matching name.
     const needsWholeFoodInterpretation = /(?:חביל[הת]|חבילות|אריז[הת]|שקית|שקיות|מארז|\b(?:pack|packet|package|bag|box|bottle)s?\b|\bwith\b|(?:^|\s)עם\s|באגט|באגטים|\bbaguette\b)/iu.test(segment);
@@ -675,6 +697,22 @@ function totalsForEntries(entries = []) {
     carbsGrams: round(totals.carbsGrams + Number(entry.carbsGrams || 0)),
     fatGrams: round(totals.fatGrams + Number(entry.fatGrams || 0))
   }), { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 });
+}
+
+// Editing an existing entry scales its persisted composition snapshot rather
+// than silently switching its nutrition source/version after a data update.
+function rescaleEntrySnapshot(entry, amount) {
+  const next=Number(amount),previous=Number(entry.amount);
+  if(!Number.isFinite(next)||next<=0||next>10000||!Number.isFinite(previous)||previous<=0)throw new Error('INVALID_AMOUNT');
+  const roundedAmount=round(next,entry.unit==='item'?2:1);
+  if(roundedAmount<=0)throw new Error('INVALID_AMOUNT');
+  const copy={...entry,name:{...entry.name},amount:roundedAmount};
+  for(const key of ['calories','proteinGrams','carbsGrams','fatGrams']) {
+    const value=Number(entry[key]);if(!Number.isFinite(value)||value<0)throw new Error('INVALID_ENTRY');
+    copy[key]=round(value*roundedAmount/previous);
+  }
+  if(entry.reference)copy.reference={...entry.reference};
+  return copy;
 }
 
 function macroEnergyPercentages(totals = {}) {
@@ -834,6 +872,7 @@ export {
   recentFoodsFromLogs,
   remainingAgainstTargets,
   resolveFoodChoice,
+  rescaleEntrySnapshot,
   scaleFood,
   shiftDateKey,
   splitFoodInput,

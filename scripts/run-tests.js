@@ -52,9 +52,9 @@ function discover(dir) {
       found.push(...discover(full));
       continue;
     }
-    // Only *.test.js. Shared helpers such as test/child-process-cleanup.js
+    // Test modules in all supported Node formats. Shared helpers such as test/child-process-cleanup.js
     // are required BY tests and must never be handed to the runner.
-    if (entry.isFile() && entry.name.endsWith(".test.js")) found.push(full);
+    if (entry.isFile() && /\.test\.(?:js|mjs|cjs)$/.test(entry.name)) found.push(full);
   }
   // Sorted by POSIX-style relative path so the order is identical on every
   // platform and every run.

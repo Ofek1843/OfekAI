@@ -1,0 +1,426 @@
+{
+  "schemaVersion": 1,
+  "dataVersion": "usda-sr-legacy-2018-04-fp-v1",
+  "retrievedAt": "2026-10-16",
+  "source": {
+    "provider": "USDA FoodData Central",
+    "dataType": "SR Legacy",
+    "archiveUrl": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_json_2018-04.zip",
+    "archiveSha256": "0fe8ae486a2c8eb42cb96413f058deb51863a46c8fb8eeb4b1fb45006dd338ef",
+    "basis": {
+      "amount": 100,
+      "unit": "g",
+      "ediblePortion": true
+    }
+  },
+  "foods": {
+    "tomato": {
+      "fdcId": 170457,
+      "description": "Tomatoes, red, ripe, raw, year round average",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Tomato (raw)",
+        "he": "עגבנייה (נאה)"
+      },
+      "nutrientsPer100g": {
+        "calories": 18,
+        "proteinGrams": 0.88,
+        "carbsGrams": 3.89,
+        "fatGrams": 0.2,
+        "fiberGrams": 1.2
+      },
+      "sourceRecordSha256": "2c261779f114e220c9e7d1815f93f816f18b5f262e8437a76a3dcc62e9a0efc1",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 170457,
+        "url": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "olive-oil": {
+      "fdcId": 171413,
+      "description": "Oil, olive, salad or cooking",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171413/nutrients",
+      "preparationState": "ready-to-eat",
+      "name": {
+        "en": "Olive oil",
+        "he": "שמן זית"
+      },
+      "nutrientsPer100g": {
+        "calories": 884,
+        "proteinGrams": 0,
+        "carbsGrams": 0,
+        "fatGrams": 100,
+        "fiberGrams": 0
+      },
+      "sourceRecordSha256": "404d475bb627a95b594f9c022f794762b1f50dbd79f916f5e40498655be781b7",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 171413,
+        "url": "https://fdc.nal.usda.gov/food-details/171413/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "ready-to-eat",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "cucumber": {
+      "fdcId": 168409,
+      "description": "Cucumber, with peel, raw",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168409/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Cucumber (raw, with peel)",
+        "he": "מלפפון (נא, עם קליפה)"
+      },
+      "nutrientsPer100g": {
+        "calories": 15,
+        "proteinGrams": 0.65,
+        "carbsGrams": 3.63,
+        "fatGrams": 0.11,
+        "fiberGrams": 0.5
+      },
+      "sourceRecordSha256": "a5240520f93368156678c728f2a7e7fcb239a508eaa42cc1d589051849eeafe7",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 168409,
+        "url": "https://fdc.nal.usda.gov/food-details/168409/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "spinach": {
+      "fdcId": 168462,
+      "description": "Spinach, raw",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168462/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Spinach (raw)",
+        "he": "תרד (נא)"
+      },
+      "nutrientsPer100g": {
+        "calories": 23,
+        "proteinGrams": 2.86,
+        "carbsGrams": 3.63,
+        "fatGrams": 0.39,
+        "fiberGrams": 2.2
+      },
+      "sourceRecordSha256": "b24a23599496df4215af29c91a3cee698b2d276e0237e2f593942b3079929a9c",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 168462,
+        "url": "https://fdc.nal.usda.gov/food-details/168462/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "carrots": {
+      "fdcId": 170393,
+      "description": "Carrots, raw",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Carrots (raw)",
+        "he": "גזר (נא)"
+      },
+      "nutrientsPer100g": {
+        "calories": 41,
+        "proteinGrams": 0.93,
+        "carbsGrams": 9.58,
+        "fatGrams": 0.24,
+        "fiberGrams": 2.8
+      },
+      "sourceRecordSha256": "6043e80b5f316de15f3c81af7f9ee0dc1a868bad6379f5641730764a32838ece",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 170393,
+        "url": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "banana": {
+      "fdcId": 173944,
+      "description": "Bananas, raw",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Banana (raw, peeled)",
+        "he": "בננה (נאה, ללא קליפה)"
+      },
+      "nutrientsPer100g": {
+        "calories": 89,
+        "proteinGrams": 1.09,
+        "carbsGrams": 22.8,
+        "fatGrams": 0.33,
+        "fiberGrams": 2.6
+      },
+      "sourceRecordSha256": "88bc039b5611af3a3eb40d518ce51c33870cd906c9e4515c107557ac1334e398",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 173944,
+        "url": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "avocado": {
+      "fdcId": 171705,
+      "description": "Avocados, raw, all commercial varieties",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171705/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Avocado (raw, flesh only)",
+        "he": "אבוקדו (נא, ללא קליפה וגלעין)"
+      },
+      "nutrientsPer100g": {
+        "calories": 160,
+        "proteinGrams": 2,
+        "carbsGrams": 8.53,
+        "fatGrams": 14.7,
+        "fiberGrams": 6.7
+      },
+      "sourceRecordSha256": "aef5f5fe44c81c8f99650f9e92e308ef450db7532314c0dc307c1ba9e1ca1170",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 171705,
+        "url": "https://fdc.nal.usda.gov/food-details/171705/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "pear": {
+      "fdcId": 169118,
+      "description": "Pears, raw",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169118/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Pear (raw)",
+        "he": "אגס (נא)"
+      },
+      "nutrientsPer100g": {
+        "calories": 57,
+        "proteinGrams": 0.36,
+        "carbsGrams": 15.2,
+        "fatGrams": 0.14,
+        "fiberGrams": 3.1
+      },
+      "sourceRecordSha256": "9e6273e0f35f95a659413c2420a1f7e98f631b9d3004503d526e95a36ee2a9df",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 169118,
+        "url": "https://fdc.nal.usda.gov/food-details/169118/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "strawberries": {
+      "fdcId": 167762,
+      "description": "Strawberries, raw",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/167762/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Strawberries (raw)",
+        "he": "תותים (נאים)"
+      },
+      "nutrientsPer100g": {
+        "calories": 32,
+        "proteinGrams": 0.67,
+        "carbsGrams": 7.68,
+        "fatGrams": 0.3,
+        "fiberGrams": 2
+      },
+      "sourceRecordSha256": "d9c94d492ed9539e0f0eaffb1712a371b4b4b7c3754cb074153819d2f509a22f",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 167762,
+        "url": "https://fdc.nal.usda.gov/food-details/167762/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "lemon": {
+      "fdcId": 167746,
+      "description": "Lemons, raw, without peel",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/167746/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Lemon (raw, without peel)",
+        "he": "לימון (נא, ללא קליפה)"
+      },
+      "nutrientsPer100g": {
+        "calories": 29,
+        "proteinGrams": 1.1,
+        "carbsGrams": 9.32,
+        "fatGrams": 0.3,
+        "fiberGrams": 2.8
+      },
+      "sourceRecordSha256": "4eb01feae6cc25943a5eb307ae1df796f7772e705055a91c844a440629262a9a",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 167746,
+        "url": "https://fdc.nal.usda.gov/food-details/167746/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "oats": {
+      "fdcId": 173904,
+      "description": "Cereals, oats, regular and quick, not fortified, dry",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173904/nutrients",
+      "preparationState": "dry",
+      "name": {
+        "en": "Oats (regular/quick, dry)",
+        "he": "שיבולת שועל (רגילה/מהירה, יבשה)"
+      },
+      "nutrientsPer100g": {
+        "calories": 379,
+        "proteinGrams": 13.2,
+        "carbsGrams": 67.7,
+        "fatGrams": 6.52,
+        "fiberGrams": 10.1
+      },
+      "sourceRecordSha256": "2672e48debc33e8fa5ddafafbda686f76b888fff4552b805e3c21c5b610494f8",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 173904,
+        "url": "https://fdc.nal.usda.gov/food-details/173904/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "dry",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    },
+    "apple": {
+      "fdcId": 171688,
+      "description": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+      "publicationDate": "4/1/2019",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+      "preparationState": "raw",
+      "name": {
+        "en": "Apple (raw, with skin)",
+        "he": "תפוח (נא, עם קליפה)"
+      },
+      "nutrientsPer100g": {
+        "calories": 52,
+        "proteinGrams": 0.26,
+        "carbsGrams": 13.8,
+        "fatGrams": 0.17,
+        "fiberGrams": 2.4
+      },
+      "sourceRecordSha256": "f2146ced693b85389094babef14353f3fdb4900ecaab7bd77d80fa9993d62772",
+      "reference": {
+        "source": "USDA FoodData Central",
+        "status": "source-matched",
+        "dataType": "SR Legacy",
+        "recordId": 171688,
+        "url": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+        "version": "usda-sr-legacy-2018-04-fp-v1",
+        "publicationDate": "4/1/2019",
+        "retrievedAt": "2026-10-16",
+        "state": "raw",
+        "basisAmount": 100,
+        "basisUnit": "g",
+        "ediblePortion": true,
+        "policy": "representative-not-brand"
+      }
+    }
+  }
+}

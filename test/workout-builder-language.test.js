@@ -63,7 +63,7 @@ test("English locale ignores any non-locale environment signal (no browser/syste
   try {
     const summary = buildEquipmentSummaryText("en", CANONICAL_EQUIPMENT_IDS);
     assert.equal(hasHebrewCharacters(summary), false, "English locale must render English regardless of system LANG");
-    assert.equal(summary, "Bodyweight, Pull-up bar, Gymnastic rings, Dumbbells, Barbell, Machines, Cable, Kettlebells, Parallel bars");
+    assert.equal(summary, "Bodyweight, Pull-up bar, Gymnastic rings, Dumbbells, Barbell, Machines, Cable, Kettlebells, Parallel bars, Roman chair");
   } finally {
     process.env.LANG = originalLang;
   }

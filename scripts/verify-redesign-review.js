@@ -29,7 +29,7 @@ async function verify() {
   if (process.env.FIREBASE_PROJECT_ID !== PROJECT_ID) throw new Error("Review verifier requires the demo-fuelphysique project.");
   const dashboard = await fetch(`${APP_URL}/dashboard.html`, { redirect: "manual" });
   const dashboardHtml = await dashboard.text();
-  if (!dashboard.ok || !dashboardHtml.includes("/js/dashboard.js") || !dashboardHtml.includes("/js/redesign-shell.js")) {
+  if (!dashboard.ok || !dashboardHtml.includes("/js/dashboard-editorial.js") || !dashboardHtml.includes("/css/dashboard-editorial.css")) {
     throw new Error("The redesigned Dashboard document did not load from the local app.");
   }
 

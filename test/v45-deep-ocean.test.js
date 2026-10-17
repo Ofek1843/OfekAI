@@ -8,16 +8,14 @@ const path = require("node:path");
 const ROOT = path.join(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 
-test("V4.5 Deep Ocean loads on landing, dashboard, and protected routes", () => {
-  const landing = read("public", "index.html");
-  const dashboard = read("public", "dashboard.html");
-  const shell = read("public", "js", "redesign-shell.js");
-
-  assert.match(landing, /\/css\/v45-deep-ocean\.css\?v=20260914-i18n-dashboard-1/);
-  assert.match(dashboard, /\/css\/v45-deep-ocean\.css\?v=20260914-i18n-dashboard-1/);
-  assert.match(dashboard, /\/js\/redesign-shell\.js\?v=20260914-i18n-dashboard-1/);
-  assert.match(shell, /querySelector\('link\[href\*="v45-deep-ocean\.css"\]'\)/);
-  assert.match(shell, /classList\.add\("fp-redesign", "fp-v45-deep-ocean"/);
+test("paper routes retain their own palette instead of reloading the legacy ocean sheet", () => {
+  const helper=require('./helpers/current-product.cjs');
+  for(const page of ['index.html','dashboard.html','social.html','workout-builder.html']) helper.assertPageShell(page);
+  const shell=read('public','js','redesign-shell.js');
+  assert.match(shell,/if \(!paperRoutes\.has\(route\)/);
+  assert.match(shell,/"fp-redesign"/);
+  assert.match(shell,/"fp-v45-deep-ocean"/);
+  assert.match(shell,/paperStyles\.href = "\/css\/product-paper-routes\.css/);
 });
 
 test("Deep Ocean restores the atmospheric canvas without replacing scene architecture", () => {
@@ -44,7 +42,8 @@ test("Deep Ocean preserves the real-athlete and reduced-motion contracts", () =>
   assert.match(engine, /IntersectionObserver/);
   assert.match(engine, /prefers-reduced-motion/);
   assert.match(engine, /get\("athleteMotion"\) !== "v42"/);
-  assert.match(dashboard, /image-sequence-v43\.js/);
+  assert.match(dashboard, /dashboard-editorial\.js/);
+  assert.doesNotMatch(dashboard, /image-sequence-v43\.js/);
 });
 
 test("Deep Ocean remains responsive and keeps protected surfaces readable", () => {

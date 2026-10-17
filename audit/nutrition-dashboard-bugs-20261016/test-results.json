@@ -1,0 +1,17 @@
+{
+  "date":"2026-10-16",
+  "scope":"uncommitted local changes; no production writes or deployment",
+  "head":"e85441393bd873feb10b4cbe4eff5b7fd8e30387",
+  "fullRegression":{"files":166,"standardFiles":162,"emulatorFiles":4,"tests":1464,"pass":1464,"fail":0,"skipped":0,"todo":0,"durationMs":35290.3415,"exitCode":0},
+  "lintAndPostlint":"PASS",
+  "syntaxAndDiffCheck":"PASS",
+  "emulators":{"project":"demo-fuelphysique","auth":"127.0.0.1:9099","firestore":"127.0.0.1:8080"},
+  "environmentRecovery":"An extra verification attempt found the previous local emulator processes unavailable. They were restarted. A run launched directly after the demo start script inherited its demo flags and failed; the final confirmed run used explicit isolated regression flags (FUELPHYSIQUE_LOCAL_DEMO=0, MOCK_EXTERNAL_SERVICES=true) and passed. No production environment was changed.",
+  "calorieAudit":{"syntheticProfiles":240,"goalCalculations":720,"accepted":689,"individualReview":31,"acceptedPairOrdering":"cut < maintenance < gain","allGoalsSameMaintenance":true,"formulaChangedThisTurn":false,"femaleExample":{"age":30,"heightCm":165,"weightKg":60,"activity":"moderatelyActive","restingEstimate":1320,"maintenanceEstimate":2046,"cut":1750,"maintain":2050,"gain":2250},"rejectedExample":{"age":30,"heightCm":180,"weightKg":80,"activity":"sedentary","cutStatus":422,"reason":"existing general-population protein-share review policy","gain":2150,"oldGoalClearedInBrowser":true}},
+  "browser":{"hiddenInAppBrowser":true,"realLocalAuthAndFirestore":true,"syntheticUserOnly":true,"nativeDesktopInput":false,"observations":["Manual inputs approximately 46px tall, adjacent label containers approximately 75px; no injected choice grids","Same body inputs: gain2250 then cut1750","Rejected cut: targetSummary hidden and empty, explicit no-new-target message, selected food unchanged","Manual draft saved through actual UI; target1750, food478kcal and32g protein","Saved menu opens from plans list and dashboard with four ingredient rows","Mobile dialog width351.5px within375px client width, no page horizontal overflow; table scrolls internally","No error-level console entries on observed tab","Temporary viewport reset and owned tab closed"],"screenshots":["saved-menu-open.jpg","saved-menu-mobile.jpg","manual-cut-1750.jpg","manual-rejected-cut.jpg"]},
+  "dashboardFailure":{"oldGlobalBannerLogicConfirmed":true,"userSaysNoBlankSections":true,"productionFailedRequestIdentified":false,"newBehavior":"bounded independent reads; one retry for transient codes; named section and manual Retry for persistent failure; no permission relaxation or silent empty substitution","faultInjectionTests":"PASS"},
+  "liveReadOnly":{"healthBuild":"aa70402f4bed196683c4f9989615fa17dbb1a0ca","authenticatedProductionApiCalled":false,"productionCalorieBehaviorConfirmed":false},
+  "clinicalValidation":false,
+  "push":false,
+  "deploy":false
+}

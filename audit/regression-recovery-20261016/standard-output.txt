@@ -1,0 +1,10 @@
+Discovered 162 test files (158 standard, 4 emulator-backed).
+Running 158 test files serially...
+ℹ tests 1425
+ℹ suites 1
+ℹ pass 1425
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ duration_ms 32487.7926
+REGRESSION_EXIT_CODE=0

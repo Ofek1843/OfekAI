@@ -30,7 +30,7 @@ test("mobile PWA instruction prompt is compact, safe-area-aware, and isolated fr
   assert.match(source, /if \(instructional\) banner\.showModal\(\)/);
   assert.match(source, /else banner\.show\(\)/);
   assert.match(source, /instructional::backdrop \{ background: rgba\(2, 8, 18, 0\.62\)/);
-  assert.match(source, /max-height:\s*min\(260px, calc\(100svh/);
+  assert.match(source, /max-height:\s*min\(230px, calc\(100svh/);
   assert.match(source, /inset-block-end:\s*calc\(8px \+ env\(safe-area-inset-bottom\)\)/);
   assert.match(source, /overflow-y:\s*auto/);
   assert.match(source, /aria-labelledby/);

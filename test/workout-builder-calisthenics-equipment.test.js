@@ -69,6 +69,7 @@ test.after(() => {
 
 function buildRepro(overrides = {}) {
   return {
+    screeningStatus: "none", age: 28,
     goal: "Improve calisthenics skills",
     experience: "beginner",
     daysPerWeek: 1,

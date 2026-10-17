@@ -290,10 +290,10 @@ test("shared plans show a focus line only when focus is active", () => {
 
 // --- Manual builder follow-up documented -------------------------------
 
-test("the manual builder RIR follow-up is documented, not implemented", () => {
-  assert.match(MANUAL_JS, /FUTURE \(not in scope here\)/);
-  assert.match(MANUAL_JS, /readExercise\(\)/);
-  assert.match(MANUAL_JS, /rir:"1-3"/, "the stored literal must remain unchanged in this task");
+test("manual builder exposes editable RIR and persists the user's effort choice", () => {
+  assert.match(MANUAL_JS,/class="rir"/);
+  assert.match(MANUAL_JS,/function readExercise\(row\)/);
+  assert.match(MANUAL_JS,/rir:row\.querySelector\("\.rir"\)\.value\.trim\(\)\|\|"1-3"/);
 });
 
 // --- Existing guidance UX must not regress -----------------------------
@@ -311,7 +311,7 @@ test("the previous guidance UX is still in place", () => {
     "Supporting volume",
     "Target reps",
     "Reps In Reserve",
-    "Do not stop solely because you reached the bottom of the rep range"
+    "Use the prescribed RIR to choose your load"
   ]) {
     assert.ok(BUILDER_JS.includes(kept), `regressed guidance UX: ${kept}`);
   }

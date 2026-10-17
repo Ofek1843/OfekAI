@@ -1,0 +1,14 @@
+{
+  "date":"2026-10-16",
+  "head":"e85441393bd873feb10b4cbe4eff5b7fd8e30387",
+  "scope":"uncommitted local working tree",
+  "fullSuite":{"command":"node scripts/run-tests.js","files":163,"standardFiles":159,"emulatorFiles":4,"tests":1448,"pass":1448,"fail":0,"skipped":0,"todo":0,"durationMs":57899.3306,"exitCode":0,"project":"demo-fuelphysique","authEmulator":"127.0.0.1:9099","firestoreEmulator":"127.0.0.1:8080","mockExternalServices":true},
+  "lint":{"packageScripts":["lint","postlint"],"invocation":"Node execSync with cmd.exe","result":"PASS"},
+  "sourceIntegrity":{"command":"node scripts/verify-food-reference-source.js <official-zip> <extracted-json>","records":12,"status":"PASS","archiveSha256":"0fe8ae486a2c8eb42cb96413f058deb51863a46c8fb8eeb4b1fb45006dd338ef"},
+  "sourceCoverage":{"command":"node scripts/audit-food-provenance.js --summary --require-verified","exitCode":1,"expected":"incomplete source coverage must not pass"},
+  "loadTest":{"command":"node scripts/load-test.js","target":"local loopback server on allocated port","exitCode":0,"clinicalOrProductionCapacityClaim":false,"results":[{"name":"static-10","requestsPerSecond":1076.7,"p50Ms":8,"p99Ms":22,"errors":0,"timeouts":0,"non2xx":0,"maxRssMb":125},{"name":"static-25","requestsPerSecond":2695.3,"p50Ms":8,"p99Ms":22,"errors":0,"timeouts":0,"non2xx":0,"maxRssMb":125},{"name":"health-25","requestsPerSecond":5287.7,"p50Ms":4,"p99Ms":11,"errors":0,"timeouts":0,"non2xx":0,"maxRssMb":125}]},
+  "diffCheck":"PASS",
+  "productionDeployment":false,
+  "liveOpenAICalls":false,
+  "cleanup":"Stopped only owned app PID 6900 and Firebase CLI process tree PID 31072 after command-line ownership validation; no source/user/test assets deleted. Temporary browser tab closed and viewport reset."
+}

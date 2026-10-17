@@ -14,7 +14,7 @@ test("nutrition builder keeps one practical meal-format choice and derives the r
   assert.doesNotMatch(markup, /name="foodStylePreference"/);
   assert.match(markup, /data-he="איך נוח לך לאכול ביום־יום\?"/);
   assert.match(client, /mealFormatPreference: formData\.get/);
-  assert.match(client, /foodStylePreference: "mix"/);
+  assert.match(client, /foodStylePreference: formData\.get\("mealFormatPreference"\) === "mix" \? "mix" : "supermarket"/);
   assert.doesNotMatch(client, /navigator\.language/);
   assert.match(client, /meal-format-badge/);
   assert.match(client, /\[data-en\]\[data-he\]/);

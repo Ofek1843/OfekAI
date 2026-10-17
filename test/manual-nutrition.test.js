@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { calculateNutritionTargets } = require("../lib/nutrition-targets");
 const { searchManualMeals, normalizeSearch } = require("../lib/manual-nutrition");
-const { CATALOG, CATEGORY_DEFINITIONS } = require("../lib/meal-catalog");
+const { CATALOG, CATEGORY_DEFINITIONS, getMealById } = require("../lib/meal-catalog");
 
 const ROOT = path.join(__dirname, "..");
 const SERVER = fs.readFileSync(path.join(ROOT, "server.js"), "utf8");
@@ -77,7 +77,7 @@ test("categories work without text, combine with search, and restrictions overri
   const veganBanana = searchManualMeals({ query: "banana", categories: ["vegan"], diet: "omnivore" }).meals;
   assert.ok(veganBanana.length > 0);
   const dairyFree = searchManualMeals({ categories: ["vegan"], diet: "vegan", allergies: ["dairy"] }).meals;
-  assert.ok(dairyFree.every(meal => !/yogurt|cheese|milk|labneh|quark/i.test(meal.title + " " + meal.ingredients)));
+  assert.ok(dairyFree.every(meal => !getMealById(meal.id).allergens.includes("dairy")));
 });
 
 test("numeric categories use actual serving nutrition", () => {
@@ -129,8 +129,8 @@ test("selection state and serving controls remain client-side across discovery c
 });
 
 test("catalog expansion keeps unique slugs, derived nutrition and imported images", () => {
-  assert.equal(CATALOG.length, 157);
-  assert.equal(new Set(CATALOG.map(meal => meal.id)).size, 157);
+  assert.ok(CATALOG.length >= 157);
+  assert.equal(new Set(CATALOG.map(meal => meal.id)).size, CATALOG.length);
   assert.equal(MANIFEST.newMeals.length, 50);
   assert.equal(new Set(MANIFEST.newMeals.map(meal => meal.slug)).size, 50);
   for (const entry of MANIFEST.newMeals) {

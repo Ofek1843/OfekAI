@@ -55,6 +55,7 @@ const { deriveAllowedEquipment } = require("./lib/workout-equipment-policy");
 const { buildLocalWorkoutProgram, buildLocalExerciseReplacement } = require("./lib/local-demo-generators");
 const { adjustWorkoutVolume } = require("./lib/workout-volume-adjustment");
 const { calculateNutritionTargets } = require("./lib/nutrition-targets");
+const { nutritionSafetyNotes, assertWorkoutAge, assertScreeningCompleted, workoutLimitationIssues, applyGeneratedWorkoutTextPolicy } = require("./lib/plan-output-policy");
 const { mealById, searchManualMeals } = require("./lib/manual-nutrition");
 const socialTyping = require("./lib/social-typing");
 const {
@@ -73,6 +74,8 @@ const {
   buildMealOption,
   getMealById,
   detectAllergens,
+  validateAllergyInput,
+  assertPlanAllergenExclusions,
   parseFoodPreferenceTerms,
   CONDITION_NUTRIENTS
 } = require("./lib/meal-catalog");
@@ -117,7 +120,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const SERVER_HOST = localDemoMode
   ? String(process.env.LOCAL_REVIEW_BIND_HOST || "127.0.0.1").trim()
-  : undefined;
+  : (process.env.SERVER_BIND_HOST || undefined);
 const BUILD_ID = String(process.env.RENDER_GIT_COMMIT || "local").trim() || "local";
 const VERIFIED_SIGNUP_ALERT_WINDOW_MS = Math.max(60_000, Number(process.env.TELEGRAM_SIGNUP_ALERT_WINDOW_MS || 15 * 60 * 1000));
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
@@ -1410,6 +1413,7 @@ async function createChatCompletion({
           {
             day: 1,
             name: "Mock Session 1",
+            splitType: "full",
             exercises: [
               { exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "pike-push-up", name: "Pike Push-up", demoName: "Pike Push-up", muscleGroup: "Shoulders", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
@@ -1420,6 +1424,7 @@ async function createChatCompletion({
           {
             day: 3,
             name: "Mock Session 2",
+            splitType: "full",
             exercises: [
               { exerciseId: "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "pistol-squat", name: "Pistol Squat", demoName: "Pistol Squat", muscleGroup: "Quads", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
@@ -1430,6 +1435,7 @@ async function createChatCompletion({
           {
             day: 5,
             name: "Mock Session 3",
+            splitType: "full",
             exercises: [
               { exerciseId: "pseudo-planche-push-up", name: "Pseudo Planche Push-up", demoName: "Pseudo Planche Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 4, reps: "6-10", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
               { exerciseId: "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." },
@@ -1478,6 +1484,7 @@ async function createChatCompletion({
             {
               day: 1,
               name: "Day 1",
+              splitType: "full",
               exercises: [
                 { name: "Pull-up", demoName: "Pull-up", muscleGroup: "Back", equipment: "Pull-up Bar", sets: 3, reps: "5-8", restSeconds: 90, rir: "1-3", notes: "" },
                 { name: "Machine Chest Press", demoName: "Machine Chest Press", muscleGroup: "Chest", equipment: "מכונה", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "" },
@@ -1580,6 +1587,7 @@ async function createChatCompletion({
       const sessions = Array.from({ length: daysPerWeek }, (_, index) => ({
         day: index + 1,
         name: `Mock Session ${index + 1}`,
+        splitType: "full",
         exercises: [
           stripId({ exerciseId: "push-up", name: "Push-up", demoName: "Push-up", muscleGroup: "Chest", equipment: "Bodyweight", sets: 3, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
           stripId({ exerciseId: forceDuplicateExerciseId ? "push-up" : "australian-row", name: "Australian Row", demoName: "Australian Row", muscleGroup: "Back", equipment: "Bodyweight", sets: 4, reps: "8-12", restSeconds: 90, rir: "1-3", notes: "Mock mode." }),
@@ -2924,8 +2932,12 @@ app.post("/api/workout-builder", async (req, res) => {
       selectedMuscles
     } = req.body;
 
-    const safety = assessSafety({ text: limitations, language, route: "workout" });
+    const safety = assessSafety({ text: limitations, language, route: "workout", profile: req.body });
     if (!safety.allowed) return res.status(422).json({ error: safety.message, code: safety.code });
+    assertWorkoutAge(age);
+    assertScreeningCompleted(req.body);
+    const limitationIssues = workoutLimitationIssues(null, limitations, language);
+    if (limitationIssues.length) return res.status(422).json({ error: limitationIssues[0], code: "LIMITATIONS_REVIEW_REQUIRED" });
 
     if (
       !goal ||
@@ -3105,7 +3117,7 @@ Programming rules:
 - Avoid excessive volume.
 - Use realistic sets, repetitions, rest periods and RIR.
 - Name the program after the split you actually created. Use precise split names such as "Upper / Lower", "Full Body", "Push / Pull / Legs", or a truthful combination such as "Full Body + Upper / Lower" or "Push / Pull / Legs + Upper / Lower". Never use a generic goal-only program name when the session structure reveals the split.
-- For fat loss / cutting, prioritize retaining performance and muscle with recoverable training: use moderate weekly volume (never a mass-phase chest volume), mostly 8–15 repetitions when appropriate, and practical shorter rests (usually 75–90 seconds for compounds and 45–75 seconds for isolation). Do not claim that muscle gain is impossible in a deficit.
+- For fat loss / cutting, prioritize retaining performance and muscle with recoverable training. Respect the product volume policy, but do not shorten rest or remove intentional strength work solely because the goal is fat loss. Individual recovery and performance matter. Do not claim that muscle gain is impossible in a deficit.
 - Prescribe no more than 4 working sets for any one exercise in a session. If more volume is needed, use another compatible movement or distribute it across training days rather than assigning 5 or more sets to one exercise.
 - Treat experience level as programming context, not a reason to add arbitrary complexity. For beginners, prefer understandable, stable movements, manageable complexity and recoverable volume. For advanced athletes, use the existing advanced target ranges and add exercise variety or specialization only when the stated constraints justify it; do not automatically make the plan longer or more complex.
 - When experience is professional and training style is calisthenics, this is an elite skill athlete request: prioritize appropriately difficult, well-scaled skill practice such as planche, front lever, one-arm pull-up, muscle-up, handstand push-up and typewriter pull-ups when the required equipment is available. Do not fill an advanced calisthenics plan with beginner substitutions such as Australian rows unless the user explicitly requests regressions or lacks the needed equipment. Skill work must still include safe progressions, realistic holds/reps and fatigue-aware volume.
@@ -3253,6 +3265,7 @@ Injuries, limitations or special requests: ${String(limitations)}
     }
 
     program.daysPerWeek = parsedDays;
+    program.age = parsedAge;
     program.goal = String(goal || program.goal || "");
     // Workout sex is optional contextual metadata only. Do not use it for
     // volume, exercise, progression or any physiological inference.
@@ -3501,6 +3514,8 @@ Injuries, limitations or special requests: ${String(limitations)}
       });
     }
 
+    applyGeneratedWorkoutTextPolicy(program, language);
+    program.age = parsedAge;
     return res.json({
       success: true,
       program,
@@ -3594,6 +3609,12 @@ app.post("/api/workout-builder/adjust-volume", async (req, res) => {
     if (!program || !Array.isArray(program.sessions)) {
       return res.status(400).json({ error: language === "he" ? "נדרשת תוכנית אימונים תקינה." : "A valid workout program is required." });
     }
+    const safety = assessSafety({text: limitations, language, route:"workout", profile:req.body});
+    if (!safety.allowed) return res.status(422).json({error:safety.message,code:safety.code});
+    assertWorkoutAge(req.body.age ?? program.age);
+    assertScreeningCompleted(req.body);
+    const limitationIssues = workoutLimitationIssues(program, limitations, language);
+    if (limitationIssues.length) return res.status(422).json({error:limitationIssues[0],code:"LIMITATIONS_REVIEW_REQUIRED"});
     const requestedDelta = Number(delta);
     if (!Number.isInteger(requestedDelta) || ![-1, 1].includes(requestedDelta)) {
       return res.status(400).json({ error: language === "he" ? "שינוי הנפח אינו תקין." : "The volume adjustment is invalid." });
@@ -3625,10 +3646,10 @@ app.post("/api/workout-builder/adjust-volume", async (req, res) => {
     });
     if (!adjustment.changed) {
       const message = adjustment.reason === "hard-maximum"
-        ? (language === "he" ? "לא ניתן להוסיף יותר נפח: הגעתם לתקרת הנפח הבטוחה לקבוצת השריר הזו." : "Volume cannot be increased: this muscle is already at its safe programming ceiling.")
+        ? (language === "he" ? "לא ניתן להוסיף נפח: הגעתם לתקרת התכנון של המוצר לקבוצת השריר הזו. זו אינה תקרת בטיחות רפואית אישית." : "Volume cannot be increased: this muscle has reached the product programming cap, not an individually validated medical safety limit.")
         : adjustment.reason === "minimum-program"
           ? (language === "he" ? "לא ניתן להפחית עוד בלי להסיר עבודה חיונית מהתוכנית." : "Volume cannot be reduced further without removing essential work from the program.")
-          : (language === "he" ? "לא נמצאה התאמת נפח בטוחה עבור התוכנית הזו." : "No safe volume adjustment is available for this program.");
+          : (language === "he" ? "לא נמצאה התאמה שעומדת במגבלות התכנון." : "No adjustment meets the programming constraints.");
       return res.status(409).json({ error: message, reason: adjustment.reason });
     }
 
@@ -3705,6 +3726,12 @@ app.post("/api/workout-builder/reroll-exercise", async (req, res) => {
         error: "Workout program is required."
       });
     }
+    const safety = assessSafety({text:limitations,language,route:"workout",profile:req.body});
+    if (!safety.allowed) return res.status(422).json({error:safety.message,code:safety.code});
+    assertWorkoutAge(req.body.age ?? program.age);
+    assertScreeningCompleted(req.body);
+    const limitationIssues = workoutLimitationIssues(program, limitations, language);
+    if (limitationIssues.length) return res.status(422).json({error:limitationIssues[0],code:"LIMITATIONS_REVIEW_REQUIRED"});
 
     const session = program.sessions[sessionIndex];
 
@@ -3960,6 +3987,7 @@ Required JSON format:
       });
     }
     newExercise = acceptedExercise;
+    applyGeneratedWorkoutTextPolicy({sessions:[{exercises:[newExercise]}]}, language);
     session.exercises[exerciseIndex] = newExercise;
     program.muscleFocusMode = muscleFocus.muscleFocusMode;
     program.selectedMuscles = muscleFocus.selectedMuscles;
@@ -4057,12 +4085,16 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
 
     const { mealNumber, optionNumber, language, plan } = req.body;
     const isHebrew = language === "he";
+    const safety = assessSafety({text:req.body.additionalNotes || "",language,route:"nutrition",profile:req.body});
+    if (!safety.allowed) return res.status(422).json({error:safety.message,code:safety.code});
+    assertScreeningCompleted(req.body);
 
     if (!plan || !Array.isArray(plan.meals)) {
       return res.status(400).json({
         error: isHebrew ? "חסרה תוכנית תזונה." : "Missing nutrition plan."
       });
     }
+    assertPlanAllergenExclusions(plan);
 
     const meal = plan.meals.find((entry) => entry.mealNumber === mealNumber);
     if (!meal) {
@@ -4177,6 +4209,8 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       const totals = evaluatePlanTotals(candidatePlan, null);
       const returnedOption = candidateMeal.options[candidateIndex];
       if (!exact.exact || !totals.withinTolerance || returnedOption?.keepsPlanValid === false) continue;
+      assertPlanAllergenExclusions(candidatePlan);
+      candidatePlan.notes = nutritionSafetyNotes({language,isYouth:plan.isYouth===true,safeConditions:plan.diagnosedConditions||[]});
 
       candidatePlan.totalsSummary = {
         ...(candidatePlan.totalsSummary || {}),
@@ -4206,11 +4240,15 @@ app.post("/api/nutrition/manual/targets", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   try {
+    const body = req.body || {};
+    const safety = assessSafety({text:[body.additionalNotes,body.allergies,body.foodsToAvoid].filter(Boolean).join(" "),language:body.language,route:"nutrition",profile:body});
+    if (!safety.allowed) return res.status(422).json({error:safety.message,code:safety.code});
     const targets = calculateNutritionTargets(req.body || {});
+    assertScreeningCompleted(body);
     if (targets.isYouth) return res.status(400).json({ error: "Manual nutrition targets are available for adults 18 and older." });
-    res.json({ targets, estimateNotice: "These are estimates, not medical advice." });
+    res.json({ targets, estimateNotice: targets.estimateNotice });
   } catch (error) {
-    res.status(400).json({ error: error.message || "Invalid nutrition targets." });
+    res.status(error.status || 400).json({ error: error.message || "Invalid nutrition targets." });
   }
 });
 
@@ -4218,6 +4256,7 @@ app.get("/api/nutrition/manual/meals", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   const split = (value) => String(value || "").split(/[,;|\n]+/).map((item) => item.trim()).filter(Boolean).slice(0, 20);
+  try {
   const result = searchManualMeals({
     query: req.query.q,
     diet: req.query.diet,
@@ -4230,6 +4269,7 @@ app.get("/api/nutrition/manual/meals", async (req, res) => {
     offset: req.query.offset || 0
   });
   res.json(result);
+  } catch(error) { res.status(error.status || 400).json({error:error.message}); }
 });
 
 app.get("/api/nutrition/manual/meals/:mealId", async (req, res) => {
@@ -4268,8 +4308,9 @@ app.post("/api/nutrition-builder", async (req, res) => {
       language = "en"
     } = req.body;
 
-    const safety = assessSafety({ text: [allergies, additionalNotes, favoriteFoods, foodsToAvoid].join(" "), language, route: "nutrition" });
+    const safety = assessSafety({ text: [allergies, additionalNotes, favoriteFoods, foodsToAvoid].join(" "), language, route: "nutrition", profile: req.body });
     if (!safety.allowed) return res.status(422).json({ error: safety.message, code: safety.code });
+    assertScreeningCompleted(req.body);
 
     if (
       !goal ||
@@ -4278,7 +4319,7 @@ app.post("/api/nutrition-builder", async (req, res) => {
       !height ||
       !weight ||
       !activityLevel ||
-      !trainingDays ||
+      trainingDays === undefined || trainingDays === null || trainingDays === "" ||
       !mealsPerDay ||
       !dietaryPreference
     ) {
@@ -4301,7 +4342,7 @@ app.post("/api/nutrition-builder", async (req, res) => {
     const safeConditions = Array.isArray(diagnosedConditions)
       ? diagnosedConditions.filter((condition) => allowedConditions.has(condition)).slice(0, 5)
       : [];
-const targets = calculateNutritionTargets({ age: parsedAge, gender, height: parsedHeight, weight: parsedWeight, activityLevel, goal });
+const targets = calculateNutritionTargets({ age, gender, height, weight, activityLevel, goal });
 const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGrams: targetProtein, carbsGrams: targetCarbs, fatGrams: targetFat, isYouth, isOlderAdult } = targets;
 
     if (
@@ -4389,7 +4430,9 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
       lowCarb: "omnivore",
       mediterranean: "omnivore"
     };
-    const catalogDiet = DIET_MAP[dietaryPreference] || "omnivore";
+    if (!Object.hasOwn(DIET_MAP, dietaryPreference)) return res.status(400).json({error:"Select a supported dietary preference."});
+    const catalogDiet = DIET_MAP[dietaryPreference];
+    validateAllergyInput(allergies);
     const excludeAllergens = detectAllergens(allergies, foodsToAvoid);
     const practicalMealFormat = ["ready", "quick", "cook", "mix"].includes(mealFormatPreference)
       ? mealFormatPreference
@@ -4438,7 +4481,7 @@ const { bmr, tdee: maintenanceCalories, dailyCalories: targetCalories, proteinGr
       return res.status(422).json({
         error: isHebrew
           ? "השילוב שבחרת של תזונה, מגבלות ורמת הכנה אינו משאיר שלוש חלופות בטוחות לכל ארוחה. נסה/י להרחיב את זמן ההכנה או לבחור בשילוב של הכול."
-          : "Your diet, restrictions and preparation choice do not leave three safe alternatives for every meal. Try allowing more preparation time or choosing a mix of meal types."
+          : "Your diet, restrictions and preparation choice do not leave enough compatible catalog choices for every meal. Try allowing more preparation time or choosing a mix of meal types."
       });
     }
 
@@ -4474,6 +4517,7 @@ Rules:
 - For each mealNumber, choose exactly 3 DIFFERENT meal ids from that slot's list below.
 - Only use ids that appear verbatim in the matching slot's list. Never invent an id.
 - Prefer ids whose calorie count is close to that slot's target calories.
+- By default prefer meals tagged everyday-preferred: familiar home meals, sandwiches, eggs, yogurt, chicken with rice, pasta and straightforward plant-based meals. Use less familiar combinations mainly for explicit favorites, variety or when restrictions require them. Never relax allergies, diet or preparation limits for familiarity. Explicit user favorites take precedence over this default.
 - Avoid repeating the same meal id across different meal numbers in the same day when the slot's list has enough alternatives.
 - Meal practicality preference: ${practicalMealFormat}; preparation-time preference: ${practicalPrepTime}; food-style preference: ${practicalFoodStyle}.
 - Food-style preference is a positive preference, never a reason to break dietary restrictions or allergies.
@@ -4646,15 +4690,14 @@ ${slots
     const waterLiters = Math.round((parsedWeight * 0.035 + parsedTrainingDays * 0.15) * 10) / 10;
 
     const plan = {
-      planName:
-        aiPlan?.planName ||
-        (isHebrew ? "תוכנית תזונה אישית" : "Personal Nutrition Plan"),
+      planName: (isHebrew ? "תוכנית תזונה אישית" : "Personal Nutrition Plan"),
       description:
-        aiPlan?.description ||
         (isHebrew
           ? "תוכנית תזונה מותאמת אישית מקטלוג ארוחות אצור."
           : "A personalized nutrition plan built from a curated meal catalog."),
       goal: String(goal),
+      isYouth,
+      diagnosedConditions: safeConditions,
       maintenanceCalories,
       dailyCalories: targetCalories,
       proteinGrams: targetProtein,
@@ -4674,10 +4717,9 @@ ${slots
       avoidTerms,
       favoriteTerms,
       meals,
-      notes: Array.isArray(aiPlan?.notes)
-        ? aiPlan.notes.filter((note) => typeof note === "string").slice(0, 5)
-        : []
+      notes: nutritionSafetyNotes({language,isYouth,safeConditions})
     };
+    assertPlanAllergenExclusions(plan);
 
     // dailyCalories/proteinGrams/... above are TARGETS derived from the
     // user's profile. The meal cards show ACTUAL catalog macros, which will

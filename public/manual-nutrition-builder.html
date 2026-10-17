@@ -19,9 +19,9 @@
 
     <section class="builder-step panel" aria-labelledby="targetsTitle">
       <div class="step-heading"><span>01</span><div><h2 id="targetsTitle">Set your targets</h2><p>These values are estimates, not medical advice.</p></div></div>
-      <form id="targetForm" class="target-form">
+      <form id="targetForm" class="target-form" data-native-controls>
         <label>Age<input id="age" type="number" min="18" max="100" value="30" required></label>
-        <label>Calculation sex<select id="gender"><option value="male">Male</option><option value="female">Female</option></select></label>
+        <label>Physiological equation coefficient<select id="gender" required><option value="" selected>Select explicitly</option><option value="male">Male coefficient</option><option value="female">Female coefficient</option></select><small>This is an equation input, not gender identity. If neither coefficient fits, seek an individually measured estimate.</small></label>
         <label>Height (cm)<input id="height" type="number" min="120" max="230" value="180" required></label>
         <label>Weight (kg)<input id="weight" type="number" min="30" max="300" step="0.1" value="80" required></label>
         <label>Activity<select id="activityLevel"><option value="sedentary">Sedentary</option><option value="lightlyActive">Lightly active</option><option value="moderatelyActive" selected>Moderately active</option><option value="veryActive">Very active</option><option value="extremelyActive">Extremely active</option></select></label>

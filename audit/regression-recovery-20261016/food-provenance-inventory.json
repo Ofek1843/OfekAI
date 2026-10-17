@@ -1,0 +1,2692 @@
+{
+  "schemaVersion": 1,
+  "scope": "generator-and-diary-source-review",
+  "summary": {
+    "ingredients": 131,
+    "recipes": 165,
+    "verifiedExternalSources": 0,
+    "unspecifiedPreparation": 109,
+    "invalidMacros": 0,
+    "macroEnergyReview": 24,
+    "diaryFoods": 92
+  },
+  "ingredients": [
+    {
+      "key": "almond-butter",
+      "name": "Almond butter",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "2104875bff6764e8b12df3df21a145af190794b67567b29b1694761585ae3454"
+    },
+    {
+      "key": "almond-milk",
+      "name": "Almond milk",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "02c94483225d94b8c3ba456800fe9d71759be095cdcfe6414e4811f9a9a81888"
+    },
+    {
+      "key": "almonds",
+      "name": "Almonds",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "b198a0e125366b4f6aa50517b3f5683c29833e2efb3abbe72c578f0ab494f7c7"
+    },
+    {
+      "key": "apple",
+      "name": "Apple",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "5f8c1a417491403961e7382d4f60cd063006fe7960217af794830a09c701f592"
+    },
+    {
+      "key": "asparagus",
+      "name": "Asparagus",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "5ef08465fd455addf85bd30e46510d86735403a0b7059bf785bcf906763baa35"
+    },
+    {
+      "key": "avocado",
+      "name": "Avocado",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 13,
+      "fingerprint": "132094178193ba972d8148b2b59bdf149b087e91bd7336b027604a61e98eb722"
+    },
+    {
+      "key": "banana",
+      "name": "Banana",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 14,
+      "fingerprint": "737def9ad031c98fbabec79a4d7ba74f2c6fa82a51de3c3074619b5d822b6f85"
+    },
+    {
+      "key": "basil",
+      "name": "Basil",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "db2e66244a76994e295a55c851d36b4324fa66d25e8022fdad2fa5e4f6e2377b"
+    },
+    {
+      "key": "basmati-rice",
+      "name": "Basmati rice (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "af19b6b74130d23522c5ccb5d47213a14d4a0d6055472650b0d8443f06ab1734"
+    },
+    {
+      "key": "beetroot",
+      "name": "Beetroot",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "a7d6016932b0a51b108e001f91ebffc6de8114e02ab58dc09c383fe88dfe94ed"
+    },
+    {
+      "key": "bell-pepper",
+      "name": "Bell pepper",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 16,
+      "fingerprint": "07bf3ed71a59284593d0f109f40dc048ed0cc6fff804779727a89472f2f41002"
+    },
+    {
+      "key": "black-beans",
+      "name": "Black beans (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "6e5ba3bd246ff5b1b005da000ccedd4d64921e54530fdda8cc8a29abdc6b8670"
+    },
+    {
+      "key": "blueberries",
+      "name": "Blueberries",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "f91d7ff5a1942c413c5fe57f29e8dd4af3e17faaf0ca7abbce49347e6c92bfa6"
+    },
+    {
+      "key": "bread",
+      "name": "White bread",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "124ad153d3dcfd9f9b999466ab73186fc278d90c2b5fc85e4540242395b8191c"
+    },
+    {
+      "key": "broad-beans",
+      "name": "Broad beans (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "0a07100e161237bfef0ccb68c48cf87f963bc41965d88612f9361d1e9e1baa59"
+    },
+    {
+      "key": "broccoli",
+      "name": "Broccoli",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "640ad7a34599b0c1184fd452719b2424f27695e3e33c3142b63542c34fd2c769"
+    },
+    {
+      "key": "brown-rice",
+      "name": "Brown rice (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 5,
+      "fingerprint": "6da6c3d100a509a9ff462df6fa8db41d187eff066a9bb94f92dcfe713754c233"
+    },
+    {
+      "key": "buckwheat-flour",
+      "name": "Buckwheat flour",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "af003390a35267d7c6f9b54d0986b33e7a066f0c80b518e7850fbf2f737a3319"
+    },
+    {
+      "key": "bulgur",
+      "name": "Bulgur (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "7cb223e9404ee672716203793c6aaffb81ef8a503c316e52a3741edc890ff92d"
+    },
+    {
+      "key": "cabbage",
+      "name": "Cabbage",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "cd0783f3223fab68e91adf418833d7bf290f689f0cb5444e57c5e80cfd54d6dc"
+    },
+    {
+      "key": "carrots",
+      "name": "Carrots",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 16,
+      "fingerprint": "14f83dfa14760b7c11ddab2962b0b5ea3324ab423b92c1ca98a6d5fda0aafcb8"
+    },
+    {
+      "key": "cashews",
+      "name": "Cashews",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "be76b7af50efe42f8c4c1085a877948fb818e12087fc2d14b011a9d579c321b1"
+    },
+    {
+      "key": "cauliflower",
+      "name": "Cauliflower",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "340188936f377943a2c27774a374097986c552d5677c6370f5a03ce0c94c3ad9"
+    },
+    {
+      "key": "celery",
+      "name": "Celery",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "3fc4b9f0b689d31761a32a0a82e004d5f5bf077069a65cb2e425e42aa40aacc6"
+    },
+    {
+      "key": "cheese",
+      "name": "Cheese",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "d16b3b92faa5357a0a56b6493f34d287d3dafcb8b13d970478692f4608260a71"
+    },
+    {
+      "key": "chia-seeds",
+      "name": "Chia seeds",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "a85b65f4c342f0fd37913845d0a4e28c6dabcc814cb9a6c9c8f8db43dbcfe9a2"
+    },
+    {
+      "key": "chicken-breast",
+      "name": "Chicken breast (grilled)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 18,
+      "fingerprint": "dbb0879e5a97c17549ea4228c5076523414fd942aa65f310d4be84e8c477f125"
+    },
+    {
+      "key": "chicken-thigh",
+      "name": "Chicken thigh (skinless)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "6efa9b5667e5f6842e4742be8d93b15b3dd0296beb25851e1370f706516801d9"
+    },
+    {
+      "key": "chickpeas",
+      "name": "Chickpeas (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "49bb8ad599e24ff24d0aafbe22e9ba3f9915adb6a945af315fc40b0a03cf064b"
+    },
+    {
+      "key": "cinnamon",
+      "name": "Cinnamon",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 10,
+      "fingerprint": "65503a9acd2ad459a99eb148b73f024924616d2d570f8851930f3703825c1a26"
+    },
+    {
+      "key": "cocoa",
+      "name": "Unsweetened cocoa",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "2694a2aaa36858ba61c297a2b9f909d4b9f7191f91e53f47986b489af3583605"
+    },
+    {
+      "key": "cod",
+      "name": "Cod fillet",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "231233ceb3281d344c807b4fd87d924d6012113018025d4fd10ad5ebf83d661d"
+    },
+    {
+      "key": "corn",
+      "name": "Corn",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "e15c56b3f7f478ccc40f654397cd47bcf4f7779c0bc71685d199ca903cff6d2b"
+    },
+    {
+      "key": "corn-tortilla",
+      "name": "Corn tortilla",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "fb3c813e0cfdfd83acb80d8bbb2f2c0a735435f724a7c5ba5b79dc75d87b7b2c"
+    },
+    {
+      "key": "cornflakes",
+      "name": "Cornflakes",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "5ceb017e96767d9321b447f5678ece4068589a0c4c58a6396e2340d2326a6d16"
+    },
+    {
+      "key": "cottage-cheese",
+      "name": "Cottage cheese (5%)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 10,
+      "fingerprint": "e566eda4a03d8db4a57d9736fc9c90fa066a2de2be8ab08bbe2b96ba5999709d"
+    },
+    {
+      "key": "couscous",
+      "name": "Couscous (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 5,
+      "fingerprint": "42db7dfcc7236c8eb3953b25bb7ad4a8e7d7c3d97496058c6b5261b5200edf5d"
+    },
+    {
+      "key": "cream",
+      "name": "Cream cheese",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "7a0f6635800c973475271c13a34c9f97f3c731509f926c652c5c781d2e975448"
+    },
+    {
+      "key": "cucumber",
+      "name": "Cucumber",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 42,
+      "fingerprint": "659635e2ce19c7d8c63e02b7dc165fd2f2e36a748eb0c31d909a9a9432360141"
+    },
+    {
+      "key": "dark-chocolate",
+      "name": "Dark chocolate",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "3fc67cf21d37825fb0bc2d8aa98b369838df4dfb83d4d4eef93348578ba8b4ae"
+    },
+    {
+      "key": "dates",
+      "name": "Dates",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "d8904c9857ce62b01b3e73d6aab1e3a975d72b5ef26827de1ef50ec264ede312"
+    },
+    {
+      "key": "dill",
+      "name": "Dill",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "4f97ef4282021f2d6aeeac0cfd2b21fb5ede5dbbec5ae3163a265f3d03ff1858"
+    },
+    {
+      "key": "edamame",
+      "name": "Edamame",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "2d18de869a0971ef6afa7927753429a4a2ef50630e40d5ee1ddd8cf97a3fa0a3"
+    },
+    {
+      "key": "egg-whites",
+      "name": "Egg whites",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "f5869ffbf869b17fc7586fd08228425f481e81626ceec07841a5cb95e8bb4e18"
+    },
+    {
+      "key": "eggs",
+      "name": "Eggs",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 19,
+      "fingerprint": "293ea65ee8d99bc59785f283829e4cd8fccea97846881bdae069946a56b4cf87"
+    },
+    {
+      "key": "farro",
+      "name": "Farro (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "3dc0fb5b4a62c7cc79193016ab13fcab3f535d03591d8089471d6d88cefe6a06"
+    },
+    {
+      "key": "feta",
+      "name": "Feta",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "ed01dd2eb300c9963dd911d747ea6af40a8cb68d91c556f3c4fc9e1583656c9e"
+    },
+    {
+      "key": "granola",
+      "name": "Granola",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "d47a31cff3f92c0838d19dba87d0fe9ec5967f296e34050fe7434c10623adc44"
+    },
+    {
+      "key": "grapes",
+      "name": "Grapes",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "86b929068b42d40a8121f1d52352f94fa7a3c5d58caf643a3ef26481140c8461"
+    },
+    {
+      "key": "greek-yogurt",
+      "name": "Greek yogurt (plain)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 8,
+      "fingerprint": "52c5e366dda3b5c2cd7d441d08bc5b5bc9fc0279c783a431a542f63f7aed940d"
+    },
+    {
+      "key": "green-beans",
+      "name": "Green beans",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "a94553374a443c575c30fa6dfe305712f7aa0139a59b1415a9faa4cfb7a5bfce"
+    },
+    {
+      "key": "haddock",
+      "name": "Haddock fillet",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "8199824e4a7643b5b65d4c94d084ac1f0fae01bbc5e3f3742cceb1bcca9a57e5"
+    },
+    {
+      "key": "halloumi",
+      "name": "Halloumi",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "2be39da3686958474ad02c131de0499c7ace077f2a2ed489b9f430839070a218"
+    },
+    {
+      "key": "herbs",
+      "name": "Fresh herbs",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 15,
+      "fingerprint": "bf63119d56eab18415cfd65c703c63c57d45e31cbeaca4fa404f6c241a2fcd19"
+    },
+    {
+      "key": "honey",
+      "name": "Honey",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "e8eea4f5710b31e2b6fc547983a4791e5561ffa627789fe5bda2653758038c6b"
+    },
+    {
+      "key": "hummus",
+      "name": "Hummus",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "906e21f4420836e076022bd69ee1e601a34d1466001c4cf5095fdc8d0ebbf758"
+    },
+    {
+      "key": "jasmine-rice",
+      "name": "Jasmine rice (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "324de124da4c0c8f7229fc7653ad2c15f6ddf4ee666be5921ed6868c6fc77d65"
+    },
+    {
+      "key": "kale",
+      "name": "Kale",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "26e81238b9852e8c152098be658dd6ca5b4d6d05e8fd2232956d1f4e8c166b80"
+    },
+    {
+      "key": "kefir",
+      "name": "Kefir",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "cfa5fa7fd9aaa9ea12c582ba65617cbb9a2a2b19df6e4b9466c415b28aed4371"
+    },
+    {
+      "key": "kidney-beans",
+      "name": "Kidney beans (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "df1d0d923a045c9f7149898e9e6183c427fb3a12a331813ea5ba198c8defee72"
+    },
+    {
+      "key": "kiwi",
+      "name": "Kiwi",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "df727768e8092b4f3b65d7b2693a73aabc7b3c0f0b6a5c5662c85aa129ee3eae"
+    },
+    {
+      "key": "labneh",
+      "name": "Labneh",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "5a05956005c4e73a89ee8a6aa9704b183ba992647e04373e9630ed74a25497f8"
+    },
+    {
+      "key": "lamb",
+      "name": "Lean lamb",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "37960e35b1e51cbb23dfcd1d0434ccf6afb5a793bf94a292c4869a0339976f0f"
+    },
+    {
+      "key": "lean-beef",
+      "name": "Lean ground beef (90%)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 9,
+      "fingerprint": "18200dfb10e26b2ca46c23deb066c83035ce6959c85d86f603621678707a2283"
+    },
+    {
+      "key": "lemon",
+      "name": "Lemon",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "29c614b267fde2fe058ebc56187fa4eeb6faef8a926ec7051ac0d136444640b0"
+    },
+    {
+      "key": "lentils",
+      "name": "Lentils (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 8,
+      "fingerprint": "d4027fc21f5ba27495ae227d47ee7b96f561463905b86dcb1d6388f6826fbfbb"
+    },
+    {
+      "key": "lettuce",
+      "name": "Lettuce",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 11,
+      "fingerprint": "ab73d3eaf9c60ebb6956064394baf963b1ff4168f5ddcd9076ff510965e3a834"
+    },
+    {
+      "key": "lupin-beans",
+      "name": "Lupin beans",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "6be52d3256fc5f0d1020a74f57ed98dfb332cc6100b491ae2ddb7520d2725bb9"
+    },
+    {
+      "key": "mackerel",
+      "name": "Smoked mackerel",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "53f9a64c37c1b993f49d45227ff9ca7f8bb28660abfa962278fbb6b1cd89f3aa"
+    },
+    {
+      "key": "mango",
+      "name": "Mango",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "36daaaaa54f9113903da63da8873e6e87bf211c4cb73f82e54211a77196a183a"
+    },
+    {
+      "key": "melon",
+      "name": "Melon",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "4f0f990e41da1d8083c343d51c56f4f7242d0c9d32538880e6d82d25a13f594e"
+    },
+    {
+      "key": "milk",
+      "name": "Milk (1%)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 10,
+      "fingerprint": "21f0ea6bdb31b8094390ffdd14e93c769befcfb0ea988d2d62f7512ddbed0c84"
+    },
+    {
+      "key": "mint",
+      "name": "Mint",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "0f72189a263e7d05dc7a5edfa4823708d3f154443f15d235fa85737e5fb49ddf"
+    },
+    {
+      "key": "miso",
+      "name": "Miso",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "cf1f84db31e44fa5ea5001a1f7e508cd3d2b001db855f504d2fc59ceb0981efe"
+    },
+    {
+      "key": "mozzarella",
+      "name": "Mozzarella",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "bb90bae00f1380d7218aef801c787d68f8e6cf55cef5082ab6c4c8199b100c7e"
+    },
+    {
+      "key": "mushrooms",
+      "name": "Mushrooms",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "350e18cd2d3f9a9ce36504046fa10e29a40556a0874db643923a2035b0b05c12"
+    },
+    {
+      "key": "mussels",
+      "name": "Mussels",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "8e5f6a416bee0fa90a5a9ca7b1fca50813aba4926372d734be799a916121e1e1"
+    },
+    {
+      "key": "mustard",
+      "name": "Mustard",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "04de6fcd3dadc81a92a8ebaf727080f548e65e163c850e7ded87f67699a3d527"
+    },
+    {
+      "key": "oat-milk",
+      "name": "Oat milk",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "744ff36b9f0bcbf0b0572178b0820c424a67e6c3fd969a3da51dfc1644596629"
+    },
+    {
+      "key": "oats",
+      "name": "Oats (dry)",
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 13,
+      "fingerprint": "dfaf83d2f2156aba3c6e1d5660107312767535f334a9a6bde093ef89a9ac4ba0"
+    },
+    {
+      "key": "olive-oil",
+      "name": "Olive oil",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 47,
+      "fingerprint": "b932a5a575ced885d6cebc8333971caf8190ed1ef9032acdead8ee65949cead1"
+    },
+    {
+      "key": "olives",
+      "name": "Olives",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "95d11388ed7ad413f43af486c7d9670116eb46226eb166fce878e5af17ed5d80"
+    },
+    {
+      "key": "onion",
+      "name": "Onion",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 8,
+      "fingerprint": "38cf60ef70ba673a327b99efbd551b2028d88307c16e0fc1a14f01f95074285e"
+    },
+    {
+      "key": "orange",
+      "name": "Orange",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "c682a4fef6f82cf3535688e7d159a131e4c87a9f34a6f3e44616931fc78223f3"
+    },
+    {
+      "key": "parmesan",
+      "name": "Parmesan",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "579c8179b6df13e3fa1a4d41318008dbe58e6808ff1821a5fd14c463a584dc9b"
+    },
+    {
+      "key": "pasta",
+      "name": "Pasta (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "b8a1c33f85a239cc478e4c7f7c27209944bd45c6bf0ab36a5916fed1edfee44b"
+    },
+    {
+      "key": "peach",
+      "name": "Peach",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "8be5756b62a48d0fe8d51f5cc1d706a445880586656459f164fe4fc46b22e3d7"
+    },
+    {
+      "key": "peanut-butter",
+      "name": "Peanut butter",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 8,
+      "fingerprint": "5958f9fbe39cd87a9c89c31d004507af69645dae770566ac875696c1e07d420d"
+    },
+    {
+      "key": "pear",
+      "name": "Pear",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "2a2b0ed156d49d92fbcabbaf44e83bdb83eb89b00a72bdd32458adcb898b7756"
+    },
+    {
+      "key": "peas",
+      "name": "Green peas",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "352756c2d34012a7de57394b53ad7a13c107399c208f9a062e3e2b253718c5df"
+    },
+    {
+      "key": "pineapple",
+      "name": "Pineapple",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 0,
+      "fingerprint": "fb4896e4e82dd127c8f331e6fbf4bc1278b2a05b82f80c1152b94739b04e7196"
+    },
+    {
+      "key": "pita",
+      "name": "Whole wheat pita",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 13,
+      "fingerprint": "8d7e4c2431e1ab49e9cc823c6b71b9d070102f695c6267c66a80824e7c28de87"
+    },
+    {
+      "key": "polenta",
+      "name": "Polenta (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "4e0466e686e776daa89413c4109497ab0b9acafbd82eb8ac323e105eb315fcfc"
+    },
+    {
+      "key": "potato",
+      "name": "Potato (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 11,
+      "fingerprint": "9f47d0496de3e7198cc1495ec75d510686dbe997db50129a36e193013adbce3b"
+    },
+    {
+      "key": "protein-powder",
+      "name": "Whey protein powder",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 5,
+      "fingerprint": "c59c5f9f12c4c3c723a81d11a5775f87b1d36b9079196749f99daf4d7343dadf"
+    },
+    {
+      "key": "quark",
+      "name": "Quark",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "6308a2570d57f3e52b05daaff38175362b39ee31db755ac03bd349fbc7177bf0"
+    },
+    {
+      "key": "quinoa",
+      "name": "Quinoa (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 10,
+      "fingerprint": "0806613eb3fcb966879cdc2b7e252186d948935538bae37a4a6d79b6a2d1d5fb"
+    },
+    {
+      "key": "raspberries",
+      "name": "Raspberries",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "6749182999984dc65ebb8ddea1b4ab5b6763dca5bcc05b0bca93faf2db0f9149"
+    },
+    {
+      "key": "rice-cakes",
+      "name": "Rice cakes",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "47b923f297b082b27106d4d069063d32997ede6230d1fc8fde1371268a25c937"
+    },
+    {
+      "key": "ricotta",
+      "name": "Ricotta",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "2f24c7a620236bd2585241cb3e6087d134d971545e3bd975ef81a3ab318ee0c4"
+    },
+    {
+      "key": "rye-bread",
+      "name": "Rye bread",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "c055abdec6a3c81ad7f1a24b219c3da5e1b062802b2fa486a176ded7f28bb8b8"
+    },
+    {
+      "key": "salmon",
+      "name": "Salmon fillet",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "84cd1b823812aa5bc052b9683fabf15c5d82bc8a1e44a0f6ed53995fd75b95f3"
+    },
+    {
+      "key": "salsa",
+      "name": "Salsa",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "66c83f54c3628b60a8d8c7c3e54b793c9339c00c471021a828782af1f5dc6f00"
+    },
+    {
+      "key": "sardines",
+      "name": "Sardines",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "bcdd47ae01d19e5f63d4dba62d31314e7b879149cda0a90fb3381bda26217788"
+    },
+    {
+      "key": "seitan",
+      "name": "Seitan",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "969035f268f2aef64e54e6887dcd0a129e15918afaac78d39690ac4135e9a5ec"
+    },
+    {
+      "key": "shrimp",
+      "name": "Shrimp",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 3,
+      "fingerprint": "3e1c8038a8b8404859a3014a1a5eae98e3e50fe50f3746cf526c50b6716011da"
+    },
+    {
+      "key": "skyr",
+      "name": "Skyr (plain)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "5c2587ee6a6528af8e86a83ecdfda16be7a1785f34c73985fbca47b01a3c8137"
+    },
+    {
+      "key": "soba-noodles",
+      "name": "Soba noodles (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "c97fcd87cf69cbbc4bd5a2d8ad8c72980a82680792d3f1cee789da3f290f483d"
+    },
+    {
+      "key": "soy-milk",
+      "name": "Soy milk",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "46f54e1d4d787a8dda5934093310bf52ac383e0e68365bd3c5b60d8954a589f4"
+    },
+    {
+      "key": "spinach",
+      "name": "Spinach",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 21,
+      "fingerprint": "92ba96e65070ba31174bd53292cbc0a006593a97b386cf88a220ca7e50340c84"
+    },
+    {
+      "key": "steak",
+      "name": "Beef steak",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "2b69f23b951c1859fa9cb17f43e56bc39cb242901911361316bbfe3d3979b51f"
+    },
+    {
+      "key": "strawberries",
+      "name": "Strawberries",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "4519b253555cb6db7d7738bc4172e27cd21db82b818619166aac3c0c8b80b09d"
+    },
+    {
+      "key": "sweet-potato",
+      "name": "Sweet potato (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 8,
+      "fingerprint": "560b29c98ad069f49e37ba5d2742a1709e5056ccd4ae792365dec70ccae690ca"
+    },
+    {
+      "key": "tahini",
+      "name": "Tahini",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "8bdb523df20dd793eb3a75f63b518c0321a248d0a51d62df33e1143f64d05d9a"
+    },
+    {
+      "key": "tempeh",
+      "name": "Tempeh",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 2,
+      "fingerprint": "db8985b18b9768284cc12e6cf21399a298fa1f27f46de4f5db6231a2aca0335b"
+    },
+    {
+      "key": "tilapia",
+      "name": "Tilapia fillet",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "14abbad9174425628352477b13e62204b6197db61de63a57f5250aff7ee1b0b7"
+    },
+    {
+      "key": "tofu",
+      "name": "Tofu (firm)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 14,
+      "fingerprint": "47cd13c0fea043ab491ab6e8a61b0862ef360f4af3016a71ed83e60983e7324a"
+    },
+    {
+      "key": "tomato",
+      "name": "Tomato",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 55,
+      "fingerprint": "e01d4a83ca453a4081bcc240f1c253f606392413a0a4405d9cecbda48932f01c"
+    },
+    {
+      "key": "tomato-sauce",
+      "name": "Tomato sauce",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 11,
+      "fingerprint": "60eb632bff0fa9d31d96a6cb024da7c0268c17f43f5e32be33ded1f476ef1289"
+    },
+    {
+      "key": "tortilla",
+      "name": "Tortilla wrap",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "9e04790da2833d0e7f632a6d6a4035d4994f176c2bda7ac14b4f2d44b335ba20"
+    },
+    {
+      "key": "trout",
+      "name": "Trout fillet",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "2f1d55827c21227408d036693291a6d90a5e8088735b01e39db863aa4a7801d6"
+    },
+    {
+      "key": "tuna",
+      "name": "Tuna (canned in water)",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 6,
+      "fingerprint": "b30f5e2b84e831a190b3fdfb5d902aea16fcafb1f883b572b1b5d7412311eb24"
+    },
+    {
+      "key": "turkey-breast",
+      "name": "Turkey breast",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 9,
+      "fingerprint": "ce9f43045aff47e513efa660bcb693866e8f43fa3d54fa4363ef6383e72a1d2d"
+    },
+    {
+      "key": "walnuts",
+      "name": "Walnuts",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 5,
+      "fingerprint": "85adda6a06c43a37026e0e87f761101846e5566a9d1f624cbdecffb14c233773"
+    },
+    {
+      "key": "watermelon",
+      "name": "Watermelon",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "3ec2f7b0d9282dd8be43ebcc18da6c5dab1568b24a477a9eb80320cbffe335ed"
+    },
+    {
+      "key": "white-beans",
+      "name": "White beans (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 4,
+      "fingerprint": "424da279458dca465a05cab5f58f87b9b54510d863e4797871f4e3b7d98d8ed7"
+    },
+    {
+      "key": "white-rice",
+      "name": "White rice (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 11,
+      "fingerprint": "2c674ad7da3b6a6ddd2a35b0ed1f71b5e255c55dca883f57ea0b8a35953a0e7a"
+    },
+    {
+      "key": "whole-grain-flour",
+      "name": "Whole-grain flour",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 1,
+      "fingerprint": "8695740940747669171d19e06b25a09bd821dac0ce13257d44a35a174a347a43"
+    },
+    {
+      "key": "whole-wheat-bread",
+      "name": "Whole wheat bread",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 18,
+      "fingerprint": "1c09c8cee7d1b5c09836d81526d3b10c5381d6c72cdd9bdca21849056c9cf1b8"
+    },
+    {
+      "key": "whole-wheat-pasta",
+      "name": "Whole wheat pasta (cooked)",
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 9,
+      "fingerprint": "9a08d566052e4ba391ced81284df3ce6984c465b9a52f387b6231aa0ef228b69"
+    },
+    {
+      "key": "zucchini",
+      "name": "Zucchini",
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null,
+      "recipes": 7,
+      "fingerprint": "e5c15f48ffdbd4a9debec6252e178c0c556a8613758479095f8ae29a3853de9d"
+    }
+  ],
+  "diary": [
+    {
+      "key": "oats",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "oats-quaker-original",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "cottage-3",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "cottage-5",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "rice-cake",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "protein-drink",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-drink",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "protein-bar",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "high-protein-yogurt",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "banana",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "apple",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pomegranate",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "lemon",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "cucumber",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "avocado",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "walnuts",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "almonds",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "cashews",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pistachios",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "peanuts",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "peanut-butter",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "dates",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "date-syrup",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "sweet-potato",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "tuna-water",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "drained",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pita",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "bread-slice",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "white-cheese-5",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "egg",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "edible item",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "hummus",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "tahini",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "labneh",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "falafel-ball",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "malabi",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "chocolate-ball",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "alfajores",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "bamba",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "bissli",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "cheese-bourekas",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "malawach",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "schnitzel",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "turkey-breast",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "spinach",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "turkey-pastrami",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "unspecified",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "rice-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "ready-rice",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pasta-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pasta-cooked",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "potato",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "yogurt",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "salmon",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "cornflakes",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pizza",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "shawarma-laffa",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "tuna-sandwich",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pita-hummus",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "chicken-breast-raw",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "ready-chicken",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "orange",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "pear",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "grapes",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "strawberries",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "watermelon",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "mango",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "tomato",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "carrot",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "bell-pepper",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "lettuce",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "raw",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "broccoli",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "zucchini",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "mushrooms",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "milk-3",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-drink",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "greek-yogurt",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "yellow-cheese",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "mozzarella",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "chicken-thigh",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "ground-beef",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "beef-steak",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "white-fish",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "tofu",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "lentils-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "lentils-cooked",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "chickpeas-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "chickpeas-cooked",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "quinoa-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "quinoa-cooked",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "bulgur-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "bulgur-cooked",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "couscous-dry",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "dry",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "couscous-cooked",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "cooked",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "olive-oil",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "granola",
+      "basis": {
+        "amount": 100,
+        "unit": "g"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    },
+    {
+      "key": "chocolate-granola-bar",
+      "basis": {
+        "amount": 1,
+        "unit": "item"
+      },
+      "state": "ready-to-eat",
+      "sourceStatus": "unverified-legacy",
+      "recordId": null
+    }
+  ],
+  "crossCatalogReviewCandidates": [
+    {
+      "key": "almonds",
+      "generator": {
+        "calories": 579,
+        "proteinGrams": 21,
+        "carbsGrams": 22,
+        "fatGrams": 50
+      },
+      "diary": {
+        "calories": 579,
+        "proteinGrams": 21.2,
+        "carbsGrams": 21.6,
+        "fatGrams": 49.9
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "apple",
+      "generator": {
+        "calories": 52,
+        "proteinGrams": 0.3,
+        "carbsGrams": 14,
+        "fatGrams": 0.2
+      },
+      "diary": {
+        "calories": 52,
+        "proteinGrams": 0.3,
+        "carbsGrams": 13.8,
+        "fatGrams": 0.2
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "avocado",
+      "generator": {
+        "calories": 160,
+        "proteinGrams": 2,
+        "carbsGrams": 9,
+        "fatGrams": 15
+      },
+      "diary": {
+        "calories": 160,
+        "proteinGrams": 2,
+        "carbsGrams": 8.5,
+        "fatGrams": 14.7
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "banana",
+      "generator": {
+        "calories": 89,
+        "proteinGrams": 1.1,
+        "carbsGrams": 23,
+        "fatGrams": 0.3
+      },
+      "diary": {
+        "calories": 89,
+        "proteinGrams": 1.1,
+        "carbsGrams": 22.8,
+        "fatGrams": 0.3
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "broccoli",
+      "generator": {
+        "calories": 35,
+        "proteinGrams": 2.4,
+        "carbsGrams": 7,
+        "fatGrams": 0.4
+      },
+      "diary": {
+        "calories": 35,
+        "proteinGrams": 2.4,
+        "carbsGrams": 7.2,
+        "fatGrams": 0.4
+      },
+      "generatorState": "unspecified",
+      "diaryState": "cooked",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "cashews",
+      "generator": {
+        "calories": 553,
+        "proteinGrams": 18,
+        "carbsGrams": 30,
+        "fatGrams": 44
+      },
+      "diary": {
+        "calories": 553,
+        "proteinGrams": 18.2,
+        "carbsGrams": 30.2,
+        "fatGrams": 43.9
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "cornflakes",
+      "generator": {
+        "calories": 357,
+        "proteinGrams": 7,
+        "carbsGrams": 84,
+        "fatGrams": 0.4
+      },
+      "diary": {
+        "calories": 357,
+        "proteinGrams": 7.5,
+        "carbsGrams": 84,
+        "fatGrams": 0.4
+      },
+      "generatorState": "unspecified",
+      "diaryState": "dry",
+      "differences": [
+        "proteinGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "dates",
+      "generator": {
+        "calories": 282,
+        "proteinGrams": 2.5,
+        "carbsGrams": 75,
+        "fatGrams": 0.4
+      },
+      "diary": {
+        "calories": 277,
+        "proteinGrams": 1.8,
+        "carbsGrams": 75,
+        "fatGrams": 0.2
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "calories",
+        "proteinGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "grapes",
+      "generator": {
+        "calories": 69,
+        "proteinGrams": 0.7,
+        "carbsGrams": 18,
+        "fatGrams": 0.2
+      },
+      "diary": {
+        "calories": 69,
+        "proteinGrams": 0.7,
+        "carbsGrams": 18.1,
+        "fatGrams": 0.2
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "greek-yogurt",
+      "generator": {
+        "calories": 59,
+        "proteinGrams": 10,
+        "carbsGrams": 3.6,
+        "fatGrams": 0.4
+      },
+      "diary": {
+        "calories": 97,
+        "proteinGrams": 9,
+        "carbsGrams": 3.9,
+        "fatGrams": 5
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "calories",
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "hummus",
+      "generator": {
+        "calories": 166,
+        "proteinGrams": 8,
+        "carbsGrams": 14,
+        "fatGrams": 10
+      },
+      "diary": {
+        "calories": 166,
+        "proteinGrams": 7.9,
+        "carbsGrams": 14.3,
+        "fatGrams": 9.6
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "labneh",
+      "generator": {
+        "calories": 150,
+        "proteinGrams": 8,
+        "carbsGrams": 6,
+        "fatGrams": 10
+      },
+      "diary": {
+        "calories": 135,
+        "proteinGrams": 8,
+        "carbsGrams": 5,
+        "fatGrams": 9
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "calories",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "lemon",
+      "generator": {
+        "calories": 29,
+        "proteinGrams": 1.1,
+        "carbsGrams": 9,
+        "fatGrams": 0.3
+      },
+      "diary": {
+        "calories": 29,
+        "proteinGrams": 1.1,
+        "carbsGrams": 9.3,
+        "fatGrams": 0.3
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "mozzarella",
+      "generator": {
+        "calories": 280,
+        "proteinGrams": 22,
+        "carbsGrams": 2.2,
+        "fatGrams": 22
+      },
+      "diary": {
+        "calories": 280,
+        "proteinGrams": 28,
+        "carbsGrams": 3.1,
+        "fatGrams": 17
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "oats",
+      "generator": {
+        "calories": 389,
+        "proteinGrams": 17,
+        "carbsGrams": 66,
+        "fatGrams": 7
+      },
+      "diary": {
+        "calories": 375,
+        "proteinGrams": 13.2,
+        "carbsGrams": 67.7,
+        "fatGrams": 6.5
+      },
+      "generatorState": "dry",
+      "diaryState": "dry",
+      "differences": [
+        "calories",
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "orange",
+      "generator": {
+        "calories": 47,
+        "proteinGrams": 0.9,
+        "carbsGrams": 12,
+        "fatGrams": 0.1
+      },
+      "diary": {
+        "calories": 47,
+        "proteinGrams": 0.9,
+        "carbsGrams": 11.8,
+        "fatGrams": 0.1
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "pear",
+      "generator": {
+        "calories": 57,
+        "proteinGrams": 0.4,
+        "carbsGrams": 15,
+        "fatGrams": 0.1
+      },
+      "diary": {
+        "calories": 57,
+        "proteinGrams": 0.4,
+        "carbsGrams": 15.2,
+        "fatGrams": 0.1
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "pita",
+      "generator": {
+        "calories": 275,
+        "proteinGrams": 9,
+        "carbsGrams": 55,
+        "fatGrams": 1.2
+      },
+      "diary": {
+        "calories": 275,
+        "proteinGrams": 9.1,
+        "carbsGrams": 55.7,
+        "fatGrams": 1.2
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "potato",
+      "generator": {
+        "calories": 87,
+        "proteinGrams": 2,
+        "carbsGrams": 20,
+        "fatGrams": 0.1
+      },
+      "diary": {
+        "calories": 87,
+        "proteinGrams": 1.9,
+        "carbsGrams": 20.1,
+        "fatGrams": 0.1
+      },
+      "generatorState": "cooked",
+      "diaryState": "cooked",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "salmon",
+      "generator": {
+        "calories": 208,
+        "proteinGrams": 20,
+        "carbsGrams": 0,
+        "fatGrams": 13
+      },
+      "diary": {
+        "calories": 206,
+        "proteinGrams": 22,
+        "carbsGrams": 0,
+        "fatGrams": 12.4
+      },
+      "generatorState": "unspecified",
+      "diaryState": "cooked",
+      "differences": [
+        "calories",
+        "proteinGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "strawberries",
+      "generator": {
+        "calories": 32,
+        "proteinGrams": 0.7,
+        "carbsGrams": 8,
+        "fatGrams": 0.3
+      },
+      "diary": {
+        "calories": 32,
+        "proteinGrams": 0.7,
+        "carbsGrams": 7.7,
+        "fatGrams": 0.3
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "carbsGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "sweet-potato",
+      "generator": {
+        "calories": 90,
+        "proteinGrams": 2,
+        "carbsGrams": 21,
+        "fatGrams": 0.1
+      },
+      "diary": {
+        "calories": 90,
+        "proteinGrams": 2,
+        "carbsGrams": 20.7,
+        "fatGrams": 0.2
+      },
+      "generatorState": "cooked",
+      "diaryState": "cooked",
+      "differences": [
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "tahini",
+      "generator": {
+        "calories": 595,
+        "proteinGrams": 17,
+        "carbsGrams": 21,
+        "fatGrams": 54
+      },
+      "diary": {
+        "calories": 595,
+        "proteinGrams": 17,
+        "carbsGrams": 21,
+        "fatGrams": 53.8
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "tofu",
+      "generator": {
+        "calories": 144,
+        "proteinGrams": 15,
+        "carbsGrams": 3,
+        "fatGrams": 8
+      },
+      "diary": {
+        "calories": 144,
+        "proteinGrams": 17,
+        "carbsGrams": 2.8,
+        "fatGrams": 8.7
+      },
+      "generatorState": "unspecified",
+      "diaryState": "ready-to-eat",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "turkey-breast",
+      "generator": {
+        "calories": 135,
+        "proteinGrams": 29,
+        "carbsGrams": 0,
+        "fatGrams": 1
+      },
+      "diary": {
+        "calories": 135,
+        "proteinGrams": 29,
+        "carbsGrams": 0,
+        "fatGrams": 1.6
+      },
+      "generatorState": "unspecified",
+      "diaryState": "cooked",
+      "differences": [
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    },
+    {
+      "key": "walnuts",
+      "generator": {
+        "calories": 654,
+        "proteinGrams": 15,
+        "carbsGrams": 14,
+        "fatGrams": 65
+      },
+      "diary": {
+        "calories": 654,
+        "proteinGrams": 15.2,
+        "carbsGrams": 13.7,
+        "fatGrams": 65.2
+      },
+      "generatorState": "unspecified",
+      "diaryState": "raw",
+      "differences": [
+        "proteinGrams",
+        "carbsGrams",
+        "fatGrams"
+      ],
+      "action": "review-identity-and-source-before-unifying"
+    }
+  ]
+}

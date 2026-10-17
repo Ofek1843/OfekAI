@@ -2,9 +2,28 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { filterMeals, selectMeals, getMealById, buildMealOption } = require("../lib/meal-catalog");
+const { CATALOG, filterMeals, selectMeals, getMealById, buildMealOption, catalogForPrompt } = require("../lib/meal-catalog");
 const { searchManualMeals } = require("../lib/manual-nutrition");
 const root = path.join(__dirname, "..");
+
+test("every catalog meal has its own local photo for generated plans", () => {
+  assert.ok(CATALOG.length >= 165);
+  for (const meal of CATALOG) {
+    assert.match(meal.image || "", new RegExp(`^/images/meals/${meal.id}\\.(?:webp|png|jpg)$`), meal.id);
+    assert.ok(fs.statSync(path.join(root, "public", meal.image)).size > 1000, meal.id);
+  }
+});
+
+test("familiar meals win an equal-fit choice, but an explicit favorite can win instead", () => {
+  const ordinary = { id: "ordinary", slots: ["lunch"], baseCalories: 500, nutrients: [], aliases: ["rice"],
+    mealFormat: "cook", foodStyles: [], everydayPreferred: true };
+  const unusual = { ...ordinary, id: "unusual", aliases: ["tempeh"], everydayPreferred: false };
+  const inputs = { pool: [unusual, ordinary], slot: "lunch", targetCalories: 500, count: 1 };
+  assert.deepEqual(selectMeals(inputs), ["ordinary"]);
+  assert.deepEqual(selectMeals({ ...inputs, favoriteTerms: ["tempeh"] }), ["unusual"]);
+  const lines = catalogForPrompt([unusual, ordinary]).split("\n");
+  assert.match(lines[0], /^ordinary .*everyday-preferred/);
+});
 
 test("canonical Hebrew logging and clarification choices resolve food thumbnails", async () => {
   const { parseFoodText, resolveFoodChoice } = await import("../public/js/daily-nutrition-domain.mjs");
@@ -12,9 +31,12 @@ test("canonical Hebrew logging and clarification choices resolve food thumbnails
   const oats = parseFoodText("50 גרם שיבולת שועל").entries[0];
   assert.equal(oats.foodId, "oats");
   assert.equal(foodThumbnail(oats), "/images/foods/oats.webp");
-  const rice = parseFoodText("אורז");
-  const riceId = rice.entries[0]?.foodId || rice.ambiguities[0]?.foodId;
-  assert.equal(foodThumbnail({ foodId: riceId }), "/images/foods/white-rice.webp");
+  const rice = parseFoodText("105 גרם אורז");
+  assert.equal(rice.ambiguities[0].kind, 'preparation');
+  for (const choice of rice.ambiguities[0].choices) {
+    const entry = parseFoodText(choice.query).entries[0];
+    assert.equal(foodThumbnail(entry), choice.choiceId === 'dry' ? '/images/common/meal.svg' : '/images/foods/white-rice.webp');
+  }
   assert.equal(foodThumbnail(resolveFoodChoice("protein-bar")), "/images/common/protein-bar.svg");
   assert.equal(foodThumbnail(resolveFoodChoice("oats-quaker-original")), "/images/foods/oats.webp");
 });

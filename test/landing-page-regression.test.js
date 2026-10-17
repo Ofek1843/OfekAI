@@ -74,21 +74,20 @@ test("mobile PWA instructions keep their action button legible and bounded", () 
   assert.match(html, /pwa-install\.js\?v=20261007-install-contrast-1/);
 });
 
-test("landing tool previews explain each workflow with quick localized motion", () => {
-  const ux = read("public/js/simple-ux.js");
-  const css = read("public/css/simple-ux.css");
-  const landing = read("public/js/landing.js");
-  const illustrationCss = read("public/css/illustrated-v4.css");
-
-  for (const language of ["en", "he", "ar", "es", "fr", "de", "zh"]) {
-    assert.match(ux, new RegExp(`${language}:\\[\\[`), `${language} needs translated workflow stage labels`);
+test("current landing previews show exercise prescriptions, meal quantities and diary progress", () => {
+  const titles=new Set();
+  for(const language of ['en','he','ar','es','fr','de','zh']) {
+    const doc=require('./helpers/current-product.cjs').landing(language);
+    titles.add(doc.querySelector('#landingHeroTitle').textContent);
+    assert.equal(doc.querySelectorAll('.simple-preview-card').length,3);
+    assert.equal(doc.querySelectorAll('.preview-exercise img').length,2);
+    assert.ok(doc.querySelector('.preview-meal-totals'));
+    assert.ok(doc.querySelector('.preview-calorie-ring'));
+    assert.ok(doc.querySelector('.preview-protein'));
+    assert.equal(doc.querySelectorAll('.preview-example-note').length,3);
   }
-  assert.match(ux, /simple-preview-stage/);
-  assert.match(ux, /2400\);/);
-  assert.match(css, /simple-row 720ms/);
-  assert.match(landing, /setActive\(index \+ 1\), 1300\)/);
-  assert.match(illustrationCss, /--motion-illustrative-training: 1250ms/);
-  assert.match(illustrationCss, /--motion-illustrative-deadlift: 1700ms/);
+  assert.equal(titles.size,7);
+  assert.match(read('public/js/simple-ux.js'),/prefers-reduced-motion: reduce/);
 });
 
 test("landing contains both verified transformation stories and comparison labels", () => {

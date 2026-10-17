@@ -27,21 +27,20 @@ test("Phase 3 uses the exact Ultramarine Spectrum palette", () => {
 
 test("Phase 3 pages load the release stylesheet and service worker cache", () => {
   for (const page of ["index.html", "dashboard.html", "workout-builder.html", "social.html"]) {
+    if(page==='dashboard.html'){require('./helpers/current-product.cjs').assertPageShell(page);continue;}
     assert.match(read("public", page), /product-polish-v3\.css\?v=20260811-spectrum-v3/);
   }
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v45-language-food-i18n-2/);
-  assert.match(sw, /product-polish-v3\.css\?v=20260811-spectrum-v3/);
+  require("./helpers/current-product.cjs").assertCurrentCache(sw);
+  require("./helpers/current-product.cjs").assertCachedAsset(sw, "/css/product-polish-v3.css");
 });
 
-test("dashboard restores five distinct domain actions with library icons", () => {
-  for (const domain of ["coach", "workout", "nutrition", "progress", "social"]) {
-    assert.match(DASHBOARD, new RegExp(`dashboard-action--${domain}`));
-    assert.match(POLISH, new RegExp(`dashboard-action--${domain}\\s*\\{`));
+test("current dashboard destinations use real library icons", async () => {
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  for(const url of ['/my-workout-plans.html','/my-nutrition-plans.html','/daily-nutrition.html','/progress.html','/social.html']) {
+    const a=document.querySelector('.sidebar a[href="'+url+'"]');assert.ok(a,url);const image=a.querySelector('img');assert.ok(image,url);assert.ok(fs.existsSync(path.join(ROOT,'public',image.getAttribute('src'))));
   }
-  assert.equal((DASHBOARD.match(/class="dashboard-action dashboard-action--/g) || []).length, 5);
-  assert.equal((DASHBOARD.match(/\/icons\/tabler\//g) || []).length >= 5, true);
-  assert.match(read("public", "icons", "tabler", "LICENSE"), /MIT License/);
+  assert.match(read('public','icons','tabler','LICENSE'),/MIT License/);
 });
 
 test("landing rhythm uses flat Glacier, Cool Blue and Midnight surfaces without gradients or glow", () => {

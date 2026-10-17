@@ -8,41 +8,48 @@ import { loadVisibleNutritionLog } from './daily-nutrition-recovery.mjs';
 import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261015-plan-tabs-1';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
 import { trackPageView } from './analytics.js';
+import { loadDashboardSections } from './dashboard-load.mjs';
 let language='en';
 try { const saved=localStorage.getItem('ofek-ai-language');if(dashboardLanguages.includes(saved))language=saved; } catch {}
 const copy=dashboardCopy(language);
 const root=document.querySelector('#dashboardRoot');
 root.querySelector('[role="status"]').textContent=copy.loading;
 let dashboard;
+let dashboardRequest=0;
 const loadVisibleDay = (uid, key) => loadVisibleNutritionLog(() => loadDailyLog(db, uid, key), uid, key);
 async function load(user) {
- const tasks=[
-  getDoc(doc(db,'users',user.uid)),getDoc(doc(db,'users',user.uid,'settings','main')),
-  getDocs(query(collection(db,'users',user.uid,'workoutPlans'),limit(30))),
-  getDocs(query(collection(db,'users',user.uid,'nutritionPlans'),limit(30))),
-  getDocs(query(collection(db,'users',user.uid,'workoutLogs'),orderBy('completedAt','desc'),limit(30))),
-  loadVisibleDay(user.uid,dateKey(new Date()))
- ];
- const results=await Promise.allSettled(tasks);
- if(auth.currentUser?.uid!==user.uid)return;
- const data=i=>results[i].status==='fulfilled'?results[i].value:null;
- const profile=data(0)?.data()||{}, settings=data(1)?.data()||{};
- const docs=i=>(data(i)?.docs||[]).map(d=>({...d.data(),id:d.id})).sort((a,b)=>(asDate(b.createdAt)?.getTime()||0)-(asDate(a.createdAt)?.getTime()||0));
- const model={name:settings.displayName||user.displayName||'',photoURL:user.photoURL||'',workouts:docs(2),meals:docs(3),
-  logs:(data(4)?.docs||[]).map(d=>({...d.data(),id:d.id})),activeWorkoutId:profile.activeWorkoutPlanId,activeMealId:profile.activeNutritionPlanId,
-  diary:data(5),workoutsFailed:!data(2),mealsFailed:!data(3),logsFailed:!data(4),diaryFailed:!data(5),error:results.some(r=>r.status==='rejected')?copy.error:''};
+ const request=++dashboardRequest;
+ const results=await loadDashboardSections({
+  profile:()=>getDoc(doc(db,'users',user.uid)),settings:()=>getDoc(doc(db,'users',user.uid,'settings','main')),
+  workouts:()=>getDocs(query(collection(db,'users',user.uid,'workoutPlans'),limit(30))),
+  meals:()=>getDocs(query(collection(db,'users',user.uid,'nutritionPlans'),limit(30))),
+  logs:()=>getDocs(query(collection(db,'users',user.uid,'workoutLogs'),orderBy('completedAt','desc'),limit(30))),
+  diary:()=>loadVisibleDay(user.uid,dateKey(new Date()))
+ });
+ if(request!==dashboardRequest||auth.currentUser?.uid!==user.uid)return;
+ const data=key=>results[key].status==='fulfilled'?results[key].value:null;
+ const failures=Object.entries(results).filter(([,result])=>result.status==='rejected').map(([section,result])=>({section,code:result.code}));
+ // No profile values, document bodies, tokens or raw SDK messages in diagnostics.
+ if(failures.length)console.warn('[dashboard] section reads failed',failures);
+ const profile=data('profile')?.data()||{}, settings=data('settings')?.data()||{};
+ const docs=key=>(data(key)?.docs||[]).map(d=>({...d.data(),id:d.id})).sort((a,b)=>(asDate(key==='logs'?b.completedAt:b.createdAt)?.getTime()||0)-(asDate(key==='logs'?a.completedAt:a.createdAt)?.getTime()||0));
+ const model={name:settings.displayName||user.displayName||'',photoURL:user.photoURL||'',workouts:docs('workouts'),meals:docs('meals'),
+  logs:docs('logs'),activeWorkoutId:profile.activeWorkoutPlanId,activeMealId:profile.activeNutritionPlanId,
+  diary:data('diary'),workoutsFailed:!data('workouts'),mealsFailed:!data('meals'),logsFailed:!data('logs'),diaryFailed:!data('diary'),loadFailures:failures,error:''};
  // Active plans may be older than the first page of saved plans.
  await Promise.all([['workouts','workoutPlans',model.activeWorkoutId],['meals','nutritionPlans',model.activeMealId]].map(async([key,folder,id])=>{
   if(!id||model[key].some(p=>p.id===id))return;
-  try{const snap=await getDoc(doc(db,'users',user.uid,folder,id));if(snap.exists())model[key].unshift({...snap.data(),id:snap.id});}catch{model.error=copy.error;}
+  const active=await loadDashboardSections({[key]:()=>getDoc(doc(db,'users',user.uid,folder,id))});
+  if(active[key].status==='fulfilled'){const snap=active[key].value;if(snap.exists())model[key].unshift({...snap.data(),id:snap.id});}
+  else {model.loadFailures.push({section:key,code:active[key].code});if(!model[key].length)model[key+'Failed']=true;}
  }));
- if(auth.currentUser?.uid!==user.uid)return;
+ if(request!==dashboardRequest||auth.currentUser?.uid!==user.uid)return;
  try {
   const response=await fetch('/api/social/identity',{headers:{Authorization:`Bearer ${await user.getIdToken()}`},signal:AbortSignal.timeout(6000)});
   if(response.ok){const social=await response.json();model.photoURL=social.profile?.photoURL||model.photoURL;}
  } catch {}
- if(auth.currentUser?.uid!==user.uid)return;
- const options={language,workoutUser:user,loadDay:key=>loadVisibleDay(user.uid,key),onLogout:async()=>{
+ if(request!==dashboardRequest||auth.currentUser?.uid!==user.uid)return;
+ const options={language,workoutUser:user,loadDay:key=>loadVisibleDay(user.uid,key),onRetry:()=>load(user),onLogout:async()=>{
   try{await disassociateCurrentInstallation();await signOut(auth);window.location.assign('/auth.html');}
   catch{root.querySelector('.status').textContent=copy.error;}
  }};

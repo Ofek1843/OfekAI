@@ -37,6 +37,13 @@ function Stop-ReviewTree([int]$ProcessId) {
 }
 
 function Resolve-FirebaseCli {
+  if ($env:FUELPHYSIQUE_FIREBASE_CLI_PATH) {
+    $explicitCli = [System.IO.Path]::GetFullPath($env:FUELPHYSIQUE_FIREBASE_CLI_PATH)
+    if (-not (Test-Path -LiteralPath $explicitCli -PathType Leaf) -or (Split-Path $explicitCli -Leaf) -ne 'firebase.js') {
+      throw "FUELPHYSIQUE_FIREBASE_CLI_PATH must point to an installed Firebase CLI firebase.js."
+    }
+    return $explicitCli
+  }
   $version = "13.35.1"
   $cacheRoot = Join-Path $env:LOCALAPPDATA "npm-cache\_npx"
   if (Test-Path -LiteralPath $cacheRoot) {

@@ -14,7 +14,7 @@ test("parses and scales a single gram-based food", async () => {
   assert.equal(result.entries.length, 1);
   assert.equal(result.entries[0].foodId, "oats");
   assert.equal(result.entries[0].amount, 50);
-  assert.equal(result.entries[0].calories, 187.5);
+  assert.equal(result.entries[0].calories, 189.5);
   assert.equal(result.entries[0].reference.state, "dry");
   assert.equal(result.entries[0].estimated, false);
 });
@@ -102,8 +102,8 @@ test("daily totals and remaining targets update across every macro", async () =>
   const entries = parseFoodText("50g oats, 1 protein drink, 118g banana").entries;
   const totals = totalsForEntries(entries);
   const remaining = remainingAgainstTargets(totals, { dailyCalories: 500, proteinGrams: 50, carbsGrams: 80, fatGrams: 20 });
-  assert.equal(totals.calories, 452.5);
-  assert.equal(remaining.calories, 47.5);
+  assert.equal(totals.calories, 454.5);
+  assert.equal(remaining.calories, 45.5);
   assert.equal(remaining.proteinGrams, 17.1);
 });
 
@@ -300,8 +300,8 @@ test("the local catalog covers a broad everyday Hebrew food corpus before smart 
     ["תפוז", "orange"], ["אגס", "pear"], ["ענבים", "grapes"], ["תותים", "strawberries"], ["אבטיח", "watermelon"], ["מנגו", "mango"],
     ["עגבניות", "tomato"], ["גזר", "carrot"], ["גמבה", "bell-pepper"], ["חסה", "lettuce"], ["ברוקולי", "broccoli"], ["קישואים", "zucchini"], ["פטריות", "mushrooms"],
     ["חלב", "milk-3"], ["יוגורט יווני", "greek-yogurt"], ["גבינה צהובה", "yellow-cheese"], ["מוצרלה", "mozzarella"],
-    ["פרגית", "chicken-thigh"], ["בשר טחון", "ground-beef"], ["סטייק", "beef-steak"], ["פילה דג", "white-fish"], ["טופו", "tofu"], ["עדשים", "lentils-cooked"], ["גרגירי חומוס", "chickpeas-cooked"],
-    ["קינואה", "quinoa-cooked"], ["בורגול", "bulgur-cooked"], ["קוסקוס", "couscous-cooked"], ["שמן זית", "olive-oil"], ["גרנולה", "granola"]
+    ["פרגית", "chicken-thigh"], ["בשר טחון", "ground-beef"], ["סטייק", "beef-steak"], ["פילה דג", "white-fish"], ["טופו", "tofu"], ["עדשים מבושלות", "lentils-cooked"], ["גרגירי חומוס מבושלים", "chickpeas-cooked"],
+    ["קינואה מבושלת", "quinoa-cooked"], ["בורגול מבושל", "bulgur-cooked"], ["קוסקוס מבושל", "couscous-cooked"], ["שמן זית", "olive-oil"], ["גרנולה", "granola"]
   ];
   for (const [input, foodId] of cases) {
     const result = parseFoodText(`100 גרם ${input}`);

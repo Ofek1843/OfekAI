@@ -17,7 +17,8 @@ export const CANONICAL_EQUIPMENT_IDS = [
   "machine",
   "cable",
   "kettlebell",
-  "parallelbar"
+  "parallelbar",
+  "romanchair"
 ];
 
 export const EQUIPMENT_LABELS = {
@@ -30,7 +31,8 @@ export const EQUIPMENT_LABELS = {
     machine: "Machines",
     cable: "Cable",
     kettlebell: "Kettlebells",
-    parallelbar: "Parallel bars"
+    parallelbar: "Parallel bars",
+    romanchair: "Roman chair"
   },
   he: {
     bodyweight: "משקל גוף",
@@ -41,7 +43,8 @@ export const EQUIPMENT_LABELS = {
     machine: "מכונות",
     cable: "כבלים",
     kettlebell: "קטלבלים",
-    parallelbar: "מקבילים"
+    parallelbar: "מקבילים",
+    romanchair: "כיסא רומי"
   }
 };
 

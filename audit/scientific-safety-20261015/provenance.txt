@@ -1,0 +1,28 @@
+Repository: C:/Users/ofek1/Documents/Codex/FuelPhysique
+Audit cutoff: 2026-10-15
+Runtime: Node v24.19.0
+No production files in the final scoped git diff.
+Pre-existing tracked node_modules changes, outputs/exercise-image-coverage.json changes, and untracked root index.html were not modified by this audit.
+
+e85441393bd873feb10b4cbe4eff5b7fd8e30387
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\server.js
+Hash : 1500D7D53225DD3C485321C3736C5A41820152C8056CE1913CF91FE967C24828
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\lib\nutrition-targets.js
+Hash : 773A38CC0EE9F394F694BACF9E4D39B35E64DF3A863A1BA8FB91AE00CD7FE80B
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\lib\meal-catalog.js
+Hash : 5055CD50006305089C9BD35AFA1BFEA0D7CB43673547296B6352B3048AFA5450
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\lib\health-safety.js
+Hash : 8C8BA0A18AAE99818B66A6238E133092917A365B8D0DB9485D03BBC8D6F89F26
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\lib\workout-validator.js
+Hash : 5C677C3B1B7E118F71F9CC5DBD92BD7987CFE49B3FE7FC1E51C4C260AB65E071
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\lib\nutrition-portion-balancer.js
+Hash : 457665F4925384777BEBABCF304E4F930336A54AD81C7F0E973DD53EB5DFE2D9
+
+Path : C:\Users\ofek1\Documents\Codex\FuelPhysique\public\js\nutrition-builder.js
+Hash : ECC7E5776DA864FEE8AC1F496B659BEBB65A27FC649EF2C0B7CE4124447D0423

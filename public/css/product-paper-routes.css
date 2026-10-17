@@ -155,6 +155,12 @@ body.fp-route-social .social-dialog :is(h2, h3, label) { color: #121417 !importa
 body.fp-route-social :is(.view-hero h1, .chat-empty h1, .rail-heading h2) { font-family: Georgia, "Times New Roman", serif !important; letter-spacing: -.04em !important; }
 body.fp-route-social .social-shell :is(input, textarea, select) { border-color: #bfc5ca !important; background: #fff !important; color: #121417 !important; }
 body.fp-route-social .social-shell :is(input, textarea)::placeholder { color: #626970 !important; }
+body.fp-route-social .message-meta { align-items: center; flex-wrap: wrap; gap: 12px; color: #626970 !important; }
+body.fp-route-social .message-delete { min-height: 36px; padding: 6px 10px; border: 1px solid #bfc5ca; border-radius: 4px; background: #fff !important; color: #07559f !important; font-size: 13px; font-weight: 600; }
+body.fp-route-social .message-delete[data-action="delete-message"] { color: #a32121 !important; }
+body.fp-route-social .message-delete:focus-visible { outline: 3px solid #0866bd; outline-offset: 2px; }
+body.fp-route-social .message-delete:disabled { opacity: .6; cursor: wait; }
+body.fp-route-social .message-tombstone { background: #f0eee9 !important; color: #626970 !important; }
 
 /* Settings belongs to app.html, not the new dashboard DOM. Keep its actual
    tabs/forms functional while giving the overlay the dashboard's system. */
@@ -177,6 +183,8 @@ body.fp-route-app .settings-field :is(input, select, textarea) { border: 1px sol
 body.fp-route-app .settings-field :is(input, select, textarea):focus-visible { border-color: #0866bd !important; outline: 3px solid #eaf3fb !important; }
 body.fp-route-app .settings-switch-row { border-color: #d9d6cf !important; }
 body.fp-route-app .save-settings { border-radius: 4px !important; background: #0866bd !important; color: #fff !important; }
+/* This is a form action row, not the dark site footer. Shared by every tab. */
+body.fp-route-app .settings-footer { background: #fff !important; color: #121417 !important; border-block-start: 1px solid #d9d6cf !important; padding-block: 16px 0; flex-wrap: wrap; }
 body.fp-route-app .settings-field-error { color: #b4233c !important; }
 
 @media (max-width: 760px) {

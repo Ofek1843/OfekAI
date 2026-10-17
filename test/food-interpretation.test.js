@@ -99,6 +99,20 @@ test("AI food interpretation refuses unsafe, incoherent, or unrecognized data", 
   }), null);
 });
 
+test('AI can request preparation for foods outside the local catalog without inventing nutrition', () => {
+  const result = sanitizeFoodInterpretation({ recognized: true, clarification: { kind: 'preparation', options: ['dry', 'cooked', 'dry', 'invalid'] },
+    nutritionPer100g: { calories: 99999 } });
+  assert.deepEqual(result, { recognized: true, clarification: { kind: 'preparation', options: ['dry', 'cooked'] } });
+  assert.equal(sanitizeFoodInterpretation({ recognized: true, clarification: { kind: 'preparation', options: ['unknown'] } }), null);
+  const instructions = foodInterpretationMessages({ text: '105g unfamiliar noodles' })[1].content;
+  assert.match(instructions, /Never silently assume cooked/);
+  assert.match(instructions, /language alone must not change the composition/);
+  assert.match(instructions, /invented water yield/);
+  for (const text of ['105g dry ramen', '105 גרם ראמן מבושל', '105g uncooked rice noodles', '105g raw chicken']) {
+    assert.equal(heuristicFoodInterpretation(text), null, 'an outage must not replace state-specific nutrition with a generic food');
+  }
+});
+
 test("daily food fallback is authenticated, rate-limited, model-configurable, and does not expose a missing key", () => {
   const server = fs.readFileSync(path.join(__dirname, "..", "server.js"), "utf8");
   assert.match(server, /app\.post\("\/api\/daily-nutrition\/interpret-food"/);

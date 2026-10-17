@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
 import { trackEvent, trackPageView } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js?v=20261014-rir-1";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
@@ -127,7 +128,7 @@ const ui = isHebrew
       weeklyVolumeAdd: "הוסף נפח",
       weeklyVolumeLower: "הפחת נפח",
       weeklyVolumeAdjustHint: "שינוי של סט אחד בתרגיל קשור",
-      weeklyVolumeCapReached: "לא ניתן להוסיף יותר נפח: הגעת לתקרה הבטוחה לקבוצה זו."
+      weeklyVolumeCapReached: "הגעת לתקרת התכנון של המוצר; היא אינה תקרת בטיחות רפואית אישית."
     }
   : {
       pageTitle: "Workout Builder",
@@ -210,7 +211,7 @@ const ui = isHebrew
       weeklyVolumeAdd: "Add volume",
       weeklyVolumeLower: "Lower volume",
       weeklyVolumeAdjustHint: "Adjust one set on a related exercise",
-      weeklyVolumeCapReached: "Volume cannot be increased: this muscle is already at its safe ceiling."
+      weeklyVolumeCapReached: "This muscle has reached the product programming cap, not an individually validated safety limit."
     };
 
 const builderPageLabels = {
@@ -384,6 +385,7 @@ function translateFormOptions() {
 
 translateFormOptions();
 document.documentElement.lang = currentLanguage;
+mountHealthScreening(form, currentLanguage);
 document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : "ltr";
 
 
@@ -823,6 +825,7 @@ form.addEventListener("submit", async (event) => {
   const formData = new FormData(form);
 
   const payload = {
+    ...healthScreeningPayload(form),
     goal: formData.get("goal"),
     priority: derivePriorityFromGoal(formData.get("goal")),
     experience: formData.get("experience"),
@@ -1288,6 +1291,7 @@ function renderWeeklyVolumeSummary(weeklyVolume) {
       <header class="weekly-volume-header">
         <h3>${escapeHtml(ui.weeklyVolumeTitle)}</h3>
         <p>${escapeHtml(ui.weeklyVolumeSubtitle)}</p>
+        <p>${isHebrew ? "הקרדיטים וטווחי הסטים הם אומדני תכנון, לא מדידת התאוששות או אישור בטיחות אישי." : "Set credits and ranges are planning estimates, not measured recovery or individual medical clearance."}</p>
         ${qualityScoreLine}
         ${startingWeekNote}
       </header>
@@ -1340,6 +1344,8 @@ async function adjustWeeklyVolume(root, muscle, delta) {
         program,
         muscle,
         delta,
+        ...healthScreeningPayload(form),
+        age: Number(formData.get("age")),
         goal: formData.get("goal"),
         priority: derivePriorityFromGoal(formData.get("goal")),
         experience: formData.get("experience"),
@@ -1820,8 +1826,10 @@ try {
   // equipment/goal/experience constraints the program was generated with.
   const formData = new FormData(form);
   const rerollPayload = {
+    ...healthScreeningPayload(form),
     sessionIndex,
     exerciseIndex,
+    age: Number(formData.get("age")),
     program: window.currentWorkoutProgram,
     goal: formData.get("goal"),
     priority: derivePriorityFromGoal(formData.get("goal")),

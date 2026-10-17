@@ -1,0 +1,93 @@
+{
+  "ingredients": 131,
+  "recipes": 165,
+  "sourceMatched": 12,
+  "unspecifiedPreparation": 98,
+  "invalidMacros": 0,
+  "macroEnergyReview": 23,
+  "diaryFoods": 92,
+  "diarySourceMatched": 12,
+  "crossCatalogReviewCandidates": [
+    "almonds",
+    "broccoli",
+    "cashews",
+    "cornflakes",
+    "dates",
+    "grapes",
+    "greek-yogurt",
+    "hummus",
+    "labneh",
+    "mozzarella",
+    "orange",
+    "pita",
+    "potato",
+    "salmon",
+    "sweet-potato",
+    "tahini",
+    "tofu",
+    "turkey-breast",
+    "walnuts"
+  ],
+  "reviewPriority": [
+    {
+      "key": "eggs",
+      "recipes": 19
+    },
+    {
+      "key": "whole-wheat-bread",
+      "recipes": 18
+    },
+    {
+      "key": "bell-pepper",
+      "recipes": 16
+    },
+    {
+      "key": "herbs",
+      "recipes": 15
+    },
+    {
+      "key": "tofu",
+      "recipes": 14
+    },
+    {
+      "key": "pita",
+      "recipes": 13
+    },
+    {
+      "key": "lettuce",
+      "recipes": 11
+    },
+    {
+      "key": "tomato-sauce",
+      "recipes": 11
+    },
+    {
+      "key": "cinnamon",
+      "recipes": 10
+    },
+    {
+      "key": "cottage-cheese",
+      "recipes": 10
+    },
+    {
+      "key": "milk",
+      "recipes": 10
+    },
+    {
+      "key": "lean-beef",
+      "recipes": 9
+    },
+    {
+      "key": "turkey-breast",
+      "recipes": 9
+    },
+    {
+      "key": "greek-yogurt",
+      "recipes": 8
+    },
+    {
+      "key": "onion",
+      "recipes": 8
+    }
+  ]
+}

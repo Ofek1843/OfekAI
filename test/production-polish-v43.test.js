@@ -9,22 +9,25 @@ const sharp = require("sharp");
 const ROOT = path.join(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 
-test("the visible skip-link injection is removed without removing main landmarks", () => {
+test("the visible skip-link injection is removed without removing main landmarks", async () => {
   const shell = read("public", "js", "redesign-shell.js");
   const css = read("public", "css", "redesign-v1.css");
   assert.doesNotMatch(shell, /skipLink|addSkipLink|fp-skip-link|Skip to main content|דילוג לתוכן הראשי/);
   assert.doesNotMatch(css, /fp-skip-link/);
   assert.match(read("public", "index.html"), /<main\b/);
-  assert.match(read("public", "dashboard.html"), /<main\b/);
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  assert.equal(document.querySelectorAll('main').length,1);
 });
 
-test("the product hamburger is isolated above dashboard content and retains the mobile drawer layer", () => {
+test("the product hamburger is isolated above dashboard content and retains the mobile drawer layer", async () => {
   const css = read("public", "css", "redesign-v1.css");
   assert.match(css, /\.fp-global-nav\s*\{[\s\S]*?isolation:\s*isolate;[\s\S]*?z-index:\s*2100;/);
   assert.match(css, /\.fp-global-menu\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?z-index:\s*2202;/);
   assert.match(css, /\.fp-global-menu-backdrop\s*\{[\s\S]*?z-index:\s*2201;/);
   assert.match(read("public", "js", "redesign-shell.js"), /fp-global-menu-button/);
-  assert.match(read("public", "dashboard.html"), /id="mobileMenuButton"/);
+  const {document}=await require('./helpers/current-product.cjs').dashboard();
+  const button=document.querySelector('[data-action="menu"]');assert.equal(button.getAttribute('aria-controls'),'dashboardSidebar');
+  assert.equal(button.getAttribute('aria-expanded'),'false');
 });
 
 test("dashboard greeting receives the restrained Deep Ocean treatment without changing localized copy", () => {
@@ -37,8 +40,8 @@ test("dashboard greeting receives the restrained Deep Ocean treatment without ch
 
 test("the polish cache generation is synchronized and preserves auth/private bypasses", () => {
   const sw = read("public", "sw.js");
-  assert.match(sw, /fuelphysique-v45-language-food-i18n-2/);
-  assert.match(sw, /image-sequence-v43\.js\?v=20260919-hero-message-render-2/);
+  require("./helpers/current-product.cjs").assertCurrentCache(sw);
+  assert.doesNotMatch(sw, /'\/js\/image-sequence-v43\.js/);
   assert.match(sw, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(sw, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);
   assert.match(sw, /AUTH_INFRASTRUCTURE_ORIGINS/);

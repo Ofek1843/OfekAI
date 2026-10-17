@@ -1,0 +1,16 @@
+{
+  "date": "2026-10-16",
+  "scope": "Food-language consistency and dry/raw/cooked weight clarification",
+  "fullSuite": { "tests": 1471, "pass": 1471, "fail": 0, "skipped": 0, "files": 167, "emulatorFiles": 4, "durationMs": 35727.3161 },
+  "focusedAfterFinalUiMessageCleanup": { "tests": 62, "pass": 62, "fail": 0 },
+  "lint": "PASS",
+  "postlint": "PASS",
+  "diffCheck": "PASS",
+  "browser": { "hidden": true, "origin": "http://127.0.0.1:3304", "ramenQuestion": "PASS", "dryRice105g": "PASS", "persistedAfterReload": "PASS", "readableContrast": "PASS" },
+  "liveOpenAiCalls": false,
+  "productionDataChanged": false,
+  "historicalEntriesRewritten": false,
+  "push": false,
+  "deploy": false,
+  "limitations": ["Composition cache is browser-local, not a universal verified nutrition database", "Unknown food-state classification depends on provider output", "No live provider recognition evaluation was performed"]
+}

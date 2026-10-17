@@ -1,0 +1,17 @@
+✔ manual names resolve to catalog credits; all weekly sessions count (1.2012ms)
+✔ edited sets recompute, unknown movements are clearly partial (0.2687ms)
+✔ reject malformed or oversized workout inputs (0.1629ms)
+✔ browser credits stay identical to the authoritative server catalog (0.9616ms)
+✔ local and server weekly counts agree for every catalog movement (4.974ms)
+✔ a manual Upper/Lower plan counts all sessions, zero-work muscles, and edits without a network request (0.1713ms)
+✔ unknown custom exercises are reported without invented muscle credits (0.1939ms)
+✔ Back Extension never resolves to Good Morning, including legacy saved ids (1.415ms)
+✔ incline machine chest press and basic sit-ups resolve and count in manual plans (0.4161ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.2444

@@ -7,6 +7,7 @@ export function workoutReviewMarkup(program, weeklyVolume, language = 'en', sele
   const sessions = program.sessions || [];
   const volume = weeklyVolume ? `<section class="saved-volume"><h3>${he?'סטים שבועיים לפי שריר':'Weekly sets by muscle'}</h3>
     <p>${he?'מחושב מכל ימי התוכנית: סטים ישירים בתוספת תרומה חלקית מתרגילים מורכבים.':'Calculated from every session in this plan: direct sets plus partial contributions from compound exercises.'}</p>
+    <p>${he?'הקרדיטים וטווחי הסטים הם אומדני תכנון, לא מדידת התאוששות או אישור בטיחות אישי.':'Set credits and ranges are planning estimates, not measured recovery or individual medical clearance.'}</p>
     <p class="saved-volume-total"><strong>${esc(weeklyVolume.totalHardSets)} ${he?'סטים בתוכנית השבועית':'working sets in the weekly plan'}</strong></p>
     ${weeklyVolume.unknownExercises?`<p role="status">${he?'החישוב חלקי: יש תרגילים ללא מיפוי שריר.':'Partial calculation: some exercises have no muscle mapping.'}</p>`:''}
     ${weeklyVolume.unknownExercises?`<p>${esc(sessions.flatMap(s=>s.exercises||[]).filter(e=>!e.exerciseId).map(e=>e.name||e.exerciseName||e.exercise).join(', '))}</p>`:''}

@@ -1,0 +1,432 @@
+{
+  "date": "2026-10-16",
+  "baseline": {
+    "tests": 1409,
+    "passed": 1350,
+    "failed": 59
+  },
+  "originalFailures": [
+    {
+      "name": "the service worker's cache version was bumped so no stale pre-fix worker keeps caching auth traffic",
+      "file": "auth-proxy.test.js",
+      "lineBefore": 321,
+      "originalError": "The input did not match the regular expression /CACHE_NAME = 'fuelphysique-editorial-landing-20261010-6'/. Input:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "every public exercise uses selectable canonical equipment",
+      "file": "catalog-generation-invariants.test.js",
+      "lineBefore": 15,
+      "originalError": "back-extension equipment must be selectable",
+      "resolution": "תוקן קוד: קטגוריית כיסא רומי חסרה ברשימת הציוד הקנונית ובבחירה. נוספה קטגוריה נפרדת, ללא השוואתה אוטומטית למכונות."
+    },
+    {
+      "name": "the complete redesign is applied once to every public HTML route",
+      "file": "complete-redesign.test.js",
+      "lineBefore": 13,
+      "originalError": "Expected values to be strictly equal:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "the service worker versions and pre-caches the shared redesign assets",
+      "file": "complete-redesign.test.js",
+      "lineBefore": 82,
+      "originalError": "The input did not match the regular expression /fuelphysique-v45-language-food-i18n-2/. Input:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "dashboard primary actions include the direct social chat destination",
+      "file": "dashboard-discoverability.test.js",
+      "lineBefore": 19,
+      "originalError": "dashboard must expose a primary capability surface",
+      "resolution": "בדיקות הועברו ל־DOM המרונדר של הדשבורד הנוכחי. נוסף בפועל קישור צדדי להודעות בשבע שפות; ניווט היומן והקישורים נבדקים."
+    },
+    {
+      "name": "daily nutrition is a visible dashboard destination and desktop drawer wheel routing is explicit",
+      "file": "dashboard-discoverability.test.js",
+      "lineBefore": 50,
+      "originalError": "The input did not match the regular expression /class=\"daily-nutrition-spotlight\"[^>]*href=\"\\/daily-nutrition\\.html\"/. Input:",
+      "resolution": "בדיקות הועברו ל־DOM המרונדר של הדשבורד הנוכחי. נוסף בפועל קישור צדדי להודעות בשבע שפות; ניווט היומן והקישורים נבדקים."
+    },
+    {
+      "name": "every catalog meal prefers its exact high-resolution WebP plate image",
+      "file": "food-image-coverage.test.js",
+      "lineBefore": 95,
+      "originalError": "Expected values to be strictly deep-equal:",
+      "resolution": "חוזה תמונות עודכן: למתכונים ללא תמונת צלחת image=null הוא מצב מכוון עם fallback גלוי. תמונה קיימת עדיין נבדקת לקיום ולחתימת קובץ; אין המצאת תמונה."
+    },
+    {
+      "name": "the dashboard is a varied five-capability studio with compact context",
+      "file": "illustrated-performance-v4.test.js",
+      "lineBefore": 30,
+      "originalError": "The input did not match the regular expression /class=\"hero-row dashboard-compact-header\"/. Input:",
+      "resolution": "ציפיות דשבורד אנימטיבי וגרסאות ישנות הוחלפו ב־DOM של הדשבורד העריכתי ובחוזה cache הנוכחי. נכסי המערכת והחרגות מידע פרטי עדיין נבדקים."
+    },
+    {
+      "name": "the PWA cache ships the simple workflows while private voice remains network-only",
+      "file": "illustrated-performance-v4.test.js",
+      "lineBefore": 92,
+      "originalError": "The input did not match the regular expression /fuelphysique-simple-workflows-20261006-1/. Input:",
+      "resolution": "ציפיות דשבורד אנימטיבי וגרסאות ישנות הוחלפו ב־DOM של הדשבורד העריכתי ובחוזה cache הנוכחי. נכסי המערכת והחרגות מידע פרטי עדיין נבדקים."
+    },
+    {
+      "name": "the lightweight three-tool explanation replaces the heavy landing sequence",
+      "file": "landing-coach-message.test.js",
+      "lineBefore": 23,
+      "originalError": "The input did not match the regular expression /simple-ux\\.js\\?v=20261006-simple-3/. Input:",
+      "resolution": "מספרי גרסה מיושנים עודכנו; נבדק כלי הדגמה הנוכחי ללא החזרת מנוע כבד שהוסר."
+    },
+    {
+      "name": "mobile PWA instruction prompt is compact, safe-area-aware, and isolated from page paint",
+      "file": "landing-mobile-stability.test.js",
+      "lineBefore": 27,
+      "originalError": "The input did not match the regular expression /max-height:\\s*min\\(260px, calc\\(100svh/. Input:",
+      "resolution": "בדיקה ציפתה לגובה 260px; המימוש מכוון ל־230px קומפקטיים יותר, עם מגבלת viewport ואזורי בטיחות. הציפייה הותאמה."
+    },
+    {
+      "name": "landing tool previews explain each workflow with quick localized motion",
+      "file": "landing-page-regression.test.js",
+      "lineBefore": 77,
+      "originalError": "en needs translated workflow stage labels",
+      "resolution": "טבלת שלבי דוגמה ישנה הוחלפה בדוגמאות מוצר עשירות. הבדיקה מרנדרת שבע שפות ובודקת תרגילים, כמויות, טבעת יומן ותווית דוגמה."
+    },
+    {
+      "name": "the V4.3 prototype service worker cache is synchronized and retains private/auth bypasses",
+      "file": "premium-illustration-v41-integration.test.js",
+      "lineBefore": 130,
+      "originalError": "The input did not match the regular expression /CACHE_NAME = 'fuelphysique-editorial-landing-20261010-6'/. Input:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "Phase 3 pages load the release stylesheet and service worker cache",
+      "file": "product-polish-v3.test.js",
+      "lineBefore": 28,
+      "originalError": "The input did not match the regular expression /product-polish-v3\\.css\\?v=20260811-spectrum-v3/. Input:",
+      "resolution": "דשבורד נוכחי בעל מעטפת עצמאית, לא כרטיסי Phase3 הישנים. נבדקים קישורים ואייקונים אמיתיים ב־DOM; מעטפת שאר הנתיבים נשמרת."
+    },
+    {
+      "name": "dashboard restores five distinct domain actions with library icons",
+      "file": "product-polish-v3.test.js",
+      "lineBefore": 37,
+      "originalError": "The input did not match the regular expression /dashboard-action--coach/. Input:",
+      "resolution": "דשבורד נוכחי בעל מעטפת עצמאית, לא כרטיסי Phase3 הישנים. נבדקים קישורים ואייקונים אמיתיים ב־DOM; מעטפת שאר הנתיבים נשמרת."
+    },
+    {
+      "name": "the visible skip-link injection is removed without removing main landmarks",
+      "file": "production-polish-v43.test.js",
+      "lineBefore": 12,
+      "originalError": "The input did not match the regular expression /<main\\b/. Input:",
+      "resolution": "נבדק main המרונדר ולא HTML האתחול. נוספו בפועל aria-controls/aria-expanded לתפריט; נבדקים סגירה ב־Escape וגבולות cache."
+    },
+    {
+      "name": "the product hamburger is isolated above dashboard content and retains the mobile drawer layer",
+      "file": "production-polish-v43.test.js",
+      "lineBefore": 21,
+      "originalError": "The input did not match the regular expression /id=\"mobileMenuButton\"/. Input:",
+      "resolution": "נבדק main המרונדר ולא HTML האתחול. נוספו בפועל aria-controls/aria-expanded לתפריט; נבדקים סגירה ב־Escape וגבולות cache."
+    },
+    {
+      "name": "the polish cache generation is synchronized and preserves auth/private bypasses",
+      "file": "production-polish-v43.test.js",
+      "lineBefore": 38,
+      "originalError": "The input did not match the regular expression /fuelphysique-v45-language-food-i18n-2/. Input:",
+      "resolution": "נבדק main המרונדר ולא HTML האתחול. נוספו בפועל aria-controls/aria-expanded לתפריט; נבדקים סגירה ב־Escape וגבולות cache."
+    },
+    {
+      "name": "existing install/activate/fetch architecture remains and cache version advances",
+      "file": "push-service-worker.test.js",
+      "lineBefore": 35,
+      "originalError": "The input did not match the regular expression /CACHE_NAME = 'fuelphysique-editorial-landing-20261010-6'/. Input:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "the service worker never caches authenticated APIs or SSE and refreshes the release cache",
+      "file": "pwa-installability.test.js",
+      "lineBefore": 85,
+      "originalError": "The input did not match the regular expression /CACHE_NAME\\s*=\\s*['\"]fuelphysique-editorial-landing-20261010-6['\"]/. Input:",
+      "resolution": "ציפיות גרסה/כתובת ללא query/צבע מעטפת/גובה 260px עודכנו לחוזה הקיים; אימות manifest, רישום SW, viewport והחרגות נתונים פרטיים נשמר."
+    },
+    {
+      "name": "index.html: links the manifest, registers the service worker, and loads pwa-install.js",
+      "file": "pwa-installability.test.js",
+      "lineBefore": 102,
+      "originalError": "index.html must load pwa-install.js",
+      "resolution": "ציפיות גרסה/כתובת ללא query/צבע מעטפת/גובה 260px עודכנו לחוזה הקיים; אימות manifest, רישום SW, viewport והחרגות נתונים פרטיים נשמר."
+    },
+    {
+      "name": "iOS install guidance waits for the first page view and is viewport-safe on a phone",
+      "file": "pwa-installability.test.js",
+      "lineBefore": 188,
+      "originalError": "The input did not match the regular expression /\\.pwa-install-banner\\.instructional\\s*\\{[\\s\\S]*?max-height:\\s*min\\(260px, calc\\(100svh/. Input:",
+      "resolution": "ציפיות גרסה/כתובת ללא query/צבע מעטפת/גובה 260px עודכנו לחוזה הקיים; אימות manifest, רישום SW, viewport והחרגות נתונים פרטיים נשמר."
+    },
+    {
+      "name": "V4.3 athlete stages contain frames and expose the Bench review host",
+      "file": "real-athlete-v43-prototype.test.js",
+      "lineBefore": 167,
+      "originalError": "The input did not match the regular expression /id=\"v43-bench-review\"\\s+data-capability=\"progress\"/. Input:",
+      "resolution": "דשבורד העבר ואירוח Bench הוסרו במכוון. המבחנים לא מחזירים אותם; נבדקות מעטפות חיות והימנעות מהעמסת מנוע/פריימים שאינם בשימוש."
+    },
+    {
+      "name": "landing and dashboard load the engine before integration with one cache generation",
+      "file": "real-athlete-v43-prototype.test.js",
+      "lineBefore": 187,
+      "originalError": "The expression evaluated to a falsy value:",
+      "resolution": "דשבורד העבר ואירוח Bench הוסרו במכוון. המבחנים לא מחזירים אותם; נבדקות מעטפות חיות והימנעות מהעמסת מנוע/פריימים שאינם בשימוש."
+    },
+    {
+      "name": "the new cache identity avoids stale V4.2 mixing without eager-loading motion frames",
+      "file": "real-athlete-v43-prototype.test.js",
+      "lineBefore": 198,
+      "originalError": "The input did not match the regular expression /fuelphysique-brand-quality-20261002-1/. Input:",
+      "resolution": "דשבורד העבר ואירוח Bench הוסרו במכוון. המבחנים לא מחזירים אותם; נבדקות מעטפות חיות והימנעות מהעמסת מנוע/פריימים שאינם בשימוש."
+    },
+    {
+      "name": "remaining journeys expose complete protected route shells",
+      "file": "remaining-user-journeys.test.js",
+      "lineBefore": 18,
+      "originalError": "dashboard has its status shell",
+      "resolution": "הבדיקות משתמשות בכניסת dashboard-editorial וב־DOM שנוצר ממנה. דרישות קשר תפריט/חיפוש/סטטוס ואימות נשמרו."
+    },
+    {
+      "name": "keyboard and accessibility contracts cover navigation, forms, dialogs and status",
+      "file": "remaining-user-journeys.test.js",
+      "lineBefore": 72,
+      "originalError": "dashboard menu button should include id=\"mobileMenuButton\"",
+      "resolution": "הבדיקות משתמשות בכניסת dashboard-editorial וב־DOM שנוצר ממנה. דרישות קשר תפריט/חיפוש/סטטוס ואימות נשמרו."
+    },
+    {
+      "name": "landing exposes three direct tools before secondary features, without a chooser click",
+      "file": "simple-ux.test.js",
+      "lineBefore": 16,
+      "originalError": "matchMedia is not defined",
+      "resolution": "תוקנה סביבת מבחן: matchMedia חסר ב־VM אף שקיים בדפדפן. נוספה הדמיה ללא אנימציה, והבדיקות המקוריות הורצו."
+    },
+    {
+      "name": "landing animation explicitly links each action to its matching example",
+      "file": "simple-ux.test.js",
+      "lineBefore": 49,
+      "originalError": "matchMedia is not defined",
+      "resolution": "תוקנה סביבת מבחן: matchMedia חסר ב־VM אף שקיים בדפדפן. נוספה הדמיה ללא אנימציה, והבדיקות המקוריות הורצו."
+    },
+    {
+      "name": "all seven supported locales have their own primary labels and no Hebrew in English",
+      "file": "simple-ux.test.js",
+      "lineBefore": 61,
+      "originalError": "matchMedia is not defined",
+      "resolution": "תוקנה סביבת מבחן: matchMedia חסר ב־VM אף שקיים בדפדפן. נוספה הדמיה ללא אנימציה, והבדיקות המקוריות הורצו."
+    },
+    {
+      "name": "the site shell applies translations on every route and supports dynamically rendered UI",
+      "file": "site-i18n.test.js",
+      "lineBefore": 30,
+      "originalError": "app.html should load the shared localization shell",
+      "resolution": "גרסאות מעטפת שונות אינן העדר תרגום. כל נתיב נבדק לפי המעטפת המוצהרת שלו, לרבות הדשבורד העצמאי; בדיקות שפה דינמית נשמרו."
+    },
+    {
+      "name": "quality layer is loaded on the public landing and all shared-shell routes",
+      "file": "site-quality.test.js",
+      "lineBefore": 9,
+      "originalError": "The input did not match the regular expression /site-quality\\.css\\?v=20261002-brand-quality-1/. Input:",
+      "resolution": "מספר גרסת CSS אוחד גם בקוד ההזרקה. ציפיית משוב static הותאמה למימוש fixed המכוון עם בקרת התנגשויות."
+    },
+    {
+      "name": "quality CSS preserves hidden state, accessible labels and mobile recovery controls",
+      "file": "site-quality.test.js",
+      "lineBefore": 14,
+      "originalError": "The input did not match the regular expression /\\.site-feedback-widget\\s*\\{[^}]*position: static !important/. Input:",
+      "resolution": "מספר גרסת CSS אוחד גם בקוד ההזרקה. ציפיית משוב static הותאמה למימוש fixed המכוון עם בקרת התנגשויות."
+    },
+    {
+      "name": "social navigation and plan share discovery are present",
+      "file": "social-ui.test.js",
+      "lineBefore": 124,
+      "originalError": "The input did not match the regular expression /href=\"\\/social\\.html\"/. Input:",
+      "resolution": "ניווט חברתי נבדק ב־DOM בפועל במקום בקובץ אתחול ריק; הקישור נוסף לסרגל צד. אין החזרת badge שהוסר."
+    },
+    {
+      "name": "targeted builder UX uses anatomy visuals, a real mutation endpoint, optional workout context and a simplified meal choice",
+      "file": "targeted-product-training-fixes.test.js",
+      "lineBefore": 93,
+      "originalError": "The input did not match the regular expression /foodStylePreference: \"mix\"/. Input:",
+      "resolution": "ברירת המחדל הפשוטה היא supermarket, ו־mix נשלח לפי הבחירה. הבדיקה מאמתת את הביטוי בפועל במקום לדרוש mix קבוע."
+    },
+    {
+      "name": "every public page loads the shared theme",
+      "file": "theme-regression.test.js",
+      "lineBefore": 57,
+      "originalError": "these pages would render without the global palette",
+      "resolution": "הדשבורד העצמאי נבדק עם CSS ייעודי; טקסט כהה על כרטיס לבן נבדק בשכבת paper שמגדירה בפועל את הרקע והטוקנים."
+    },
+    {
+      "name": "the theme is loaded before any page stylesheet, so there is no old-theme flash",
+      "file": "theme-regression.test.js",
+      "lineBefore": 65,
+      "originalError": "Expected values to be strictly deep-equal:",
+      "resolution": "הדשבורד העצמאי נבדק עם CSS ייעודי; טקסט כהה על כרטיס לבן נבדק בשכבת paper שמגדירה בפועל את הרקע והטוקנים."
+    },
+    {
+      "name": "the ocean-depth layer markup is present on the pages that were verified, each loading the layer once",
+      "file": "theme-regression.test.js",
+      "lineBefore": 304,
+      "originalError": "dashboard.html should include exactly one ocean-depth-layer element",
+      "resolution": "הדשבורד העצמאי נבדק עם CSS ייעודי; טקסט כהה על כרטיס לבן נבדק בשכבת paper שמגדירה בפועל את הרקע והטוקנים."
+    },
+    {
+      "name": "the light meal card keeps its own dark text after the theme change",
+      "file": "theme-regression.test.js",
+      "lineBefore": 327,
+      "originalError": "the card must still define dark local text",
+      "resolution": "הדשבורד העצמאי נבדק עם CSS ייעודי; טקסט כהה על כרטיס לבן נבדק בשכבת paper שמגדירה בפועל את הרקע והטוקנים."
+    },
+    {
+      "name": "all public pages and the service worker use their exact versioned shell generation",
+      "file": "ultramarine-motion.test.js",
+      "lineBefore": 82,
+      "originalError": "Expected values to be strictly equal:",
+      "resolution": "ספירה קשיחה של 34 דפים וגרסאות עבר הוחלפה בבדיקת כל הקבצים שהתגלו, קיום נכסים וחוזה מעטפת לכל נתיב."
+    },
+    {
+      "name": "nutrition builder keeps one practical meal-format choice and derives the removed detail fields",
+      "file": "v44-generator-ux.test.js",
+      "lineBefore": 9,
+      "originalError": "The input did not match the regular expression /foodStylePreference: \"mix\"/. Input:",
+      "resolution": "ציפיית mix קבוע הותאמה לבחירה אמיתית עם ברירת מחדל supermarket."
+    },
+    {
+      "name": "V4.5 Deep Ocean loads on landing, dashboard, and protected routes",
+      "file": "v45-deep-ocean.test.js",
+      "lineBefore": 11,
+      "originalError": "The input did not match the regular expression /\\/css\\/v45-deep-ocean\\.css\\?v=20260914-i18n-dashboard-1/. Input:",
+      "resolution": "הבדיקה מכירה במסלולי paper ואינה דורשת להחזיר מעליהם שכבת ocean. מנגנוני reduced-motion והמסכים הנוכחיים נבדקים."
+    },
+    {
+      "name": "Deep Ocean preserves the real-athlete and reduced-motion contracts",
+      "file": "v45-deep-ocean.test.js",
+      "lineBefore": 37,
+      "originalError": "The input did not match the regular expression /image-sequence-v43\\.js/. Input:",
+      "resolution": "הבדיקה מכירה במסלולי paper ואינה דורשת להחזיר מעליהם שכבת ocean. מנגנוני reduced-motion והמסכים הנוכחיים נבדקים."
+    },
+    {
+      "name": "Social loads the ocean layer and keeps Hebrew when the settings read is unavailable",
+      "file": "v45-hebrew-social-mobile-fix.test.js",
+      "lineBefore": 23,
+      "originalError": "The expression evaluated to a falsy value:",
+      "resolution": "מסלולי paper נטענים דרך המעטפת במקום קישור ocean סטטי. בדיקות קריאות, טקסט עברי והחרגות פרטיות נשמרו."
+    },
+    {
+      "name": "daily and saved nutrition Hebrew copy is readable and no longer mojibake",
+      "file": "v45-hebrew-social-mobile-fix.test.js",
+      "lineBefore": 46,
+      "originalError": "The expression evaluated to a falsy value:",
+      "resolution": "מסלולי paper נטענים דרך המעטפת במקום קישור ocean סטטי. בדיקות קריאות, טקסט עברי והחרגות פרטיות נשמרו."
+    },
+    {
+      "name": "the service worker uses a fresh cache while keeping private routes network-only",
+      "file": "v45-hebrew-social-mobile-fix.test.js",
+      "lineBefore": 63,
+      "originalError": "The input did not match the regular expression /CACHE_NAME = 'fuelphysique-editorial-landing-20261010-6'/. Input:",
+      "resolution": "מסלולי paper נטענים דרך המעטפת במקום קישור ocean סטטי. בדיקות קריאות, טקסט עברי והחרגות פרטיות נשמרו."
+    },
+    {
+      "name": "V4.5 cache generation includes the Deep Ocean daily nutrition shell",
+      "file": "v45-pwa-cache.test.js",
+      "lineBefore": 10,
+      "originalError": "The input did not match the regular expression /fuelphysique-v45-language-food-i18n-2/. Input:",
+      "resolution": "הקבצים נבדקים לפי נתיבם וקיומם תחת דור ה־cache העדכני, לא גרסאות היסטוריות שונות."
+    },
+    {
+      "name": "final nutrition submit preserves step six and answers",
+      "file": "v46-nutrition-mobile.test.js",
+      "lineBefore": 27,
+      "originalError": "window is not defined",
+      "resolution": "תוקנה סביבת מבחן: נוספו window/FuelSimpleUI/readDailyDraft/withDeadline לפונקציות האמיתיות. בדיקות שמירת היום ומעבר אשף נשמרו; נוספו בנפרד רגרסיות שמירה ומעבר ימים."
+    },
+    {
+      "name": "delayed generation module cannot cause native form navigation or lost answers",
+      "file": "v46-nutrition-mobile.test.js",
+      "lineBefore": 38,
+      "originalError": "window is not defined",
+      "resolution": "תוקנה סביבת מבחן: נוספו window/FuelSimpleUI/readDailyDraft/withDeadline לפונקציות האמיתיות. בדיקות שמירת היום ומעבר אשף נשמרו; נוספו בנפרד רגרסיות שמירה ומעבר ימים."
+    },
+    {
+      "name": "Hebrew wizard keeps localized steps and validation",
+      "file": "v46-nutrition-mobile.test.js",
+      "lineBefore": 48,
+      "originalError": "window is not defined",
+      "resolution": "תוקנה סביבת מבחן: נוספו window/FuelSimpleUI/readDailyDraft/withDeadline לפונקציות האמיתיות. בדיקות שמירת היום ומעבר אשף נשמרו; נוספו בנפרד רגרסיות שמירה ומעבר ימים."
+    },
+    {
+      "name": "optional daily data failure still loads the mandatory saved day without an alarming warning",
+      "file": "v46-nutrition-mobile.test.js",
+      "lineBefore": 65,
+      "originalError": "window is not defined",
+      "resolution": "תוקנה סביבת מבחן: נוספו window/FuelSimpleUI/readDailyDraft/withDeadline לפונקציות האמיתיות. בדיקות שמירת היום ומעבר אשף נשמרו; נוספו בנפרד רגרסיות שמירה ומעבר ימים."
+    },
+    {
+      "name": "queued daily save captures its day and immutable entries",
+      "file": "v46-nutrition-mobile.test.js",
+      "lineBefore": 81,
+      "originalError": "readDailyDraft is not defined",
+      "resolution": "תוקנה סביבת מבחן: נוספו window/FuelSimpleUI/readDailyDraft/withDeadline לפונקציות האמיתיות. בדיקות שמירת היום ומעבר אשף נשמרו; נוספו בנפרד רגרסיות שמירה ומעבר ימים."
+    },
+    {
+      "name": "motion assets load through the shared shell and stale cache identity is replaced",
+      "file": "v47-motion-experience.test.js",
+      "lineBefore": 57,
+      "originalError": "The input did not match the regular expression /fuelphysique-v45-language-food-i18n-2/. Input:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "private playback is network-only, CSP permits only the configured media origin, and the cache version includes the new client module",
+      "file": "voice-message-regression.test.js",
+      "lineBefore": 33,
+      "originalError": "The input did not match the regular expression /fuelphysique-v45-language-food-i18n-2/. Input:",
+      "resolution": "מספר דור cache היסטורי הוחלף בחוזה משותף לדור השחרור הנוכחי; בדיקות התנהגות וחריגות אימות/פרטיות נשמרו."
+    },
+    {
+      "name": "every exercise retains its Effort value and accessible RIR control",
+      "file": "workout-mobile-results-v2.test.js",
+      "lineBefore": 87,
+      "originalError": "The input did not match the regular expression /ui\\.rirUnit\\(String\\(exercise\\.rir\\)\\)/. Input:",
+      "resolution": "הבדיקות הותאמו ל־RIR עם fallback תקין, RTL גם לערבית ולגרסאות RIR האחרונות; דרישות נגישות וגודל נשמרו."
+    },
+    {
+      "name": "Hebrew uses logical layout, readable RIR and the shared RTL direction",
+      "file": "workout-mobile-results-v2.test.js",
+      "lineBefore": 129,
+      "originalError": "The input did not match the regular expression /document\\.documentElement\\.dir = isHebrew \\? \"rtl\" : \"ltr\"/. Input:",
+      "resolution": "הבדיקות הותאמו ל־RIR עם fallback תקין, RTL גם לערבית ולגרסאות RIR האחרונות; דרישות נגישות וגודל נשמרו."
+    },
+    {
+      "name": "the versioned page loads the mobile result assets",
+      "file": "workout-mobile-results-v2.test.js",
+      "lineBefore": 139,
+      "originalError": "The input did not match the regular expression /workout-builder\\.css\\?v=20260918-volume-reroll-1/. Input:",
+      "resolution": "הבדיקות הותאמו ל־RIR עם fallback תקין, RTL גם לערבית ולגרסאות RIR האחרונות; דרישות נגישות וגודל נשמרו."
+    },
+    {
+      "name": "the manual builder RIR follow-up is documented, not implemented",
+      "file": "workout-muscle-focus-ux.test.js",
+      "lineBefore": 293,
+      "originalError": "The input did not match the regular expression /FUTURE \\(not in scope here\\)/. Input:",
+      "resolution": "RIR ידני כבר יושם ולכן נבדקת הבחירה הנשמרת במקום לדרוש שלא יהיה ממומש. ההסבר מאמת RIR, לא הנחיית חזרות שהמשתמש ביקש להסיר."
+    },
+    {
+      "name": "the previous guidance UX is still in place",
+      "file": "workout-muscle-focus-ux.test.js",
+      "lineBefore": 301,
+      "originalError": "regressed guidance UX: Do not stop solely because you reached the bottom of the rep range",
+      "resolution": "RIR ידני כבר יושם ולכן נבדקת הבחירה הנשמרת במקום לדרוש שלא יהיה ממומש. ההסבר מאמת RIR, לא הנחיית חזרות שהמשתמש ביקש להסיר."
+    }
+  ],
+  "additionalRuntimeFixes": [
+    "serialized-write-after-ui-timeout",
+    "rapid-date-navigation-race",
+    "stale-food-recognition-result",
+    "copy-previous-day-pending-edits",
+    "serialized-cloud-timestamp-freshness",
+    "duplicate-food-submit"
+  ],
+  "note": "59 failed assertions were not 59 distinct product defects. Historical design expectations and incomplete VM fixtures were updated explicitly; new runtime failures have dedicated behavioral tests."
+}

@@ -63,6 +63,7 @@ function authHeaders() {
 
 function buildWorkoutPayload(overrides = {}) {
   return {
+    screeningStatus: "none",
     goal: "Build muscle",
     experience: "intermediate",
     age: 28,

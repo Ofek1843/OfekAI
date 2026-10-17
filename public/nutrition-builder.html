@@ -126,7 +126,7 @@
             <span>02</span>
             <div>
               <h2 data-en="Tell us about yourself" data-he="ספר לנו עליך">Tell us about yourself</h2>
-              <p data-en="Age and gender are used to calculate your metabolic rate." data-he="גיל ומין משמשים לחישוב קצב חילוף החומרים שלך.">Age and gender are used to calculate your metabolic rate.</p>
+              <p data-en="Age and a physiological equation coefficient estimate resting energy expenditure; this is not a measured metabolic rate." data-he="הגיל ומקדם פיזיולוגי במשוואה משמשים לאומדן הוצאה במנוחה; זו אינה מדידת חילוף חומרים.">Age and a physiological equation coefficient estimate resting energy expenditure; this is not a measured metabolic rate.</p>
             </div>
           </div>
 
@@ -136,12 +136,13 @@
               <input id="age" name="age" type="number" min="15" max="100" required />
             </label>
             <label>
-              <span data-en="Gender" data-he="מין">Gender</span>
+              <span data-en="Physiological equation coefficient" data-he="מקדם פיזיולוגי במשוואה">Physiological equation coefficient</span>
               <select id="gender" name="gender" required>
-                <option value="" data-en="Select gender" data-he="בחר מין">Select gender</option>
+                <option value="" data-en="Select explicitly" data-he="בחרו במפורש">Select explicitly</option>
                 <option value="male" data-en="Male" data-he="זכר">Male</option>
                 <option value="female" data-en="Female" data-he="נקבה">Female</option>
               </select>
+              <small data-en="This is not gender identity. If neither coefficient is appropriate, seek an individually measured estimate." data-he="זהו פרמטר חישוב ולא זהות מגדרית. אם אף מקדם אינו מתאים, מומלץ לקבל אומדן אישי נמדד.">This is not gender identity. If neither coefficient is appropriate, seek an individually measured estimate.</small>
             </label>
           </div>
 

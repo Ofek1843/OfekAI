@@ -77,6 +77,7 @@ test.after(() => {
 
 function buildWorkoutPayload(overrides = {}) {
   return {
+    screeningStatus: "none",
     goal: "Build muscle",
     experience: "intermediate",
     age: 28,
@@ -235,6 +236,7 @@ test("POST /api/workout-builder/reroll-exercise: bodyweight-only reroll repairs 
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
+      screeningStatus: "none", age: 28,
       sessionIndex: 0,
       exerciseIndex: 0,
       program,
@@ -274,6 +276,7 @@ test("POST /api/workout-builder/reroll-exercise: a valid reroll returns 200", as
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
+      screeningStatus: "none", age: 28,
       sessionIndex: 0,
       exerciseIndex: 0,
       program: genData.program,
@@ -307,6 +310,7 @@ test("POST /api/workout-builder/reroll-exercise never reports an echoed exercise
     method: "POST",
     headers: authHeaders(),
     body: JSON.stringify({
+      screeningStatus: "none", age: 28,
       sessionIndex: 0,
       exerciseIndex: 0,
       program: { daysPerWeek: 1, sessionDuration: 60, sessions: [{ day: 1, name: "Day 1", exercises: [currentExercise] }] },
@@ -334,6 +338,7 @@ test("POST /api/workout-builder/reroll-exercise searches catalog after an unsuit
       method: "POST",
       headers: authHeaders(),
       body: JSON.stringify({
+      screeningStatus: "none", age: 28,
         sessionIndex: 0, exerciseIndex: 0,
         program: {
           daysPerWeek: 1, sessionDuration: 45,

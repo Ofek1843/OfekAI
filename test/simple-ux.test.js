@@ -10,7 +10,9 @@ const root = path.join(__dirname,'..');
 const source = fs.readFileSync(path.join(root,'public/js/simple-ux.js'),'utf8');
 function render(page,language='en') {
   const {document,window} = parseHTML(fs.readFileSync(path.join(root,'public',page),'utf8'));
-  vm.runInNewContext(source,{document,window,Event:window.Event,localStorage:{getItem:()=>language},location:{pathname:`/${page}`}});
+  const matchMedia=()=>({matches:false,addEventListener(){},removeEventListener(){}});
+  window.matchMedia=matchMedia;
+  vm.runInNewContext(source,{document,window,matchMedia,Event:window.Event,localStorage:{getItem:()=>language},location:{pathname:`/${page}`}});
   return {document,window};
 }
 test('landing exposes three direct tools before secondary features, without a chooser click',() => {

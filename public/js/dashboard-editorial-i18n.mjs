@@ -11,5 +11,7 @@ zh:'首页|计划|动作|营养|指南|仪表板|训练计划|饮食计划|饮�
 export const dashboardLanguages = Object.keys(rows);
 export function dashboardCopy(language='en') {
  const values=(rows[language]||rows.en).split('|');
- return Object.fromEntries(keys.map((key,index)=>[key,values[index]]));
+ const messages={en:'Messages',he:'הודעות',es:'Mensajes',fr:'Messages',de:'Nachrichten',ar:'الرسائل',zh:'消息'};
+ const failurePrefixes={en:'Could not load',he:'לא ניתן לטעון',es:'No se pudo cargar',fr:'Chargement impossible',de:'Laden fehlgeschlagen',ar:'تعذر تحميل',zh:'无法加载'};
+ return {...Object.fromEntries(keys.map((key,index)=>[key,values[index]])),messages:messages[language]||messages.en,loadFailurePrefix:failurePrefixes[language]||failurePrefixes.en};
 }

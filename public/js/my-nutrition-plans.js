@@ -3,6 +3,7 @@ import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
+import { openSavedNutrition } from './saved-nutrition-view.mjs';
 
 const grid = document.querySelector("#plansGrid");
 const status = document.querySelector("#plansStatus");
@@ -65,7 +66,7 @@ function render() {
     return `<article class="plan-card${active ? " active" : ""}" data-id="${esc(saved.id)}">
       <span class="active-badge">${ui.active}</span><h2>${esc(saved.name || plan.planName || ui.defaultPlan)}</h2>
       <div class="plan-meta"><span>${esc(plan.dailyCalories ?? "-")} ${ui.calories}</span><span>${esc(plan.proteinGrams ?? "-")} ${ui.protein}</span></div>
-      <div class="plan-actions"><button class="activate-button" type="button" ${active ? "disabled" : ""}>${active ? ui.current : ui.use}</button><a class="share-social-link" href="/social.html?share=nutrition&amp;sourceId=${encodeURIComponent(saved.id)}">${isHebrew ? "שיתוף עם חבר" : "Share with friend"}</a>
+      <div class="plan-actions"><button class="view-nutrition-button" type="button">${isHebrew ? 'צפייה בתפריט' : 'View meal plan'}</button><button class="activate-button" type="button" ${active ? "disabled" : ""}>${active ? ui.current : ui.use}</button><a class="share-social-link" href="/social.html?share=nutrition&amp;sourceId=${encodeURIComponent(saved.id)}">${isHebrew ? "שיתוף עם חבר" : "Share with friend"}</a>
       <div class="manage-actions"><button class="rename-button" type="button">✏️ ${ui.rename}</button><button class="delete-button" type="button">🗑️ ${ui.remove}</button></div></div></article>`;
   }).join("") + lockedSlotsMarkup();
   plans.filter((saved) => saved.sourceType === "manual").forEach((saved) => {
@@ -73,6 +74,7 @@ function render() {
     actions?.insertAdjacentHTML("afterbegin", `<a class="edit-button" href="/manual-nutrition-builder.html?edit=${encodeURIComponent(saved.id)}">${ui.edit}</a><a class="duplicate-button" href="/manual-nutrition-builder.html?duplicate=${encodeURIComponent(saved.id)}">${ui.duplicate}</a>`);
   });
   grid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => button.addEventListener("click", () => activate(button.closest(".plan-card").dataset.id)));
+  grid.querySelectorAll('.view-nutrition-button').forEach(button=>button.addEventListener('click',()=>openSavedNutrition(plans.find(plan=>plan.id===button.closest('.plan-card').dataset.id),isHebrew?'he':'en')));
   grid.querySelectorAll(".rename-button").forEach((button) => button.addEventListener("click", () => rename(button.closest(".plan-card").dataset.id)));
   grid.querySelectorAll(".delete-button").forEach((button) => button.addEventListener("click", () => remove(button.closest(".plan-card").dataset.id)));
 }

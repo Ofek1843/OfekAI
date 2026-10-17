@@ -170,7 +170,8 @@ test("V4.3 athlete stages contain frames and expose the Bench review host", () =
   assert.match(CSS, /landing-hero-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*contain: paint/s);
   assert.match(CSS, /journey-illustration\[data-v43-motion="prototype"\][\s\S]*?overflow: hidden;[\s\S]*?contain: paint;/);
   assert.doesNotMatch(CSS, /width:\s*(108|112)%/);
-  assert.match(dashboard, /id="v43-bench-review"\s+data-capability="progress"/);
+  require('./helpers/current-product.cjs').assertPageShell('dashboard.html');
+  assert.doesNotMatch(dashboard, /id="v43-bench-review"/);
   assert.match(CSS, /#v43-bench-review\s*\{[^}]*scroll-margin-top: 92px/s);
   assert.match(CSS, /#v43-bench-review \.capability-illustration\[data-v43-motion="prototype"\][^{]*\{[^}]*width: 44%;[^}]*height: 72%;/s);
   assert.match(CSS, /#v43-bench-review\s*\{[^}]*min-height: 450px/s);
@@ -184,20 +185,17 @@ test("V4.3 athlete stages contain frames and expose the Bench review host", () =
   assert.match(ENGINE, /frame\("session", 1/);
 });
 
-test("landing and dashboard load the engine before integration with one cache generation", () => {
-  for (const file of ["index.html", "dashboard.html"]) {
-    const html = read("public", file);
-    const engine = `/js/image-sequence-v43.js?v=${ENGINE_VERSION}`;
-    const integration = `/js/illustrated-v4.js?v=${INTEGRATION_VERSION}`;
-    assert.ok(html.includes(engine));
-    assert.ok(html.indexOf(engine) < html.indexOf(integration));
-    assert.match(html, new RegExp(`illustrated-v4\\.css\\?v=${CSS_VERSION}`));
+test("the live landing avoids the heavy engine; editorial dashboard uses its isolated view", () => {
+  for(const file of ['index.html','dashboard.html']) {
+    const html=read('public',file);assert.doesNotMatch(html,/<script[^>]+src="[^"]*image-sequence-v43/);
+    require('./helpers/current-product.cjs').assertPageShell(file);
   }
+  assert.match(read('public','index.html'),/simple-ux\.js\?v=/);
 });
 
 test("the new cache identity avoids stale V4.2 mixing without eager-loading motion frames", () => {
-  assert.match(SW, /fuelphysique-brand-quality-20261002-1/);
-  assert.match(SW, new RegExp(`image-sequence-v43\\.js\\?v=${ENGINE_VERSION}`));
+  require("./helpers/current-product.cjs").assertCurrentCache(SW);
+  assert.doesNotMatch(SW, /'\/js\/image-sequence-v43\.js/);
   assert.doesNotMatch(SW, /athlete-motion\/v43\/.+frame-/);
   assert.match(SW, /AUTH_PROXY_PREFIX = '\/__\/auth\/'/);
   assert.match(SW, /NETWORK_ONLY_PREFIXES = \['\/api\/'\]/);

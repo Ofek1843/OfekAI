@@ -13,6 +13,20 @@ import { withDeadline } from "./daily-nutrition-recovery.mjs";
 
 const MAX_DAILY_ENTRIES = 80;
 
+// Persist the reference used at entry creation, not today's catalog version.
+// This is source metadata, not a clinical or branded-product certification.
+function normalizeReference(reference) {
+  if (!reference || typeof reference !== 'object') return null;
+  const value = {};
+  for (const key of ['source', 'status', 'dataType', 'url', 'version', 'publicationDate', 'retrievedAt', 'state', 'basisUnit', 'policy']) {
+    if (typeof reference[key] === 'string') value[key] = reference[key].slice(0, key === 'url' ? 500 : 160);
+  }
+  if (Number.isSafeInteger(reference.recordId) && reference.recordId > 0) value.recordId = reference.recordId;
+  if (Number.isFinite(reference.basisAmount) && reference.basisAmount > 0) value.basisAmount = reference.basisAmount;
+  if (typeof reference.ediblePortion === 'boolean') value.ediblePortion = reference.ediblePortion;
+  return Object.keys(value).length ? value : null;
+}
+
 function assertIdentity(uid) {
   const value = String(uid || "").trim();
   if (!value || value.includes("/")) throw new Error("INVALID_USER");
@@ -50,7 +64,8 @@ function normalizeEntry(entry, index = 0) {
     portionCount: Number.isFinite(portionCount) && portionCount > 0 ? portionCount : null,
     portionSize: String(entry.portionSize || "").slice(0, 20) || null,
     portionKind: String(entry.portionKind || "").slice(0, 20) || null,
-    compositeEstimate: entry.compositeEstimate === true
+    compositeEstimate: entry.compositeEstimate === true,
+    reference: normalizeReference(entry.reference)
   };
   if ([value.amount, value.calories, value.proteinGrams, value.carbsGrams, value.fatGrams].some((number) => !Number.isFinite(number) || number < 0)) {
     throw new Error("INVALID_ENTRY");

@@ -179,6 +179,15 @@
     </section>
   </main>
 
+  <dialog id="deleteMessageDialog" class="social-dialog" aria-labelledby="deleteMessageTitle" aria-describedby="deleteMessageDescription">
+    <h2 id="deleteMessageTitle">Delete message</h2>
+    <p id="deleteMessageDescription"></p>
+    <form method="dialog" class="profile-preview-actions">
+      <button id="cancelDeleteMessage" class="secondary-button" value="cancel" autofocus>Cancel</button>
+      <button id="confirmDeleteMessage" class="primary-button" value="delete">Delete message</button>
+    </form>
+  </dialog>
+
   <dialog id="musicLinkDialog" class="social-dialog music-link-dialog" aria-labelledby="musicLinkTitle">
     <form method="dialog" class="dialog-close-row"><button class="icon-button" aria-label="Close">Close</button></form>
     <div class="dialog-copy"><span class="eyebrow" id="musicLinkEyebrow">SAFE MUSIC LINK</span><h2 id="musicLinkTitle">Share workout music</h2><p id="musicLinkText">Paste a public HTTPS link. FuelPhysique never downloads, embeds or proxies the destination.</p></div>

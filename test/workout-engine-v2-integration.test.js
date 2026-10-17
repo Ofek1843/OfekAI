@@ -107,6 +107,8 @@ function startServer(port, fixture = FIXTURE) {
 
 function payload(overrides = {}) {
   return {
+    screeningStatus: "none",
+    age: 28,
     goal: "Build muscle",
     experience: "beginner",
     daysPerWeek: 2,
@@ -129,6 +131,7 @@ function headers(id) {
 
 function integratedFrontendPayload(overrides = {}) {
   return {
+    screeningStatus: "none",
     goal: "Build muscle",
     priority: "hypertrophy",
     experience: "intermediate",
@@ -242,6 +245,7 @@ test("production-path fixture uses authoritative repair and validates the muscle
     method: "POST",
     headers: headers("reroll"),
     body: JSON.stringify({
+      screeningStatus: "none", age: 28,
       sessionIndex: 0,
       exerciseIndex: 0,
       program: body.program,

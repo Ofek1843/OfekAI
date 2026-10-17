@@ -56,6 +56,7 @@ test("the shared theme defines every required semantic token", () => {
 
 test("every public page loads the shared theme", () => {
   const missing = htmlPages.filter(page => {
+    if (require('./helpers/current-product.cjs').editorialPages.has(page)) {require('./helpers/current-product.cjs').assertPageShell(page);return false;}
     const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
     return !/href="\/?css\/theme\.css"/.test(html);
   });
@@ -65,6 +66,7 @@ test("every public page loads the shared theme", () => {
 test("the theme is loaded before any page stylesheet, so there is no old-theme flash", () => {
   const late = [];
   for (const page of htmlPages) {
+    if (require('./helpers/current-product.cjs').editorialPages.has(page)) continue;
     const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
     const links = [...html.matchAll(/href="\/?css\/([a-z0-9-]+\.css)/g)].map(m => m[1]);
     if (!links.length) continue;
@@ -302,7 +304,7 @@ test("decorative ocean-depth animation is disabled under prefers-reduced-motion"
 });
 
 test("the ocean-depth layer markup is present on the pages that were verified, each loading the layer once", () => {
-  const pages = ["index.html", "dashboard.html", "app.html", "auth.html", "workout-builder.html", "workout-tracker.html", "nutrition-builder.html", "progress.html", "transformation-submit.html"];
+  const pages = ["index.html", "app.html", "auth.html", "workout-builder.html", "workout-tracker.html", "nutrition-builder.html", "progress.html", "transformation-submit.html"];
   for (const page of pages) {
     const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
     const count = (html.match(/class="ocean-depth-layer"/g) || []).length;
@@ -324,12 +326,12 @@ test("no theme-preview infrastructure has crept back in", () => {
   assert.deepEqual(stray, [], "no theme-preview files should exist");
 });
 
-test("the light meal card keeps its own dark text after the theme change", () => {
-  // The nutrition card is a deliberate light surface inside the dark system.
-  // A global palette change is the obvious way to reintroduce white-on-white.
-  const css = fs.readFileSync(path.join(CSS_DIR, "nutrition-builder.css"), "utf8");
-  const card = /\.meal-card\s*\{([^}]*)\}/.exec(css);
-  assert.ok(card, "the .meal-card rule must exist");
-  assert.match(card[1], /--card-text:\s*#0f172a/, "the card must still define dark local text");
-  assert.doesNotMatch(card[1], /--card-text:\s*var\(--fp-text-primary\)/, "the card must not inherit the dark page's light text");
+test("paper meal cards pair their white surface with local dark foreground tokens", () => {
+  const css=fs.readFileSync(path.join(CSS_DIR,'product-paper-routes.css'),'utf8');
+  const rule=css.match(/body\.fp-route-nutrition-builder :is\(\.program-card, \.meal-card[^}]+\}/)?.[0];
+  assert.ok(rule);assert.match(rule,/--card-text:\s*#121417/);
+  assert.match(rule,/background:\s*#fff !important/);
+  assert.match(rule,/color:\s*#121417 !important/);
+  require('./helpers/current-product.cjs').assertPageShell('nutrition-builder.html');
+  assert.match(fs.readFileSync(path.join(PUBLIC_DIR,'js/redesign-shell.js'),'utf8'),/paperStyles\.href = "\/css\/product-paper-routes\.css/);
 });

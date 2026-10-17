@@ -86,6 +86,7 @@ function authHeaders() {
 
 function buildWorkoutPayload(overrides = {}) {
   return {
+    screeningStatus: "none", age: 28,
     goal: "Build muscle",
     experience: "intermediate",
     age: 28,
@@ -159,7 +160,7 @@ test("Reroll endpoint also maps upstream 403 to local 502", async () => {
   const res = await fetch(`${upstreamFailureServer.baseUrl}/api/workout-builder/reroll-exercise`, {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify({ sessionIndex: 0, exerciseIndex: 0, program, equipment: ["bodyweight"], goal: "Build muscle", language: "en" })
+    body: JSON.stringify({ screeningStatus:"none", age:28, sessionIndex: 0, exerciseIndex: 0, program, equipment: ["bodyweight"], goal: "Build muscle", language: "en" })
   });
   const data = await res.json();
 

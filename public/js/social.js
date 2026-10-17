@@ -569,13 +569,14 @@ function renderMessages({ preserveScroll = false } = {}) {
   $("#messageList").innerHTML = state.messages.map((message) => {
     const sent = message.senderUid === state.user.uid;
     const failed = message.status === "failed";
-    const content = message.type === "artifact" ? artifactCard(message)
+    const content = message.deletedAt ? `<div class="message-bubble message-tombstone"><em>${escapeHtml(ui.deleted)}</em></div>`
+      : message.type === "artifact" ? artifactCard(message)
       : message.type === "voice" ? voiceMessageBubble(message)
         : message.type === "music_link" ? musicLinkBubble(message)
         : `<div class="message-bubble" dir="auto">${message.deletedAt ? `<em>${ui.deleted}</em>` : escapeHtml(message.text || "")}</div>`;
     return `<li class="message-row${sent ? " is-sent" : ""}" data-message-id="${escapeHtml(message.id)}" data-message-type="${escapeHtml(message.type || "text")}">
       ${content}
-      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent ? (!message.deletedAt && !failed ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.remove.split(" ")[0]}</button>` : "") : (!message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">${language === "he" ? "דיווח" : "Report"}</button>` : "")}</span>
+      <span class="message-meta"><time>${formatMessageTime(message.createdAt, language)}</time>${sent ? (!message.deletedAt && !failed && message.status !== "sending" ? `<button class="message-delete" type="button" data-action="delete-message" data-message-id="${escapeHtml(message.id)}">${ui.deleteMessage}</button>` : "") : (!message.deletedAt ? `<button class="message-delete" type="button" data-action="report-message" data-message-id="${escapeHtml(message.id)}">${language === "he" ? "דיווח" : "Report"}</button>` : "")}</span>
       ${failed ? `<span class="message-failed">${message.type === "voice" ? ui.voiceUploadFailed : ui.sendFailed}<button type="button" data-action="retry-message" data-message-id="${escapeHtml(message.id)}">${ui.retry}</button></span>` : ""}
     </li>`;
   }).join("");
@@ -1069,6 +1070,20 @@ async function copyArtifact(artifactId = state.activeArtifact?.id) {
   }
 }
 
+function confirmMessageDeletion() {
+  const dialog = $("#deleteMessageDialog");
+  if (dialog.open) return Promise.resolve(false);
+  $("#deleteMessageTitle").textContent = ui.deleteMessage;
+  $("#deleteMessageDescription").textContent = ui.confirmDeleteMessage;
+  $("#cancelDeleteMessage").textContent = ui.cancel;
+  $("#confirmDeleteMessage").textContent = ui.deleteMessage;
+  dialog.returnValue = "cancel";
+  return new Promise((resolve) => {
+    dialog.addEventListener("close", () => resolve(dialog.returnValue === "delete"), { once: true });
+    dialog.showModal();
+  });
+}
+
 async function messageListAction(button) {
   const action = button.dataset.action;
   if (action === "toggle-voice") {
@@ -1089,17 +1104,26 @@ async function messageListAction(button) {
     return copyArtifact(button.dataset.artifactId);
   }
   if (action === "delete-message") {
+    const message = state.messages.find((item) => item.id === button.dataset.messageId);
+    if (!message || message.senderUid !== state.user.uid || message.deletedAt || button.disabled) return;
+    const conversationId = state.activeConversation.id;
+    if (!await confirmMessageDeletion()) return;
+    button.disabled = true;
     try {
-      await api(`/conversations/${encodeURIComponent(state.activeConversation.id)}/messages/${encodeURIComponent(button.dataset.messageId)}`, { method: "DELETE" });
-      const message = state.messages.find((item) => item.id === button.dataset.messageId);
-      if (message) {
-        message.deletedAt = new Date().toISOString();
-        message.text = "";
-        if (message.type === "voice") message.voice = { ...(message.voice || {}), assetId: undefined, unavailable: true };
+      await api(`/conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(message.id)}`, { method: "DELETE" });
+      if (state.activeConversation?.id === conversationId) {
+        const current = state.messages.find((item) => item.id === message.id);
+        if (current) {
+          current.deletedAt = new Date().toISOString();
+          current.text = "";
+          if (current.type === "voice") current.voice = { ...(current.voice || {}), assetId: undefined, unavailable: true };
+        }
+        voicePlayback.stop();
+        renderMessages();
       }
-      voicePlayback.stop();
-      renderMessages();
+      toast(ui.deleted);
     } catch (error) { toast(error.message, true); }
+    finally { button.disabled = false; }
   }
   if (action === "report-message") {
     return reportSocialContent("message", `${state.activeConversation.id}:${button.dataset.messageId}`);

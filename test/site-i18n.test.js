@@ -39,7 +39,7 @@ test("the site shell applies translations on every route and supports dynamicall
   assert.ok(pages.length >= 35);
   for (const page of pages) {
     const html = fs.readFileSync(path.join(PUBLIC, page), "utf8");
-    assert.match(html, /redesign-shell\.js\?v=20261002-brand-quality-1/, `${page} should load the shared localization shell`);
+    require('./helpers/current-product.cjs').assertPageShell(page);
   }
   assert.match(SW, /\/js\/i18n\.js\?v=20261002-brand-quality-1/);
 });

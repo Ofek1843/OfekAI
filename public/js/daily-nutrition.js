@@ -1,5 +1,6 @@
 import { auth, db } from "./firebase-config.js";
-import { withDeadline } from "./daily-nutrition-recovery.mjs";
+import { cacheInterpretedFood, cachedWeighedFood, preparationIdentity, preparationLabels } from './food-preparation.mjs';
+import { withDeadline, nutritionTimestampMillis } from "./daily-nutrition-recovery.mjs";
 import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260928-multilingual-food-1";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
@@ -10,12 +11,12 @@ import {
   parseFoodText,
   remainingAgainstTargets,
   resolveFoodChoice,
+  rescaleEntrySnapshot,
   shiftDateKey,
   targetSnapshot,
   totalsForEntries
 } from "./daily-nutrition-domain.mjs?v=20261013-nutrition-recovery-1";
 import {
-  copyPreviousDay,
   loadCustomFoods,
   loadDailyLog,
   loadNutritionWeek,
@@ -93,10 +94,7 @@ function clearDailyDraft(uid, dateKey, token) {
 }
 
 function timestampMillis(value) {
-  if (!value) return 0;
-  if (typeof value.toMillis === "function") return value.toMillis();
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : 0;
+  return nutritionTimestampMillis(value);
 }
 
 const state = {
@@ -222,6 +220,7 @@ function updateWeekLog() {
 }
 
 function queueSave() {
+  if (!state.user || !state.log) return Promise.resolve(false);
   updateWeekLog();
   // Capture this day now, not when an earlier asynchronous save finishes.
   const uid = state.user.uid;
@@ -264,10 +263,13 @@ function queueSave() {
       let lastError;
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
-          const saved = await withDeadline(saveDailyLog(db, uid, dateKey, log).then((value) => {
+          // A UI deadline cannot cancel a Firestore write. Keep the real
+          // write in the queue until it settles, or a late old write could
+          // overwrite the newer snapshot after the timeout released it.
+          const saved = await saveDailyLog(db, uid, dateKey, log).then((value) => {
             clearDailyDraft(uid, dateKey, draftToken);
             return value;
-          }));
+          });
           return saved;
         } catch (error) {
           lastError = error;
@@ -280,13 +282,19 @@ function queueSave() {
     .then(() => {
       setSaveStatus(copy.saveStatus, "");
       state.lastSaveOk = true;
+      return true;
     })
     .catch((error) => {
       console.error("Daily nutrition autosave failed:", error);
-      setSaveStatus(copy.savedOnDevice, "error");
+      setSaveStatus(readDailyDraft(uid, dateKey) ? copy.savedOnDevice : copy.saveError, "error");
       state.lastSaveOk = false;
+      return false;
     });
-  return state.saveChain;
+  // Only the caller/UI times out. The authoritative queue remains serialized.
+  return withDeadline(state.saveChain).catch(() => {
+    setSaveStatus(readDailyDraft(uid, dateKey) ? copy.savedOnDevice : copy.saveError, "error");
+    return false;
+  });
 }
 
 function renderTargets(totals) {
@@ -450,32 +458,38 @@ async function loadTargets() {
 }
 
 async function loadDate(dateKey) {
-  await state.saveChain;
+  const request = state.dateLoadRequest = (state.dateLoadRequest || 0) + 1;
+  const uid = state.user.uid;
   state.dateKey = dateKey;
+  state.log = null;
   state.calendarMonthKey = dateKey.slice(0, 7);
   state.editingId = null;
   state.pendingClarification = null;
   $("#clarificationPanel").hidden = true;
   setComposerMessage();
   setPageStatus(copy.loading);
+  await withDeadline(state.saveChain).catch(() => undefined);
+  if (request !== state.dateLoadRequest || state.user?.uid !== uid) return;
   // A read failure (or an offline stream that never resolves) must not disable
   // the composer. Fall back to a local working log so logging keeps working;
   // queueSave() then re-reads and merges the saved day before the next write,
   // so an unread saved log is never silently overwritten with new-only entries.
   let log;
-  const localDraft = readDailyDraft(state.user.uid, state.dateKey);
+  const localDraft = readDailyDraft(uid, dateKey);
   try {
-    log = await withTimeout(loadDailyLog(db, state.user.uid, state.dateKey), LOG_LOAD_TIMEOUT_MS);
+    log = await withTimeout(loadDailyLog(db, uid, dateKey), LOG_LOAD_TIMEOUT_MS);
     if (localDraft && localDraft.savedAt > timestampMillis(log.updatedAt)) {
-      log = normalizeLog(state.dateKey, localDraft.log);
+      log = normalizeLog(dateKey, localDraft.log);
       log.readFailed = false;
     }
   } catch (error) {
     console.warn("Daily nutrition: today's log did not load; starting a local working log.", error);
-    log = normalizeLog(state.dateKey, localDraft?.log || {});
+    log = normalizeLog(dateKey, localDraft?.log || {});
     log.readFailed = true;
   }
-  const weekLogs = await withDeadline(loadNutritionWeek(db, state.user.uid, state.dateKey)).catch(() => [log]);
+  if (request !== state.dateLoadRequest || state.user?.uid !== uid) return;
+  const weekLogs = await withDeadline(loadNutritionWeek(db, uid, dateKey)).catch(() => [log]);
+  if (request !== state.dateLoadRequest || state.user?.uid !== uid) return;
   state.log = log;
   if (!state.log.targetSnapshot && state.targets.complete) {
     state.log.targetSnapshot = { ...state.targets };
@@ -500,6 +514,8 @@ function addEntries(entries) {
   const createdAt = new Date().toISOString();
   const added = entries.map((entry) => ({ ...entry, id: createEntryId(), createdAt }));
   state.log.entries = [...state.log.entries, ...added].slice(0, 80);
+  state.pendingClarification = null;
+  $("#clarificationPanel").hidden = true;
   render();
   window.fpV47Success?.($("#autosaveState"));
   queueSave();
@@ -533,15 +549,18 @@ function clarificationChoiceLabel(ambiguity, choice) {
 }
 
 function renderClarification(result) {
+  setComposerMessage('');
   state.pendingClarification = result;
   const ambiguity = result.ambiguities[0];
   const panel = $("#clarificationPanel");
   panel.hidden = false;
-  const title = ambiguity.kind === "brand" ? copy.brandClarificationTitle
+  const title = ambiguity.kind === "preparation" ? (language === 'he' ? 'איך נשקל המזון?' : 'How was the food weighed?')
+    : ambiguity.kind === "brand" ? copy.brandClarificationTitle
     : ambiguity.kind === "size" ? copy.sizeClarificationTitle
     : ambiguity.kind === "smart-food" ? copy.smartFoodClarificationTitle
     : copy.clarificationTitle;
-  const hint = ambiguity.kind === "brand" ? copy.brandClarificationHint
+  const hint = ambiguity.kind === "preparation" ? (language === 'he' ? 'בחרו את מצב המזון בזמן השקילה. אותו משקל יבש ומבושל אינו שווה בערכים. אם לא ידוע, בדקו את האריזה או הזינו תיאור מדויק יותר — לא נבחר מצב אוטומטית.' : 'Choose its state when weighed. Equal dry and cooked weights have different nutrition. If unsure, check the label or enter a more specific description; no state is selected automatically.')
+    : ambiguity.kind === "brand" ? copy.brandClarificationHint
     : ambiguity.kind === "size" ? copy.sizeClarificationHint
     : ambiguity.kind === "smart-food" ? copy.smartFoodClarificationHint
     : ambiguity.kind === "portion" ? copy.portionClarificationHint
@@ -561,6 +580,10 @@ function renderClarification(result) {
 
 function finishClarification(resolvedEntries, note = "") {
   const pending = state.pendingClarification;
+  if (pending?.ambiguities.length > 1) {
+    renderClarification({ ...pending, entries: [...pending.entries, ...resolvedEntries], ambiguities: pending.ambiguities.slice(1) });
+    return;
+  }
   const unresolved = pending?.errors || [];
   const message = unresolved.length
     ? format(copy.partialAdded, { food: unresolved.map((error) => error.segment).join(", ") })
@@ -572,26 +595,8 @@ function finishClarification(resolvedEntries, note = "") {
 }
 
 function smartFoodFromInterpretation(interpretation, rawText) {
-  const normalized = String(rawText || "food").toLowerCase().replace(/[^a-z0-9\u0590-\u05ff]+/giu, "-").replace(/^-+|-+$/g, "").slice(0, 42) || "food";
-  const nutrition = interpretation.nutritionPer100g;
-  const food = {
-    id: `ai-food-${normalized}-${Date.now().toString(36)}`,
-    lookupKey: String(rawText || "").trim().toLowerCase(),
-    name: interpretation.food.name,
-    aliases: [...new Set([rawText, ...(interpretation.food.aliases || []), interpretation.food.name?.en, interpretation.food.name?.he].filter(Boolean))],
-    baseAmount: 100,
-    baseUnit: "g",
-    specificity: "custom",
-    source: "ai-estimate",
-    macros: {
-      calories: nutrition.calories,
-      protein: nutrition.proteinGrams,
-      carbs: nutrition.carbsGrams,
-      fat: nutrition.fatGrams
-    },
-    reference: { source: "AI-assisted representative estimate", policy: "estimated-not-brand" }
-  };
-  state.smartFoods = [...state.smartFoods, food].slice(-60);
+  const { food, foods } = cacheInterpretedFood(state.smartFoods, interpretation, parseAmountPrefix(rawText), rawText);
+  state.smartFoods = foods;
   persistSmartFoods();
   return food;
 }
@@ -649,11 +654,14 @@ async function requestSmartFoodInterpretation(segment) {
 }
 
 async function submitFoodText(value) {
-  // AI foods are per-100g compositions, not remembered serving sizes.
-  // Reinterpret their portions instead of silently defaulting to 100g.
-  let result = parseFoodText(value, { customFoods: state.customFoods });
+  const uid = state.user?.uid, dateKey = state.dateKey, request = state.dateLoadRequest;
+  const isCurrentDay = () => state.user?.uid === uid && state.dateKey === dateKey && state.dateLoadRequest === request && !!state.log;
+  if (!isCurrentDay()) return;
+  // Cache compositions, not serving sizes. Never bypass preparation questions.
+  let result = { ...parseFoodText(value, { customFoods: state.customFoods }), originalInput: value };
+  result.ambiguities.sort((a, b) => Number(b.kind === 'preparation') - Number(a.kind === 'preparation'));
   let lookupUnavailable = false;
-  if (result.ambiguities.length === 1) {
+  if (result.ambiguities.length === 1 && result.ambiguities[0].kind !== 'preparation') {
     const remembered = localStorage.getItem(`fp-daily-choice-${result.ambiguities[0].segment.replace(/\d+/g, "").trim()}`);
     const rememberedChoice = result.ambiguities[0].choices.find((choice) => (choice.choiceId || choice.foodId) === remembered);
     if (rememberedChoice) {
@@ -676,10 +684,19 @@ async function submitFoodText(value) {
     if (firstUnknown) {
       setComposerMessage(language === "he" ? "מזהים את המאכל…" : "Identifying that food…");
       try {
-        const interpretation = await requestSmartFoodInterpretation(firstUnknown.segment);
         const explicit = parseAmountPrefix(firstUnknown.segment);
+        const cached = cachedWeighedFood(state.smartFoods, explicit);
+        const interpretation = cached ? null : await requestSmartFoodInterpretation(firstUnknown.segment);
+        if (!isCurrentDay()) return;
+        if (interpretation?.clarification?.kind === 'preparation') {
+          const identity = preparationIdentity(explicit.foodText);
+          renderClarification({ ...result, ambiguities: [{ kind: 'preparation', segment: firstUnknown.segment,
+            choices: interpretation.clarification.options.map(option => ({ choiceId: option, label: preparationLabels[option],
+              query: `${explicit.amount || ''} ${explicit.unit || ''} ${option} ${identity.key}`.trim() })) }] });
+          return;
+        }
         if (["g", "kg"].includes(explicit.unit) && explicit.amount > 0) {
-          const food = smartFoodFromInterpretation(interpretation, firstUnknown.segment);
+          const food = cached || smartFoodFromInterpretation(interpretation, firstUnknown.segment);
           const scaled = resolveFoodChoice(food.id, {
             amount: explicit.amount,
             unit: explicit.unit,
@@ -687,7 +704,7 @@ async function submitFoodText(value) {
             customFoods: availableFoods()
           });
           const entry = { ...scaled, estimated: true, approximate: true,
-            estimateConfidence: interpretation.confidence || "low", estimateReason: "ai-food-estimate",
+            estimateConfidence: interpretation?.confidence || "low", estimateReason: "ai-food-estimate",
             estimatedGrams: scaled.unit === "g" ? scaled.amount : null };
           const remaining = result.errors.filter((error) => error !== firstUnknown);
           setComposerMessage(remaining.length ? format(copy.partialAdded, { food: remaining.map((error) => error.segment).join(", ") }) : "", remaining.length > 0);
@@ -702,6 +719,7 @@ async function submitFoodText(value) {
         });
         return;
       } catch (error) {
+        if (!isCurrentDay()) return;
         // The local catalog remains the primary path. A provider/key outage
         // must not look like the food itself was invalid or block known foods.
         console.warn("Smart food lookup unavailable:", error.code || error.message);
@@ -723,12 +741,29 @@ function bindEvents() {
     $("#foodInput").value = button.dataset.example;
     $("#foodInput").focus();
   }));
-  $("#clarificationPanel").addEventListener("click", (event) => {
+  $("#clarificationPanel").addEventListener("click", async (event) => {
     const button = event.target.closest("[data-food-choice-index]");
     if (!button || !state.pendingClarification) return;
     const ambiguity = state.pendingClarification.ambiguities[0];
     const choice = ambiguity.choices[Number(button.dataset.foodChoiceIndex)];
     if (!choice) return;
+    if (ambiguity.kind === 'preparation') {
+      if (state.preparationBusy) return;
+      state.preparationBusy = true;
+      const pending = state.pendingClarification;
+      const input = pending.originalInput || ambiguity.segment;
+      const nextInput = input.replace(ambiguity.segment, () => choice.query);
+      try {
+        panelChoicesDisabled(true);
+        await submitFoodText(nextInput);
+      } catch {
+        setComposerMessage(copy.saveError, true);
+      } finally {
+        state.preparationBusy = false;
+        panelChoicesDisabled(false);
+      }
+      return;
+    }
     const resolved = resolveFoodChoice(choice.foodId, {
       amount: choice.amount ?? ambiguity.amount,
       unit: choice.unit || ambiguity.unit,
@@ -778,7 +813,7 @@ function bindEvents() {
   });
   $("#foodEntries").addEventListener("click", (event) => {
     const button = event.target.closest("[data-entry-action]");
-    if (!button) return;
+    if (!button || !state.log) return;
     const index = state.log.entries.findIndex((entry) => entry.id === button.dataset.entryId);
     if (index < 0) return;
     const entry = state.log.entries[index];
@@ -797,7 +832,7 @@ function bindEvents() {
     if (action === "save") {
       const amount = Number(document.querySelector(`[data-edit-amount="${CSS.escape(entry.id)}"]`)?.value);
       try {
-        const scaled = resolveFoodChoice(entry.foodId, { amount, unit: entry.unit, rawText: entry.rawText, customFoods: availableFoods() });
+        const scaled = rescaleEntrySnapshot(entry, amount);
         state.log.entries[index] = { ...entry, ...scaled, estimated: false, approximate: false, estimateConfidence: null, estimatedGrams: null, portionCount: null, portionSize: null, portionKind: null, compositeEstimate: false };
         state.editingId = null;
         queueSave();
@@ -809,6 +844,7 @@ function bindEvents() {
   });
   $("#combinationForm").addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (!state.log) return;
     const combinationForm = event.currentTarget;
     const name = new FormData(combinationForm).get("name");
     if (!state.log.entries.length) return setComposerMessage(copy.emptyEntries, true);
@@ -827,15 +863,19 @@ function bindEvents() {
     const combination = state.combinations[Number(button.dataset.combinationIndex)];
     if (combination) addEntries(combination.entries.map((entry) => ({ ...entry, id: undefined })));
   });
-  $("#copyYesterdayButton").addEventListener("click", async () => {
+  $("#copyYesterdayButton").addEventListener("click", async function copyPreviousDayEntries() {
+    if (!state.log) return;
+    const uid = state.user.uid, dateKey = state.dateKey, request = state.dateLoadRequest;
     const button = $("#copyYesterdayButton");
     button.disabled = true;
     try {
-      const result = await copyPreviousDay(db, state.user.uid, state.dateKey);
-      state.log = result.log;
-      setComposerMessage(result.copiedCount ? format(copy.copied, { count: result.copiedCount }) : copy.nothingToCopy);
-      state.weekLogs = await loadNutritionWeek(db, state.user.uid, state.dateKey);
-      render();
+      // Merge into the current local snapshot and use the same save queue.
+      // A separate read/overwrite path would lose pending edits or race saves.
+      const previous = await withDeadline(loadDailyLog(db, uid, shiftDateKey(dateKey, -1)));
+      if (state.user?.uid !== uid || state.dateKey !== dateKey || state.dateLoadRequest !== request || !state.log) return;
+      const entries = previous.entries.slice(0, Math.max(0, 80 - state.log.entries.length));
+      if (entries.length) addEntries(entries);
+      setComposerMessage(entries.length ? format(copy.copied, { count: entries.length }) : copy.nothingToCopy);
     } catch {
       setComposerMessage(copy.saveError, true);
     } finally {
@@ -843,6 +883,7 @@ function bindEvents() {
     }
   });
   $("#finishDayButton").addEventListener("click", () => {
+    if (!state.log) return;
     state.log.completed = true;
     state.log.completedAt = new Date().toISOString();
     setPageStatus(copy.dayFinished);
@@ -854,8 +895,8 @@ function bindEvents() {
     const button = event.currentTarget;
     button.disabled = true;
     try {
-      await queueSave();
-      setComposerMessage(state.lastSaveOk ? copy.saveStatus : copy.savedOnDevice, !state.lastSaveOk);
+      const saved = await queueSave();
+      setComposerMessage(saved ? copy.saveStatus : (readDailyDraft(state.user.uid, state.dateKey) ? copy.savedOnDevice : copy.saveError), !saved);
     } finally {
       button.disabled = false;
     }
@@ -883,6 +924,10 @@ function bindEvents() {
   });
 }
 
+function panelChoicesDisabled(disabled) {
+  document.querySelectorAll('#clarificationPanel [data-food-choice-index]').forEach(button => { button.disabled = disabled; });
+}
+
 // Bind the primary composer before the protected-page gate finishes. This
 // keeps a click from becoming a silent no-op while Firebase is resolving or
 // when a transient profile read prevents the rest of the page from starting.
@@ -892,6 +937,7 @@ function bindFoodComposer() {
   form.dataset.bound = "true";
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (form.dataset.submitting === "true") return;
     const input = $("#foodInput");
     const value = input?.value.trim();
     if (!value) return;
@@ -899,11 +945,19 @@ function bindFoodComposer() {
       setComposerMessage(copy.loading, true);
       return;
     }
+    const addButton = $("#addFoodButton");
+    form.dataset.submitting = "true";
+    form.setAttribute("aria-busy", "true");
+    if (addButton) addButton.disabled = true;
     try {
       await submitFoodText(value);
     } catch (error) {
       console.error("Daily nutrition food entry failed:", error);
       setComposerMessage(copy.saveError, true);
+    } finally {
+      form.dataset.submitting = "false";
+      form.setAttribute("aria-busy", "false");
+      if (addButton) addButton.disabled = false;
     }
   });
 }
@@ -925,7 +979,7 @@ async function init(user) {
     await loadDate(state.dateKey);
     // Targets and saved combinations enrich the view, but a temporary read
     // failure must never make a fully usable food log look broken.
-    if (optional.some((result) => result.status === "rejected")) setPageStatus("");
+    if (!state.log?.readFailed && optional.some((result) => result.status === "rejected")) setPageStatus("");
   } catch (error) {
     console.error("Daily nutrition initialization failed:", error);
     if (!state.log) {

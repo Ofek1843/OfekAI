@@ -1,5 +1,6 @@
 export const SOCIAL_STRINGS = {
   en: {
+    deleteMessage: "Delete message", confirmDeleteMessage: "Delete this message for both people? Copies of shared plans already saved will not be deleted.",
     socialProfile: "SOCIAL PROFILE", profile: "Profile", editProfile: "Edit profile", athleteBadge: "Athlete", proBadge: "Pro", coachBadge: "Coach", developerBadge: "Developer",
     typing: "is typing…",
     friends: "Friends", messages: "Messages", dashboard: "Dashboard", identityEyebrow: "YOUR SOCIAL ID",
@@ -20,6 +21,7 @@ export const SOCIAL_STRINGS = {
     copyAsIs: "Copy As-Is", copiedFrom: "Copied from", graphSummary: "Accessible graph summary", noData: "There is not enough data to share this graph yet."
   },
   he: {
+    deleteMessage: "מחיקת הודעה", confirmDeleteMessage: "למחוק את ההודעה לשני המשתתפים? עותקים של תוכניות שכבר נשמרו לא יימחקו.",
     socialProfile: "פרופיל חברתי", profile: "פרופיל", editProfile: "עריכת פרופיל", athleteBadge: "ספורטאי", proBadge: "Pro", coachBadge: "מאמן", developerBadge: "מפתח",
     typing: "מקליד…",
     friends: "חברים", messages: "הודעות", dashboard: "לוח הבקרה", identityEyebrow: "הזהות החברתית שלך",

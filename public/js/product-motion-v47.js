@@ -79,7 +79,7 @@
 
   function addSelectChoices(selectId) {
     const select = document.querySelector(selectId);
-    if (!select || select.dataset.fpV47Choices === "true") return;
+    if (!select || select.closest('[data-native-controls]') || select.dataset.fpV47Choices === "true") return;
     const options = [...select.options].filter((option) => option.value);
     if (!options.length) return;
     select.dataset.fpV47Choices = "true";
@@ -112,7 +112,7 @@
 
   function addGenderChoices() {
     const select = document.querySelector("#gender");
-    if (!select || document.querySelector(".fp-v47-gender-grid")) return;
+    if (!select || select.closest('[data-native-controls]') || document.querySelector(".fp-v47-gender-grid")) return;
     select.classList.add("visually-hidden-select");
     const grid = document.createElement("div");
     // Essential form controls must not depend on an entrance observer.

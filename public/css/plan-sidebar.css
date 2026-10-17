@@ -1,0 +1,36 @@
+/* Scoped to the saved-workout library; do not reshape other product routes. */
+body.has-plan-sidebar { --plan-sidebar-width: 220px; --plan-header-height: 78px; padding-top: 0 !important; }
+body.has-plan-sidebar .plan-navigation { position: static !important; }
+body.has-plan-sidebar .plan-navigation-header { position: sticky; top: 0; z-index: 100; height: var(--plan-header-height); display: flex; align-items: center; gap: 16px; padding: 0 32px; background: #f8f7f4 !important; border-bottom: 1px solid #dfdeda; box-shadow: none !important; }
+body.has-plan-sidebar .plan-navigation-brand { font: bold italic 36px/1 Georgia, serif !important; letter-spacing: -2px; color: #121315 !important; text-decoration: none; text-transform: none !important; }
+body.has-plan-sidebar .plan-navigation-brand span { color: #095399 !important; }
+body.has-plan-sidebar .plan-navigation-sidebar { position: fixed !important; inset-block: var(--plan-header-height) 0; inset-inline-start: 0; width: var(--plan-sidebar-width); padding: 28px 0; overflow-y: auto; background: #f8f7f4 !important; border-inline-end: 1px solid #dfdeda; z-index: 90; }
+body.has-plan-sidebar .plan-navigation-sidebar nav { display: flex; flex-direction: column; }
+body.has-plan-sidebar .plan-navigation-link { display: flex; align-items: center; gap: 18px; min-height: 54px; padding: 12px 24px; font: 19px/1.4 Georgia, serif !important; color: #121315 !important; text-decoration: none; text-transform: none !important; }
+body.has-plan-sidebar .plan-navigation-link img { width: 23px; height: 23px; flex: 0 0 23px; filter: none !important; }
+body.has-plan-sidebar .plan-navigation-link:hover,
+body.has-plan-sidebar .plan-navigation-link[aria-current="page"] { background: #ece8e1 !important; }
+body.has-plan-sidebar .plan-navigation-link[data-nav-key="settings"] { border-top: 1px solid #dfdeda; margin-top: 24px; padding-top: 24px; }
+body.has-plan-sidebar .plan-navigation-toggle { display: none; }
+body.has-plan-sidebar .plan-navigation :is(a, button):focus-visible { outline: 3px solid #095399; outline-offset: -3px; }
+body.has-plan-sidebar .plans-page { width: auto !important; max-width: none !important; margin-inline: var(--plan-sidebar-width) 0 !important; padding: 24px 32px 72px !important; border: 0 !important; min-width: 0; }
+body.has-plan-sidebar .page-nav { position: static !important; padding: 0 !important; min-height: 52px !important; border: 0 !important; margin-bottom: 32px; flex-wrap: wrap; }
+body.has-plan-sidebar .plans-header h1 { font-size: clamp(36px, 4.5vw, 64px) !important; overflow-wrap: anywhere; }
+body.has-plan-sidebar .plans-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+body.has-plan-sidebar .plan-navigation [hidden] { display: none !important; }
+@media (max-width: 1050px) {
+  body.has-plan-sidebar .plans-grid { grid-template-columns: minmax(0, 1fr); }
+  body.has-plan-sidebar .plans-page { padding-inline: 24px !important; }
+}
+@media (max-width: 760px) {
+  body.has-plan-sidebar { --plan-header-height: 66px; --plan-sidebar-width: min(280px, 85vw); }
+  body.has-plan-sidebar.plan-navigation-open { overflow: hidden; }
+  body.has-plan-sidebar .plan-navigation-header { padding-inline: 16px; z-index: 102; }
+  body.has-plan-sidebar .plan-navigation-brand { font-size: 30px !important; }
+  body.has-plan-sidebar .plan-navigation-toggle { display: grid; place-items: center; width: 44px; height: 44px; padding: 8px; background: transparent !important; border: 1px solid #dfdeda; border-radius: 4px; }
+  body.has-plan-sidebar .plan-navigation-toggle img { width: 24px; height: 24px; filter: none !important; }
+  body.has-plan-sidebar .plan-navigation-sidebar { z-index: 102; padding-top: 12px; }
+  body.has-plan-sidebar .plan-navigation-backdrop { position: fixed; inset: var(--plan-header-height) 0 0; z-index: 101; border: 0; padding: 0; background: #12131566 !important; }
+  body.has-plan-sidebar .plans-page { margin-inline: 0 !important; padding: 20px 16px 60px !important; }
+  body.has-plan-sidebar .builder-links { display: flex; flex-wrap: wrap; gap: 12px; }
+}
