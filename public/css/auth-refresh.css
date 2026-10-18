@@ -1,0 +1,249 @@
+/* Light, focused authentication surface matching the dashboard's paper UI. */
+html {
+  background: #f5f6f8 !important;
+  color-scheme: light !important;
+}
+
+body.fp-route-auth {
+  min-height: 100svh !important;
+  padding: 24px !important;
+  color: #17212f !important;
+  color-scheme: light !important;
+  background: #f5f6f8 !important;
+}
+
+/* The app shell adds the deep-ocean route class after first paint. Keep auth
+   on its explicitly light surface even when that shared skin loads later. */
+html body.fp-route-auth.fp-v45-deep-ocean {
+  color-scheme: light !important;
+  background: #f5f6f8 !important;
+}
+
+body.fp-route-auth .ocean-depth-layer,
+body.fp-route-auth .ocean-depth-glow {
+  display: none !important;
+}
+
+body.fp-route-auth .auth-container {
+  width: min(960px, 100%) !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  border: 1px solid #dce1e8 !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  box-shadow: 0 12px 34px rgba(20, 34, 52, 0.08) !important;
+}
+
+body.fp-route-auth .brand {
+  justify-content: center !important;
+  padding: clamp(32px, 5vw, 60px) !important;
+  border-inline-end: 1px solid #e5e8ed !important;
+  background: #fff !important;
+  color: #17212f !important;
+  text-align: start !important;
+}
+
+body.fp-route-auth .brand h1 {
+  margin: 0 0 12px !important;
+  color: #111827 !important;
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  line-height: 1.08 !important;
+}
+
+body.fp-route-auth .brand p {
+  max-width: 32ch !important;
+  color: #5d6877 !important;
+  font-size: 1rem !important;
+  line-height: 1.65 !important;
+}
+
+body.fp-route-auth .auth-panel,
+body.fp-route-auth .auth-card {
+  padding: clamp(28px, 4.5vw, 52px) !important;
+  color: #17212f !important;
+  background: #fff !important;
+}
+
+body.fp-route-auth .auth-tabs {
+  margin-bottom: 22px !important;
+  background: #f2f4f7 !important;
+}
+
+body.fp-route-auth .tab-button {
+  min-height: 46px;
+  color: #586474 !important;
+}
+
+body.fp-route-auth .tab-button.active {
+  color: #135fb5 !important;
+  background: #fff !important;
+  box-shadow: 0 1px 4px rgba(20, 34, 52, 0.12) !important;
+}
+
+body.fp-route-auth .google-button {
+  min-height: 56px;
+  border: 1px solid #b8c2ce !important;
+  border-radius: 10px !important;
+  color: #17212f !important;
+  background: #fff !important;
+  box-shadow: 0 2px 5px rgba(20, 34, 52, 0.08) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+body.fp-route-auth .google-button:hover:not(:disabled) {
+  border-color: #64748b !important;
+  background: #f9fafb !important;
+  box-shadow: 0 4px 12px rgba(20, 34, 52, 0.12) !important;
+}
+
+body.fp-route-auth .auth-separator {
+  margin: 20px 0 !important;
+  color: #737f8e !important;
+}
+
+body.fp-route-auth .auth-separator::before,
+body.fp-route-auth .auth-separator::after {
+  background: #e1e5eb !important;
+}
+
+body.fp-route-auth label {
+  color: #263344 !important;
+}
+
+body.fp-route-auth input:not([type="checkbox"]) {
+  min-height: 50px;
+  border: 1px solid #c8d0da !important;
+  border-radius: 9px !important;
+  color: #17212f !important;
+  background: #fff !important;
+}
+
+body.fp-route-auth input:not([type="checkbox"]):focus {
+  border-color: #2584df !important;
+  box-shadow: 0 0 0 3px rgba(37, 132, 223, 0.16) !important;
+}
+
+body.fp-route-auth input::placeholder {
+  color: #8290a1 !important;
+}
+
+body.fp-route-auth .remember-consent,
+body.fp-route-auth .terms-consent,
+body.fp-route-auth .privacy-note {
+  color: #586474 !important;
+}
+
+body.fp-route-auth .terms-consent a,
+body.fp-route-auth .privacy-note a,
+body.fp-route-auth .forgot-password-link {
+  color: #125fae !important;
+}
+
+body.fp-route-auth .remember-consent input,
+body.fp-route-auth .terms-consent input {
+  width: 18px !important;
+  height: 18px;
+  flex: 0 0 auto;
+  accent-color: #1476cf;
+}
+
+body.fp-route-auth .submit-button {
+  min-height: 52px;
+  border-radius: 9px !important;
+  color: #fff !important;
+  background: #1676d2 !important;
+  font-size: 16px !important;
+}
+
+body.fp-route-auth .submit-button:hover:not(:disabled) {
+  background: #0f63b5 !important;
+}
+
+body.fp-route-auth .message.error {
+  color: #9b1c28 !important;
+  border-color: #f1b8bd !important;
+  background: #fff1f2 !important;
+}
+
+body.fp-route-auth .message.success {
+  color: #17613b !important;
+  border-color: #a7dfbf !important;
+  background: #effaf3 !important;
+}
+
+body.fp-route-auth .panel-cancel {
+  border-color: #c8d0da !important;
+  color: #344255 !important;
+  background: #fff !important;
+}
+
+body.fp-route-auth .panel-cancel:hover {
+  border-color: #8795a6 !important;
+  color: #17212f !important;
+  background: #f8fafc !important;
+}
+
+@media (max-width: 700px) {
+  body.fp-route-auth {
+    align-items: flex-start !important;
+    padding: 12px !important;
+  }
+
+  body.fp-route-auth .auth-container {
+    grid-template-columns: 1fr !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    border-radius: 14px !important;
+  }
+
+  body.fp-route-auth .brand {
+    min-height: 0 !important;
+    padding: 24px 20px 18px !important;
+    border-inline-end: 0 !important;
+    border-block-end: 1px solid #e5e8ed !important;
+  }
+
+  body.fp-route-auth .brand h1 {
+    margin-bottom: 7px !important;
+    font-size: clamp(1.85rem, 8vw, 2.4rem) !important;
+    line-height: 1.12 !important;
+    overflow-wrap: normal !important;
+  }
+
+  body.fp-route-auth .brand p {
+    max-width: 38ch !important;
+    font-size: 0.92rem !important;
+    line-height: 1.5 !important;
+  }
+
+  body.fp-route-auth .auth-panel,
+  body.fp-route-auth .auth-card {
+    padding: 22px 20px 28px !important;
+  }
+
+  body.fp-route-auth .auth-tabs {
+    margin-bottom: 18px !important;
+  }
+
+  body.fp-route-auth .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  body.fp-route-auth .privacy-note {
+    margin-top: 18px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body.fp-route-auth {
+    padding: 8px !important;
+  }
+
+  body.fp-route-auth .brand,
+  body.fp-route-auth .auth-panel,
+  body.fp-route-auth .auth-card {
+    padding-inline: 16px !important;
+  }
+}
