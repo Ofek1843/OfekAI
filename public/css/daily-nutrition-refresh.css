@@ -1,0 +1,276 @@
+/* Focused, paper-based refresh for the signed-in daily nutrition experience. */
+body.daily-nutrition-route {
+  --daily-paper: #f7f5f1;
+  --daily-surface: #ffffff;
+  --daily-ink: #121820;
+  --daily-muted: #66707b;
+  --daily-line: #d9d7d1;
+  --daily-blue: #0969c7;
+  --daily-blue-soft: #eaf4ff;
+  background: var(--daily-paper) !important;
+  color: var(--daily-ink) !important;
+}
+
+body.daily-nutrition-route .simple-tool-nav { display: none !important; }
+
+body.daily-nutrition-route .daily-nutrition-shell {
+  width: min(1280px, calc(100% - 40px)) !important;
+  margin: 0 auto !important;
+  padding: 28px 0 72px !important;
+}
+
+body.daily-nutrition-route .daily-surface {
+  background: var(--daily-surface) !important;
+  color: var(--daily-ink) !important;
+  border: 1px solid var(--daily-line) !important;
+  border-radius: 16px !important;
+  box-shadow: none !important;
+}
+
+body.daily-nutrition-route .daily-hero {
+  position: static !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: end !important;
+  gap: 28px !important;
+  margin: 0 0 14px !important;
+  padding: 30px 32px !important;
+  background: #fff !important;
+  border: 1px solid var(--daily-line) !important;
+  border-radius: 16px !important;
+}
+
+body.daily-nutrition-route .daily-hero h1 {
+  max-width: none !important;
+  margin: 8px 0 6px !important;
+  font-size: clamp(2.35rem, 4vw, 4.15rem) !important;
+  line-height: .96 !important;
+  letter-spacing: -.045em !important;
+}
+
+body.daily-nutrition-route .daily-hero p {
+  max-width: 700px !important;
+  margin: 0 !important;
+  color: var(--daily-muted) !important;
+  font-size: 1rem !important;
+}
+
+body.daily-nutrition-route .daily-context-links {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+body.daily-nutrition-route .daily-context-links a,
+body.daily-nutrition-route .date-toolbar button {
+  min-height: 44px !important;
+  padding: 0 16px !important;
+  border: 1px solid #bcc5cf !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #213142 !important;
+  font-weight: 700 !important;
+}
+
+body.daily-nutrition-route .daily-context-links a:last-child {
+  background: var(--daily-blue-soft) !important;
+  border-color: #bedcff !important;
+  color: #075cae !important;
+}
+
+body.daily-nutrition-route .date-toolbar {
+  position: static !important;
+  min-height: 68px !important;
+  padding: 10px 14px !important;
+}
+
+body.daily-nutrition-route .date-toolbar-center {
+  padding: 0 16px !important;
+}
+
+body.daily-nutrition-route .daily-page-status:empty { display: none !important; }
+
+body.daily-nutrition-route .food-composer {
+  margin-top: 14px !important;
+  padding: 26px 30px !important;
+}
+
+body.daily-nutrition-route .section-heading-row { align-items: flex-start !important; }
+
+body.daily-nutrition-route .section-heading-row h2,
+body.daily-nutrition-route .daily-section-heading h2,
+body.daily-nutrition-route .macro-heading h2 {
+  margin: 6px 0 4px !important;
+  font-size: clamp(1.65rem, 2.3vw, 2.2rem) !important;
+  line-height: 1.08 !important;
+}
+
+body.daily-nutrition-route .section-helper,
+body.daily-nutrition-route .daily-section-heading p,
+body.daily-nutrition-route .metric-note,
+body.daily-nutrition-route .save-guide {
+  color: var(--daily-muted) !important;
+  font-size: .94rem !important;
+}
+
+body.daily-nutrition-route .autosave-state {
+  padding: 7px 11px !important;
+  border-color: #bcebd8 !important;
+  background: #f0fbf6 !important;
+  color: #207653 !important;
+  font-size: .78rem !important;
+  white-space: nowrap !important;
+}
+
+body.daily-nutrition-route .food-composer-form {
+  grid-template-columns: minmax(0, 1fr) 116px !important;
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+
+body.daily-nutrition-route .food-composer-form input,
+body.daily-nutrition-route .food-composer-form button {
+  min-height: 54px !important;
+  border-radius: 10px !important;
+}
+
+body.daily-nutrition-route .food-composer-form button,
+body.daily-nutrition-route .finish-button {
+  background: var(--daily-blue) !important;
+  border-color: var(--daily-blue) !important;
+  color: #fff !important;
+}
+
+body.daily-nutrition-route .food-examples {
+  gap: 7px !important;
+  margin-top: 12px !important;
+}
+
+body.daily-nutrition-route .food-examples button {
+  padding: 7px 10px !important;
+  border: 1px solid #d8e2ec !important;
+  border-radius: 999px !important;
+  background: #f5f8fb !important;
+  color: #41576c !important;
+  font-size: .82rem !important;
+  font-weight: 600 !important;
+}
+
+body.daily-nutrition-route .composer-actions {
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  margin-top: 18px !important;
+}
+
+body.daily-nutrition-route .composer-actions button {
+  min-height: 44px !important;
+  border-radius: 9px !important;
+  padding-inline: 15px !important;
+}
+
+body.daily-nutrition-route .save-now-button {
+  order: 3 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  color: #516274 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+
+body.daily-nutrition-route .save-guide { margin: 8px 0 0 !important; }
+
+body.daily-nutrition-route .daily-progress-section { margin-top: 34px !important; }
+
+body.daily-nutrition-route .daily-section-heading {
+  margin-bottom: 14px !important;
+  padding: 0 4px !important;
+}
+
+body.daily-nutrition-route .daily-overview-grid {
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr) !important;
+  gap: 14px !important;
+}
+
+body.daily-nutrition-route .macro-card--primary,
+body.daily-nutrition-route .daily-goals-card {
+  min-height: 260px !important;
+  padding: 24px !important;
+}
+
+body.daily-nutrition-route .macro-card--primary .macro-visual-row {
+  grid-template-columns: 150px minmax(0, 1fr) !important;
+  gap: 28px !important;
+}
+
+body.daily-nutrition-route .macro-card--primary .macro-ring {
+  width: 150px !important;
+  height: 150px !important;
+  box-shadow: inset 0 0 0 34px #edf1f5 !important;
+}
+
+body.daily-nutrition-route .macro-breakdown > div { padding: 11px 0 !important; }
+
+body.daily-nutrition-route .goal-stat-value {
+  font-size: clamp(2.8rem, 5vw, 4.6rem) !important;
+  line-height: 1 !important;
+}
+
+body.daily-nutrition-route .daily-content-grid {
+  grid-template-columns: minmax(0, 1.8fr) minmax(280px, .62fr) !important;
+  gap: 14px !important;
+  margin-top: 14px !important;
+}
+
+body.daily-nutrition-route .entries-panel,
+body.daily-nutrition-route .day-history-card,
+body.daily-nutrition-route .calendar-panel,
+body.daily-nutrition-route .compact-tool-card { padding: 24px !important; }
+
+body.daily-nutrition-route .entries-panel .section-helper { margin: 5px 0 0 !important; }
+
+body.daily-nutrition-route .entry-count {
+  min-width: 42px !important;
+  height: 42px !important;
+  background: var(--daily-blue-soft) !important;
+  color: var(--daily-blue) !important;
+}
+
+body.daily-nutrition-route button:focus-visible,
+body.daily-nutrition-route a:focus-visible,
+body.daily-nutrition-route input:focus-visible,
+body.daily-nutrition-route summary:focus-visible {
+  outline: 3px solid #111 !important;
+  outline-offset: 3px !important;
+}
+
+@media (max-width: 900px) {
+  body.daily-nutrition-route .daily-hero,
+  body.daily-nutrition-route .daily-overview-grid,
+  body.daily-nutrition-route .daily-content-grid { grid-template-columns: 1fr !important; }
+  body.daily-nutrition-route .daily-context-links { justify-content: flex-start !important; }
+}
+
+@media (max-width: 620px) {
+  body.daily-nutrition-route .daily-nutrition-shell {
+    width: min(100% - 24px, 1280px) !important;
+    padding-top: 14px !important;
+  }
+  body.daily-nutrition-route .daily-hero,
+  body.daily-nutrition-route .food-composer { padding: 20px 16px !important; }
+  body.daily-nutrition-route .food-composer .section-heading-row { display: grid !important; grid-template-columns: 1fr !important; }
+  body.daily-nutrition-route .autosave-state { justify-self: start !important; white-space: normal !important; }
+  body.daily-nutrition-route .daily-hero h1 { font-size: clamp(2.15rem, 12vw, 3.1rem) !important; }
+  body.daily-nutrition-route .daily-context-links { display: grid !important; grid-template-columns: 1fr 1fr !important; }
+  body.daily-nutrition-route .date-toolbar { display: grid !important; grid-template-columns: 1fr !important; gap: 8px !important; }
+  body.daily-nutrition-route .date-toolbar-center { order: -1 !important; justify-content: center !important; }
+  body.daily-nutrition-route .date-toolbar-actions,
+  body.daily-nutrition-route .date-toolbar > button { width: 100% !important; }
+  body.daily-nutrition-route .food-composer-form { grid-template-columns: 1fr !important; }
+  body.daily-nutrition-route .food-composer-form button { width: 100% !important; }
+  body.daily-nutrition-route .food-examples { display: flex !important; flex-wrap: wrap !important; overflow: visible !important; }
+  body.daily-nutrition-route .composer-actions { display: grid !important; grid-template-columns: 1fr 1fr !important; }
+  body.daily-nutrition-route .composer-actions .save-now-button { grid-column: 1 / -1 !important; }
+  body.daily-nutrition-route .macro-card--primary .macro-visual-row { grid-template-columns: 112px minmax(0, 1fr) !important; gap: 14px !important; }
+  body.daily-nutrition-route .macro-card--primary .macro-ring { width: 112px !important; height: 112px !important; box-shadow: inset 0 0 0 26px #edf1f5 !important; }
+  body.daily-nutrition-route .daily-goals-card { grid-template-columns: 1fr !important; }
+}

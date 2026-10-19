@@ -124,3 +124,18 @@ No actionable P0/P1/P2 issue remains.
 The initial source-only review identified navy plan/social/settings surfaces and black-on-navy headings. Browser captures now confirm the four route views have the new light surface. A residual image-caption contrast defect and mobile header overlap were fixed. Direct browser hit-testing uncovered and confirmed the repair of the settings overlay positioning bug; settings was then visually captured at desktop and mobile sizes.
 
 final result: blocked
+
+
+---
+
+# Daily Nutrition and Workout History refresh — 2026-10-18
+
+final result: passed
+
+- Source evidence: the three user-provided screenshots from October 18, 2026.
+- Implementation evidence: local browser renders of both refreshed surfaces, including a narrow mobile viewport.
+- Daily Nutrition: removed the redundant tool strip, reduced oversized hierarchy and whitespace, clarified copy and action priority, tightened the macro/goal cards, and separated headings from helper copy.
+- Workout History: replaced the dark navy canvas and low-contrast cards with the dashboard's warm-white paper system, readable ink, light summary cards, clear chips, and restrained destructive styling.
+- Responsive QA: navigation, date controls, composer actions, macro cards, stats, and history cards stack without horizontal overflow. A mobile autosave-badge overflow and scrolling example-chip row were found and fixed.
+- Accessibility: labels/live regions remain in place, focus states are visible, key controls meet the 44px target, and decorative emoji were removed from functional controls.
+- P0/P1/P2 findings: none remaining.

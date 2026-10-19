@@ -587,8 +587,8 @@ export function exerciseImageResolutionDetails(exercise = {}) {
 export function exerciseImageUrl(exercise = {}) {
   const details = exerciseImageResolutionDetails(exercise);
   if (!details.usedFallback) {
-    // The corrected roller position must bypass the previous week-long image cache.
-    return details.imageUrl + (details.attemptedSlug === "seated-leg-curl" ? "?v=20261015-curl-2" : "");
+    // All consumers must bypass the previous week-long cache after the guide audit.
+    return details.imageUrl + "?v=20261018-guides-6";
   }
 
   if (details.attemptedSlug) {

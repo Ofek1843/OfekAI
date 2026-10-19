@@ -14,6 +14,9 @@ const dailyClient = read("public/js/daily-nutrition.js");
 const dailyHtml = read("public/daily-nutrition.html");
 const nutritionCss = read("public/css/nutrition-builder.css");
 const nutritionClient = read("public/js/nutrition-builder.js");
+const nutritionUXCss = read("public/css/simple-ux.css");
+const mealPhotoClient = read("public/js/meal-photo.mjs");
+const nutritionHtml = read("public/nutrition-builder.html");
 
 test("mobile product drawer is a full-height readable overlay", () => {
   assert.match(shellCss, /\.fp-global-menu\s*\{[\s\S]*?position:\s*fixed/);
@@ -46,14 +49,14 @@ test("daily nutrition binds Add before auth settles and reports failures", () =>
   assert.match(dailyClient, /function createEntryId\(\)/);
 });
 
-test("nutrition meal imagery fills its media region without a letterbox strip", () => {
-  // cover + a fixed aspect box means the photo fills edge to edge — no purple
-  // gradient strip from object-fit: contain letterboxing a mismatched ratio.
+test("nutrition meal imagery keeps the entire dish visible in a neutral frame", () => {
+  // Ingredient photos can have different aspect ratios; contain avoids
+  // cropping food from the plate and the neutral fill avoids a dark strip.
   assert.match(nutritionCss, /\.meal-photo\s*\{[\s\S]*?max-width:\s*520px[\s\S]*?aspect-ratio:\s*3 \/ 2/);
   assert.match(nutritionCss, /@media\(max-width:700px\)[\s\S]*?\.meal-photo\s*\{[\s\S]*?max-width:\s*460px[\s\S]*?aspect-ratio:\s*3 \/ 2/);
-  assert.match(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*cover[\s\S]*?image-rendering:\s*auto/);
-  assert.doesNotMatch(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*contain/);
-  assert.match(nutritionCss, /\.meal-photo\s*\{[\s\S]*?background:\s*#0e1f31/);
+  assert.match(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*contain[\s\S]*?image-rendering:\s*auto/);
+  assert.doesNotMatch(nutritionCss, /\.meal-photo img\s*\{[\s\S]*?object-fit:\s*cover/);
+  assert.match(nutritionCss, /\.meal-photo\s*\{[\s\S]*?background:\s*#f4f2ec/);
   assert.match(nutritionClient, /decoding="async"/);
 });
 
@@ -69,6 +72,13 @@ test("nutrition meal card shrinks to the viewport so the reroll control stays on
   assert.doesNotMatch(nutritionCss, /\.nutrition-reroll-meal-button > span:last-child\s*\{[^}]*clip/);
   assert.match(nutritionClient, /nutrition-reroll-meal-button/);
   assert.match(nutritionClient, /api\/nutrition-builder\/reroll-meal/);
+});
+
+test("nutrition wizard option panels are light and meal photos refresh their cache", () => {
+  assert.match(nutritionUXCss, /fp-route-nutrition-builder \.simple-builder \.simple-options[\s\S]*?background:\s*#fff/);
+  assert.match(nutritionUXCss, /fp-route-nutrition-builder \.simple-builder \.visual-choice-card[\s\S]*?grid-template-columns:\s*78px minmax\(0, 1fr\)[\s\S]*?background:\s*#fff/);
+  assert.match(mealPhotoClient, /v=20261018-meal-photo-1/);
+  assert.match(nutritionHtml, /simple-ux\.css\?v=20261018-nutrition-light-1/);
 });
 
 test("inactive meal alternatives do not decode their photos and ingredient thumbnails", () => {

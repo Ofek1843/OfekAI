@@ -1538,9 +1538,9 @@ html[dir="ltr"] .nutrition-food-table td {
   height: auto;
   overflow: hidden;
   border-radius: 20px;
-  /* Neutral card-tone fill: with object-fit: cover there is no letterbox, and
-     any pre-load frame reads as part of the card rather than a purple strip. */
-  background: #0e1f31;
+  /* Neutral paper backing preserves each complete dish, even when its photo
+     has a different aspect ratio from the media frame. */
+  background: #f4f2ec;
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(82, 201, 138, 0.2);
 }
@@ -1551,9 +1551,8 @@ html[dir="ltr"] .nutrition-food-table td {
   display: block;
   width: 100%;
   height: 100%;
-  /* cover fills the media region edge to edge (no purple strip); centred so a
-     plated dish keeps its focus. */
-  object-fit: cover;
+  /* Keep the entire plate and every pictured ingredient in frame. */
+  object-fit: contain;
   object-position: center;
   image-rendering: auto;
   backface-visibility: hidden;

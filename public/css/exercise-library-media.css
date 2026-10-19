@@ -1,0 +1,13 @@
+/* Exercise guides are instructional images: never crop poses or muscle maps. */
+.exercise-library .exercise-card img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: contain;
+  background: #000;
+}
+.exercise-image-link { display: block; }
+.exercise-image-link:focus-visible { outline: 3px solid #087fe7; outline-offset: -3px; }
+@media (max-width: 520px) {
+  .exercise-library .exercise-grid { grid-template-columns: minmax(0, 1fr); }
+}

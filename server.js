@@ -137,6 +137,7 @@ const rateLimiters = {
   analytics: createRateLimiter({ windowMs: 60_000, max: Number(process.env.ANALYTICS_PER_IP_PER_MINUTE || 180), keyPrefix: "analytics" }),
   publicStats: createRateLimiter({ windowMs: 60_000, max: Number(process.env.PUBLIC_SOCIAL_PROOF_PER_IP_PER_MINUTE || 60), keyPrefix: "public-social-proof" }),
   feedback: createRateLimiter({ windowMs: 60_000, max: Number(process.env.FEEDBACK_PER_IP_PER_MINUTE || 6), keyPrefix: "feedback" }),
+  nutritionReroll: createRateLimiter({ windowMs: 60_000, max: Number(process.env.NUTRITION_REROLLS_PER_UID_PER_MINUTE || 30), keyPrefix: "nutrition-reroll" }),
   socialSearch: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_SEARCHES_PER_UID_PER_MINUTE || 20), keyPrefix: "social-search" }),
   socialRelationships: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_RELATIONSHIPS_PER_UID_PER_MINUTE || 12), keyPrefix: "social-relationship" }),
   socialMessages: createRateLimiter({ windowMs: 60_000, max: Number(process.env.SOCIAL_MESSAGES_PER_UID_PER_MINUTE || 30), keyPrefix: "social-message" }),
@@ -1274,7 +1275,9 @@ app.get("/exercise-library", (req, res) => {
   const cardsByMuscle = muscles.map((muscle) => {
     const cards = exercises.filter((exercise) => exercise.primaryMuscle === muscle).map((exercise) => `
       <article class="exercise-card" data-exercise-card data-search="${escapeHtml(exercise.searchText)}">
-        <img src="${escapeHtml(exercise.image)}" alt="${escapeHtml(exercise.title)} exercise illustration" width="320" height="220" loading="lazy" decoding="async">
+        <a class="exercise-image-link" href="${escapeHtml(exercise.image)}?v=20261018-guides-6" target="_blank" rel="noopener" aria-label="${escapeHtml(exercise.title)} — open full-size guide">
+          <img src="${escapeHtml(exercise.image)}?v=20261018-guides-6" alt="${escapeHtml(exercise.title)} exercise guide" width="320" height="220" loading="lazy" decoding="async">
+        </a>
         <div class="exercise-card-copy"><h3>${escapeHtml(exercise.title)}</h3>
           <p><strong>Catalog focus:</strong> ${escapeHtml(exercise.primaryMuscle)}</p>
           <p><strong>Equipment:</strong> ${escapeHtml(exercise.equipment)}</p>
@@ -1294,6 +1297,7 @@ app.get("/exercise-library", (req, res) => {
   <style>
     .exercise-library{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:24px 0 80px}.exercise-library .legal-nav{margin-bottom:36px}.library-intro{max-width:850px;margin:0 auto 32px;text-align:center}.library-intro h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin:16px 0}.library-intro>p{color:var(--fp-text-muted);font-size:18px}.library-tools{position:sticky;top:8px;z-index:2;display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:16px;align-items:center;padding:14px;background:var(--fp-surface);border:1px solid var(--fp-border);border-radius:16px;margin:28px 0}.library-tools input{width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--fp-border);border-radius:10px;background:var(--fp-bg-page);color:var(--fp-text-primary)}.muscle-jumps{display:flex;flex-wrap:wrap;gap:8px}.muscle-jumps a{padding:7px 10px;border:1px solid var(--fp-border);border-radius:999px;font-size:13px}.muscle-section{scroll-margin-top:110px;margin:44px 0}.muscle-section>h2{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--fp-border);padding-bottom:12px}.muscle-section>h2 span{font-size:13px;color:var(--fp-text-muted);font-weight:500}.exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.exercise-card{overflow:hidden;border:1px solid var(--fp-border);border-radius:14px;background:var(--fp-surface)}.exercise-card[hidden],.muscle-section[hidden]{display:none}.exercise-card img{display:block;width:100%;height:180px;object-fit:cover;background:#091526}.exercise-card-copy{padding:14px}.exercise-card h3{font-size:18px;margin:0 0 12px}.exercise-card p{font-size:14px;margin:6px 0;color:var(--fp-text-muted)}.library-note{padding:16px;border-inline-start:3px solid var(--fp-brand-primary);background:var(--fp-surface);border-radius:8px;color:var(--fp-text-muted)}.library-cta{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0}.library-cta a{display:inline-block;padding:12px 18px;border-radius:10px;background:var(--fp-brand-primary);color:#06111c;font-weight:800}.library-cta a.secondary{background:transparent;color:var(--fp-text-primary);border:1px solid var(--fp-border)}@media(max-width:720px){.library-tools{position:static;grid-template-columns:1fr}.muscle-jumps{max-height:126px;overflow:auto}.exercise-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.exercise-card img{height:130px}.exercise-card-copy{padding:10px}.exercise-card h3{font-size:15px}}
   </style>
+  <link rel="stylesheet" href="/css/exercise-library-media.css?v=20261018-guides-6">
 </head><body><main class="exercise-library">
   <nav class="legal-nav" aria-label="Main navigation"><a class="legal-nav-brand" href="/">FuelPhysique</a><div class="legal-nav-links"><a href="/about.html">About</a><a href="/faq.html">FAQ</a><a href="/pricing.html">Plans</a></div></nav>
   <header class="library-intro"><span class="legal-badge">Free exercise directory</span><h1>Browse exercises by muscle and equipment</h1><p>Explore movements included in the FuelPhysique workout-planning catalog. Search by exercise name, equipment or the muscle tags used by the planner.</p><div class="library-cta"><a href="/workout-builder.html">Build a workout plan</a><a class="secondary" href="/about.html">How FuelPhysique works</a></div></header>
@@ -4146,7 +4150,7 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
   try {
     const user = await requireFirebaseUser(req, res);
     if (!user) return;
-    rateLimiters.ai(req, user.uid);
+    rateLimiters.nutritionReroll(req, user.uid);
 
     const { mealNumber, optionNumber, language, plan } = req.body;
     const isHebrew = language === "he";
@@ -4206,19 +4210,24 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       avoidTerms
     });
 
-    const usedMealIds = new Set();
+    // Only the first card in each *other* meal slot contributes to the active
+    // day. Carousel alternatives are not part of the current plan total and
+    // must not exhaust the replacement catalog before the user can try them.
+    const activeMealIds = new Set();
     for (const entry of plan.meals) {
-      for (const entryOption of entry.options || []) {
-        if (entryOption?.mealId) usedMealIds.add(entryOption.mealId);
-      }
+      if (entry.mealNumber === mealNumber) continue;
+      const activeOption = (entry.options || []).find((entryOption) => entryOption?.optionNumber === 1)
+        || entry.options?.[0];
+      if (activeOption?.mealId) activeMealIds.add(activeOption.mealId);
     }
+    const currentMealId = option.mealId;
     // Remember previously replaced meals in this slot. Without this, the
     // highest-ranked former choice wins the next request and A/B toggles.
     const rerollHistory = Array.isArray(meal.rerollHistory)
       ? meal.rerollHistory.filter(id => typeof id === "string").slice(-80)
       : [];
 
-    const candidateIds = selectMeals({
+    const candidateOptions = {
       pool,
       slot,
       targetCalories: meal.targetCalories,
@@ -4227,13 +4236,28 @@ app.post("/api/nutrition-builder/reroll-meal", async (req, res) => {
       targetFatGrams: meal.targetFatGrams,
       macroAware: true,
       // A strict macro/safety check below can reject many candidates; a
-      // 12-meal shortlist hid valid alternatives later in the catalog.
+      // shortlist hid valid alternatives later in the catalog.
       count: pool.length,
-      exclude: [...usedMealIds, ...rerollHistory],
       mealFormatPreference,
       foodStylePreference,
       favoriteTerms
+    };
+    const preferredCandidateIds = selectMeals({
+      ...candidateOptions,
+      exclude: [...activeMealIds, currentMealId, ...rerollHistory]
     });
+    // Once every unseen meal has been tried, allow the catalog to cycle. Keep
+    // the currently displayed dish and other active meal slots excluded; the
+    // exact calorie, macro, serving-size and allergen checks still run below.
+    const fallbackCandidateIds = selectMeals({
+      ...candidateOptions,
+      exclude: [...activeMealIds, currentMealId]
+    });
+    const preferredSet = new Set(preferredCandidateIds);
+    const candidateIds = [
+      ...preferredCandidateIds,
+      ...fallbackCandidateIds.filter((candidateId) => !preferredSet.has(candidateId))
+    ];
 
     if (!candidateIds.length) {
       return res.status(409).json({

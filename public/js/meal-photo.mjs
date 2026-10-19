@@ -17,6 +17,16 @@ const safeLocalImage = value => typeof value === 'string'
 
 export function mealPhotoFor(option = {}, meal = {}) {
   const id = option.mealId || meal.mealId || meal.id;
-  if (addedPhotos.has(id)) return `/images/meals/${id}.webp`;
-  return safeLocalImage(option.image || option.mealImage || meal.image || meal.mealImage);
+  let source = addedPhotos.has(id)
+    ? `/images/meals/${id}.webp`
+    : safeLocalImage(option.image || option.mealImage || meal.image || meal.mealImage);
+  // Older saved plans may still carry the meal-catalog SVG illustration URL.
+  // Every meal SVG has a reviewed photographic WebP sibling, so normalize the
+  // legacy URL instead of allowing a stale snapshot to override the real photo.
+  if (/^\/images\/meals\/[\w-]+\.svg$/.test(source)) {
+    source = source.replace(/\.svg$/, ".webp");
+  }
+  // Bust stale low-resolution meal photos that may remain in a browser or CDN
+  // cache after a sharper catalog asset has replaced them.
+  return source ? `${source}?v=20261018-meal-photo-1` : "";
 }

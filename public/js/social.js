@@ -1,6 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 import { guardProtectedPage } from "./verification-gate.js";
 import { trackPageView } from "./analytics.js";
+import { exerciseImageUrl } from "./exercise-image.js";
 import {
   collection,
   doc,
@@ -975,7 +976,7 @@ function workoutPreview(snapshot) {
   ${sharedFocusSummary(snapshot)}
   ${muscles.length ? `<section><h3>Weekly volume</h3><div class="volume-bars">${muscles.map(([muscle, value]) => `<div class="volume-bar"><span>${escapeHtml(muscle)}</span><i style="--bar:${Math.round(value / max * 100)}%"></i><b>${escapeHtml(value)}</b></div>`).join("")}</div></section>` : ""}
   <nav class="preview-session-nav" aria-label="Workout sessions">${(snapshot.sessions || []).map((session, index) => `<a href="#shared-session-${index}">${index + 1}. ${escapeHtml(session.name)}</a>`).join("")}</nav>
-  <div>${(snapshot.sessions || []).map((session, sessionIndex) => `<section class="preview-session" id="shared-session-${sessionIndex}" tabindex="-1"><h3>${sessionIndex + 1}. ${escapeHtml(session.name)}</h3>${(session.exercises || []).map((exercise) => `<div class="exercise-preview-row"><img src="/images/exercises/${encodeURIComponent(exercise.exerciseId)}.png" alt="" loading="lazy" onerror="this.src='/images/exercises/fuelphysique-demo-fallback.svg'"><div><strong>${escapeHtml(exercise.name)}</strong><span>${escapeHtml(exercise.sets)} ${ui.sets} · ${escapeHtml(exercise.restSeconds)}s ${ui.rest} · ${escapeHtml(ui.effortRir(exercise.rir ?? "1–3"))}</span></div><span>${escapeHtml(exercise.equipment || "")}</span></div>`).join("")}</section>`).join("")}</div>`;
+  <div>${(snapshot.sessions || []).map((session, sessionIndex) => `<section class="preview-session" id="shared-session-${sessionIndex}" tabindex="-1"><h3>${sessionIndex + 1}. ${escapeHtml(session.name)}</h3>${(session.exercises || []).map((exercise) => `<div class="exercise-preview-row"><img src="${escapeHtml(exerciseImageUrl(exercise))}" alt="" loading="lazy" onerror="this.src='/images/exercises/fuelphysique-demo-fallback.svg'"><div><strong>${escapeHtml(exercise.name)}</strong><span>${escapeHtml(exercise.sets)} ${ui.sets} · ${escapeHtml(exercise.restSeconds)}s ${ui.rest} · ${escapeHtml(ui.effortRir(exercise.rir ?? "1–3"))}</span></div><span>${escapeHtml(exercise.equipment || "")}</span></div>`).join("")}</section>`).join("")}</div>`;
 }
 
 function nutritionPreview(snapshot) {
@@ -1000,7 +1001,7 @@ function graphPreview(snapshot) {
 
 function simpleArtifactPreview(type, snapshot) {
   if (type === "personal_record") return `<article class="preview-record"><span class="eyebrow">${ui.personal_record}</span><h2>${escapeHtml(snapshot.exerciseName)}</h2><p><strong>${escapeHtml(snapshot.value)} ${escapeHtml(snapshot.unit)}</strong>${snapshot.repetitions ? ` × ${escapeHtml(snapshot.repetitions)}` : ""}</p><p>${escapeHtml(snapshot.achievedDate || "")}</p>${snapshot.note ? `<p>${escapeHtml(snapshot.note)}</p>` : ""}<a class="secondary-button" href="/exercise-progress.html?exercise=${encodeURIComponent(snapshot.exerciseId || "")}">Open exercise</a></article>`;
-  if (type === "completed_workout") return `<div class="preview-summary-grid"><article><strong>${Math.round((snapshot.durationSeconds || 0) / 60)}</strong><span>min</span></article><article><strong>${snapshot.completedSets || 0}</strong><span>${ui.sets}</span></article><article><strong>${snapshot.exercises?.length || 0}</strong><span>exercises</span></article></div><section class="preview-session">${(snapshot.exercises || []).map((exercise) => `<div class="exercise-preview-row"><img src="/images/exercises/${encodeURIComponent(exercise.exerciseId)}.png" alt="" onerror="this.src='/images/exercises/fuelphysique-demo-fallback.svg'"><div><strong>${escapeHtml(exercise.name)}</strong><span>${exercise.completedSets} ${ui.sets}</span></div></div>`).join("")}</section>`;
+  if (type === "completed_workout") return `<div class="preview-summary-grid"><article><strong>${Math.round((snapshot.durationSeconds || 0) / 60)}</strong><span>min</span></article><article><strong>${snapshot.completedSets || 0}</strong><span>${ui.sets}</span></article><article><strong>${snapshot.exercises?.length || 0}</strong><span>exercises</span></article></div><section class="preview-session">${(snapshot.exercises || []).map((exercise) => `<div class="exercise-preview-row"><img src="${escapeHtml(exerciseImageUrl(exercise))}" alt="" onerror="this.src='/images/exercises/fuelphysique-demo-fallback.svg'"><div><strong>${escapeHtml(exercise.name)}</strong><span>${exercise.completedSets} ${ui.sets}</span></div></div>`).join("")}</section>`;
   return graphPreview(snapshot);
 }
 

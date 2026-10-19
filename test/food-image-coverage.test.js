@@ -131,6 +131,26 @@ test("catalog meal photos have enough source detail for the large meal view", as
   assert.deepEqual(tooSmall, []);
 });
 
+test("legacy meal SVG URLs normalize to reviewed photographic WebP assets", async () => {
+  const mealPhoto = await import("../public/js/meal-photo.mjs");
+  const mealImageDir = path.join(ROOT, "public", "images", "meals");
+  const legacyIllustrations = fs.readdirSync(mealImageDir).filter((name) => name.endsWith(".svg"));
+  assert.ok(legacyIllustrations.length > 0, "exercise the legacy illustration migration");
+
+  for (const filename of legacyIllustrations) {
+    const id = path.basename(filename, ".svg");
+    const photoPath = path.join(mealImageDir, `${id}.webp`);
+    assert.ok(fs.existsSync(photoPath), `${id} needs a photographic WebP sibling`);
+    const photo = await sharp(photoPath).metadata();
+    assert.ok(Math.min(photo.width, photo.height) >= 500, `${id} photo has enough detail`);
+    assert.equal(
+      mealPhoto.mealPhotoFor({ mealId: id, image: `/images/meals/${filename}` }),
+      `/images/meals/${id}.webp?v=20261018-meal-photo-1`,
+      `${id} legacy saved plan should display its photo`
+    );
+  }
+});
+
 test("no catalog meal ingredient reaches the unexpected placeholder", () => {
   const fallbackRows = [];
   for (const meal of CATALOG) {

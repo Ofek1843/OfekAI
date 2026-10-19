@@ -44,7 +44,7 @@ test('meal replacement cycles through distinct safe catalog meals instead of tog
     assert.equal(generated.status, 200);
     let plan = generated.body.plan;
     const seen = new Set([plan.meals[0].options[0].mealId]);
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 12; index++) {
       const result = await harness.request('/api/nutrition-builder/reroll-meal', {
         plan, mealNumber: 1, optionNumber: 1, language: 'en', screeningStatus: 'none'
       });

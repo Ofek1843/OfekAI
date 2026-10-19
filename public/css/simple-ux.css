@@ -104,6 +104,110 @@ body.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero #landingHeroTitle 
 @media(prefers-reduced-motion:reduce) { .simple-preview-row { animation:none; }.simple-tool,.simple-preview-card { transition:none; }.simple-preview-card { display:grid!important; transform:none; } }
 [data-theme="light"] .simple-tools>h2 { color:#112c42; }
 
+/* The nutrition wizard uses paper surfaces like the rest of the product.
+   Keep its compact options and goal cards readable after the legacy ocean CSS
+   and the redesign stylesheet have both been applied. */
+body.fp-route-nutrition-builder .simple-builder .simple-options {
+  border: 1px solid #d9d6cf !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .simple-options > summary {
+  color: #07559f !important;
+}
+body.fp-route-nutrition-builder .simple-builder .simple-options[open] {
+  padding-bottom: 16px !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card,
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card:hover,
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card:focus-within {
+  display: grid !important;
+  grid-template-columns: 78px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 14px !important;
+  min-height: 112px !important;
+  padding: 14px !important;
+  border: 1px solid #d9d6cf !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  color: #121417 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card--wide,
+body.fp-route-nutrition-builder .simple-builder .nutr-goal-grid .visual-choice-card--wide {
+  grid-column: auto !important;
+  min-height: 112px !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-image {
+  position: relative !important;
+  inset: auto !important;
+  grid-column: 1 !important;
+  width: 78px !important;
+  height: 78px !important;
+  min-height: 0 !important;
+  border-radius: 9px !important;
+  background-size: cover !important;
+  filter: none !important;
+  transform: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card--nutr-muscle .visual-choice-image {
+  background-image: url('/images/nutrition-builder/goals/build-muscle.webp') !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card--nutr-fat .visual-choice-image {
+  background-image: url('/images/nutrition-builder/goals/lose-fat.webp') !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card--nutr-maintain .visual-choice-image {
+  background-image: url('/images/nutrition-builder/goals/maintain-weight.webp') !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-shade {
+  display: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-content {
+  position: static !important;
+  inset: auto !important;
+  grid-column: 2 !important;
+  color: #121417 !important;
+  text-shadow: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-content strong {
+  color: #121417 !important;
+  text-shadow: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-content small {
+  color: #626970 !important;
+  text-shadow: none !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card:has(input:checked) {
+  border-color: #0866bd !important;
+  background: #eaf3fb !important;
+  box-shadow: 0 0 0 2px #eaf3fb !important;
+}
+body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-check {
+  top: 10px !important;
+  right: 10px !important;
+  width: 26px !important;
+  height: 26px !important;
+  color: #fff !important;
+  background: #0866bd !important;
+  box-shadow: none !important;
+}
+@media (max-width: 620px) {
+  body.fp-route-nutrition-builder .simple-builder .visual-choice-card,
+  body.fp-route-nutrition-builder .simple-builder .visual-choice-card--wide {
+    grid-template-columns: 58px minmax(0, 1fr) !important;
+    min-height: 88px !important;
+    padding: 10px !important;
+    gap: 10px !important;
+  }
+  body.fp-route-nutrition-builder .simple-builder .visual-choice-card .visual-choice-image {
+    width: 58px !important;
+    height: 58px !important;
+  }
+}
+
 /* The compact workout wizard is assembled by simple-ux.js after load. Keep its
    compact layout, but use the same paper surfaces as the dashboard/landing. */
 body.fp-route-workout-builder .simple-builder .visual-choice-card,

@@ -37,7 +37,7 @@ function createHarness({ aiOutput = "{}", localDemoMode = false } = {}) {
     console: Object.fromEntries(["info","warn","error","log","time","timeEnd"].map(key=>[key,(...args)=>logs.push({key,args})])),
     process: { env: { OPENAI_API_KEY: "AUDIT_STUB_NOT_A_REAL_KEY" } },
     requireFirebaseUser: async () => ({uid:"audit-synthetic-user"}),
-    rateLimiters: { ai() {} }, rejectIfDuplicateAi: () => "audit",
+    rateLimiters: { ai() {}, nutritionReroll() {} }, rejectIfDuplicateAi: () => "audit",
     inFlight: { finish() {} }, localDemoMode,
     resolveWorkoutModel: () => "audit-mock-model",
     createChatCompletion: async options => {

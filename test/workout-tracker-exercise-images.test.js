@@ -47,7 +47,7 @@ test("exercise-image resolver: canonical exercises used by the tracker", async (
       assert.equal(details.sourceField, "exerciseId", "the canonical exerciseId must be the field that resolved");
 
       const url = exerciseImageUrl(exercise);
-      assert.equal(url, `/images/exercises/${exercise.expectedSlug}.png`);
+      assert.equal(url, `/images/exercises/${exercise.expectedSlug}.png?v=20261018-guides-6`);
 
       // The URL the tracker requests must correspond to a real file on disk
       // (server.js's webp negotiation serves the .webp sibling of this exact
@@ -72,7 +72,7 @@ test("exercise-image resolver: an aliased spelling still resolves to the real fi
     const details = exerciseImageResolutionDetails(exercise);
     assert.equal(details.usedFallback, false, `${exercise.name} (alias) must resolve via ALIASES, not fall back`);
     assert.equal(details.attemptedSlug, exercise.expectedSlug);
-    assert.equal(exerciseImageUrl(exercise), `/images/exercises/${exercise.expectedSlug}.png`);
+    assert.equal(exerciseImageUrl(exercise), `/images/exercises/${exercise.expectedSlug}.png?v=20261018-guides-6`);
     assert.ok(fs.existsSync(path.join(EXERCISE_DIR, `${exercise.expectedSlug}.png`)));
   }
 });
@@ -102,12 +102,12 @@ test("an old saved plan without exerciseId still resolves the correct image via 
   const details = exerciseImageResolutionDetails(oldSavedExercise);
   assert.equal(details.usedFallback, false, "a pre-exerciseId saved plan must not fall back to the branded placeholder");
   assert.equal(details.sourceField, "demoName", "with no exerciseId, demoName is the next candidate tried");
-  assert.equal(exerciseImageUrl(oldSavedExercise), "/images/exercises/machine-chest-press.png");
+  assert.equal(exerciseImageUrl(oldSavedExercise), "/images/exercises/machine-chest-press.png?v=20261018-guides-6");
 
   // An aliased name (no dedicated file under that exact spelling) must also
   // still resolve for an old saved plan.
   const oldSavedAliasedExercise = { name: "Overhead Press", demoName: "Overhead Press", equipment: "Barbell" };
-  assert.equal(exerciseImageUrl(oldSavedAliasedExercise), "/images/exercises/barbell-shoulder-press.png");
+  assert.equal(exerciseImageUrl(oldSavedAliasedExercise), "/images/exercises/barbell-shoulder-press.png?v=20261018-guides-6");
 });
 
 test("exercise-image resolver: canonical exerciseId wins over a mismatched display name", async () => {
@@ -144,7 +144,7 @@ test("exercise-image resolver: Hebrew exercise names do not affect resolution wh
   assert.equal(details.sourceField, "exerciseId", "exerciseId must be tried before the Hebrew name");
   assert.equal(details.attemptedSlug, "barbell-squat");
   assert.equal(details.usedFallback, false);
-  assert.equal(exerciseImageUrl(exercise), "/images/exercises/barbell-squat.png");
+  assert.equal(exerciseImageUrl(exercise), "/images/exercises/barbell-squat.png?v=20261018-guides-6");
 });
 
 test("exercise-image resolver: a Hebrew-only name with no exerciseId falls back safely instead of guessing", async () => {
