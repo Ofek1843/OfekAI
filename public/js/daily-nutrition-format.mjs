@@ -41,6 +41,13 @@ function formatNutritionNumber(value, locale = "en", precision = 1) {
   });
 }
 
+function formatNutritionDate(dateKey, locale = "en") {
+  const match = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return "";
+  const [, , month, day] = match;
+  return nutritionLocale(locale) === "he" ? `${day}.${month}` : `${month}.${day}`;
+}
+
 function nutritionUnitLabel(unit, locale = "en", amount = 1) {
   const language = nutritionLocale(locale);
   const normalized = String(unit || "item").toLowerCase();
@@ -72,6 +79,7 @@ function formatNutritionAmount(value, unit, locale = "en", precision = 1) {
 export {
   UNIT_LABELS,
   formatNutritionAmount,
+  formatNutritionDate,
   formatNutritionNumber,
   nutritionAmountParts,
   nutritionLocale,

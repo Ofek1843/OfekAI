@@ -8,6 +8,7 @@ const root = path.join(__dirname, '..', 'public');
 const html = fs.readFileSync(path.join(root, 'dashboard.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css', 'dashboard-editorial.css'), 'utf8');
 const production = fs.readFileSync(path.join(root, 'js', 'dashboard-editorial.js'), 'utf8');
+const viewSource = fs.readFileSync(path.join(root, 'js', 'dashboard-editorial-view.mjs'), 'utf8');
 const sw = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 const moduleUrl = pathToFileURL(path.join(root, 'js', 'dashboard-editorial-view.mjs')).href;
 
@@ -28,6 +29,9 @@ test('dashboard uses reference layout, blue wordmark and real account data', () 
   assert.match(production, /collection\(db,'users',user\.uid,'workoutPlans'\)/);
   assert.match(production, /collection\(db,'users',user\.uid,'nutritionPlans'\)/);
   assert.match(production, /loadVisibleDay\(user\.uid,dateKey\(new Date\(\)\)\)/);
+  assert.match(viewSource, /const plansNav=event\.target\.closest\('\.top-links a\[href="#plans"\]'\)/);
+  assert.match(viewSource, /section\.scrollIntoView\(\{behavior:'smooth',block:'start'\}\);section\.focus\(\{preventScroll:true\}\)/);
+  assert.match(viewSource, /id="plans" tabindex="-1"/);
   assert.match(html, /serviceWorker\.register\('\/sw\.js'\)/);
   for (const image of ['training', 'workout-1', 'meal-1'])
     assert.ok(fs.existsSync(path.join(root, 'assets', 'dashboard', `${image}.webp`)));

@@ -59,6 +59,11 @@
     .footer-links a { color: #8e9d99; font-size: 13px; font-weight: 600; }
     .footer-copy { margin: 0; font-size: 12px; color: #8e9d99; }
     @media (max-width: 720px) { .pricing-cards { grid-template-columns: 1fr; } }
+    /* Keep this legacy dark pricing page readable when the global redesign theme is active. */
+    body.fp-redesign .pricing-page { color: var(--text) !important; }
+    body.fp-redesign .pricing-page :where(h1, h2, h3, th, td, .price, .price-card p) { color: var(--text) !important; }
+    body.fp-redesign .pricing-page :where(.pricing-hero p, .prop-card p, .price span, .footer-copy, .footer-links a, .pricing-page > section > p) { color: var(--muted) !important; }
+    body.fp-redesign .pricing-page .pricing-table tbody tr.highlight-row td { color: #c5b9e8 !important; }
   </style>
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>

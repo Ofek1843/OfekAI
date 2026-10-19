@@ -88,6 +88,49 @@ body.daily-nutrition-route .date-toolbar-center {
   padding: 0 16px !important;
 }
 
+body.daily-nutrition-route .date-picker-label {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 88px !important;
+  min-height: 44px !important;
+  padding: 8px 12px !important;
+  overflow: hidden !important;
+  border: 1px solid #bcc5cf !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: #15202b !important;
+  font: 700 1rem/1 "Space Grotesk", sans-serif !important;
+  cursor: pointer !important;
+}
+
+body.daily-nutrition-route .date-picker-label:focus-within {
+  outline: 3px solid #111 !important;
+  outline-offset: 3px !important;
+}
+
+body.daily-nutrition-route .date-picker-label input {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  opacity: 0 !important;
+  background: transparent !important;
+  cursor: pointer !important;
+  color-scheme: light !important;
+}
+
+body.daily-nutrition-route #selectedDateLabel {
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+
 body.daily-nutrition-route .daily-page-status:empty { display: none !important; }
 
 body.daily-nutrition-route .food-composer {

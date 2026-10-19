@@ -1539,6 +1539,41 @@ body.fp-redesign::after,
   padding: clamp(48px, 8vw, 96px) 0 112px !important;
 }
 
+/* Legal/support pages keep their paper theme instead of inheriting the app's dark canvas. */
+body.fp-redesign.fp-legal-route {
+  --fp-bg-deep: #f7f5f1;
+  --fp-bg-page: #f7f5f1;
+  --fp-bg-section: #ffffff;
+  --fp-surface: #ffffff;
+  --fp-surface-raised: #ffffff;
+  --fp-surface-soft: #f0eee9;
+  --fp-border: #d9d6cf;
+  --fp-border-strong: #a8b1c1;
+  --fp-text-primary: #121417;
+  --fp-text-secondary: #343843;
+  --fp-text-muted: #626970;
+  --fp-text-inverse: #ffffff;
+  --fp-brand-primary: #0866bd;
+  --fp-brand-secondary: #07559f;
+  color-scheme: light;
+  color: #121417 !important;
+  background: #f7f5f1 !important;
+}
+
+body.fp-redesign.fp-legal-route .legal-page { color: #121417 !important; }
+body.fp-redesign.fp-legal-route .faq-item {
+  color: #121417 !important;
+  background: #ffffff !important;
+  border-color: #d9d6cf !important;
+}
+body.fp-redesign.fp-legal-route .faq-item :where(summary, .faq-answer) { color: #343843 !important; }
+body.fp-redesign.fp-legal-route footer {
+  color: #343843 !important;
+  background: #f7f5f1 !important;
+  border-color: #d9d6cf !important;
+}
+body.fp-redesign.fp-legal-route footer a { color: #07559f !important; }
+
 .fp-legal-route :where(header, .legal-header) {
   margin-block-end: 48px !important;
   padding-block-end: 20px !important;

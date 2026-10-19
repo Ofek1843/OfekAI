@@ -5,7 +5,7 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-aut
 import { disassociateCurrentInstallation } from './push-notifications.js';
 import { loadDailyLog, normalizeLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
 import { loadDashboardDay } from './dashboard-diary.mjs';
-import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261015-plan-tabs-1';
+import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261019-plans-scroll-1';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
 import { trackPageView } from './analytics.js';
 import { loadDashboardSections } from './dashboard-load.mjs';

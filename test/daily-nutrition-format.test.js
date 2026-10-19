@@ -20,3 +20,10 @@ test("nutrition formatter exposes isolated number and unit parts", async () => {
   const { nutritionAmountParts } = await formatPromise;
   assert.deepEqual(nutritionAmountParts(1234.5, "g", "he"), { number: "1,234.5", unit: "גרם", locale: "he" });
 });
+
+test("nutrition date display uses an unambiguous language-specific month and day", async () => {
+  const { formatNutritionDate } = await formatPromise;
+  assert.equal(formatNutritionDate("2026-10-19", "he"), "19.10");
+  assert.equal(formatNutritionDate("2026-10-19", "en"), "10.19");
+  assert.equal(formatNutritionDate("invalid", "en"), "");
+});

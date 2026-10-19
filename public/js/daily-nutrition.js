@@ -28,10 +28,11 @@ import {
 import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260928-language-coverage-1";
 import {
   formatNutritionAmount,
+  formatNutritionDate,
   formatNutritionNumber,
   nutritionAmountParts,
   nutritionUnitLabel
-} from "./daily-nutrition-format.mjs?v=20260914-i18n-dashboard-1";
+} from "./daily-nutrition-format.mjs?v=20261019-date-label-1";
 
 const $ = (selector) => document.querySelector(selector);
 const language = ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
@@ -219,8 +220,7 @@ function dateFromKey(dateKey) {
 }
 
 function dateLabel(dateKey) {
-  if (dateKey === localDateKey()) return copy.today;
-  return new Intl.DateTimeFormat(language === "he" ? "he-IL" : "en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" }).format(dateFromKey(dateKey));
+  return new Intl.DateTimeFormat(language === "he" ? "he-IL" : "en-US", { weekday: "short", month: "long", day: "numeric", year: "numeric" }).format(dateFromKey(dateKey));
 }
 
 function setPageStatus(message = "", error = false, { retry = null } = {}) {
@@ -474,7 +474,8 @@ function renderDayHistory() {
 
 function render() {
   $("#selectedDate").value = state.dateKey;
-  $("#selectedDateLabel").textContent = dateLabel(state.dateKey);
+  $("#selectedDateLabel").textContent = formatNutritionDate(state.dateKey, language);
+  $("#selectedDate").setAttribute("aria-label", `${copy.chooseDate}: ${dateLabel(state.dateKey)}`);
   const totals = totalsForEntries(state.log.entries);
   state.log.totals = totals;
   updateWeekLog();

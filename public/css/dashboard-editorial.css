@@ -21,3 +21,4 @@
 @media(max-width:650px){.account-area{margin-inline-start:auto;gap:6px}.account-area .account-name{display:block;max-width:70px;overflow:hidden;text-overflow:ellipsis}.avatar{width:46px;height:46px}.avatar-placeholder{font-size:9px}.diary{min-height:256px}.session-photo{min-height:0}}
 .diary{min-width:0}.diary .section-heading{flex-wrap:wrap}.diary-data{gap:clamp(7px,1vw,16px);min-width:0}.ring{width:clamp(84px,8vw,128px);height:clamp(84px,8vw,128px)}.macros{min-width:0;gap:6px}.macro{min-width:0;padding-inline-start:6px}.macro strong,.macro small{overflow-wrap:anywhere}.macro progress{width:100%;max-width:46px}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.plans{scroll-margin-top:24px}

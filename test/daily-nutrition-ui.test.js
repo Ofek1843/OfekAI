@@ -9,6 +9,7 @@ const root = path.join(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const html = read("public/daily-nutrition.html");
 const css = read("public/css/daily-nutrition.css");
+const refreshCss = read("public/css/daily-nutrition-refresh.css");
 const client = read("public/js/daily-nutrition.js");
 const copy = read("public/js/daily-nutrition-i18n.mjs");
 const formatter = read("public/js/daily-nutrition-format.mjs");
@@ -175,6 +176,8 @@ test("mobile food logging keeps the input, date and save actions readable", () =
   assert.match(css, /Final mobile clarity overrides/);
   assert.match(css, /\.food-composer-form\s*\{\s*grid-template-columns:\s*1fr;\s*gap:\s*11px/);
   assert.match(css, /\.food-composer-form button\s*\{\s*width:\s*100%;\s*min-width:\s*0/);
-  assert.match(css, /\.date-picker-label input\s*\{\s*width:\s*84px/);
+  assert.match(html, /<span id="selectedDateLabel" dir="ltr">10\.19<\/span>/);
+  assert.match(client, /formatNutritionDate\(state\.dateKey, language\)/);
+  assert.match(refreshCss, /\.date-picker-label input\s*\{[^}]*position: absolute !important;[^}]*opacity: 0 !important/);
   assert.match(css, /\.composer-actions\s*\{\s*grid-template-columns:\s*1fr;\s*gap:\s*10px/);
 });

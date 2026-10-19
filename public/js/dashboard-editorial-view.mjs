@@ -95,7 +95,7 @@ export function mountDashboard(root, initial={}, options={}) {
   '<main class="dashboard-main"><div class="status" role="status">'+escapeHTML(failureMessage)+(failureMessage?'<button class="button" data-action="retry-dashboard">'+t.retry+'</button>':'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header><section class="week" aria-label="'+t.week+'">'+weekHTML()+'</section>'+
   '<article class="session '+(!next?'empty':'')+'"><img class="session-photo" src="'+asset('training')+'" alt="" width="305" height="324" fetchpriority="high"><div class="session-copy"><div class="session-topline"><span class="eyebrow">'+t.next+'</span>'+(plan.durationWeeks?link('/my-workout-plans.html',escapeHTML(plan.durationWeeks)+' '+t.weeks+icon('chevron-right'),'session-week'):'')+'</div><h2>'+escapeHTML(title)+'</h2><p class="session-description">'+escapeHTML(next?detail:t.setup)+'</p><div class="session-meta">'+(duration?'<span>'+icon('clock')+escapeHTML(duration)+' '+t.minutes+'</span>':'')+(plan.experienceLevel||plan.level?'<span>'+icon('chart-bar')+escapeHTML(level(plan.experienceLevel||plan.level))+'</span>':'')+(session?'<span>'+icon('barbell')+(session.exercises||[]).length+' '+t.exerciseCount+'</span>':'')+'</div><div class="session-actions">'+link(tracking,t[next?'start':'createNow']+icon('arrow-right'),'button primary')+(next?'<button class="button" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':'')+'</div></div></article>'+
   '<section class="diary" aria-label="'+t.diary+'">'+diaryHTML()+'</section></div>'+
-  '<section class="plans" id="plans"><header class="section-heading"><h2>'+t.yourPlans+'</h2>'+link('/my-workout-plans.html',t.viewAll+icon('arrow-right'),'text-link')+'</header><div class="plan-columns">'+panel('workout')+panel('meal')+'</div></section>'+
+  '<section class="plans" id="plans" tabindex="-1"><header class="section-heading"><h2>'+t.yourPlans+'</h2>'+link('/my-workout-plans.html',t.viewAll+icon('arrow-right'),'text-link')+'</header><div class="plan-columns">'+panel('workout')+panel('meal')+'</div></section>'+
   '<section class="activity"><header class="section-heading"><h2>'+t.recent+'</h2>'+link('/workout-history.html',t.viewLog+icon('arrow-right'),'text-link')+'</header>'+
   ((model.logs||[]).length?model.logs.slice(0,3).map(log=>{
    const date=asDate(log.completedAt||log.startedAt), exerciseCount=Array.isArray(log.exercises)?log.exercises.length:0;
@@ -122,6 +122,12 @@ export function mountDashboard(root, initial={}, options={}) {
   openSavedNutrition(saved,language);
  }
  root.addEventListener('click',async event=>{
+  const plansNav=event.target.closest('.top-links a[href="#plans"]');
+  if(plansNav){
+   const section=root.querySelector('#plans');
+   if(section){event.preventDefault();section.scrollIntoView({behavior:'smooth',block:'start'});section.focus({preventScroll:true});}
+   return;
+  }
   const planButton=event.target.closest('[data-plan-id]');if(planButton){try{await showPlan(planButton.dataset.planKind,planButton.dataset.planId);}catch{root.querySelector('.status').textContent=t.error;}return;}
   const action=event.target.closest('[data-action]')?.dataset.action;if(!action)return;
   if(action==='menu'){const opened=root.querySelector('.sidebar').classList.toggle('open');root.querySelector('.mobile-backdrop').classList.toggle('open',opened);event.target.closest('button').setAttribute('aria-expanded',String(opened));}
