@@ -317,6 +317,8 @@ textarea:focus,
 .food-table td,
 .macro-card,
 .daily-goals-card { background: #fff !important; color: var(--product-ink) !important; }
+body.daily-nutrition-route .target-setup h3 { color: var(--product-ink) !important; text-shadow: none !important; }
+body.daily-nutrition-route .target-setup p { color: var(--product-muted) !important; text-shadow: none !important; }
 .macro-ring { background: conic-gradient(var(--product-blue) var(--macro-progress, 0%), #e2e0db 0) !important; }
 .protein-progress span { background: var(--product-blue) !important; }
 

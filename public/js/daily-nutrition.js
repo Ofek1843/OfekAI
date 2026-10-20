@@ -19,14 +19,15 @@ import {
 import {
   loadCustomFoods,
   loadDailyLog,
+  loadNutritionMonth,
   loadNutritionWeek,
   loadSavedCombinations,
   normalizeLog,
   saveDailyLog,
   saveFoodCombination
-} from "./daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20261019-food-diary-1";
-import { clearGuestDraft, readGuestDraft, showSignupPrompt } from "./guest-trial.mjs";
+} from "./daily-nutrition-store.mjs?v=20261020-calendar-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20261020-calendar-1";
+import { clearGuestDraft, readGuestDraft, showSignupPrompt } from "./guest-trial.mjs?v=20261020-guest-dashboard-1";
 import {
   formatNutritionAmount,
   formatNutritionDate,
@@ -146,6 +147,9 @@ const state = {
   dateKey: localDateKey(),
   log: null,
   weekLogs: [],
+  monthLogs: [],
+  monthLoadedKey: "",
+  monthLoadRequest: 0,
   customFoods: [],
   smartFoods: loadSmartFoods(),
   combinations: [],
@@ -470,8 +474,40 @@ function calendarLabel(monthKey) {
 function logByDateKey() {
   return new Map([
     ...state.weekLogs.map((log) => [log.dateKey, log]),
+    ...state.monthLogs.map((log) => [log.dateKey, log]),
     [state.log.dateKey, state.log]
   ]);
+}
+
+async function loadCalendarMonth() {
+  if (state.guest || !state.user || !state.log) return;
+  const monthKey = state.calendarMonthKey;
+  if (state.monthLoadedKey === monthKey) return;
+  const request = ++state.monthLoadRequest;
+  state.monthLogs = [];
+  $("#calendarStatus").textContent = language === "he" ? "טוען קלוריות לחודש..." : "Loading this month's calories...";
+  renderDayHistory();
+  try {
+    const logs = await withDeadline(loadNutritionMonth(db, state.user.uid, monthKey));
+    if (request !== state.monthLoadRequest || monthKey !== state.calendarMonthKey) return;
+    state.monthLogs = logs;
+    state.monthLoadedKey = monthKey;
+    $("#calendarStatus").textContent = "";
+    renderDayHistory();
+  } catch {
+    if (request !== state.monthLoadRequest) return;
+    $("#calendarStatus").textContent = language === "he" ? "לא ניתן לטעון את קלוריות החודש. נסו לפתוח שוב." : "Could not load this month's calories. Close and reopen to retry.";
+  }
+}
+
+function setCalendarOpen(open) {
+  const panel = $("#calendarPanel");
+  panel.hidden = !open;
+  $("#datePickerButton").setAttribute("aria-expanded", String(open));
+  if (open) {
+    if (state.guest) $("#calendarStatus").textContent = language === "he" ? "התחברו כדי לראות ימים קודמים." : "Sign in to see previous days.";
+    loadCalendarMonth();
+  }
 }
 
 function caloriesForDate(dateKey, logs) {
@@ -504,7 +540,8 @@ function renderDayHistory() {
     const calories = caloriesForDate(dateKey, logs);
     const isSelected = dateKey === state.dateKey;
     const isToday = dateKey === localDateKey();
-    return `<button type="button" class="calendar-day${isSelected ? " is-selected" : ""}${isToday ? " is-today" : ""}" data-calendar-date="${dateKey}" role="gridcell" aria-current="${isSelected ? "date" : "false"}"><b>${day}</b><small>${calories ? amountMarkup(calories, "kcal", 0) : "—"}</small></button>`;
+    const calorieLabel = calories ? `${number(calories, 0)} kcal` : copy.notLogged;
+    return `<button type="button" class="calendar-day${isSelected ? " is-selected" : ""}${isToday ? " is-today" : ""}" data-calendar-date="${dateKey}" role="gridcell" aria-label="${esc(`${dateLabel(dateKey)}: ${calorieLabel}`)}" aria-current="${isSelected ? "date" : "false"}"><b>${day}</b><small>${calories ? esc(number(calories, 0)) : "—"}</small></button>`;
   }).join("");
 }
 
@@ -553,6 +590,7 @@ async function loadDate(dateKey) {
   state.dateKey = dateKey;
   state.log = null;
   state.calendarMonthKey = dateKey.slice(0, 7);
+  if (state.monthLoadedKey !== state.calendarMonthKey) state.monthLogs = [];
   state.editingId = null;
   state.pendingClarification = null;
   $("#clarificationPanel").hidden = true;
@@ -609,6 +647,7 @@ async function loadDate(dateKey) {
   }
   state.weekLogs = weekLogs;
   render();
+  if (!$("#calendarPanel").hidden) loadCalendarMonth();
   if (readDailyDraft(state.user.uid, state.dateKey)) {
     $("#autosaveState").textContent = copy.savedOnDevice;
     $("#autosaveState").className = "autosave-state error";
@@ -1049,6 +1088,10 @@ function bindEvents() {
   $("#previousDay").addEventListener("click", () => state.guest ? promptGuestDiarySignup() : loadDate(shiftDateKey(state.dateKey, -1)));
   $("#nextDay").addEventListener("click", () => state.guest ? promptGuestDiarySignup() : loadDate(shiftDateKey(state.dateKey, 1)));
   $("#todayButton").addEventListener("click", () => state.guest ? promptGuestDiarySignup() : loadDate(localDateKey()));
+  $("#datePickerButton").addEventListener("click", () => setCalendarOpen($("#calendarPanel").hidden));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !$("#calendarPanel").hidden) setCalendarOpen(false);
+  });
   $("#selectedDate").addEventListener("change", (event) => event.target.value && (state.guest ? promptGuestDiarySignup() : loadDate(event.target.value)));
   $("#nearbyDays").addEventListener("click", (event) => {
     const button = event.target.closest("[data-history-date]");
@@ -1059,17 +1102,20 @@ function bindEvents() {
   $("#calendarGrid").addEventListener("click", (event) => {
     const button = event.target.closest("[data-calendar-date]");
     if (!button?.dataset.calendarDate) return;
-    if (state.guest) return promptGuestDiarySignup();
-    loadDate(button.dataset.calendarDate);
+    if (state.guest && button.dataset.calendarDate !== state.dateKey) return promptGuestDiarySignup();
+    setCalendarOpen(false);
+    if (!state.guest) loadDate(button.dataset.calendarDate);
   });
   $("#calendarPreviousMonth").addEventListener("click", () => {
     state.calendarMonthKey = shiftDateKey(`${state.calendarMonthKey}-01`, -1).slice(0, 7);
     renderDayHistory();
+    loadCalendarMonth();
   });
   $("#calendarNextMonth").addEventListener("click", () => {
     const [year, month] = state.calendarMonthKey.split("-").map(Number);
     state.calendarMonthKey = localDateKey(new Date(year, month, 1, 12)).slice(0, 7);
     renderDayHistory();
+    loadCalendarMonth();
   });
 }
 
@@ -1166,7 +1212,7 @@ function initGuestPreview() {
   $("#autosaveState").textContent = language === "he" ? "נשמר במכשיר" : "Saved on this device";
   $(".save-guide").textContent = language === "he" ? "הפריטים נשמרים זמנית במכשיר. הירשמו כדי לשמור אותם בחשבון." : "Entries stay temporarily on this device. Sign up to save them to your account.";
   $("#copyYesterdayButton").disabled = true;
-  ["#previousDay", "#nextDay", "#todayButton", "#selectedDate", "#calendarPreviousMonth", "#calendarNextMonth"].forEach((selector) => {
+  ["#previousDay", "#nextDay", "#todayButton", "#selectedDate"].forEach((selector) => {
     const control = $(selector);
     if (control) control.disabled = true;
   });

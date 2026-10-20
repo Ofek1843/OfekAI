@@ -44,3 +44,21 @@ test("guest form drafts restore values and notify dependent controls", async () 
   assert.equal(elements[4].value, "31");
   assert.deepEqual(changed, ["strength", "muscle", "mon", "wed", "age"]);
 });
+
+test("guest Google handoff retains the builder return path and draft", async () => {
+  const { startGuestSignup } = await loadGuestTrial();
+  const values = new Map();
+  let destination = "";
+  global.sessionStorage = { setItem: (key, value) => values.set(key, value) };
+  global.window = { location: { assign: (url) => { destination = url; } } };
+  try {
+    startGuestSignup("workout", "/workout-builder.html?resumeGuest=workout", [{ name: "goal", value: "buildMuscle" }], "google");
+    const url = new URL(destination, "https://fuelphysique.com");
+    assert.equal(url.searchParams.get("provider"), "google");
+    assert.equal(url.searchParams.get("next"), "/workout-builder.html?resumeGuest=workout");
+    assert.equal(JSON.parse(values.get("fp-guest-trial-v1:workout")).payload[0].value, "buildMuscle");
+  } finally {
+    delete global.sessionStorage;
+    delete global.window;
+  }
+});

@@ -10,7 +10,7 @@ import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 import { t } from "./i18n.js?v=20261002-brand-quality-1";
 import { fetchWithDeadline } from "./request-deadline.mjs";
-import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs";
+import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs?v=20261020-guest-dashboard-1";
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 import {
@@ -26,15 +26,19 @@ const currentLanguage =
   ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
     ? localStorage.getItem("ofek-ai-language")
     : "en";
+let resumedGuestDraft = false;
 
 function resumeGuestWorkout(user) {
   if (!user || new URLSearchParams(location.search).get("resumeGuest") !== "workout") return;
   const fields = readGuestDraft("workout");
   if (!fields) return;
   restoreForm(form, fields);
-  clearGuestDraft("workout");
-  // Restore the wizard's visible step as well as its values before resuming.
-  while (wizardNextButton && !wizardNextButton.classList.contains("hidden")) wizardNextButton.click();
+  resumedGuestDraft = true;
+  const cleanUrl = new URL(location.href);
+  cleanUrl.searchParams.delete("resumeGuest");
+  history.replaceState(null, "", cleanUrl);
+  // The submit handler validates every step, then generates once. Do not
+  // click through a wizard loop: validation could keep one step open forever.
   setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
 }
 
@@ -925,6 +929,7 @@ if (data.program) {
   });
 
   renderProgram(data.program, data.weeklyVolume);
+  if (resumedGuestDraft) { clearGuestDraft("workout"); resumedGuestDraft = false; }
   return;
 }
     resultElement.innerHTML = `

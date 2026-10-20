@@ -4,7 +4,7 @@ function draftKey(kind) {
   return `${GUEST_DRAFT_PREFIX}:${kind}`;
 }
 
-export function startGuestSignup(kind, nextPath, payload = null) {
+export function startGuestSignup(kind, nextPath, payload = null, provider = "") {
   try {
     if (payload) sessionStorage.setItem(draftKey(kind), JSON.stringify({ savedAt: Date.now(), payload }));
     sessionStorage.setItem(`${GUEST_DRAFT_PREFIX}:next`, nextPath);
@@ -12,6 +12,7 @@ export function startGuestSignup(kind, nextPath, payload = null) {
     // Session storage is a convenience; never prevent the signup path.
   }
   const query = new URLSearchParams({ mode: "signup", next: nextPath });
+  if (provider === "google") query.set("provider", "google");
   window.location.assign(`/auth.html?${query.toString()}`);
 }
 
@@ -64,14 +65,22 @@ export function showSignupPrompt(element, kind, nextPath, isHebrew = false) {
   if (!element) return;
   element.replaceChildren();
   const message = document.createElement("span");
-  message.textContent = isHebrew
-    ? "הפרטים נשמרו במכשיר הזה. הירשמו בחינם כדי להמשיך."
-    : "Your answers are saved on this device. Create a free account to continue.";
+  message.textContent = kind === "diary"
+    ? (isHebrew ? "רשומות המזון נשמרו זמנית במכשיר. התחברו בחינם כדי לשמור ולהמשיך להוסיף." : "Your food log is stored temporarily on this device. Sign in for free to save it and keep adding.")
+    : (isHebrew ? "הפרטים נשמרו במכשיר הזה. התחברו בחינם כדי ליצור ולשמור את התוכנית." : "Your answers are saved on this device. Sign in for free to generate and save your plan.");
+  const actions = document.createElement("div");
+  actions.className = "guest-signup-actions";
+  const googleButton = document.createElement("button");
+  googleButton.type = "button";
+  googleButton.className = "guest-signup-button";
+  googleButton.textContent = isHebrew ? "המשך עם Google" : "Continue with Google";
+  googleButton.addEventListener("click", () => startGuestSignup(kind, nextPath, null, "google"));
   const button = document.createElement("button");
   button.type = "button";
-  button.className = "guest-signup-button";
-  button.textContent = isHebrew ? "הירשמו והמשיכו" : "Sign up and continue";
+  button.className = "guest-signup-button guest-signup-button--secondary";
+  button.textContent = isHebrew ? "אימייל או כניסה לחשבון" : "Email or existing account";
   button.addEventListener("click", () => startGuestSignup(kind, nextPath));
-  element.append(message, button);
+  actions.append(googleButton, button);
+  element.append(message, actions);
   element.classList.add("guest-signup-prompt");
 }

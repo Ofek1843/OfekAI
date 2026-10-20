@@ -3,6 +3,7 @@ const ALLOWED_EVENTS = new Set([
   "page_view",
   "signup",
   "signup_started",
+  "guest_started",
   "signup_completed",
   "onboarding_completed",
   "builder_open",

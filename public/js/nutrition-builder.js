@@ -8,7 +8,7 @@ import { fetchWithDeadline } from "./request-deadline.mjs";
 import { prepareNutritionPlanForSave } from "./nutrition-selection.mjs";
 import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
 import { mealPhotoFor } from "./meal-photo.mjs";
-import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs";
+import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs?v=20261020-guest-dashboard-1";
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 const form = document.querySelector("#nutrition-builder-form");
@@ -19,15 +19,17 @@ const currentLanguage =
   ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
     ? localStorage.getItem("ofek-ai-language")
     : "en";
+let resumedGuestDraft = false;
 
 function resumeGuestNutrition(user) {
   if (!user || new URLSearchParams(location.search).get("resumeGuest") !== "nutrition") return;
   const fields = readGuestDraft("nutrition");
   if (!fields) return;
   restoreForm(form, fields);
-  clearGuestDraft("nutrition");
-  const next = document.querySelector("#wizardNextButton");
-  while (next && !next.classList.contains("hidden")) next.click();
+  resumedGuestDraft = true;
+  const cleanUrl = new URL(location.href);
+  cleanUrl.searchParams.delete("resumeGuest");
+  history.replaceState(null, "", cleanUrl);
   setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
 }
 
@@ -400,6 +402,7 @@ setStatus("");
 if (data.plan) {
   window.currentNutritionPlan = data.plan;
   renderNutritionPlan(data.plan);
+  if (resumedGuestDraft) { clearGuestDraft("nutrition"); resumedGuestDraft = false; }
   window.fpV47Success?.(button);
   return;
 }

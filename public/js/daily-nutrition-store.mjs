@@ -2,9 +2,14 @@ import {
   collection,
   deleteDoc,
   doc,
+  documentId,
+  endAt,
   getDoc,
   getDocs,
+  orderBy,
+  query,
   serverTimestamp,
+  startAt,
   setDoc
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
@@ -119,6 +124,13 @@ async function loadNutritionWeek(db, uid, anchorDateKey) {
   return Promise.all(keys.map((dateKey) => loadDailyLog(db, uid, dateKey)));
 }
 
+async function loadNutritionMonth(db, uid, monthKey) {
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthKey)) throw new Error("INVALID_MONTH");
+  const reference = collection(db, "users", assertIdentity(uid), "dailyNutritionLogs");
+  const snapshot = await getDocs(query(reference, orderBy(documentId()), startAt(`${monthKey}-01`), endAt(`${monthKey}-31`)));
+  return snapshot.docs.map((item) => normalizeLog(item.id, item.data()));
+}
+
 async function copyPreviousDay(db, uid, destinationDateKey, idFactory = () => crypto.randomUUID()) {
   const previous = await loadDailyLog(db, uid, shiftDateKey(destinationDateKey, -1));
   const destination = await loadDailyLog(db, uid, destinationDateKey);
@@ -179,6 +191,7 @@ export {
   loadCustomFoods,
   loadDailyLog,
   loadNutritionWeek,
+  loadNutritionMonth,
   loadSavedCombinations,
   normalizeEntry,
   normalizeLog,

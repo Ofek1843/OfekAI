@@ -22,3 +22,11 @@
 .diary{min-width:0}.diary .section-heading{flex-wrap:wrap}.diary-data{gap:clamp(7px,1vw,16px);min-width:0}.ring{width:clamp(84px,8vw,128px);height:clamp(84px,8vw,128px)}.macros{min-width:0;gap:6px}.macro{min-width:0;padding-inline-start:6px}.macro strong,.macro small{overflow-wrap:anywhere}.macro progress{width:100%;max-width:46px}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 .plans{scroll-margin-top:24px}
+.guest-dashboard-banner{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 18px;padding:18px 22px;border:1px solid #9fc5e8;border-radius:8px;background:#eaf4fd;color:#162a3b}
+.guest-dashboard-banner strong{display:block;font:700 20px/1.25 Arial,sans-serif}
+.guest-dashboard-banner p{margin:6px 0 0;color:#405568;font:15px/1.5 Arial,sans-serif}
+.guest-dashboard-banner .button{flex:none}
+.guest-account-link{padding:10px 14px;border-radius:5px;background:var(--blue);color:#fff;font:700 14px Arial,sans-serif;white-space:nowrap}
+.guest-account-link:hover{background:#06457f}
+.guest-login-link{font:700 14px Arial,sans-serif;white-space:nowrap}
+@media(max-width:650px){.guest-dashboard-banner{align-items:stretch;flex-direction:column;padding:16px}.guest-dashboard-banner .button{width:100%}.guest-account-link{font-size:12px;padding:9px}.guest-login-link{display:none}}

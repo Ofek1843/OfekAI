@@ -5,9 +5,9 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-aut
 import { disassociateCurrentInstallation } from './push-notifications.js';
 import { loadDailyLog, normalizeLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
 import { loadDashboardDay } from './dashboard-diary.mjs';
-import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261019-plans-scroll-1';
+import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261020-guest-dashboard-1';
 import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
-import { trackPageView } from './analytics.js';
+import { trackEvent, trackPageView } from './analytics.js?v=20261020-guest-dashboard-1';
 import { loadDashboardSections } from './dashboard-load.mjs';
 let language='en';
 try { const saved=localStorage.getItem('ofek-ai-language');if(dashboardLanguages.includes(saved))language=saved; } catch {}
@@ -16,6 +16,20 @@ const root=document.querySelector('#dashboardRoot');
 root.querySelector('[role="status"]').textContent=copy.loading;
 let dashboard;
 let dashboardRequest=0;
+let dashboardIsGuest=false;
+function showGuestDashboard() {
+ ++dashboardRequest;
+ document.body.style.visibility='visible';
+ try {
+  if (sessionStorage.getItem('fp_guest_dashboard_seen') !== '1') {
+   sessionStorage.setItem('fp_guest_dashboard_seen','1');
+   trackEvent('guest_started',{source:'dashboard'});
+  }
+ } catch { trackEvent('guest_started',{source:'dashboard'}); }
+ const model={name:'',workouts:[],meals:[],logs:[],diary:null,activeWorkoutId:null,activeMealId:null,error:''};
+ dashboard=mountDashboard(root,model,{language,guest:true});
+ dashboardIsGuest=true;
+}
 const loadVisibleDay = (uid, key) => loadDashboardDay({
   uid, dateKey: key,
   loadClient: () => loadDailyLog(db, uid, key),
@@ -68,9 +82,11 @@ async function load(user) {
   try{await disassociateCurrentInstallation();await signOut(auth);window.location.assign('/auth.html');}
   catch{root.querySelector('.status').textContent=copy.error;}
  }};
- if(dashboard)dashboard.update(model);else dashboard=mountDashboard(root,model,options);
+ if(dashboard&&!dashboardIsGuest)dashboard.update(model);
+ else dashboard=mountDashboard(root,model,options);
+ dashboardIsGuest=false;
 }
-guardProtectedPage({onAuthenticated:async(user)=>{
+guardProtectedPage({onSignedOut:showGuestDashboard,onAuthenticated:async(user)=>{
  try{
   await load(user);
   if(auth.currentUser?.uid!==user.uid||!dashboard)return;

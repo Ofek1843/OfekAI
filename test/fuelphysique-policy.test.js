@@ -61,6 +61,14 @@ test("analytics sanitizer drops unsupported events and sensitive fields", () => 
   assert.equal(payload.properties.nested, '{"foo":"bar"}');
 });
 
+test("guest entry is tracked separately from a real registration", () => {
+  const event = sanitizeAnalyticsPayload({ event: "guest_started", path: "/dashboard.html", properties: { source: "dashboard", email: "private@example.com" } });
+  assert.equal(event.event, "guest_started");
+  assert.equal(event.properties.source, "dashboard");
+  assert.equal(event.properties.email, undefined);
+  assert.equal(summarizePublicStats({ users: [] }).registeredUsers, 0, "the guest event does not create a registered user");
+});
+
 test("public stats summary counts only meaningful records", () => {
   const stats = summarizePublicStats({
     users: [

@@ -27,5 +27,8 @@
 
 .guest-signup-button:hover { background: #075fba; }
 .guest-signup-button:focus-visible { outline: 3px solid #80c3ff; outline-offset: 2px; }
+.guest-signup-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.guest-signup-button--secondary { border: 1px solid #8aa9c4; background: #fff; color: #183b5b; }
+.guest-signup-button--secondary:hover { background: #e4f1ff; }
 
 body.daily-nutrition-route .guest-signup-prompt { grid-column: 1 / -1; }

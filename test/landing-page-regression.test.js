@@ -115,7 +115,7 @@ test("mobile landing gives distinct entry actions and clearly labels every plan 
     assert.ok(actions, `${language}: missing entry actions`);
     assert.match(actions.querySelector('.landing-entry-link--primary').getAttribute('href'), /auth\.html\?provider=google$/);
     assert.match(actions.querySelector('.landing-entry-link--secondary').getAttribute('href'), /auth\.html\?mode=signup$/);
-    assert.equal(actions.querySelector('.landing-entry-link[href="/daily-nutrition.html"]')?.getAttribute('href'), '/daily-nutrition.html');
+    assert.equal(actions.querySelector('.landing-entry-link[href="/dashboard.html"]')?.getAttribute('href'), '/dashboard.html');
     for (const preview of doc.querySelectorAll('.simple-preview-card')) {
       assert.equal(preview.firstElementChild.className, 'preview-example-note');
       assert.ok(preview.querySelector(':scope > strong').textContent.length > 0);

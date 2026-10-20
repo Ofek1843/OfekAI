@@ -18,7 +18,7 @@ const shell = read("public/js/redesign-shell.js");
 const dashboard = read("public/dashboard.html");
 const server = read("server.js");
 
-test("daily logging action precedes entries and the day history", () => {
+test("date toolbar opens the calorie calendar before the food composer", () => {
   const composer = html.indexOf('id="foodComposerForm"');
   const progress = html.indexOf('id="progressSectionTitle"');
   const entries = html.indexOf('id="foodEntries"');
@@ -27,7 +27,8 @@ test("daily logging action precedes entries and the day history", () => {
   assert.ok(composer < progress);
   assert.ok(progress < entries);
   assert.ok(composer < entries);
-  assert.ok(entries < calendar);
+  assert.ok(calendar < composer);
+  assert.match(html, /id="datePickerButton"[^>]+aria-controls="calendarPanel"/);
 });
 
 test("daily nutrition explains the first three actions without hiding the existing tools", () => {
@@ -63,6 +64,12 @@ test("missing nutrition targets explain the required plan and offer both setup p
   assert.match(css, /\.target-setup\[hidden\]\s*\{\s*display:\s*none/);
   assert.match(copy, /Build and save a nutrition plan, then set it as your active plan/);
   assert.match(copy, /בנו ושמרו תוכנית תזונה, ואז הגדירו אותה כתוכנית הפעילה/);
+});
+
+test("missing-target copy remains readable on the white card", () => {
+  const editorial = read("public/css/product-editorial.css");
+  assert.match(editorial, /body\.daily-nutrition-route \.target-setup h3 \{ color: var\(--product-ink\) !important/);
+  assert.match(editorial, /body\.daily-nutrition-route \.target-setup p \{ color: var\(--product-muted\) !important/);
 });
 
 test("client protects private data while offering a local guest preview", () => {

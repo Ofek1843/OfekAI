@@ -88,7 +88,7 @@ test('rapid day navigation discards a stale read and never exposes an old log un
   const ctx={state,db:{},console:{warn(){}},$:()=>({}),copy:{loading:'loading'},navigator:{onLine:false},
     withDeadline:p=>p,withTimeout:p=>p,LOG_LOAD_TIMEOUT_MS:10,readDailyDraft:()=>null,
     loadDailyLog(db,uid,date){const gate=deferred();loads.set(date,gate);return gate.promise;},loadNutritionWeek:async()=>[],
-    normalizeLog:(date,log={})=>({dateKey:date,entries:[],...log}),setComposerMessage(){},setPageStatus(){},
+    normalizeLog:(date,log={})=>({dateKey:date,entries:[],...log}),setComposerMessage(){},setPageStatus(){},loadCalendarMonth(){},
     render(){renders.push({date:state.dateKey,log:state.log.dateKey});}};
   vm.createContext(ctx);vm.runInContext(body('async function loadDate(','function addEntries'),ctx);
   const first=ctx.loadDate('2026-10-15');assert.equal(state.log,null);await tick();
@@ -107,7 +107,7 @@ test('a failed browser read uses the authenticated server copy instead of claimi
     loadDailyLog:async()=>{throw Error('browser stream stalled');},
     loadDailyLogFromServer:async date=>({dateKey:date,entries:[{id:'cloud'}],completed:false}),
     loadNutritionWeek:async()=>[],normalizeLog:(date,log={})=>({dateKey:date,entries:[],...log}),
-    setComposerMessage(){},setPageStatus(message,error){pageStatus={message,error};},render(){}};
+    setComposerMessage(){},setPageStatus(message,error){pageStatus={message,error};},render(){},loadCalendarMonth(){}};
   vm.createContext(ctx);vm.runInContext(body('async function loadDate(','function addEntries'),ctx);
   await ctx.loadDate('2026-10-16');
   assert.equal(state.log.entries[0].id,'cloud');
@@ -127,7 +127,7 @@ test('a server-confirmed completed write clears its stale local warning without 
     loadDailyLogFromServer:async date=>({dateKey:date,entries:[entry],completed:false,targetSnapshot:null,updatedAt:300}),
     sameSavedLog:(a,b)=>JSON.stringify(a.entries)===JSON.stringify(b.entries),
     loadNutritionWeek:async()=>[],normalizeLog:(date,log={})=>({dateKey:date,entries:[],completed:false,targetSnapshot:null,...log}),
-    timestampMillis:value=>Number(value)||0,setComposerMessage(){},setPageStatus(){},render(){},queueSave(){saved++;}};
+    timestampMillis:value=>Number(value)||0,setComposerMessage(){},setPageStatus(){},render(){},loadCalendarMonth(){},queueSave(){saved++;}};
   vm.createContext(ctx);vm.runInContext(body('async function loadDate(','function addEntries'),ctx);
   await ctx.loadDate('2026-10-16');
   assert.equal(cleared,1);

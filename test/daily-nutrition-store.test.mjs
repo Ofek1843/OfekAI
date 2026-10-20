@@ -49,3 +49,23 @@ test('save/reload/copy preserve source snapshots while legacy entries gain no in
   const copied=await ctx.copyPreviousDay({},'owner','2026-10-16',()=>`copied-${writes.length}`);
   assert.equal(copied.log.entries[0].reference.recordId,173904);assert.equal(copied.log.entries[1].reference,null);
 });
+
+test('monthly calendar reads only the signed-in user month and recomputes calories from entries',async()=>{
+  const {ctx}=store();let request;
+  ctx.collection=(db,...parts)=>parts.join('/');
+  ctx.documentId=()=> '__name__';
+  ctx.orderBy=(field)=>({orderBy:field});
+  ctx.startAt=(value)=>({startAt:value});
+  ctx.endAt=(value)=>({endAt:value});
+  ctx.query=(reference,...constraints)=>({reference,constraints});
+  ctx.getDocs=async value=>{request=value;return {docs:[{id:'2026-10-20',data:()=>({entries:[entry],totals:{calories:9999}})}]};};
+  const logs=await ctx.loadNutritionMonth({},'owner','2026-10');
+  assert.equal(request.reference,'users/owner/dailyNutritionLogs');
+  assert.equal(request.constraints[0].orderBy,'__name__');
+  assert.equal(request.constraints[1].startAt,'2026-10-01');
+  assert.equal(request.constraints[2].endAt,'2026-10-31');
+  assert.equal(logs[0].dateKey,'2026-10-20');
+  assert.equal(logs[0].totals.calories,200);
+  await assert.rejects(ctx.loadNutritionMonth({},'bad/owner','2026-10'),/INVALID_USER/);
+  await assert.rejects(ctx.loadNutritionMonth({},'owner','2026-13'),/INVALID_MONTH/);
+});

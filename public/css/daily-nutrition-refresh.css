@@ -103,7 +103,20 @@ body.daily-nutrition-route .date-picker-label {
   color: #15202b !important;
   font: 700 1rem/1 "Space Grotesk", sans-serif !important;
   cursor: pointer !important;
+  gap: 8px !important;
 }
+
+body.daily-nutrition-route .date-picker-label[aria-expanded="true"] { border-color: #0866bd !important; box-shadow: 0 0 0 3px #dcebfa !important; }
+body.daily-nutrition-route #selectedDate[hidden] { display: none !important; }
+body.daily-nutrition-route .date-toolbar #calendarPanel { grid-column: 1 / -1; width: min(460px, 100%); justify-self: center; margin: 4px 0 8px; padding: 14px 0 0; border: 1px solid #d6d4ce; border-radius: 12px; background: #fff; box-shadow: 0 12px 32px #182c3b1a; color: #17212b; }
+body.daily-nutrition-route .date-toolbar #calendarPanel[hidden] { display: none !important; }
+body.daily-nutrition-route .calendar-panel-heading { display: flex; flex-direction: column; gap: 3px; padding: 0 16px 8px; }
+body.daily-nutrition-route .calendar-panel-heading b { color: #17212b; font-size: 1rem; }
+body.daily-nutrition-route .calendar-panel-heading small { color: #586775; font-size: .82rem; }
+body.daily-nutrition-route .calendar-day small { color: #07559b !important; font-size: .67rem; font-weight: 700; }
+body.daily-nutrition-route .calendar-status { min-height: 1.25em; margin: 0; padding: 0 16px 12px; color: #586775; font-size: .78rem; }
+body.daily-nutrition-route #calendarPreviousMonth img { transform: rotate(180deg) !important; }
+body.daily-nutrition-route #calendarNextMonth img { transform: none !important; }
 
 body.daily-nutrition-route .date-picker-label:focus-within {
   outline: 3px solid #111 !important;

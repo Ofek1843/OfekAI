@@ -191,14 +191,14 @@
         ? 'בונים תוכנית אימון או תפריט, רושמים ארוחות ועוקבים אחרי ההתקדמות במקום אחד.'
         : copy('intro');
     const entryCopy = {
-      en: ['Continue with Google', 'Sign up with email', 'Try the food diary as a guest', 'Log in', 'Try a tool first. Sign up when you are ready to generate or save.'],
-      he: ['ממשיכים עם Google', 'הרשמה עם אימייל', 'ניסיון ביומן התזונה כאורחים', 'כניסה לחשבון', 'אפשר לנסות קודם. נרשמים כשרוצים ליצור או לשמור.'],
-      ar: ['المتابعة باستخدام Google', 'التسجيل بالبريد الإلكتروني', 'تجربة سجل الطعام كضيف', 'تسجيل الدخول', 'جرّب أداة أولاً. سجّل عندما تريد الإنشاء أو الحفظ.'],
-      es: ['Continuar con Google', 'Registrarse con correo', 'Probar el diario como invitado', 'Iniciar sesión', 'Prueba una herramienta. Regístrate para crear o guardar.'],
-      fr: ['Continuer avec Google', 'S’inscrire par e-mail', 'Essayer le journal en invité', 'Se connecter', 'Essayez d’abord un outil. Inscrivez-vous pour créer ou enregistrer.'],
-      de: ['Mit Google fortfahren', 'Mit E-Mail registrieren', 'Ernährungstagebuch als Gast testen', 'Anmelden', 'Probiere zuerst ein Werkzeug aus. Registriere dich zum Erstellen oder Speichern.'],
-      zh: ['使用 Google 继续', '使用邮箱注册', '以访客身份试用饮食日记', '登录', '先试用工具。需要生成或保存时再注册。']
-    }[language] || ['Continue with Google', 'Sign up with email', 'Try the food diary as a guest', 'Log in', 'Try a tool first. Sign up when you are ready to generate or save.'];
+      en: ['Continue with Google', 'Sign up with email', 'Continue as a Guest', 'Log in', 'Explore the dashboard and try a tool. Sign up only when you are ready to generate or save.'],
+      he: ['ממשיכים עם Google', 'הרשמה עם אימייל', 'המשך כאורח', 'כניסה לחשבון', 'אפשר לראות את הדשבורד ולנסות כלי. נרשמים רק כשרוצים ליצור או לשמור.'],
+      ar: ['المتابعة باستخدام Google', 'التسجيل بالبريد الإلكتروني', 'المتابعة كضيف', 'تسجيل الدخول', 'جرّب لوحة التحكم أولاً. سجّل عندما تريد الإنشاء أو الحفظ.'],
+      es: ['Continuar con Google', 'Registrarse con correo', 'Continuar como invitado', 'Iniciar sesión', 'Explora el panel y prueba una herramienta. Regístrate para crear o guardar.'],
+      fr: ['Continuer avec Google', 'S’inscrire par e-mail', 'Continuer en invité', 'Se connecter', 'Explorez le tableau de bord. Inscrivez-vous pour créer ou enregistrer.'],
+      de: ['Mit Google fortfahren', 'Mit E-Mail registrieren', 'Als Gast fortfahren', 'Anmelden', 'Erkunde das Dashboard. Registriere dich zum Erstellen oder Speichern.'],
+      zh: ['使用 Google 继续', '使用邮箱注册', '以访客身份继续', '登录', '先浏览控制面板。生成或保存时再注册。']
+    }[language] || ['Continue with Google', 'Sign up with email', 'Continue as a Guest', 'Log in', 'Explore the dashboard and try a tool. Sign up only when you are ready to generate or save.'];
     const entryActions = document.createElement('div');
     entryActions.className = 'landing-entry-actions';
     const startLink = document.createElement('a');
@@ -216,7 +216,7 @@
     emailLink.textContent = entryCopy[1];
     const guestLink = document.createElement('a');
     guestLink.className = 'landing-entry-link landing-entry-link--secondary';
-    guestLink.href = '/daily-nutrition.html';
+    guestLink.href = '/dashboard.html';
     guestLink.textContent = entryCopy[2];
     const loginLink = document.createElement('a');
     loginLink.className = 'landing-entry-login';
