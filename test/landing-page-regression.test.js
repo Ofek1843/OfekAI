@@ -113,8 +113,9 @@ test("mobile landing gives distinct entry actions and clearly labels every plan 
     const doc = require('./helpers/current-product.cjs').landing(language);
     const actions = doc.querySelector('.landing-entry-actions');
     assert.ok(actions, `${language}: missing entry actions`);
-    assert.match(actions.querySelector('.landing-entry-link--primary').getAttribute('href'), /auth\.html\?mode=signup$/);
-    assert.match(actions.querySelector('.landing-entry-link--secondary').getAttribute('href'), /auth\.html$/);
+    assert.match(actions.querySelector('.landing-entry-link--primary').getAttribute('href'), /auth\.html\?provider=google$/);
+    assert.match(actions.querySelector('.landing-entry-link--secondary').getAttribute('href'), /auth\.html\?mode=signup$/);
+    assert.equal(actions.querySelector('.landing-entry-link[href="/daily-nutrition.html"]')?.getAttribute('href'), '/daily-nutrition.html');
     for (const preview of doc.querySelectorAll('.simple-preview-card')) {
       assert.equal(preview.firstElementChild.className, 'preview-example-note');
       assert.ok(preview.querySelector(':scope > strong').textContent.length > 0);

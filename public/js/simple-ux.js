@@ -49,7 +49,7 @@
     ['nutrition','nutritionText','nutrition-builder.html','salad'],
     ['diary','diaryText','daily-nutrition.html','clipboard']
   ];
-  function tools(publicPage) {
+  function tools() {
     const region = document.createElement('section');
     region.className = 'simple-tools';
     region.id = 'simpleTools';
@@ -60,7 +60,7 @@
       const link = document.createElement('a');
       link.className = 'simple-tool';
       link.dataset.toolIndex = String(index);
-      link.href = publicPage ? `auth.html?next=${href}` : `/${href}`;
+      link.href = `/${href}`;
       const marker = text('span', title, 'simple-tool-icon');
       marker.textContent = String(index+1).padStart(2,'0');
       marker.setAttribute('aria-hidden','true');
@@ -191,28 +191,41 @@
         ? 'בונים תוכנית אימון או תפריט, רושמים ארוחות ועוקבים אחרי ההתקדמות במקום אחד.'
         : copy('intro');
     const entryCopy = {
-      en: ['Get started', 'Log in', 'New here? Create an account to build your own plan.'],
-      he: ['מתחילים כאן', 'כניסה לחשבון', 'חדשים כאן? פתחו חשבון כדי ליצור תוכנית משלכם.'],
-      ar: ['ابدأ الآن', 'تسجيل الدخول', 'أنشئ حسابًا لتبني خطتك الخاصة.'],
-      es: ['Empezar', 'Iniciar sesión', 'Crea una cuenta para construir tu propio plan.'],
-      fr: ['Commencer', 'Se connecter', 'Créez un compte pour créer votre programme.'],
-      de: ['Jetzt starten', 'Anmelden', 'Erstelle ein Konto für deinen eigenen Plan.'],
-      zh: ['开始使用', '登录', '创建账户，制定属于你的计划。']
-    }[language] || ['Get started', 'Log in', 'Create an account to build your own plan.'];
+      en: ['Continue with Google', 'Sign up with email', 'Try the food diary as a guest', 'Log in', 'Try a tool first. Sign up when you are ready to generate or save.'],
+      he: ['ממשיכים עם Google', 'הרשמה עם אימייל', 'ניסיון ביומן התזונה כאורחים', 'כניסה לחשבון', 'אפשר לנסות קודם. נרשמים כשרוצים ליצור או לשמור.'],
+      ar: ['المتابعة باستخدام Google', 'التسجيل بالبريد الإلكتروني', 'تجربة سجل الطعام كضيف', 'تسجيل الدخول', 'جرّب أداة أولاً. سجّل عندما تريد الإنشاء أو الحفظ.'],
+      es: ['Continuar con Google', 'Registrarse con correo', 'Probar el diario como invitado', 'Iniciar sesión', 'Prueba una herramienta. Regístrate para crear o guardar.'],
+      fr: ['Continuer avec Google', 'S’inscrire par e-mail', 'Essayer le journal en invité', 'Se connecter', 'Essayez d’abord un outil. Inscrivez-vous pour créer ou enregistrer.'],
+      de: ['Mit Google fortfahren', 'Mit E-Mail registrieren', 'Ernährungstagebuch als Gast testen', 'Anmelden', 'Probiere zuerst ein Werkzeug aus. Registriere dich zum Erstellen oder Speichern.'],
+      zh: ['使用 Google 继续', '使用邮箱注册', '以访客身份试用饮食日记', '登录', '先试用工具。需要生成或保存时再注册。']
+    }[language] || ['Continue with Google', 'Sign up with email', 'Try the food diary as a guest', 'Log in', 'Try a tool first. Sign up when you are ready to generate or save.'];
     const entryActions = document.createElement('div');
     entryActions.className = 'landing-entry-actions';
     const startLink = document.createElement('a');
-    startLink.className = 'landing-entry-link landing-entry-link--primary';
-    startLink.href = 'auth.html?mode=signup';
-    startLink.textContent = entryCopy[0];
+    startLink.className = 'landing-entry-link landing-entry-link--primary landing-entry-link--google';
+    startLink.id = 'continueGoogleCta';
+    startLink.href = 'auth.html?provider=google';
+    const googleIcon = hero.querySelector('#continueGoogleCta svg')?.cloneNode(true);
+    if (googleIcon) startLink.append(googleIcon);
+    const googleLabel = document.createElement('span');
+    googleLabel.textContent = entryCopy[0];
+    startLink.append(googleLabel);
+    const emailLink = document.createElement('a');
+    emailLink.className = 'landing-entry-link landing-entry-link--secondary';
+    emailLink.href = 'auth.html?mode=signup';
+    emailLink.textContent = entryCopy[1];
+    const guestLink = document.createElement('a');
+    guestLink.className = 'landing-entry-link landing-entry-link--secondary';
+    guestLink.href = '/daily-nutrition.html';
+    guestLink.textContent = entryCopy[2];
     const loginLink = document.createElement('a');
-    loginLink.className = 'landing-entry-link landing-entry-link--secondary';
+    loginLink.className = 'landing-entry-login';
     loginLink.href = 'auth.html';
-    loginLink.textContent = entryCopy[1];
+    loginLink.textContent = entryCopy[3];
     const entryHint = document.createElement('small');
     entryHint.className = 'landing-entry-hint';
-    entryHint.textContent = entryCopy[2];
-    entryActions.append(startLink, loginLink, entryHint);
+    entryHint.textContent = entryCopy[4];
+    entryActions.append(startLink, emailLink, guestLink, loginLink, entryHint);
     lede.after(entryActions);
     const editorialMedia = document.createElement('figure');
     editorialMedia.className = 'editorial-landing-media';
@@ -226,7 +239,7 @@
     editorialCaption.textContent = language === 'he' ? 'התוכנית שלך. ההתקדמות שלך.' : 'Your plan. Your progress.';
     editorialMedia.append(editorialPhoto, editorialCaption);
     hero.querySelector('.hero-content').after(editorialMedia);
-    editorialMedia.after(tools(true));
+    editorialMedia.after(tools());
     ['.hero-subcopy','.hero-support','.hero-meta','.hero-cta-row','.feature-pills','.builder-chooser','.eyebrow'].forEach(selector => hero.querySelector(selector)?.remove());
     hero.querySelector('.landing-plan-guide-link')?.remove();
     const aside = hero.querySelector('.hero-panel');
@@ -321,7 +334,7 @@
   // dashboard where it pushes the actual plan cards below the fold.
   if (studio && !document.body.classList.contains('dashboard-design-v2')) {
     const extra = details([...studio.querySelectorAll('.capability-card')],'more');
-    const core = tools(false);
+    const core = tools();
     studio.before(core);
     studio.replaceWith(extra);
     // Keep IDs for localized/dashboard state updates, but put secondary tools after the core actions.

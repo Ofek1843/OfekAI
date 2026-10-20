@@ -31,7 +31,7 @@ function resumeGuestNutrition(user) {
   setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
 }
 
-guardProtectedPage({ onAuthenticated: resumeGuestNutrition, onSignedOut: () => {} });
+guardProtectedPage({ onAuthenticated: resumeGuestNutrition, onSignedOut: () => { document.body.style.visibility = "visible"; } });
 async function authHeaders(contentType = "application/json") {
   const user = auth.currentUser;
   if (!user) throw new Error("Authentication required.");

@@ -24,7 +24,7 @@ test("the lightweight three-tool explanation replaces the heavy landing sequence
   const landing = read("public/index.html");
   const simpleUx = read("public/js/simple-ux.js");
   const sw = read("public/sw.js");
-  assert.match(landing, /simple-ux\.js\?v=20261014-rir-1/);
+  assert.match(landing, /simple-ux\.js\?v=20261020-guest-entry-1/);
   assert.doesNotMatch(landing, /image-sequence-v43\.js/);
   require("./helpers/current-product.cjs").assertCachedAsset(sw, "/js/simple-ux.js");
   for (const key of ["workout", "nutrition", "diary"]) assert.match(simpleUx, new RegExp(`'${key}'`));

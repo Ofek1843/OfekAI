@@ -19,7 +19,10 @@ test('landing exposes three direct tools before secondary features, without a ch
   const {document}=render('index.html');
   const cards=[...document.querySelectorAll('.simple-tool')];
   assert.equal(cards.length,3);
-  assert.deepEqual(cards.map(node=>node.getAttribute('href')),['auth.html?next=workout-builder.html','auth.html?next=nutrition-builder.html','auth.html?next=daily-nutrition.html']);
+  assert.deepEqual(cards.map(node=>node.getAttribute('href')),['/workout-builder.html','/nutrition-builder.html','/daily-nutrition.html']);
+  assert.equal(document.querySelector('.landing-entry-link--google')?.getAttribute('href'),'auth.html?provider=google');
+  assert.equal(document.querySelector('.landing-entry-link--secondary')?.getAttribute('href'),'auth.html?mode=signup');
+  assert.equal(document.querySelectorAll('.landing-entry-link[href="/daily-nutrition.html"]').length,1);
   assert.equal(document.querySelector('#builderChooser'),null);
   assert.equal(document.querySelector('#buildProgramCta'),null);
   assert.equal(document.querySelector('#features').closest('details').hasAttribute('open'),false);

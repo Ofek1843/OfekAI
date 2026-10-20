@@ -1170,6 +1170,7 @@ function initGuestPreview() {
     const control = $(selector);
     if (control) control.disabled = true;
   });
+  document.body.style.visibility = "visible";
 }
 
 applyLanguage();

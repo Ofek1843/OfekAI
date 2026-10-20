@@ -38,7 +38,7 @@ function resumeGuestWorkout(user) {
   setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
 }
 
-guardProtectedPage({ onAuthenticated: resumeGuestWorkout, onSignedOut: () => {} });
+guardProtectedPage({ onAuthenticated: resumeGuestWorkout, onSignedOut: () => { document.body.style.visibility = "visible"; } });
 trackPageView({ page: "workout-builder" });
 trackEvent("builder_open", { builder: "workout" });
 async function authHeaders(contentType = "application/json") {

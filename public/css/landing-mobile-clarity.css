@@ -19,7 +19,16 @@ body.landing-page .landing-entry-link {
 }
 body.landing-page .landing-entry-link--primary { background: #0866bd; color: #fff; }
 body.landing-page .landing-entry-link--secondary { background: #fff; color: #064d91; }
+body.landing-page .landing-entry-link--google { grid-column: 1 / -1; gap: 10px; }
+body.landing-page .landing-entry-link--google svg { width: 20px; height: 20px; flex: none; }
 body.landing-page .landing-entry-link:focus-visible { outline: 3px solid #5bdcea; outline-offset: 3px; }
+body.landing-page .landing-entry-login {
+  grid-column: 1 / -1;
+  justify-self: start;
+  color: #064d91;
+  font: 600 14px/1.4 Arial, sans-serif;
+}
+body.landing-page .landing-entry-login:focus-visible { outline: 3px solid #5bdcea; outline-offset: 3px; }
 body.landing-page .landing-entry-hint {
   grid-column: 1 / -1;
   color: #5f6368;
