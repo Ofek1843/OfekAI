@@ -271,6 +271,175 @@ body.daily-nutrition-route .compact-tool-card { padding: 24px !important; }
 
 body.daily-nutrition-route .entries-panel .section-helper { margin: 5px 0 0 !important; }
 
+/* Compact food diary: keep the portion and calories visible, disclose actions on demand. */
+body.daily-nutrition-route .food-diary-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+body.daily-nutrition-route .diary-add-food {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #a9cef4 !important;
+  border-radius: 10px;
+  background: #fff !important;
+  color: var(--daily-blue) !important;
+  font: 600 .9rem/1.2 "Space Grotesk", sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+body.daily-nutrition-route .diary-add-food img {
+  width: 18px;
+  height: 18px;
+  filter: none;
+}
+
+body.daily-nutrition-route .food-diary-list { margin-top: 18px; }
+body.daily-nutrition-route .food-entry {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid #e2e8ef;
+  border-radius: 0;
+  background: #fff !important;
+  color: var(--daily-ink);
+  box-shadow: none;
+}
+body.daily-nutrition-route .food-entry:last-child { border-bottom: 0; }
+body.daily-nutrition-route .food-entry-summary {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) max-content 20px;
+  align-items: center;
+  gap: 12px;
+  min-height: 80px;
+  padding: 12px 4px;
+  list-style: none;
+  cursor: pointer;
+}
+body.daily-nutrition-route .food-entry-summary::-webkit-details-marker { display: none; }
+body.daily-nutrition-route .food-entry-summary::marker { content: ""; }
+body.daily-nutrition-route .food-entry-summary:hover { background: #f7faff; }
+body.daily-nutrition-route .food-entry-summary:focus-visible {
+  outline: 3px solid var(--daily-blue) !important;
+  outline-offset: -3px !important;
+  border-radius: 8px;
+}
+body.daily-nutrition-route .food-entry-summary .food-thumbnail {
+  width: 52px;
+  height: 52px;
+  margin: 0;
+  border: 1px solid #e8edf2;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #f5f7fa;
+}
+body.daily-nutrition-route .food-entry-text { display: grid; gap: 3px; min-width: 0; }
+body.daily-nutrition-route .food-entry-name {
+  color: var(--daily-ink) !important;
+  font: 600 1rem/1.35 "Space Grotesk", sans-serif;
+  overflow-wrap: anywhere;
+}
+body.daily-nutrition-route .food-entry-portion {
+  color: var(--daily-muted) !important;
+  font-size: .85rem;
+  line-height: 1.4;
+}
+body.daily-nutrition-route .food-entry-calories {
+  justify-self: end;
+  color: var(--daily-ink);
+}
+body.daily-nutrition-route .food-entry-calories .nutrition-amount {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+}
+body.daily-nutrition-route .food-entry-calories .nutrition-number {
+  color: var(--daily-ink);
+  font-size: 1.03rem;
+  font-weight: 600;
+}
+body.daily-nutrition-route .food-entry-calories .nutrition-unit {
+  color: var(--daily-muted);
+  font-size: .8rem;
+}
+body.daily-nutrition-route .food-entry-chevron {
+  width: 20px;
+  height: 20px;
+  opacity: .6;
+  transition: transform .15s ease;
+}
+html[dir="rtl"] body.daily-nutrition-route .food-entry-chevron { transform: rotate(180deg); }
+body.daily-nutrition-route .food-entry[open] > summary .food-entry-chevron { transform: rotate(90deg); }
+body.daily-nutrition-route .food-entry-details {
+  display: grid;
+  gap: 14px;
+  padding: 2px 4px 18px 68px;
+}
+html[dir="rtl"] body.daily-nutrition-route .food-entry-details { padding-inline: 68px 4px; }
+body.daily-nutrition-route .food-entry-macros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 12px 0;
+  border-block: 1px solid #e8edf2;
+}
+body.daily-nutrition-route .food-entry-macros dt {
+  color: var(--daily-muted);
+  font-size: .8rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+body.daily-nutrition-route .food-entry-macros dd {
+  margin: 4px 0 0;
+  color: var(--daily-ink);
+  font-size: .95rem;
+  font-weight: 600;
+}
+body.daily-nutrition-route .food-entry-note { margin: 0; color: var(--daily-muted); font-size: .85rem; }
+body.daily-nutrition-route .food-entry-estimate { color: #875600; }
+body.daily-nutrition-route .food-entry-edit-label { display: grid; gap: 6px; color: var(--daily-muted); font-size: .85rem; }
+body.daily-nutrition-route .food-entry-details .entry-edit { justify-content: flex-start; }
+body.daily-nutrition-route .food-entry-details .entry-edit input {
+  width: 100px;
+  min-height: 44px;
+  border: 1px solid #a9b8c8;
+  background: #fff !important;
+  color: var(--daily-ink) !important;
+  font: inherit;
+}
+body.daily-nutrition-route .food-entry .entry-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+body.daily-nutrition-route .food-entry .entry-actions button {
+  flex: 0 1 auto;
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid #ccd7e3 !important;
+  border-radius: 9px;
+  background: #fff !important;
+  color: #23405d !important;
+  font: 600 .85rem/1.3 "Space Grotesk", sans-serif;
+  cursor: pointer;
+}
+body.daily-nutrition-route .food-entry .entry-actions button[data-entry-action="save"] {
+  background: var(--daily-blue) !important;
+  border-color: var(--daily-blue) !important;
+  color: #fff !important;
+}
+body.daily-nutrition-route .food-entry .entry-actions button[data-entry-action="delete"] {
+  background: #fff7f6 !important;
+  border-color: #f0d1ce !important;
+  color: #ae302a !important;
+}
+
 body.daily-nutrition-route .entry-count {
   min-width: 42px !important;
   height: 42px !important;
@@ -294,6 +463,21 @@ body.daily-nutrition-route summary:focus-visible {
 }
 
 @media (max-width: 620px) {
+  body.daily-nutrition-route .entries-panel { padding: 20px 16px !important; }
+  body.daily-nutrition-route .entries-panel .section-heading-row { flex-wrap: wrap; gap: 12px; }
+  body.daily-nutrition-route .food-diary-tools { justify-content: flex-start; }
+  body.daily-nutrition-route .food-entry-summary {
+    grid-template-columns: 44px minmax(0, 1fr) max-content 18px;
+    gap: 8px;
+    min-height: 72px;
+    padding-inline: 0;
+  }
+  body.daily-nutrition-route .food-entry-summary .food-thumbnail { width: 44px; height: 44px; border-radius: 10px; }
+  body.daily-nutrition-route .food-entry-name { font-size: .94rem; }
+  body.daily-nutrition-route .food-entry-portion { font-size: .8rem; }
+  body.daily-nutrition-route .food-entry-details,
+  html[dir="rtl"] body.daily-nutrition-route .food-entry-details { padding-inline: 0; }
+  body.daily-nutrition-route .food-entry .entry-actions button { flex: 1 1 auto; }
   body.daily-nutrition-route .daily-nutrition-shell {
     width: min(100% - 24px, 1280px) !important;
     padding-top: 14px !important;
@@ -316,4 +500,8 @@ body.daily-nutrition-route summary:focus-visible {
   body.daily-nutrition-route .macro-card--primary .macro-visual-row { grid-template-columns: 112px minmax(0, 1fr) !important; gap: 14px !important; }
   body.daily-nutrition-route .macro-card--primary .macro-ring { width: 112px !important; height: 112px !important; box-shadow: inset 0 0 0 26px #edf1f5 !important; }
   body.daily-nutrition-route .daily-goals-card { grid-template-columns: 1fr !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.daily-nutrition-route .food-entry-chevron { transition: none; }
 }

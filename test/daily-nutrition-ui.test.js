@@ -46,7 +46,9 @@ test("daily nutrition explains the first three actions without hiding the existi
 test("daily nutrition uses semantic, accessible controls and live summaries", () => {
   assert.match(html, /<form id="foodComposerForm"/);
   assert.match(html, /<label class="sr-only" for="foodInput"/);
-  assert.match(html, /<table class="food-table">/);
+  assert.match(html, /<div id="foodEntries"><\/div>/);
+  assert.match(client, /<details class="food-entry"/);
+  assert.match(client, /<summary class="food-entry-summary">/);
   assert.match(html, /role="progressbar"/);
   assert.match(html, /role="status" aria-live="polite"/);
   assert.match(html, /id="macroRing" class="macro-ring" role="img"/);
@@ -163,13 +165,12 @@ test("dashboard and global drawer expose one unambiguous Daily Nutrition route",
   assert.match(shell, /href: "\/daily-nutrition\.html"/);
 });
 
-test("mobile layout stacks food rows without horizontal table scrolling", () => {
-  assert.match(css, /@media \(max-width: 760px\)/);
-  assert.match(css, /\.food-table thead\s*\{\s*display:\s*none/);
-  assert.match(css, /\.food-table tr\s*\{[\s\S]*display:\s*grid/);
-  assert.match(css, /\.food-table\s*\{\s*min-width:\s*0\s*!important/);
+test("food diary uses compact disclosure rows instead of a wide table", () => {
+  assert.doesNotMatch(html, /<table class="food-table">/);
+  assert.match(refreshCss, /\.food-entry-summary\s*\{[\s\S]*?grid-template-columns:\s*52px minmax\(0, 1fr\) max-content 20px/);
+  assert.match(refreshCss, /\.food-entry-summary\s*\{[\s\S]*?grid-template-columns:\s*44px minmax\(0, 1fr\) max-content 18px/);
+  assert.match(html, /id="diaryAddFoodButton"/);
   assert.match(css, /body\.daily-nutrition-route\s*\{[^}]*overflow-x:\s*hidden/);
-  assert.match(css, /\.food-table-wrap\s*\{[^}]*overflow:\s*hidden/);
 });
 
 test("mobile food logging keeps the input, date and save actions readable", () => {

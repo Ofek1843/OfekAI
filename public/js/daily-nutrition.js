@@ -25,7 +25,7 @@ import {
   saveDailyLog,
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20260928-language-coverage-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20261019-food-diary-1";
 import {
   formatNutritionAmount,
   formatNutritionDate,
@@ -398,13 +398,18 @@ function renderMacroDistribution(totals) {
 
 function renderEntries() {
   const body = $("#foodEntries");
+  const expanded = new Set(Array.from(body.querySelectorAll("details[open]"), (row) => row.dataset.entryRow));
+  const focused = body.contains(document.activeElement) ? document.activeElement : null;
+  const focusedId = focused?.closest("[data-entry-row]")?.dataset.entryRow;
+  const focusedIndex = focusedId ? Array.from(body.children).findIndex((row) => row.dataset.entryRow === focusedId) : -1;
+  const focusedAction = focused?.dataset.entryAction;
   $("#entryCount").textContent = String(state.log.entries.length);
   $("#emptyEntries").hidden = state.log.entries.length > 0;
   body.innerHTML = state.log.entries.map((entry) => {
     const editing = state.editingId === entry.id;
-    const amountCell = editing
-      ? `<div class="entry-edit" dir="ltr"><input data-edit-amount="${esc(entry.id)}" type="number" min="0.1" max="10000" step="0.1" value="${esc(entry.amount)}"><span class="nutrition-unit"${language === "he" ? ' lang="he" dir="rtl"' : ""}>${esc(nutritionUnitLabel(entry.unit, language, entry.amount))}</span></div>`
-      : amountMarkup(entry.amount, entry.unit, 1, { approximate: entry.approximate === true });
+    const amountEditor = editing
+      ? `<label class="food-entry-edit-label"><span>${esc(copy.amount)}</span><span class="entry-edit" dir="ltr"><input data-edit-amount="${esc(entry.id)}" type="number" min="0.1" max="10000" step="0.1" value="${esc(entry.amount)}"><span class="nutrition-unit"${language === "he" ? ' lang="he" dir="rtl"' : ""}>${esc(nutritionUnitLabel(entry.unit, language, entry.amount))}</span></span></label>`
+      : "";
     const actions = editing
       ? `<button type="button" data-entry-action="save" data-entry-id="${esc(entry.id)}">${esc(copy.save)}</button><button type="button" data-entry-action="cancel" data-entry-id="${esc(entry.id)}">${esc(copy.cancel)}</button>`
       : `<button type="button" data-entry-action="edit" data-entry-id="${esc(entry.id)}">${esc(copy.edit)}</button><button type="button" data-entry-action="duplicate" data-entry-id="${esc(entry.id)}">${esc(copy.duplicate)}</button><button type="button" data-entry-action="delete" data-entry-id="${esc(entry.id)}">${esc(copy.delete)}</button>`;
@@ -413,11 +418,39 @@ function renderEntries() {
         ? format(entry.compositeEstimate ? copy.estimatedComposite : copy.estimatedPortion, { amount: formatNutritionAmount(entry.estimatedGrams, "g", language, 1) })
         : copy.estimatedGeneric)
       : "";
-    return `<tr data-entry-row="${esc(entry.id)}"><td><div class="food-identity">${foodThumbnailMarkup(entry)}<div class="food-name"><strong>${esc(entryName(entry))}</strong><small dir="auto">${esc(entry.rawText || entry.source || "")}</small>${estimateText ? `<small class="estimate-note">${esc(estimateText)}</small>` : ""}</div></div></td><td data-label="${esc(copy.amount)}">${amountCell}</td><td data-label="${esc(copy.calories)}">${amountMarkup(entry.calories, "kcal", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.protein)}">${amountMarkup(entry.proteinGrams, "g", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.carbs)}">${amountMarkup(entry.carbsGrams, "g", 1, { approximate: entry.approximate === true })}</td><td data-label="${esc(copy.fat)}">${amountMarkup(entry.fatGrams, "g", 1, { approximate: entry.approximate === true })}</td><td><div class="entry-actions">${actions}</div></td></tr>`;
+    return `<details class="food-entry" data-entry-row="${esc(entry.id)}"${editing || expanded.has(entry.id) ? " open" : ""}>
+      <summary class="food-entry-summary">
+        ${foodThumbnailMarkup(entry)}
+        <span class="food-entry-text"><strong class="food-entry-name" dir="auto">${esc(entryName(entry))}</strong><span class="food-entry-portion">${amountMarkup(entry.amount, entry.unit, 1, { approximate: entry.approximate === true })}</span></span>
+        <span class="food-entry-calories">${amountMarkup(entry.calories, "kcal", 1, { approximate: entry.approximate === true })}</span>
+        <img class="food-entry-chevron" src="/icons/tabler/chevron-right.svg" alt="" width="20" height="20">
+      </summary>
+      <div class="food-entry-details">
+        <dl class="food-entry-macros">
+          <div><dt>${esc(copy.protein)}</dt><dd>${amountMarkup(entry.proteinGrams, "g", 1, { approximate: entry.approximate === true })}</dd></div>
+          <div><dt>${esc(copy.carbs)}</dt><dd>${amountMarkup(entry.carbsGrams, "g", 1, { approximate: entry.approximate === true })}</dd></div>
+          <div><dt>${esc(copy.fat)}</dt><dd>${amountMarkup(entry.fatGrams, "g", 1, { approximate: entry.approximate === true })}</dd></div>
+        </dl>
+        ${entry.rawText ? `<p class="food-entry-note" dir="auto">${esc(entry.rawText)}</p>` : ""}
+        ${estimateText ? `<p class="food-entry-note food-entry-estimate">${esc(estimateText)}</p>` : ""}
+        ${amountEditor}
+        <div class="entry-actions">${actions}</div>
+      </div>
+    </details>`;
   }).join("");
   body.querySelectorAll("img.food-thumbnail").forEach((image) => {
     image.onerror = () => { image.onerror = null; image.src = FOOD_THUMBNAIL_FALLBACK; };
   });
+  // Rebuilding the list must not strand keyboard focus after an action.
+  if (focusedId) {
+    const row = Array.from(body.children).find((candidate) => candidate.dataset.entryRow === focusedId);
+    const target = row
+      ? (state.editingId === focusedId
+        ? row.querySelector("[data-edit-amount]")
+        : row.querySelector(`[data-entry-action="${["save", "cancel"].includes(focusedAction) ? "edit" : focusedAction}"]`) || row.querySelector("summary"))
+      : body.children[Math.min(focusedIndex, body.children.length - 1)]?.querySelector("summary") || $("#diaryAddFoodButton");
+    target?.focus({ preventScroll: true });
+  }
 }
 
 function renderCombinations() {
@@ -816,6 +849,7 @@ async function submitFoodText(value) {
 }
 
 function bindEvents() {
+  $("#diaryAddFoodButton").addEventListener("click", () => $("#foodInput").focus());
   document.querySelectorAll("[data-example]").forEach((button) => button.addEventListener("click", () => {
     $("#foodInput").value = button.dataset.example;
     $("#foodInput").focus();

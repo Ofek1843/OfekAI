@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1">
   <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260918-daily-resilience-1">
   <link rel="stylesheet" href="/css/product-editorial.css?v=20261013-nutrition-recovery-1">
-  <link rel="stylesheet" href="/css/daily-nutrition-refresh.css?v=20261019-date-label-1">
+  <link rel="stylesheet" href="/css/daily-nutrition-refresh.css?v=20261019-food-diary-1">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
 <script defer src="/js/google-analytics-consent.js?v=20261017-1"></script>
 </head>
@@ -123,14 +123,11 @@
     <div class="daily-content-grid">
       <section class="entries-panel daily-surface" aria-labelledby="entriesTitle">
         <div class="section-heading-row">
-          <div><span class="daily-kicker" data-copy="entriesTitle">3 · TODAY’S FOOD</span><h2 id="entriesTitle" data-copy="entriesHeading">Food logged today</h2><p class="section-helper" data-copy="entriesHint">Review, edit, duplicate or remove what you logged.</p></div>
-          <span class="entry-count" id="entryCount">0</span>
+          <div><span class="daily-kicker" data-copy="entriesTitle">3 · TODAY’S FOOD</span><h2 id="entriesTitle" data-copy="entriesHeading">Food diary</h2><p class="section-helper" data-copy="entriesHint">Select a food to view details, edit, duplicate or remove it.</p></div>
+          <div class="food-diary-tools"><span class="entry-count" id="entryCount">0</span><button id="diaryAddFoodButton" class="diary-add-food" type="button"><img src="/icons/tabler/plus.svg" alt=""><span data-copy="addFood">Add food</span></button></div>
         </div>
-        <div class="food-table-wrap">
-          <table class="food-table">
-            <thead><tr><th data-copy="food">Food</th><th data-copy="amount">Amount</th><th data-copy="calories">Calories</th><th data-copy="protein">Protein</th><th data-copy="carbs">Carbohydrates</th><th data-copy="fat">Fat</th><th data-copy="actions">Actions</th></tr></thead>
-            <tbody id="foodEntries"></tbody>
-          </table>
+        <div class="food-diary-list">
+          <div id="foodEntries"></div>
           <p id="emptyEntries" class="empty-state" data-copy="emptyEntries">Nothing logged yet. Add your first food above.</p>
         </div>
       </section>
@@ -163,7 +160,7 @@
   </main>
   <link rel="stylesheet" href="/css/simple-ux.css?v=20261007-motion-1">
   <script src="/js/simple-ux.js?v=20261007-motion-1"></script>
-  <script type="module" src="/js/daily-nutrition.js?v=20261019-date-label-1"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20261019-food-diary-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>
