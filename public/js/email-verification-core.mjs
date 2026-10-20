@@ -54,12 +54,10 @@ export function resendCooldownStorageKey(uid) {
   return `fp-verify-resend-${uid || "anon"}`;
 }
 
-// --- Access policy -----------------------------------------------------
-// True when this signed-in user must be blocked from sensitive/saved product
-// features until they verify their email. A Google account's emailVerified
-// is always true (Google itself verified the address), so this naturally
-// never blocks a Google user without needing any provider-specific branching
-// — simpler and more robust than checking providerData.
+// --- Optional verification UI predicate --------------------------------
+// This predicate is not used by the general app-access guard. Email
+// verification can be requested by an individual sensitive workflow when
+// required, but unverified users retain access to ordinary product features.
 export function shouldBlockUnverifiedAccess(user) {
   if (!user) return false;
   return user.emailVerified !== true;
@@ -72,10 +70,11 @@ export function shouldBlockUnverifiedAccess(user) {
 export const VERIFICATION_STRINGS = {
   en: {
     checkEmailTitle: "Check your email",
-    checkEmailBody: "We've sent a verification link to your email address. Your account is created — verifying your email unlocks your saved plans and progress.",
+    checkEmailBody: "Your account is ready. Email verification is optional, and you can use the app now.",
+    signupSuccess: "Account created. Redirecting to your dashboard…",
 
     gateTitle: "Please verify your email",
-    gateBody: "We sent a verification link to your email address when you signed up. Verify it to unlock your workout plans, nutrition plans, AI Coach and progress tracking.",
+    gateBody: "Email verification is optional for using FuelPhysique. You can continue to your account now.",
     resendButton: "Resend verification email",
     resendLoading: "Sending...",
     resendSuccess: "Verification email sent. Please check your inbox.",
@@ -101,10 +100,11 @@ export const VERIFICATION_STRINGS = {
   },
   he: {
     checkEmailTitle: "יש לבדוק את תיבת הדואר",
-    checkEmailBody: "שלחנו קישור לאימות לכתובת האימייל שלך. החשבון שלך נוצר — אימות האימייל פותח את התוכניות וההתקדמות השמורות שלך.",
+    checkEmailBody: "החשבון שלך מוכן. אימות האימייל הוא אפשרות בלבד, ואפשר להשתמש באתר כבר עכשיו.",
+    signupSuccess: "החשבון נוצר. מעבירים אותך ללוח הבקרה…",
 
     gateTitle: "יש לאמת את כתובת האימייל",
-    gateBody: "שלחנו קישור לאימות לכתובת האימייל שלך בעת ההרשמה. יש לאמת אותה כדי לפתוח את תוכניות האימון, תוכניות התזונה, מאמן ה-AI ומעקב ההתקדמות.",
+    gateBody: "אימות האימייל אינו נדרש לשימוש ב-FuelPhysique. אפשר להמשיך לחשבון שלך עכשיו.",
     resendButton: "שליחה חוזרת של אימייל האימות",
     resendLoading: "שולח...",
     resendSuccess: "אימייל האימות נשלח. יש לבדוק את תיבת הדואר.",

@@ -26,6 +26,24 @@ test("landing hides low-count social proof and keeps the primary CTA hooks", () 
   assert.doesNotMatch(landingJs, /\/api\/public-social-proof|publicRegisteredUsers|publicWorkoutPlans|renderSocialProofCount/);
 });
 
+test("landing offers one-step Google sign-in and a direct email-signup alternative", () => {
+  const html = read("public/index.html");
+  const landingJs = read("public/js/landing.js");
+  const authJs = read("public/js/auth.js");
+
+  assert.match(html, /<a href="auth\.html\?provider=google"[^>]*id="continueGoogleCta"/);
+  assert.match(html, /landingContinueGoogle/);
+  assert.match(html, /href="auth\.html\?mode=signup"[^>]*landingContinueEmail/);
+  assert.match(landingJs, /landingContinueGoogle: "Continue with Google"/);
+  assert.match(landingJs, /landingContinueGoogle: "ממשיכים עם Google"/);
+  assert.match(landingJs, /trackClick\("signup_started", \{ method: "google", source: "landing" \}\)/);
+  assert.match(landingJs, /trackClick\("signup_started", \{ method: "email_password", source: "landing" \}\)/);
+  assert.match(authJs, /getRedirectResult\(auth\)[\s\S]*?get\("provider"\) === "google"/);
+  assert.match(authJs, /startGoogleSignIn\(\{ forceRedirect: true \}\)/);
+  assert.match(authJs, /signInWithRedirect\(auth, provider\)/);
+  assert.match(authJs, /needsTermsAcceptance\(existingProfile, TERMS_VERSION\)/);
+});
+
 test("landing language choices keep English first and order remaining options consistently", () => {
   const html = read("public/index.html");
   const options = [...html.matchAll(/role="option" id="welcomeLanguageOption-([a-z]+)"/g)].map((match) => match[1]);
@@ -48,7 +66,7 @@ test("landing language menu uses an in-page accessible picker instead of the nat
   assert.match(css, /\.language-welcome__options:not\(\[hidden\]\)\s*\{[^}]*position: static/);
   assert.doesNotMatch(css, /\.language-welcome__options:not\(\[hidden\]\)\s*\{[^}]*overflow-y:\s*auto/);
   assert.equal((html.match(/role="option" id="welcomeLanguageOption-/g) || []).length, 7);
-  assert.match(html, /landing\.css\?v=20261007-language-picker-3/);
+  assert.match(html, /landing\.css\?v=20261020-google-entry-1/);
   assert.match(html, /language-welcome\.js\?v=20261007-language-picker-2/);
 });
 
@@ -144,6 +162,8 @@ test("dashboard public progress teaser markup was removed", () => {
 test("new landing translation keys exist in English and Hebrew fallbacks", () => {
   const landingJs = read("public/js/landing.js");
   const requiredKeys = [
+    "landingContinueGoogle",
+    "landingContinueEmail",
     "landingSystemTitle",
     "landingResultsTitle",
     "landingResultThreeTitle",
@@ -207,11 +227,9 @@ test("transformation submission remains visible before auth and localizes Hebrew
   assert.match(html, /id="submissionAuthWarning"/);
   assert.doesNotMatch(html, /id="submissionAuthWarning" hidden/);
   assert.doesNotMatch(submitJs, /form\.hidden\s*=/);
-  // The warning is hidden only for a signed-in AND verified user -- an
-  // unverified email/password user must still see it (see
-  // shouldBlockUnverifiedAccess in verification-gate.js).
+  // Any signed-in user may submit; email verification is optional.
   assert.match(submitJs, /authWarning\.hidden = isUsable/);
-  assert.match(submitJs, /shouldBlockUnverifiedAccess/);
+  assert.doesNotMatch(submitJs, /shouldBlockUnverifiedAccess/);
   assert.match(submitJs, /אפשר למלא את הטופס עכשיו/);
   assert.match(submitJs, /שליחת התהליך שלך/);
   assert.match(submitJs, /missingTools/);

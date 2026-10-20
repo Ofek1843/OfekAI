@@ -355,6 +355,11 @@ body.landing-page.fp-v45-deep-ocean.fp-route-index .simple-preview-card .simple-
 }
 .hero-btn.primary { border-color: var(--ed-blue) !important; background: var(--ed-blue) !important; color: #fff !important; }
 .hero-btn.secondary { border: 1px solid #a9a7a2 !important; background: transparent !important; color: var(--ed-ink) !important; }
+.hero-btn.landing-google-cta { border: 1px solid #dadce0 !important; border-radius: 8px !important; background: #fff !important; color: #171717 !important; box-shadow: 0 8px 24px rgba(10, 30, 50, .12) !important; font-family: var(--ed-sans) !important; }
+.hero-btn.landing-google-cta:hover,
+.hero-btn.landing-google-cta:focus-visible { border-color: #9aa0a6 !important; background: #f8f9fa !important; }
+.landing-google-cta svg { width: 21px !important; height: 21px !important; flex: 0 0 21px !important; }
+.landing-email-cta { grid-column: 1 / -1; order: 1; margin: -5px 0 4px; color: var(--ed-muted); font-family: var(--ed-sans); font-size: 15px; font-weight: 700; text-align: center; text-underline-offset: 4px; }
 .landing-plan-guide-link { color: var(--ed-blue-dark) !important; }
 .feature-pills { grid-area: pills !important; justify-content: flex-start !important; margin-top: 30px !important; }
 .feature-pill {

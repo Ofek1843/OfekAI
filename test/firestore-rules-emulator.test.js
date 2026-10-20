@@ -46,6 +46,13 @@ function bob() {
   return testEnv.authenticatedContext("bob", { email: "bob@example.test" }).firestore();
 }
 
+function unverifiedAlice() {
+  return testEnv.authenticatedContext("alice", {
+    email: "alice@example.test",
+    email_verified: false
+  }).firestore();
+}
+
 function carol() {
   return testEnv.authenticatedContext("carol", { email: "carol@example.test" }).firestore();
 }
@@ -156,6 +163,22 @@ test("legacy owner access is preserved and cross-user access is denied", async (
   await assertFails(updateDoc(doc(owner, "users/alice"), { subscription: { planId: "pro", status: "active" } }));
   await assertFails(deleteDoc(doc(owner, "users/alice")));
   await assertFails(getDoc(doc(other, "users/alice")));
+});
+
+test("unverified email users retain only their normal owner-scoped access", async () => {
+  await seed();
+  const unverified = unverifiedAlice();
+  await assertSucceeds(getDoc(doc(unverified, "users/alice")));
+  await assertSucceeds(getDoc(doc(unverified, "users/alice/workoutPlans/plan-a")));
+  await assertSucceeds(setDoc(doc(unverified, "users/alice/workoutPlans/unverified-plan"), { name: "My plan" }));
+  await assertFails(getDoc(doc(unverified, "users/bob")));
+  await assertFails(setDoc(doc(unverified, "users/bob/workoutPlans/forged"), { name: "forged" }));
+
+  // Signup notification claims are written by the trusted server only.
+  for (const db of [unverified, alice(), bob(), unauthenticated()]) {
+    await assertFails(getDoc(doc(db, "signupNotificationEvents/private-hash")));
+    await assertFails(setDoc(doc(db, "signupNotificationEvents/forged"), { claimedAt: 1 }));
+  }
 });
 
 test("leaderboard and legacy share behavior matches the baseline", async () => {

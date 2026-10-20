@@ -65,8 +65,9 @@ test("missing nutrition targets explain the required plan and offer both setup p
   assert.match(copy, /בנו ושמרו תוכנית תזונה, ואז הגדירו אותה כתוכנית הפעילה/);
 });
 
-test("client protects the route and keeps target history plan-first", () => {
-  assert.match(client, /guardProtectedPage\(\{ onAuthenticated: init \}\)/);
+test("client protects private data while offering a local guest preview", () => {
+  assert.match(client, /guardProtectedPage\(\{ onAuthenticated: init, onSignedOut: initGuestPreview \}\)/);
+  assert.match(client, /state\.guest = true[\s\S]*?up to 3 food entries/);
   assert.match(client, /targetSnapshot\(\{ activePlan \}\)/);
   assert.match(client, /maintenanceCalories: Number\(settings\.nutritionTargets\.maintenanceCalories\)/);
   assert.doesNotMatch(client, /weight\s*\*\s*[0-9]/);

@@ -5,7 +5,7 @@ const { getAuth, connectAuthEmulator, createUserWithEmailAndPassword, sendEmailV
 const { buildActionCodeSettings } = require("../public/js/email-verification-core.mjs");
 const { resolveContinueUrl } = require("../public/js/auth-action-core.mjs");
 
-test("disposable emulator account verifies, continues to production login, signs out and signs back in", async () => {
+test("disposable unverified email account can sign in immediately and verify optionally later", async () => {
   const host = process.env.FIREBASE_AUTH_EMULATOR_HOST || "127.0.0.1:9100";
   assert.match(host, /^127\.0\.0\.1:\d+$/);
   const projectId = "demo-fuelphysique";
@@ -16,7 +16,13 @@ test("disposable emulator account verifies, continues to production login, signs
   const password = "Emulator-only-test-349!";
   try {
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(user, buildActionCodeSettings("https://fuelphysique.com"));
+    assert.equal(user.emailVerified, false, "new account is unverified initially");
+    await signOut(auth);
+    const immediateLogin = await signInWithEmailAndPassword(auth, email, password);
+    assert.equal(immediateLogin.user.emailVerified, false, "unverified account can sign in normally");
+    await signOut(auth);
+    const { user: verificationUser } = await signInWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(verificationUser, buildActionCodeSettings("https://fuelphysique.com"));
     const response = await fetch(`http://${host}/emulator/v1/projects/${projectId}/oobCodes`);
     assert.equal(response.status, 200);
     const { oobCodes } = await response.json();
@@ -26,8 +32,8 @@ test("disposable emulator account verifies, continues to production login, signs
     const continuation = link.searchParams.get("continueUrl");
     assert.equal(continuation, "https://fuelphysique.com/auth.html");
     await applyActionCode(auth, action.oobCode);
-    await reload(user);
-    assert.equal(user.emailVerified, true);
+    await reload(verificationUser);
+    assert.equal(verificationUser.emailVerified, true);
     assert.equal(new URL(resolveContinueUrl(continuation), "https://fuelphysique.com").href, "https://fuelphysique.com/auth.html");
     await signOut(auth);
     assert.equal(auth.currentUser, null);

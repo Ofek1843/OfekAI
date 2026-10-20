@@ -14,6 +14,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
+  getAdditionalUserInfo,
   linkWithCredential,
   signOut,
   sendEmailVerification,
@@ -115,6 +116,7 @@ const forgotPasswordMessage = document.getElementById("forgotPasswordMessage");
 
 let currentMode = "login";
 let authenticationCompleted = false;
+let signupCompletionTracked = false;
 // True from the moment a Google flow starts until it either redirects into
 // the product or is fully cancelled. While it's set, the onAuthStateChanged
 // guard must NOT redirect: a first-time Google user IS signed in but has not
@@ -190,6 +192,12 @@ function safeSessionRemove(key) {
 function showMessage(text, type) {
   authMessage.textContent = text;
   authMessage.className = `message ${type}`;
+}
+
+function trackSignupCompletion(method) {
+  if (signupCompletionTracked) return;
+  signupCompletionTracked = true;
+  trackEvent("signup_completed", { method });
 }
 
 function clearMessage() {
@@ -344,7 +352,7 @@ function redirectToProduct() {
 // post-linking). Reads the existing profile first so a returning user is
 // never re-prompted for terms they already accepted, and so the merge write
 // can never blank out a value this provider didn't supply.
-async function finalizeGoogleUser(user, { isNewLink = false } = {}) {
+async function finalizeGoogleUser(user, { isNewLink = false, isNewUser = false } = {}) {
   const profileRef = doc(db, "users", user.uid);
   const completion = await completeGoogleProfileBootstrap({
     loadProfile: async () => {
@@ -371,7 +379,7 @@ async function finalizeGoogleUser(user, { isNewLink = false } = {}) {
   }
 
   if (completion.status === "terms_required") {
-    pendingProfile = { user, existingProfile, isNewLink, providerId: GoogleAuthProvider.PROVIDER_ID };
+    pendingProfile = { user, existingProfile, isNewLink, isNewUser, providerId: GoogleAuthProvider.PROVIDER_ID };
     openPanel(termsGatePanel);
     showPanelMessage(termsGateMessage, "", "");
     return;
@@ -392,7 +400,7 @@ async function finalizeGoogleUser(user, { isNewLink = false } = {}) {
 }
 
 // --- Google sign-in entry point ------------------------------------------
-async function startGoogleSignIn() {
+async function startGoogleSignIn({ forceRedirect = false } = {}) {
   clearMessage();
   googleFlowInProgress = true;
   setGoogleButtonBusy(true);
@@ -415,7 +423,7 @@ async function startGoogleSignIn() {
         : browserSessionPersistence
     );
 
-    const useRedirect = preferRedirectFallback || shouldUseRedirect({
+    const useRedirect = forceRedirect || preferRedirectFallback || shouldUseRedirect({
       userAgent: window.navigator.userAgent,
       isStandalone: isStandaloneDisplayMode()
     });
@@ -432,9 +440,13 @@ async function startGoogleSignIn() {
     setGoogleAuthStage("popup");
     const result = await signInWithPopup(auth, provider);
     setGoogleAuthStage("credential_completion");
-    await finalizeGoogleUser(result.user);
+    await finalizeGoogleUser(result.user, { isNewUser: getAdditionalUserInfo(result)?.isNewUser === true });
   } catch (error) {
     handleGoogleError(error);
+    if (forceRedirect) {
+      googleFlowInProgress = false;
+      revealPage();
+    }
   } finally {
     setGoogleButtonBusy(false);
     // googleFlowInProgress stays set while a panel is open so the
@@ -561,7 +573,7 @@ async function submitTermsAcceptance() {
   termsGateSubmit.disabled = true;
 
   try {
-    const { user, existingProfile, providerId = "" } = pendingProfile;
+    const { user, existingProfile, isNewUser = false, providerId = "" } = pendingProfile;
 
     const token = await user.getIdToken(true);
     const acceptance = await fetch("/api/legal/acceptance", {
@@ -597,9 +609,8 @@ async function submitTermsAcceptance() {
     authenticationCompleted = true;
     pendingProfile = null;
 
-    if (!existingProfile) {
-      trackEvent("signup", { method: "google" });
-      trackEvent("signup_completed", { method: "google" });
+    if (isNewUser) {
+      trackSignupCompletion("google");
     }
 
     closePanels();
@@ -803,27 +814,16 @@ authForm.addEventListener(
 
         // auth.languageCode was already set at module load, before this call,
         // so the emailed template renders in the visitor's language.
-        try {
-          await sendEmailVerification(userCredential.user, actionCodeSettings);
-        } catch (verificationError) {
-          // The account and profile document both already exist at this
-          // point — a verification-send failure (e.g. a transient
-          // auth/too-many-requests from rapid test signups) must not be
-          // treated as signup failing outright. The user can resend from the
-          // verification gate once they reach the product.
-          console.error("Could not send the verification email:", verificationError?.code || "unknown");
-        }
+        // Verification is optional. Start the email send without holding up
+        // the signed-in session or redirect; a failure must never block entry.
+        void sendEmailVerification(userCredential.user, actionCodeSettings)
+          .catch((verificationError) => {
+            console.error("Could not send the optional verification email:", verificationError?.code || "unknown");
+          });
 
         authenticationCompleted = true;
-        trackEvent("signup", { method: "email_password" });
-        trackEvent("signup_completed", { method: "email_password" });
-
-        // Never claims the address is already verified — the account is
-        // created, but verifying the emailed link is a separate step.
-        showMessage(
-          verificationStrings.checkEmailBody,
-          "success"
-        );
+        trackSignupCompletion("email_password");
+        showMessage(verificationStrings.signupSuccess, "success");
       } else {
         const userCredential = await signInWithEmailAndPassword(
           auth,
@@ -892,7 +892,7 @@ async function bootstrap() {
     if (result?.user) {
       googleFlowInProgress = true;
       setGoogleAuthStage("credential_completion");
-      await finalizeGoogleUser(result.user);
+      await finalizeGoogleUser(result.user, { isNewUser: getAdditionalUserInfo(result)?.isNewUser === true });
       // finalizeGoogleUser either redirected or opened the terms gate; in
       // both cases the auth-state guard must not also act.
       if (isPanelOpen()) {
@@ -909,6 +909,27 @@ async function bootstrap() {
     }
   } finally {
     safeSessionRemove(REDIRECT_NEXT_STORAGE_KEY);
+  }
+
+  // Landing-page Google CTAs request a direct provider handoff. Wait for
+  // Firebase's persisted auth state first so an existing session is never
+  // silently switched to a different Google account. Use redirect (not a
+  // popup) because the explicit gesture occurred on the previous page.
+  if (new URLSearchParams(window.location.search).get("provider") === "google") {
+    const initialUser = await new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        unsubscribe();
+        resolve(user);
+      }, () => resolve(null));
+    });
+    if (!initialUser) {
+      const cleanUrl = new URL(window.location.href);
+      cleanUrl.searchParams.delete("provider");
+      window.history.replaceState(null, "", `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+      googleFlowInProgress = true;
+      await startGoogleSignIn({ forceRedirect: true });
+      return;
+    }
   }
 
   onAuthStateChanged(auth, async (user) => {

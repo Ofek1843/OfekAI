@@ -30,6 +30,9 @@ const LANDING_FALLBACKS = {
     landingPrimaryCta: "Choose your starting point",
     landingWorkoutGuideLink: "See how the workout plan generator works",
     landingSecondaryCta: "Log in",
+    landingContinueGoogle: "Continue with Google",
+    landingContinueEmail: "or sign up with email",
+    landingGuestCta: "Try the food diary as a guest",
     landingFeatureWorkouts: "Workout plans",
     landingFeatureNutrition: "Nutrition",
     landingFeatureProgress: "Progress",
@@ -144,6 +147,9 @@ const LANDING_FALLBACKS = {
     landingPrimaryCta: "בנו לי תוכנית",
     landingWorkoutGuideLink: "כך מחולל תוכניות האימון עובד",
     landingSecondaryCta: "כניסה",
+    landingContinueGoogle: "ממשיכים עם Google",
+    landingContinueEmail: "או הרשמה באמצעות אימייל",
+    landingGuestCta: "נסו את יומן התזונה כאורחים",
     landingFeatureWorkouts: "תוכניות אימון",
     landingFeatureNutrition: "תזונה",
     landingFeatureProgress: "התקדמות",
@@ -315,6 +321,14 @@ function wireSmartLoginLinks() {
       if (element.getAttribute("aria-busy") === "true") return;
       element.setAttribute("aria-busy", "true");
       trackClick("signup", { source: "landing" });
+      const authUrl = new URL(element.getAttribute("href"), window.location.href);
+      const provider = authUrl.searchParams.get("provider");
+      const mode = authUrl.searchParams.get("mode");
+      if (provider === "google") {
+        trackClick("signup_started", { method: "google", source: "landing" });
+      } else if (mode === "signup") {
+        trackClick("signup_started", { method: "email_password", source: "landing" });
+      }
       const user = await waitForAuthState();
       element.removeAttribute("aria-busy");
       window.location.href = user

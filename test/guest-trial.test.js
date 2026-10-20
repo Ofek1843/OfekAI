@@ -1,0 +1,46 @@
+const test = require("node:test");
+const assert = require("node:assert/strict");
+
+async function loadGuestTrial() {
+  return import("../public/js/guest-trial.mjs");
+}
+
+test("guest form drafts preserve text, selections, and checkbox state", async () => {
+  const { serializeForm } = await loadGuestTrial();
+  const elements = [
+    { name: "limitations", type: "textarea", value: "shoulder pain" },
+    { name: "days", type: "checkbox", value: "mon", checked: true },
+    { name: "days", type: "checkbox", value: "wed", checked: false },
+    { name: "goal", type: "radio", value: "strength", checked: false },
+    { name: "goal", type: "radio", value: "muscle", checked: true }
+  ];
+  const draft = serializeForm({ elements });
+  assert.equal(draft[0].value, "shoulder pain");
+  assert.deepEqual(draft.filter((field) => field.name === "days").map((field) => field.checked), [true, false]);
+  assert.deepEqual(draft.filter((field) => field.name === "goal").map((field) => field.checked), [false, true]);
+});
+
+test("guest form drafts restore values and notify dependent controls", async () => {
+  const { restoreForm } = await loadGuestTrial();
+  const changed = [];
+  const elements = [
+    { name: "goal", type: "radio", value: "strength", checked: true, dispatchEvent: () => changed.push("strength") },
+    { name: "goal", type: "radio", value: "muscle", checked: false, dispatchEvent: () => changed.push("muscle") },
+    { name: "days", type: "checkbox", value: "mon", checked: false, dispatchEvent: () => changed.push("mon") },
+    { name: "days", type: "checkbox", value: "wed", checked: true, dispatchEvent: () => changed.push("wed") },
+    { name: "age", type: "number", value: "", dispatchEvent: () => changed.push("age") }
+  ];
+  assert.equal(restoreForm({ elements }, [
+    { name: "goal", type: "radio", value: "strength", checked: false },
+    { name: "goal", type: "radio", value: "muscle", checked: true },
+    { name: "days", type: "checkbox", value: "mon", checked: true },
+    { name: "days", type: "checkbox", value: "wed", checked: false },
+    { name: "age", type: "number", value: "31" }
+  ]), true);
+  assert.equal(elements[0].checked, false);
+  assert.equal(elements[1].checked, true);
+  assert.equal(elements[2].checked, true);
+  assert.equal(elements[3].checked, false);
+  assert.equal(elements[4].value, "31");
+  assert.deepEqual(changed, ["strength", "muscle", "mon", "wed", "age"]);
+});

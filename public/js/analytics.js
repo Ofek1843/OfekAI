@@ -30,6 +30,7 @@ function cleanText(value, limit = 80) {
 
 const CAMPAIGN_STORAGE_KEY = "fp_campaign_attribution_session_v1";
 const CAMPAIGN_ATTRIBUTION_TTL_MS = 24 * 60 * 60 * 1000;
+let signupConversionSent = false;
 
 function cleanCampaignValue(value) {
   return String(value ?? "")
@@ -76,9 +77,21 @@ export function trackEvent(name, properties = {}) {
   if (typeof window === "undefined") return;
   const eventName = cleanText(name, 40);
   if (!ALLOWED_EVENTS.has(eventName)) return;
+  const eventProperties = { ...(properties || {}) };
+  if (eventName === "signup_completed") {
+    if (signupConversionSent) return;
+    signupConversionSent = true;
+    // The consent loader defines gtag only after the visitor opts into GA.
+    // Do not send email, UID, name, or any other account identifier.
+    if (typeof window.gtag === "function") {
+      const method = ["google", "email_password"].includes(eventProperties.method)
+        ? eventProperties.method
+        : "unknown";
+      window.gtag("event", "sign_up", { method });
+    }
+  }
 
   const attribution = campaignAttribution();
-  const eventProperties = { ...(properties || {}) };
   if (attribution.source) eventProperties.campaign_source = attribution.source;
   if (attribution.medium) eventProperties.campaign_medium = attribution.medium;
   if (attribution.name) eventProperties.campaign_name = attribution.name;

@@ -629,11 +629,12 @@ test("cancelling the linking flow clears the pending credential and signs out", 
 test("allowlisted safe product destinations are preserved", () => {
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
   assert.equal(resolveNextPath("nutrition-builder.html"), "/nutrition-builder.html");
+  assert.equal(resolveNextPath("daily-nutrition.html"), "/daily-nutrition.html");
   assert.equal(resolveNextPath("dashboard.html"), "/dashboard.html");
   assert.equal(resolveNextPath("/app.html?settings=open&section=account"), "/app.html?settings=open&section=account");
   assert.equal(resolveNextPath("/social.html"), "/social.html", "the social landing page is a safe post-auth destination");
   assert.equal(resolveNextPath("/workout-tracker.html"), "/workout-tracker.html", "the tracker landing page is a safe post-auth destination");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "daily-nutrition.html", "social.html", "workout-tracker.html"]);
 });
 
 test("any other next value falls back to the dashboard — the login page is not an open redirect", () => {
@@ -645,6 +646,10 @@ test("any other next value falls back to the dashboard — the login page is not
   assert.equal(resolveNextPath("https://evil.example.com"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("../../etc/passwd"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("/workout-builder.html"), "/workout-builder.html", "protected-page login recovery accepts the same internal path with a leading slash");
+  assert.equal(resolveNextPath("/workout-builder.html?resumeGuest=workout"), "/workout-builder.html?resumeGuest=workout");
+  assert.equal(resolveNextPath("/nutrition-builder.html?resumeGuest=nutrition"), "/nutrition-builder.html?resumeGuest=nutrition");
+  assert.equal(resolveNextPath("/daily-nutrition.html?resumeGuest=diary"), "/daily-nutrition.html?resumeGuest=diary");
+  assert.equal(resolveNextPath("/daily-nutrition.html?resumeGuest=workout"), "/dashboard.html", "guest resume destinations remain bound to the page");
 });
 
 test("the requested destination survives a mobile redirect round trip via session storage", () => {
@@ -755,4 +760,11 @@ test("an unconfigured Google provider degrades gracefully instead of dead-ending
     assert.match(english, /email and password/i, `${code} must fall back to the email/password path`);
     assert.match(getFriendlyAuthError(code, "he"), /[֐-׿]/);
   }
+});
+
+test("Google signup conversion uses Firebase's new-user result, not profile existence", () => {
+  assert.match(AUTH_JS, /getAdditionalUserInfo\(result\)\?\.isNewUser\s*===\s*true/);
+  assert.match(AUTH_JS, /pendingProfile\s*=\s*\{[^}]*isNewUser/);
+  assert.match(AUTH_JS, /if \(isNewUser\)\s*\{\s*trackSignupCompletion\("google"\)/);
+  assert.doesNotMatch(AUTH_JS, /if \(!existingProfile\)\s*\{\s*trackSignupCompletion\("google"\)/);
 });

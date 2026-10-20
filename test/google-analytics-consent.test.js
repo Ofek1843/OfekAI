@@ -64,6 +64,37 @@ test("previously granted consent loads without a duplicate banner", () => {
   assert.equal(page.document.querySelectorAll('script[src*="googletagmanager.com"]').length, 1);
 });
 
+test("successful signup sends exactly one PII-free GA4 conversion only after consent", () => {
+  const analyticsSource = fs.readFileSync(path.join(ROOT, "public/js/analytics.js"), "utf8")
+    .replace(/^export /gm, "");
+  function runAnalytics(withConsent) {
+    const gtagCalls = [];
+    const context = {
+      window: {
+        location: { pathname: "/auth.html", search: "" },
+        sessionStorage: { getItem: () => null, setItem() {} },
+        ...(withConsent ? { gtag: (...args) => gtagCalls.push(args) } : {})
+      },
+      document: { referrer: "", title: "Login" },
+      navigator: { sendBeacon: () => true },
+      URLSearchParams,
+      Date,
+      Blob,
+      JSON,
+      Object,
+      String,
+      Set
+    };
+    vm.runInNewContext(`${analyticsSource}\ntrackEvent("signup_completed", { method: "google", email: "private@example.test", uid: "private-uid" });\ntrackEvent("signup_completed", { method: "google" });`, context);
+    return gtagCalls;
+  }
+
+  const calls = runAnalytics(true);
+  assert.equal(calls.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(calls[0])), ["event", "sign_up", { method: "google" }]);
+  assert.deepEqual(runAnalytics(false), []);
+});
+
 test("privacy page exposes a way to reverse an accepted choice", () => {
   const page = runPage({ stored: "granted", pathname: "/privacy.html" });
   assert.ok(page.document.getElementById("analytics-choices"));

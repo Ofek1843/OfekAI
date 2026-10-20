@@ -1,0 +1,31 @@
+.guest-signup-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid #b9d8f5;
+  border-radius: 0.8rem;
+  background: #f0f7ff;
+  color: #183b5b;
+  font-size: 0.95rem;
+}
+
+.guest-signup-button {
+  min-height: 2.65rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: #0875e1;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.guest-signup-button:hover { background: #075fba; }
+.guest-signup-button:focus-visible { outline: 3px solid #80c3ff; outline-offset: 2px; }
+
+body.daily-nutrition-route .guest-signup-prompt { grid-column: 1 / -1; }

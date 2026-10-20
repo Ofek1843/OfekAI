@@ -17,7 +17,6 @@ import {
     signOut
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
-import { shouldBlockUnverifiedAccess } from "./verification-gate.js";
 import { directImageKitUpload } from "./imagekit-upload.js";
 import { buildProgressReport } from "./progress-report.mjs";
 
@@ -1411,16 +1410,6 @@ onAuthStateChanged(
                 }
             );
 
-            return;
-        }
-
-        // app-auth.js (loaded on the same page) owns the visible
-        // verification gate; this guard exists so settings.js's own
-        // independent Firestore read/write never runs ahead of that
-        // decision -- app-auth.js hiding the body is not sufficient on its
-        // own, since this module has its own onAuthStateChanged and would
-        // otherwise fetch/write user data regardless of page visibility.
-        if (shouldBlockUnverifiedAccess(user)) {
             return;
         }
 

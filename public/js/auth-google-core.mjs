@@ -28,6 +28,7 @@ export const ALLOWED_NEXT_PATHS = [
   "app.html",
   "workout-builder.html",
   "nutrition-builder.html",
+  "daily-nutrition.html",
   "social.html",
   "workout-tracker.html"
 ];
@@ -56,8 +57,17 @@ export function resolveNextPath(requestedNext) {
     if (section !== null && !/^(profile|athlete|preferences|language|notifications|account|appearance)$/.test(section)) return DEFAULT_NEXT_PATH;
     return `${url.pathname}${url.search}`;
   }
-  if (["workout-builder.html", "nutrition-builder.html"].includes(filename)) {
-    return url.search ? DEFAULT_NEXT_PATH : `/${filename}`;
+  if (["workout-builder.html", "nutrition-builder.html", "daily-nutrition.html"].includes(filename)) {
+    if (!url.search) return `/${filename}`;
+    const resumeByPage = {
+      "workout-builder.html": "workout",
+      "nutrition-builder.html": "nutrition",
+      "daily-nutrition.html": "diary"
+    };
+    if (keys.length === 1 && keys[0] === "resumeGuest" && url.searchParams.get("resumeGuest") === resumeByPage[filename]) {
+      return `${url.pathname}?resumeGuest=${resumeByPage[filename]}`;
+    }
+    return DEFAULT_NEXT_PATH;
   }
 
   const safeId = value => /^[A-Za-z0-9_-]{1,160}$/.test(value || "");

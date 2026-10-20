@@ -343,7 +343,7 @@ test("getRedirectResult is resolved before the asynchronous auth-state guard -- 
 
 test("the next destination allowlist includes only protected return pages required by the Terms gate", () => {
   const { resolveNextPath, ALLOWED_NEXT_PATHS } = require("../public/js/auth-google-core.mjs");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "social.html", "workout-tracker.html"]);
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "daily-nutrition.html", "social.html", "workout-tracker.html"]);
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
   assert.equal(resolveNextPath("app.html?settings=open&section=account"), "/app.html?settings=open&section=account");
   assert.equal(resolveNextPath("app.html?settings=open&section=admin"), "/dashboard.html");

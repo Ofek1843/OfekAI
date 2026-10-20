@@ -26,6 +26,7 @@ import {
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1";
 import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20261019-food-diary-1";
+import { clearGuestDraft, readGuestDraft, showSignupPrompt } from "./guest-trial.mjs";
 import {
   formatNutritionAmount,
   formatNutritionDate,
@@ -43,6 +44,7 @@ document.documentElement.dir = ["he", "ar"].includes(language) ? "rtl" : "ltr";
 const copy = dailyNutritionCopy(language);
 const SMART_FOODS_STORAGE_KEY = "fp-daily-smart-foods-v1";
 const DAILY_DRAFT_STORAGE_PREFIX = "fp-daily-log-draft-v2";
+const GUEST_DAILY_LOG_KEY = "fp-guest-diary-preview-v1";
 
 function loadSmartFoods() {
   try {
@@ -140,6 +142,7 @@ function sameSavedLog(first, second) {
 
 const state = {
   user: null,
+  guest: false,
   dateKey: localDateKey(),
   log: null,
   weekLogs: [],
@@ -623,16 +626,35 @@ function addEntries(entries) {
     setComposerMessage(copy.loading, true);
     return;
   }
+  const remainingGuestSlots = state.guest ? Math.max(0, 3 - state.log.entries.length) : 80;
+  if (state.guest && remainingGuestSlots === 0) {
+    promptGuestDiarySignup();
+    return;
+  }
   const createdAt = new Date().toISOString();
-  const added = entries.map((entry) => ({ ...entry, id: createEntryId(), createdAt }));
-  state.log.entries = [...state.log.entries, ...added].slice(0, 80);
+  const added = entries.slice(0, remainingGuestSlots).map((entry) => ({ ...entry, id: createEntryId(), createdAt }));
+  state.log.entries = [...state.log.entries, ...added].slice(0, state.guest ? 3 : 80);
   state.pendingClarification = null;
   $("#clarificationPanel").hidden = true;
   render();
   window.fpV47Success?.($("#autosaveState"));
+  if (state.guest) persistGuestDiary();
+  if (state.guest && (entries.length > added.length || state.log.entries.length >= 3)) promptGuestDiarySignup();
   queueSave();
   $("#foodInput").value = "";
   $("#foodInput").focus();
+}
+
+function persistGuestDiary() {
+  try { sessionStorage.setItem(GUEST_DAILY_LOG_KEY, JSON.stringify({ dateKey: state.dateKey, log: state.log })); } catch {}
+}
+
+function promptGuestDiarySignup() {
+  persistGuestDiary();
+  try {
+    sessionStorage.setItem("fp-guest-trial-v1:diary", JSON.stringify({ savedAt: Date.now(), payload: { dateKey: state.dateKey, log: state.log } }));
+  } catch {}
+  showSignupPrompt($("#composerMessage"), "diary", "/daily-nutrition.html?resumeGuest=diary", language === "he");
 }
 
 function createEntryId() {
@@ -794,6 +816,10 @@ async function submitFoodText(value) {
   if (result.errors.length) {
     const firstUnknown = result.errors.find((error) => error.code === "UNKNOWN_FOOD");
     if (firstUnknown) {
+      if (state.guest) {
+        setComposerMessage(language === "he" ? "במצב ניסיון אפשר להוסיף מאכלים מוכרים מהדוגמאות בלבד. הירשמו כדי להוסיף עוד." : "In the guest preview, use a recognized food from the examples. Sign up to add more foods.", true);
+        return;
+      }
       setComposerMessage(language === "he" ? "מזהים את המאכל…" : "Identifying that food…");
       try {
         const explicit = parseAmountPrefix(firstUnknown.segment);
@@ -939,6 +965,7 @@ function bindEvents() {
       queueSave();
     }
     if (action === "duplicate") {
+      if (state.guest && state.log.entries.length >= 3) return promptGuestDiarySignup();
       state.log.entries.splice(index + 1, 0, { ...entry, id: createEntryId(), createdAt: new Date().toISOString() });
       queueSave();
     }
@@ -953,11 +980,13 @@ function bindEvents() {
         setComposerMessage(copy.saveError, true);
       }
     }
+    if (state.guest) persistGuestDiary();
     render();
   });
   $("#combinationForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!state.log) return;
+    if (state.guest) return promptGuestDiarySignup();
     const combinationForm = event.currentTarget;
     const name = new FormData(combinationForm).get("name");
     if (!state.log.entries.length) return setComposerMessage(copy.emptyEntries, true);
@@ -978,6 +1007,7 @@ function bindEvents() {
   });
   $("#copyYesterdayButton").addEventListener("click", async function copyPreviousDayEntries() {
     if (!state.log) return;
+    if (state.guest) return promptGuestDiarySignup();
     const uid = state.user.uid, dateKey = state.dateKey, request = state.dateLoadRequest;
     const button = $("#copyYesterdayButton");
     button.disabled = true;
@@ -997,6 +1027,7 @@ function bindEvents() {
   });
   $("#finishDayButton").addEventListener("click", () => {
     if (!state.log) return;
+    if (state.guest) return promptGuestDiarySignup();
     state.log.completed = true;
     state.log.completedAt = new Date().toISOString();
     setPageStatus(copy.dayFinished);
@@ -1005,6 +1036,7 @@ function bindEvents() {
     queueSave();
   });
   $("#saveDailyLogButton").addEventListener("click", async (event) => {
+    if (state.guest) return promptGuestDiarySignup();
     const button = event.currentTarget;
     button.disabled = true;
     try {
@@ -1014,17 +1046,21 @@ function bindEvents() {
       button.disabled = false;
     }
   });
-  $("#previousDay").addEventListener("click", () => loadDate(shiftDateKey(state.dateKey, -1)));
-  $("#nextDay").addEventListener("click", () => loadDate(shiftDateKey(state.dateKey, 1)));
-  $("#todayButton").addEventListener("click", () => loadDate(localDateKey()));
-  $("#selectedDate").addEventListener("change", (event) => event.target.value && loadDate(event.target.value));
+  $("#previousDay").addEventListener("click", () => state.guest ? promptGuestDiarySignup() : loadDate(shiftDateKey(state.dateKey, -1)));
+  $("#nextDay").addEventListener("click", () => state.guest ? promptGuestDiarySignup() : loadDate(shiftDateKey(state.dateKey, 1)));
+  $("#todayButton").addEventListener("click", () => state.guest ? promptGuestDiarySignup() : loadDate(localDateKey()));
+  $("#selectedDate").addEventListener("change", (event) => event.target.value && (state.guest ? promptGuestDiarySignup() : loadDate(event.target.value)));
   $("#nearbyDays").addEventListener("click", (event) => {
     const button = event.target.closest("[data-history-date]");
-    if (button?.dataset.historyDate) loadDate(button.dataset.historyDate);
+    if (!button?.dataset.historyDate) return;
+    if (state.guest) return promptGuestDiarySignup();
+    loadDate(button.dataset.historyDate);
   });
   $("#calendarGrid").addEventListener("click", (event) => {
     const button = event.target.closest("[data-calendar-date]");
-    if (button?.dataset.calendarDate) loadDate(button.dataset.calendarDate);
+    if (!button?.dataset.calendarDate) return;
+    if (state.guest) return promptGuestDiarySignup();
+    loadDate(button.dataset.calendarDate);
   });
   $("#calendarPreviousMonth").addEventListener("click", () => {
     state.calendarMonthKey = shiftDateKey(`${state.calendarMonthKey}-01`, -1).slice(0, 7);
@@ -1077,6 +1113,7 @@ function bindFoodComposer() {
 
 async function init(user) {
   state.user = user;
+  state.guest = false;
   bindEvents();
   window.addEventListener("online", () => {
     if (state.log && readDailyDraft(state.user.uid, state.dateKey)) queueSave();
@@ -1090,6 +1127,13 @@ async function init(user) {
     state.customFoods = optional[1].status === "fulfilled" ? optional[1].value : [];
     state.combinations = optional[2].status === "fulfilled" ? optional[2].value : [];
     await loadDate(state.dateKey);
+    const resumed = new URLSearchParams(location.search).get("resumeGuest") === "diary" ? readGuestDraft("diary") : null;
+    if (resumed?.log && state.log && (!resumed.dateKey || resumed.dateKey === state.dateKey)) {
+      const ids = new Set(state.log.entries.map((entry) => entry.id));
+      state.log.entries = [...state.log.entries, ...resumed.log.entries.filter((entry) => !ids.has(entry.id))].slice(0, 80);
+      render();
+      if (await queueSave()) clearGuestDraft("diary");
+    }
     // Targets and saved combinations enrich the view, but a temporary read
     // failure must never make a fully usable food log look broken.
     if (!state.log?.readFailed && optional.some((result) => result.status === "rejected")) setPageStatus("");
@@ -1105,6 +1149,29 @@ async function init(user) {
   }
 }
 
+function initGuestPreview() {
+  state.user = null;
+  state.guest = true;
+  state.targets = targetSnapshot();
+  let draft = null;
+  try { draft = JSON.parse(sessionStorage.getItem(GUEST_DAILY_LOG_KEY) || "null"); } catch {}
+  state.dateKey = localDateKey();
+  state.log = normalizeLog(state.dateKey, draft?.dateKey === state.dateKey ? draft.log : {});
+  state.weekLogs = [state.log];
+  state.customFoods = [];
+  state.combinations = [];
+  bindEvents();
+  render();
+  $("#pageStatus").textContent = language === "he" ? "מצב ניסיון: עד 3 פריטי מזון נשמרים זמנית במכשיר בלבד." : "Guest preview: up to 3 food entries, stored temporarily on this device only.";
+  $("#autosaveState").textContent = language === "he" ? "נשמר במכשיר" : "Saved on this device";
+  $(".save-guide").textContent = language === "he" ? "הפריטים נשמרים זמנית במכשיר. הירשמו כדי לשמור אותם בחשבון." : "Entries stay temporarily on this device. Sign up to save them to your account.";
+  $("#copyYesterdayButton").disabled = true;
+  ["#previousDay", "#nextDay", "#todayButton", "#selectedDate", "#calendarPreviousMonth", "#calendarNextMonth"].forEach((selector) => {
+    const control = $(selector);
+    if (control) control.disabled = true;
+  });
+}
+
 applyLanguage();
-guardProtectedPage({ onAuthenticated: init });
+guardProtectedPage({ onAuthenticated: init, onSignedOut: initGuestPreview });
 bindFoodComposer();

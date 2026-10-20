@@ -8,12 +8,8 @@ import { fetchWithDeadline } from "./request-deadline.mjs";
 import { prepareNutritionPlanForSave } from "./nutrition-selection.mjs";
 import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
 import { mealPhotoFor } from "./meal-photo.mjs";
+import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs";
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
-
-// Same reasoning as workout-builder.js: nothing here loads private data on
-// page open, but Generate and Save both call authenticated product
-// APIs/Firestore. Keep the page hidden and un-clickable until verified.
-guardProtectedPage({});
 
 const form = document.querySelector("#nutrition-builder-form");
 const button = document.querySelector("#generate-button");
@@ -23,6 +19,19 @@ const currentLanguage =
   ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
     ? localStorage.getItem("ofek-ai-language")
     : "en";
+
+function resumeGuestNutrition(user) {
+  if (!user || new URLSearchParams(location.search).get("resumeGuest") !== "nutrition") return;
+  const fields = readGuestDraft("nutrition");
+  if (!fields) return;
+  restoreForm(form, fields);
+  clearGuestDraft("nutrition");
+  const next = document.querySelector("#wizardNextButton");
+  while (next && !next.classList.contains("hidden")) next.click();
+  setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
+}
+
+guardProtectedPage({ onAuthenticated: resumeGuestNutrition, onSignedOut: () => {} });
 async function authHeaders(contentType = "application/json") {
   const user = auth.currentUser;
   if (!user) throw new Error("Authentication required.");
@@ -306,6 +315,13 @@ document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (button.disabled) return;
+
+  if (!auth.currentUser) {
+    const nextPath = "/nutrition-builder.html?resumeGuest=nutrition";
+    try { sessionStorage.setItem("fp-guest-trial-v1:nutrition", JSON.stringify({ savedAt: Date.now(), payload: serializeForm(form) })); } catch {}
+    showSignupPrompt(document.querySelector("#builder-status"), "nutrition", nextPath, isHebrew);
+    return;
+  }
 
   setLoading(true);
   setStatus(ui.generatingStatus);

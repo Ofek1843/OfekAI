@@ -10,16 +10,8 @@ import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 import { t } from "./i18n.js?v=20261002-brand-quality-1";
 import { fetchWithDeadline } from "./request-deadline.mjs";
+import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs";
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
-
-// This builder has no data to load on page open (generation is entirely
-// user-interaction-driven via the Generate button, which reads
-// auth.currentUser at click time) -- but it DOES call an authenticated
-// product API and write a saved plan once generated. guardProtectedPage
-// keeps the whole page hidden (and therefore un-clickable) until the
-// signed-in user's email is verified, so there is no window where an
-// unverified user could open this page directly and generate/save a plan.
-guardProtectedPage({});
 
 import {
   collection,
@@ -34,6 +26,19 @@ const currentLanguage =
   ["en", "he", "es", "fr", "de", "ar", "zh"].includes(localStorage.getItem("ofek-ai-language"))
     ? localStorage.getItem("ofek-ai-language")
     : "en";
+
+function resumeGuestWorkout(user) {
+  if (!user || new URLSearchParams(location.search).get("resumeGuest") !== "workout") return;
+  const fields = readGuestDraft("workout");
+  if (!fields) return;
+  restoreForm(form, fields);
+  clearGuestDraft("workout");
+  // Restore the wizard's visible step as well as its values before resuming.
+  while (wizardNextButton && !wizardNextButton.classList.contains("hidden")) wizardNextButton.click();
+  setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
+}
+
+guardProtectedPage({ onAuthenticated: resumeGuestWorkout, onSignedOut: () => {} });
 trackPageView({ page: "workout-builder" });
 trackEvent("builder_open", { builder: "workout" });
 async function authHeaders(contentType = "application/json") {
@@ -809,6 +814,13 @@ form.addEventListener("submit", async (event) => {
       goalError.classList.remove("hidden");
     }
     document.querySelector("#goalChoices")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  if (!auth.currentUser) {
+    const nextPath = "/workout-builder.html?resumeGuest=workout";
+    try { sessionStorage.setItem("fp-guest-trial-v1:workout", JSON.stringify({ savedAt: Date.now(), payload: serializeForm(form) })); } catch {}
+    showSignupPrompt(statusElement, "workout", nextPath, isHebrew);
     return;
   }
 

@@ -107,6 +107,7 @@ const { BRAND_NAME, COACH_CREATOR_RESPONSE, COACH_CREATOR_FOLLOWUP, sanitizeAnal
 const { getPublicStats, toPublicSocialProof } = require("./lib/public-stats");
 const { getUsdToIlsRate } = require("./lib/fx-rate");
 const { createTelemetryAgent } = require("./lib/telemetry-agent");
+const { claimSignupNotification } = require("./lib/registration-notification");
 const { assessSafety } = require("./lib/health-safety");
 const {
   clientIp,
@@ -123,7 +124,7 @@ const SERVER_HOST = localDemoMode
   ? String(process.env.LOCAL_REVIEW_BIND_HOST || "127.0.0.1").trim()
   : (process.env.SERVER_BIND_HOST || undefined);
 const BUILD_ID = String(process.env.RENDER_GIT_COMMIT || "local").trim() || "local";
-const VERIFIED_SIGNUP_ALERT_WINDOW_MS = Math.max(60_000, Number(process.env.TELEGRAM_SIGNUP_ALERT_WINDOW_MS || 15 * 60 * 1000));
+const NEW_SIGNUP_ALERT_WINDOW_MS = Math.max(60_000, Number(process.env.TELEGRAM_SIGNUP_ALERT_WINDOW_MS || 15 * 60 * 1000));
 const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 180000);
@@ -358,7 +359,6 @@ app.post("/api/legal/acceptance", async (req, res) => {
     return res.status(400).json({ error: "Explicit Terms acceptance is required.", code: "terms_acceptance_required" });
   }
   const profileRef = getFuelPhysiqueFirestore().doc(`users/${user.uid}`);
-  const existingProfile = await profileRef.get();
   await profileRef.set({
     termsAccepted: true,
     termsVersion: publicLegalPolicy().termsVersion,
@@ -367,19 +367,23 @@ app.post("/api/legal/acceptance", async (req, res) => {
     privacyAcceptedAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp()
   }, { merge: true });
-  // A fresh Firebase account with no profile is the only server-verified
-  // registration signal. Do not trust the public browser analytics event for
-  // an operator alert: it can be replayed by anyone.
-  const accountAgeMs = Date.now() - Number(user.createdAt || 0);
-  const isFreshRegistration = !existingProfile.exists
-    && Number.isFinite(accountAgeMs)
-    && accountAgeMs >= -60_000
-    && accountAgeMs <= VERIFIED_SIGNUP_ALERT_WINDOW_MS;
-  if (isFreshRegistration) {
-    telemetry.recordVerifiedRegistration({ uid: user.uid }).catch(error => {
-      console.error("Verified signup telemetry failed:", error.message);
-    });
-  }
+  // The Firebase account creation time comes from the server-verified
+  // Identity Toolkit lookup. A private, persistent claim deduplicates retries
+  // across concurrent requests, existing profile documents, and Render
+  // restarts (including first-time Google accounts). The notification is
+  // asynchronous so Telegram can never block authentication or legal access.
+  void claimSignupNotification({
+    db: getFuelPhysiqueFirestore(),
+    uid: user.uid,
+    createdAt: user.createdAt,
+    windowMs: NEW_SIGNUP_ALERT_WINDOW_MS,
+    serverTimestamp: FieldValue.serverTimestamp
+  }).then((claimed) => {
+    if (claimed) return telemetry.recordNewRegistration({ uid: user.uid });
+    return false;
+  }).catch(error => {
+    console.error("New signup notification claim failed:", error.message);
+  });
   res.setHeader("Cache-Control", "no-store");
   res.json({ accepted: true, ...publicLegalPolicy() });
 });

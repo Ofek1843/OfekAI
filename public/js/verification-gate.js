@@ -1,17 +1,5 @@
-// Shared "please verify your email" overlay, usable from any product page's
-// own auth guard. Extracted out of app-auth.js so the same gate (and its
-// resend cooldown/loading/success states) doesn't get re-implemented per
-// page — each page's guard just calls shouldBlockUnverifiedAccess(user) and,
-// if true, renderVerificationGate(user) instead of rendering its normal
-// content.
-//
-// Product policy: an unverified email/password user finishes account
-// creation and IS authenticated, but sensitive/saved product features are
-// blocked until user.emailVerified is true. A Google account's
-// emailVerified is always true, so shouldBlockUnverifiedAccess never blocks
-// one — no Google-specific branching needed. Never auto-sends on load: the
-// email already went out at signup (see auth.js); this screen only sends
-// again on an explicit, cooldown-limited click.
+// Shared authentication and legal-consent guard. Email verification remains
+// available as an optional account action, but it does not gate app access.
 
 import { auth, db } from "./firebase-config.js";
 
@@ -360,17 +348,14 @@ export function renderVerificationGate(user, { onVerified } = {}) {
 
 // guardProtectedPage({ onAuthenticated, onSignedOut }) -- the single ordering
 // primitive every protected page should use: resolve Firebase auth state ->
-// verify a user is signed in -> verify the email policy -> only THEN call
+// verify a user is signed in -> verify current Terms -> only THEN call
 // onAuthenticated(user) to initialize the page's private data/features.
 // Content stays hidden (body.style.visibility) for the entire time between
 // "auth state unknown" and "cleared for access" -- there is no window where
 // the protected feature initializes and then gets covered by an overlay.
 //
-// onAuthenticated is guaranteed to run AT MOST ONCE per page load, whether
-// the user was verified from the start or became verified later via the
-// gate's "I've verified my email" recovery (see renderVerificationGate's
-// onVerified) -- guarding against both a redirect loop and a duplicate
-// initialization.
+// onAuthenticated is guaranteed to run AT MOST ONCE per page load, guarding
+// against duplicate initialization during auth-state changes.
 //
 // onSignedOut defaults to redirecting to /auth.html; pages that need a
 // custom not-signed-in destination (e.g. preserving a return path) may pass
@@ -398,15 +383,6 @@ export function guardProtectedPage({ onAuthenticated, onSignedOut } = {}) {
           : `/auth.html?next=${encodeURIComponent(nextPath)}`;
         window.location.replace(destination);
       }
-      return;
-    }
-
-    if (shouldBlockUnverifiedAccess(user)) {
-      renderVerificationGate(user, { onVerified: proceed });
-      // The GATE must be visible even though the protected feature itself
-      // stays uninitialized -- this reveals the gate overlay, not any
-      // private content underneath it.
-      document.body.style.visibility = "visible";
       return;
     }
 

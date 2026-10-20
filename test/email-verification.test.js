@@ -1,5 +1,5 @@
 // Email verification, resend cooldown, forgot-password, and the
-// product-wide "unverified users are blocked from sensitive features" gate.
+// optional verification messaging and app-access policy.
 // The shared decision logic in public/js/email-verification-core.mjs is
 // exercised directly as real behavior; the browser wiring (auth.js,
 // app-auth.js, dashboard.js, verification-gate.js) is asserted at source
@@ -51,7 +51,7 @@ test("email/password signup calls sendEmailVerification with ActionCodeSettings"
   assert.match(AUTH_JS, /sendEmailVerification\(userCredential\.user, actionCodeSettings\)/);
 });
 
-test("display name is saved (updateProfile + Firestore merge) before the verification email is sent", () => {
+test("profile is saved before the optional verification email is requested", () => {
   const signupBlock = AUTH_JS.match(/if \(currentMode === "signup"\) \{[\s\S]*?authenticationCompleted = true;/);
   assert.ok(signupBlock, "expected the signup branch of the submit handler");
 
@@ -72,17 +72,18 @@ test("display name is saved (updateProfile + Firestore merge) before the verific
   assert.ok(languageIndexInFile !== -1 && languageIndexInFile < AUTH_JS.indexOf("authForm.addEventListener"), "auth.languageCode must be set at module load, before the signup handler can ever run");
 });
 
-test("a verification-send failure does not fail the signup — the account and profile already exist", () => {
+test("the optional verification email is fire-and-forget and cannot delay signup", () => {
   const signupBlock = AUTH_JS.match(/if \(currentMode === "signup"\) \{[\s\S]*?authenticationCompleted = true;/);
-  assert.match(signupBlock[0], /try \{\s*await sendEmailVerification/, "the send must be wrapped so its failure can't propagate");
+  assert.match(signupBlock[0], /void sendEmailVerification\(userCredential\.user, actionCodeSettings\)[\s\S]*?\.catch\(/);
+  assert.doesNotMatch(signupBlock[0], /await sendEmailVerification/);
 });
 
-test("the signup success message tells the user to check their email and never claims it is already verified", () => {
-  assert.match(AUTH_JS, /verificationStrings\.checkEmailBody/, "the success message must come from the shared, non-hardcoded string");
-  assert.doesNotMatch(VERIFICATION_STRINGS.en.checkEmailBody, /\bverified\b/i, "English checkEmailBody must not claim the address is already verified");
-  assert.match(VERIFICATION_STRINGS.en.checkEmailBody, /sent|link/i, "English checkEmailBody must mention that a link/email was sent");
-  assert.doesNotMatch(VERIFICATION_STRINGS.he.checkEmailBody, /מאומת/, "Hebrew checkEmailBody must not claim the address is already verified");
-  assert.match(VERIFICATION_STRINGS.he.checkEmailBody, /שלחנו|קישור/, "Hebrew checkEmailBody must mention that a link/email was sent");
+test("the signup success message confirms immediate access without requiring email verification", () => {
+  assert.match(AUTH_JS, /verificationStrings\.signupSuccess/);
+  assert.match(VERIFICATION_STRINGS.en.signupSuccess, /created|redirecting/i);
+  assert.match(VERIFICATION_STRINGS.he.signupSuccess, /נוצר|מעבירים/);
+  assert.match(VERIFICATION_STRINGS.en.checkEmailBody, /optional/i);
+  assert.match(VERIFICATION_STRINGS.he.checkEmailBody, /אפשרות בלבד/);
 });
 
 // --- Correct ActionCodeSettings --------------------------------------------
@@ -146,7 +147,7 @@ test("the verification gate's resend also sets auth.languageCode via the shared 
 
 // --- 2. Email verification access policy -----------------------------------
 
-test("a signed-in user with emailVerified !== true is blocked from sensitive features", () => {
+test("verification status remains accurately detectable for an optional email UI", () => {
   assert.equal(shouldBlockUnverifiedAccess({ emailVerified: false }), true);
   assert.equal(shouldBlockUnverifiedAccess({ emailVerified: undefined }), true);
   assert.equal(shouldBlockUnverifiedAccess({}), true);
@@ -179,6 +180,15 @@ test("both app.html and dashboard.html enforce the gate before rendering saved c
   assert.match(DASHBOARD_JS, /guardProtectedPage\(/);
   assert.doesNotMatch(APP_AUTH_JS, /shouldBlockUnverifiedAccess|renderVerificationGate|removeVerificationGate/, "app-auth.js must not duplicate the gate implementation");
   assert.doesNotMatch(DASHBOARD_JS, /shouldBlockUnverifiedAccess|renderVerificationGate|removeVerificationGate/, "dashboard.js must not duplicate the gate implementation");
+});
+
+test("general app access no longer gates on emailVerified; only sign-in and Terms are checked", () => {
+  const guard = GATE_JS.match(/export function guardProtectedPage\([\s\S]*?\n\}/)?.[0];
+  assert.ok(guard);
+  assert.doesNotMatch(guard, /shouldBlockUnverifiedAccess|emailVerified|renderVerificationGate/);
+  assert.match(guard, /onAuthStateChanged\(auth/);
+  assert.match(guard, /requiresCurrentTerms\(user\)/);
+  assert.match(guard, /proceed\(user\)/);
 });
 
 test("the gate never sends a verification email automatically — only an explicit resend click does", () => {
@@ -283,7 +293,7 @@ test("auth/too-many-requests during a resend is shown as friendly copy, never a 
 
 // --- Already verified / Google bypass (integration of the above) -----------
 
-test("an already-verified email/password user is treated identically to a Google user by the gate", () => {
+test("email/password and Google identities follow the same general app-access policy", () => {
   const verifiedPassword = { emailVerified: true, providerData: [{ providerId: "password" }] };
   const verifiedGoogle = { emailVerified: true, providerData: [{ providerId: "google.com" }] };
   assert.equal(shouldBlockUnverifiedAccess(verifiedPassword), shouldBlockUnverifiedAccess(verifiedGoogle));

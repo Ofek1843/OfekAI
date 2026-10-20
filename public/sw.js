@@ -1,8 +1,8 @@
 // Bump this whenever a deploy must guarantee stale cached HTML/JS/CSS is
 // dropped (the activate handler below deletes any cache whose name !==
-// CACHE_NAME) -- e.g. this bump ships the Workout Tracker exercise-image
-// deadlock fix and must not be served from a stale v1 cache after deploy.
-const CACHE_NAME = 'fuelphysique-food-diary-20261019-1';
+// CACHE_NAME) -- e.g. this bump ships the guest signup/resume flow and must
+// not be served from a stale cached builder or diary page after deploy.
+const CACHE_NAME = 'fuelphysique-guest-trial-20261020-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -67,14 +67,19 @@ const urlsToCache = [
   '/assets/dashboard/landing-training.webp',
   '/css/simple-ux.css?v=20261007-motion-1',
   '/css/simple-ux.css?v=20261010-workout-paper-2',
-  '/css/landing.css?v=20261007-language-picker-3',
-  '/css/landing-editorial.css?v=20261013-product-preview-1',
+  '/css/landing.css?v=20261020-google-entry-1',
+  '/css/landing-editorial.css?v=20261020-google-entry-1',
   '/css/landing-product-previews.css?v=20261013-product-preview-1',
   '/css/saved-workout-view.css?v=20261015-plan-tabs-1',
   '/js/saved-workout-view.mjs?v=20261015-plan-tabs-1',
   '/js/saved-workout-volume.mjs?v=20261015-plan-tabs-1',
   '/js/workout-volume-data.mjs',
   '/css/site-quality.css?v=20261007-mobile-clarity-2',
+  '/js/landing.js?v=20261020-google-entry-1',
+  '/js/guest-trial.mjs',
+  '/js/workout-builder.js?v=20261020-guest-trial-1',
+  '/js/nutrition-builder.js?v=20261020-guest-trial-1',
+  '/js/daily-nutrition.js?v=20261020-guest-trial-1',
   '/js/landing-navigation.mjs',
   '/js/request-deadline.mjs',
   '/css/redesign-v1.css?v=20260914-i18n-dashboard-1',
@@ -82,6 +87,7 @@ const urlsToCache = [
   '/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1',
   '/css/daily-nutrition.css?v=20260918-daily-resilience-1',
   '/css/daily-nutrition-refresh.css?v=20261019-food-diary-1',
+  '/css/guest-trial.css?v=20261020-guest-trial-1',
   '/css/workout-history-refresh.css?v=20261018-1',
   '/css/product-motion-v47.css?v=20260908-v47-choice-polish-2',
   '/css/product-polish-v3.css?v=20260811-spectrum-v3',
