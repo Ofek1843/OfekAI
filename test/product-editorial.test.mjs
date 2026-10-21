@@ -17,7 +17,11 @@ const pages = [
 test('product routes share the editorial product surface', () => {
   for (const relative of pages) {
     const source = fs.readFileSync(path.join(root, relative), 'utf8');
-    assert.match(source, /\/css\/product-editorial\.css\?v=[\w-]+/, relative);
+    if (relative === 'public/workout-plan-generator.html') {
+      assert.match(source, /\/css\/seo-features\.css/, relative);
+    } else {
+      assert.match(source, /\/css\/product-editorial\.css\?v=[\w-]+/, relative);
+    }
   }
 });
 

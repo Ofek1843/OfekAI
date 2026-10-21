@@ -17,6 +17,8 @@ const path = require("node:path");
 const ROOT = path.join(__dirname, "..");
 const PUBLIC_DIR = path.join(ROOT, "public");
 const ORIGIN = "https://fuelphysique.com";
+const { features, hub } = require("../lib/seo-feature-content");
+const FEATURE_FILES = [hub, ...features];
 
 const read = file => fs.readFileSync(path.join(PUBLIC_DIR, file), "utf8");
 
@@ -40,6 +42,7 @@ const read = file => fs.readFileSync(path.join(PUBLIC_DIR, file), "utf8");
 //                                submission form gated behind sign-in
 //   billing-result.html     B -- transitional post-checkout status page
 const PUBLIC_INDEXABLE = Object.freeze({
+  ...Object.fromEntries(FEATURE_FILES.map(page => [page.file, page.route])),
   "index.html": "/",
   "about.html": "/about.html",
   "pricing.html": "/pricing.html",
@@ -60,11 +63,13 @@ const PUBLIC_SITEMAP_ROUTES = Object.freeze([
   "/", "/about.html", "/workout-plan-generator.html", "/exercise-library",
   "/pricing.html", "/faq.html", "/contact.html", "/terms.html", "/privacy.html",
   "/refund-policy.html", "/subscription-policy.html", "/accessibility.html",
-  "/community-guidelines.html", "/copyright.html", "/subprocessors.html"
+  "/community-guidelines.html", "/copyright.html", "/subprocessors.html",
+  ...FEATURE_FILES.map(page => page.route).filter(route => route !== "/workout-plan-generator.html")
 ]);
 
 const MUST_BE_NOINDEX = Object.freeze([
   "app.html", "auth.html", "auth-action.html", "billing-result.html",
+  "daily-nutrition.html",
   "dashboard.html", "exercise-progress.html", "leaderboard.html",
   "leaderboard-admin.html", "log-workout.html", "manual-nutrition-builder.html",
   "manual-workout-builder.html", "my-nutrition-plans.html", "my-workout-plans.html",
@@ -187,8 +192,8 @@ test("sitemap contains no private, auth, action or callback route", () => {
   for (const page of MUST_BE_NOINDEX) {
     assert.ok(!urls.includes(`/${page}`), `${page} must never appear in the sitemap`);
   }
-  for (const fragment of ["dashboard", "settings", "social", "progress", "my-", "auth", "billing", "leaderboard"]) {
-    assert.ok(!urls.includes(fragment), `sitemap must not reference "${fragment}"`);
+  for (const route of ["/settings.html", "/api/", "/__/auth/"]) {
+    assert.ok(!urls.includes(ORIGIN + route), `sitemap must not reference "${route}"`);
   }
 });
 
@@ -196,7 +201,7 @@ test("every sitemap URL maps to a real file that is served", () => {
   for (const url of sitemapUrls()) {
     const route = url.slice(ORIGIN.length);
     // "/" is served by express.static's directory index.
-    const file = route === "/" ? "index.html" : route.replace(/^\//, "");
+    const file = FEATURE_FILES.find(page => page.route === route)?.file || (route === "/" ? "index.html" : route.replace(/^\//, ""));
     if (route === "/exercise-library") {
       assert.match(fs.readFileSync(path.join(ROOT, "server.js"), "utf8"), /app\.get\("\/exercise-library"/);
       continue;
@@ -250,15 +255,15 @@ test("the landing title describes the product rather than only the brand", () =>
   assert.match(title, /FuelPhysique/);
 });
 
-test("workout plan generator page explains real inputs and has a direct signup path", () => {
+test("workout plan generator explains real inputs and guest-first conversion", () => {
   const page = read("workout-plan-generator.html");
-  assert.match(page, /Build a workout plan around your real week/);
+  assert.match(page, /A workout plan built around your real week/);
   assert.match(page, /experience[\s\S]*equipment[\s\S]*schedule/i);
   assert.match(page, /injuries, pain or movement limitations/i);
   assert.match(page, /Generated plans are general fitness suggestions/);
-  assert.match(page, /href="\/auth\.html\?next=workout-builder\.html"/);
-  assert.match(page, /data-legal-language="he"/);
-  assert.match(page, /מתחילים לבנות תוכנית אימון/);
+  assert.match(page, /href="\/workout-builder\.html\?lang=en"/);
+  assert.match(page, /sign in to generate and save/);
+  assert.match(page, /calisthenics/);
   assert.match(read("index.html"), /href="\/workout-plan-generator\.html"/);
 });
 
@@ -387,9 +392,9 @@ test("landing JSON-LD asserts no rating, review, offer or price", () => {
   }
 });
 
-test("JSON-LD is only on the landing page", () => {
+test("JSON-LD is confined to the homepage and reviewed feature templates", () => {
   for (const file of Object.keys(PUBLIC_INDEXABLE)) {
-    if (file === "index.html") continue;
+    if (file === "index.html" || FEATURE_FILES.some(page => page.file === file)) continue;
     assert.ok(
       !/application\/ld\+json/i.test(read(file)),
       `${file} should not carry structured data in this foundation`

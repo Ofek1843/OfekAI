@@ -19,7 +19,10 @@ const ALLOWED_EVENTS = new Set([
   "subscription_completed",
   "subscription_cancelled",
   "referral_link_opened",
-  "nutrition_shopping_list"
+  "nutrition_shopping_list",
+  "seo_landing_view",
+  "seo_cta_click",
+  "nutrition_generated"
 ]);
 
 function cleanText(value, limit = 80) {
@@ -32,6 +35,48 @@ function cleanText(value, limit = 80) {
 const CAMPAIGN_STORAGE_KEY = "fp_campaign_attribution_session_v1";
 const CAMPAIGN_ATTRIBUTION_TTL_MS = 24 * 60 * 60 * 1000;
 let signupConversionSent = false;
+const SEO_FEATURES = new Set(["features", "workout-plan-generator", "meal-plan-generator", "nutrition-tracker", "workout-tracker", "training-volume", "progress-tracking"]);
+const SEO_STORAGE_KEY = "fp_seo_feature_session_v1";
+const SEO_FUNNEL_EVENTS = new Set(["seo_landing_view", "seo_cta_click", "signup_started", "workout_generated", "nutrition_generated"]);
+const signupStartsSent = new Set();
+const SIGNUP_START_STORAGE_KEY = "fp_signup_start_session_v1";
+const SIGNUP_START_TTL_MS = 30 * 60 * 1000;
+
+function safeReferrer() {
+  try {
+    const url = new URL(document.referrer);
+    return /^https?:$/.test(url.protocol) ? url.origin : "";
+  } catch {
+    return "";
+  }
+}
+
+function previouslyStartedSignup(method) {
+  if (signupStartsSent.has(method)) return true;
+  signupStartsSent.add(method);
+  try {
+    const prior = JSON.parse(window.sessionStorage.getItem(SIGNUP_START_STORAGE_KEY) || "null");
+    const age = Date.now() - Number(prior?.capturedAt);
+    window.sessionStorage.setItem(SIGNUP_START_STORAGE_KEY, JSON.stringify({ method, capturedAt: Date.now() }));
+    return prior?.method === method && age >= 0 && age < SIGNUP_START_TTL_MS;
+  } catch {
+    return false;
+  }
+}
+
+function seoAttribution(eventName, properties) {
+  try {
+    if (eventName === "seo_cta_click" && SEO_FEATURES.has(properties.feature)) {
+      window.sessionStorage.setItem(SEO_STORAGE_KEY, JSON.stringify({ feature: properties.feature, capturedAt: Date.now() }));
+    }
+    const stored = JSON.parse(window.sessionStorage.getItem(SEO_STORAGE_KEY) || "null");
+    const age = Date.now() - Number(stored?.capturedAt);
+    if (SEO_FEATURES.has(stored?.feature) && age >= 0 && age <= CAMPAIGN_ATTRIBUTION_TTL_MS) return stored.feature;
+  } catch {
+    // Storage is optional. Navigation and generation must still succeed.
+  }
+  return null;
+}
 
 function cleanCampaignValue(value) {
   return String(value ?? "")
@@ -78,7 +123,22 @@ export function trackEvent(name, properties = {}) {
   if (typeof window === "undefined") return;
   const eventName = cleanText(name, 40);
   if (!ALLOWED_EVENTS.has(eventName)) return;
-  const eventProperties = { ...(properties || {}) };
+  let eventProperties = { ...(properties || {}) };
+  // Feature events use a fixed schema even for our first-party endpoint.
+  // Future callers must not accidentally attach food, health or identity data.
+  if (["seo_landing_view", "seo_cta_click", "nutrition_generated"].includes(eventName)) {
+    eventProperties = {
+      ...(SEO_FEATURES.has(eventProperties.feature) ? { feature: eventProperties.feature } : {}),
+      ...(["hero", "footer"].includes(eventProperties.placement) ? { placement: eventProperties.placement } : {}),
+      ...(eventName === "nutrition_generated" ? { builder: "nutrition" } : {})
+    };
+  }
+  if (eventName === "signup_started") {
+    const method = ["google", "email_password"].includes(eventProperties.method) ? eventProperties.method : "unknown";
+    if (previouslyStartedSignup(method)) return;
+  }
+  const seoFeature = seoAttribution(eventName, eventProperties);
+  if (seoFeature) eventProperties.seo_feature = seoFeature;
   if (eventName === "signup_completed") {
     if (signupConversionSent) return;
     signupConversionSent = true;
@@ -88,8 +148,18 @@ export function trackEvent(name, properties = {}) {
       const method = ["google", "email_password"].includes(eventProperties.method)
         ? eventProperties.method
         : "unknown";
-      window.gtag("event", "sign_up", { method });
+      window.gtag("event", "sign_up", { method, ...(seoFeature ? { seo_feature: seoFeature } : {}) });
     }
+  }
+  // Reuse the consent-controlled tag; never forward arbitrary event properties.
+  // In particular, workout goals, food descriptions and body metrics stay out.
+  if (SEO_FUNNEL_EVENTS.has(eventName) && typeof window.gtag === "function") {
+    const safe = {};
+    if (seoFeature) safe.seo_feature = seoFeature;
+    if (SEO_FEATURES.has(eventProperties.feature)) safe.feature = eventProperties.feature;
+    if (["hero", "footer"].includes(eventProperties.placement)) safe.placement = eventProperties.placement;
+    if (["google", "email_password"].includes(eventProperties.method)) safe.method = eventProperties.method;
+    window.gtag("event", eventName, safe);
   }
 
   const attribution = campaignAttribution();
@@ -100,7 +170,7 @@ export function trackEvent(name, properties = {}) {
   const payload = {
     event: eventName,
     path: cleanText(window.location.pathname, 120),
-    referrer: cleanText(document.referrer || "", 180),
+    referrer: safeReferrer(),
     title: cleanText(document.title || "", 120),
     ts: Date.now(),
     properties: Object.fromEntries(
@@ -117,11 +187,11 @@ export function trackEvent(name, properties = {}) {
 
   try {
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(
+      const queued = navigator.sendBeacon(
         ANALYTICS_ENDPOINT,
         new Blob([body], { type: "application/json" })
       );
-      return;
+      if (queued) return;
     }
   } catch {
     // Fall back to fetch below.

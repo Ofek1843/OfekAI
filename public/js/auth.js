@@ -697,7 +697,9 @@ if (new URLSearchParams(window.location.search).get("mode") === "signup") {
 }
 
 googleButton?.addEventListener("click", () => {
-  trackEvent("signup_started", { method: "google" });
+  if (currentMode === "signup") {
+    trackEvent("signup_started", { method: "google" });
+  }
   startGoogleSignIn();
 });
 

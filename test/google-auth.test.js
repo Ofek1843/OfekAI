@@ -220,6 +220,13 @@ test("the Google button exposes loading and disabled states", () => {
   assert.match(AUTH_HTML, /\.google-button:disabled/, "a disabled visual state must exist");
 });
 
+test("Google login is not counted as a signup start", () => {
+  assert.match(
+    AUTH_JS,
+    /googleButton\?\.addEventListener\("click", \(\) => \{\s*if \(currentMode === "signup"\) \{\s*trackEvent\("signup_started", \{ method: "google" \}\);\s*\}\s*startGoogleSignIn\(\);/,
+  );
+});
+
 test("the Blue Abyss theme and existing layout are preserved", () => {
   assert.match(AUTH_HTML, /theme\.css/, "the shared theme stylesheet must still be linked");
   assert.match(AUTH_HTML, /ocean-depth-layer/, "the Blue Abyss backdrop must be preserved");

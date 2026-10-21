@@ -3,7 +3,8 @@
 # Private application pages (dashboard, saved plans, progress, social,
 # settings) and transitional pages (login, password action, billing result)
 # are kept out of search results by a `noindex` robots meta tag in their own
-# HTML, and are protected from access by Firebase Authentication. They are
+# HTML. Account data is protected by authentication; guest tools expose only
+# their public forms or local trial state, not other users' data. These pages are
 # deliberately NOT listed as Disallow here: a crawler that is blocked from
 # fetching a URL can never read its noindex, so blocking them would make the
 # noindex unenforceable. robots.txt is a crawl directive, not access control.

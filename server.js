@@ -316,6 +316,9 @@ app.get("/landing-preview.html", (req, res, next) => {
   });
 });
 
+// Full public HTML, canonical aliases and real 404s before static directory handling.
+app.use(require("./lib/seo-feature-router"));
+
 app.use(express.static(path.join(__dirname, "public"), {
   maxAge: "1h",
   setHeaders(res, filePath) {
@@ -1303,7 +1306,7 @@ app.get("/exercise-library", (req, res) => {
   </style>
   <link rel="stylesheet" href="/css/exercise-library-media.css?v=20261018-guides-6">
 </head><body><main class="exercise-library">
-  <nav class="legal-nav" aria-label="Main navigation"><a class="legal-nav-brand" href="/">FuelPhysique</a><div class="legal-nav-links"><a href="/about.html">About</a><a href="/faq.html">FAQ</a><a href="/pricing.html">Plans</a></div></nav>
+  <nav class="legal-nav" aria-label="Main navigation"><a class="legal-nav-brand" href="/">FuelPhysique</a><div class="legal-nav-links"><a href="/features">Features</a><a href="/about.html">About</a><a href="/faq.html">FAQ</a><a href="/pricing.html">Plans</a></div></nav>
   <header class="library-intro"><span class="legal-badge">Free exercise directory</span><h1>Browse exercises by muscle and equipment</h1><p>Explore movements included in the FuelPhysique workout-planning catalog. Search by exercise name, equipment or the muscle tags used by the planner.</p><div class="library-cta"><a href="/workout-builder.html">Build a workout plan</a><a class="secondary" href="/about.html">How FuelPhysique works</a></div></header>
   <p class="library-note">Muscle tags describe how each movement is categorized in the planning catalog; they are not a claim that an exercise trains only those muscles or a substitute for professional guidance. Choose movements that suit your experience, equipment and circumstances.</p>
   <div class="library-tools"><label><input type="search" id="exercise-search" aria-label="Search exercises, muscles or equipment" placeholder="Search exercises, muscles or equipment" autocomplete="off"></label><nav class="muscle-jumps" aria-label="Browse muscle groups">${muscles.map((muscle) => `<a href="#muscle-${escapeHtml(muscle.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}">${escapeHtml(muscle)}</a>`).join("")}</nav></div>

@@ -56,7 +56,7 @@ test("the shared theme defines every required semantic token", () => {
 
 test("every public page loads the shared theme", () => {
   const missing = htmlPages.filter(page => {
-    if (require('./helpers/current-product.cjs').editorialPages.has(page)) {require('./helpers/current-product.cjs').assertPageShell(page);return false;}
+    if (require('./helpers/current-product.cjs').editorialPages.has(page) || require('./helpers/current-product.cjs').seoPages.has(page)) {require('./helpers/current-product.cjs').assertPageShell(page);return false;}
     const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
     return !/href="\/?css\/theme\.css"/.test(html);
   });
@@ -66,7 +66,7 @@ test("every public page loads the shared theme", () => {
 test("the theme is loaded before any page stylesheet, so there is no old-theme flash", () => {
   const late = [];
   for (const page of htmlPages) {
-    if (require('./helpers/current-product.cjs').editorialPages.has(page)) continue;
+    if (require('./helpers/current-product.cjs').editorialPages.has(page) || require('./helpers/current-product.cjs').seoPages.has(page)) continue;
     const html = fs.readFileSync(path.join(PUBLIC_DIR, page), "utf8");
     const links = [...html.matchAll(/href="\/?css\/([a-z0-9-]+\.css)/g)].map(m => m[1]);
     if (!links.length) continue;

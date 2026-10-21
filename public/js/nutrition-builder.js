@@ -402,6 +402,7 @@ setStatus("");
 if (data.plan) {
   window.currentNutritionPlan = data.plan;
   renderNutritionPlan(data.plan);
+  trackEvent("nutrition_generated", { builder: "nutrition" });
   if (resumedGuestDraft) { clearGuestDraft("nutrition"); resumedGuestDraft = false; }
   window.fpV47Success?.(button);
   return;

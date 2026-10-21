@@ -15,6 +15,10 @@ test("the complete redesign is applied once to every public HTML route", () => {
   const failures = [];
   for (const page of pages) {
     const html = fs.readFileSync(path.join(PUBLIC, page), "utf8");
+    if (require('./helpers/current-product.cjs').seoPages.has(page)) {
+      require('./helpers/current-product.cjs').assertPageShell(page);
+      continue;
+    }
     if (require('./helpers/current-product.cjs').editorialPages.has(page)) {
       require('./helpers/current-product.cjs').assertPageShell(page);
       continue;

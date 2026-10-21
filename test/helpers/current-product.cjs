@@ -5,6 +5,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const publicRoot=path.join(__dirname,'../../public');
 const read=p=>fs.readFileSync(path.join(publicRoot,p),'utf8');
 const editorialPages=new Set(['dashboard.html','dashboard-preview.html']);
+const seoPages=new Set(['workout-plan-generator.html']);
 function assertCurrentCache(source) {
   assert.equal(source.match(/const CACHE_NAME = ['"]([^'"]+)['"]/)[1],'fuelphysique-guest-dashboard-20261020-1');
   assert.match(source,/NETWORK_ONLY_PREFIXES/);
@@ -12,7 +13,11 @@ function assertCurrentCache(source) {
 }
 function assertPageShell(page) {
   const html=read(page);
-  if(editorialPages.has(page)) {
+  if(seoPages.has(page)) {
+    assert.match(html,/\/css\/seo-features\.css/);
+    assert.match(html,/\/js\/seo-features\.js/);
+    assert.doesNotMatch(html,/redesign-shell\.js/);
+  } else if(editorialPages.has(page)) {
     assert.match(html,/dashboard-editorial\.css\?v=/);
     assert.match(html,/dashboard-editorial(?:-preview)?\.js\?v=/);
     assert.doesNotMatch(html,/redesign-shell\.js|image-sequence-v43\.js/);
@@ -44,4 +49,4 @@ function landing(language='en') {
   vm.runInNewContext(read('js/simple-ux.js'),{document,window,matchMedia,Event:window.Event,localStorage:{getItem:()=>language},location:{pathname:'/index.html'}});
   return document;
 }
-module.exports={assertCurrentCache,assertCachedAsset,assertPageShell,editorialPages,dashboard,landing,read};
+module.exports={assertCurrentCache,assertCachedAsset,assertPageShell,editorialPages,seoPages,dashboard,landing,read};
