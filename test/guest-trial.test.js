@@ -62,3 +62,22 @@ test("guest Google handoff retains the builder return path and draft", async () 
     delete global.window;
   }
 });
+
+test("guest signup handoff reports one provider choice without blocking navigation", async () => {
+  const { startGuestSignup } = await loadGuestTrial();
+  const choices = [];
+  const destinations = [];
+  global.sessionStorage = { setItem() {} };
+  global.window = { location: { assign: url => destinations.push(url) } };
+  try {
+    startGuestSignup("nutrition", "/nutrition-builder.html?resumeGuest=nutrition", null, "google", method => choices.push(method));
+    startGuestSignup("workout", "/workout-builder.html?resumeGuest=workout", null, "", () => { throw new Error("analytics unavailable"); });
+    assert.deepEqual(choices, ["google"]);
+    assert.equal(destinations.length, 2);
+    assert.match(destinations[0], /provider=google/);
+    assert.match(destinations[1], /next=/);
+  } finally {
+    delete global.sessionStorage;
+    delete global.window;
+  }
+});

@@ -71,6 +71,14 @@ test("the auth landing subtitle describes the real product without chat/conversa
   assert.doesNotMatch(subtitle, /[֐-׿]/, "the subtitle is English only");
 });
 
+test("signup privacy note names the account data this product actually saves", () => {
+  const note = AUTH_HTML.match(/<p class="privacy-note">[\s\S]*?<\/p>/);
+  assert.ok(note, "expected the privacy note next to the signup form");
+  assert.match(note[0], /workout plans, meal plans, food diary, and progress/);
+  assert.doesNotMatch(note[0], /conversations/i);
+  assert.match(note[0], /href="\/terms\.html"/);
+});
+
 test("the landing copy change did not disturb authentication markup", () => {
   // Every element the auth logic binds to must still be present.
   for (const id of ["authForm", "email", "password", "rememberMe", "googleButton", "termsGatePanel", "linkAccountPanel", "loginTab", "signupTab", "submitButton"]) {

@@ -119,3 +119,115 @@ test("server accepts new events and meal success instrumentation has one call af
   assert.equal((source.match(/trackEvent\("nutrition_generated"/g) || []).length, 1);
   assert.match(source, /if \(data\.plan\) \{[\s\S]*?renderNutritionPlan\(data\.plan\);\s*trackEvent\("nutrition_generated"/);
 });
+
+test("activation stages use the existing consent-controlled GA tag and keep UTM through guest signup", async () => {
+  const memory = new Map();
+  const landing = context({ consent: true, memory });
+  landing.scope.window.location.search = "?utm_source=Meta&utm_medium=Paid_Social&utm_campaign=Fall26";
+  vm.runInContext('trackEvent("landing_page_view", { source: "landing" });', landing.scope);
+  const builder = context({ consent: true, memory });
+  builder.scope.window.location.pathname = "/workout-builder.html";
+  vm.runInContext(`
+    trackEvent("builder_open", { builder: "workout" });
+    trackEvent("generate_clicked", { builder: "workout", goal: "private" });
+    trackEvent("builder_validation_error", { builder: "workout", message: "private" });
+    trackEvent("signup_handoff", { builder: "workout", method: "google", email: "private@example.test" });
+  `, builder.scope);
+  const auth = context({ consent: true, memory });
+  auth.scope.window.location.pathname = "/auth.html";
+  vm.runInContext('trackEvent("signup_completed", { method: "google" });', auth.scope);
+  const activated = context({ consent: true, memory });
+  activated.scope.window.location.pathname = "/workout-builder.html";
+  vm.runInContext('trackEvent("workout_generated", {}); trackEvent("plan_saved", { type: "workout" });', activated.scope);
+  const names = [landing, builder, auth, activated].flatMap(page => page.gtag.map(call => call[1]));
+  assert.deepEqual(names, ["landing_page_view", "builder_open", "generate_clicked", "builder_validation_error", "signup_handoff", "sign_up", "workout_generated", "plan_saved"]);
+  assert.equal(activated.gtag.at(-1)[2].type, "workout");
+  for (const page of [landing, builder, auth, activated]) {
+    const payload = JSON.parse(await page.beacons[0].body.text());
+    assert.equal(payload.properties.campaign_source, "meta");
+    assert.equal(payload.properties.campaign_medium, "paid_social");
+    assert.equal(payload.properties.campaign_name, "fall26");
+  }
+  assert.doesNotMatch(JSON.stringify(builder.gtag), /private|goal|email|message/);
+});
+
+test("failure events are enum-only, consent-gated for GA, and rejected without a known builder", async () => {
+  const page = context({ consent: true });
+  vm.runInContext(`
+    trackEvent("generation_failed", { builder: "nutrition", reason: "server_error", food: "private meal", error: "private stack" });
+    trackEvent("generation_failed", { builder: "nutrition", reason: "private stack" });
+    trackEvent("generate_clicked", { builder: "private builder" });
+  `, page.scope);
+  assert.equal(page.gtag.length, 2);
+  assert.equal(page.beacons.length, 2);
+  assert.deepEqual(JSON.parse(JSON.stringify(page.gtag[0][2])), { builder: "nutrition", reason: "server_error" });
+  const payload = JSON.parse(await page.beacons[0].body.text());
+  assert.deepEqual(sanitizeAnalyticsPayload(payload).properties, { builder: "nutrition", reason: "server_error" });
+  assert.doesNotMatch(JSON.stringify(payload), /private meal|private stack/);
+  const denied = context();
+  vm.runInContext('trackEvent("plan_saved", { type: "nutrition" });', denied.scope);
+  assert.equal(denied.gtag.length, 0);
+  assert.equal(denied.beacons.length, 1);
+  assert.equal(sanitizeAnalyticsPayload({ event: "generation_failed", properties: { builder: "other" } }), null);
+  assert.deepEqual([0, 400, 429, 503].map(status => vm.runInContext(`generationFailureCategory(${status})`, page.scope)),
+    ["network_or_timeout", "request_rejected", "rate_limited", "server_error"]);
+});
+
+test("legacy shopping-list and referral events do not carry meal names or raw UTM values", async () => {
+  const page = context();
+  page.scope.window.location.search = "?utm_source=Meta&utm_campaign=Launch26";
+  vm.runInContext(`
+    trackEvent("nutrition_shopping_list", { plan: "private meal plan" });
+    trackEvent("referral_link_opened", { source: "private@example.test" });
+  `, page.scope);
+  assert.equal(page.beacons.length, 2);
+  for (const beacon of page.beacons) {
+    const payload = JSON.parse(await beacon.body.text());
+    assert.equal(payload.properties.campaign_source, "meta");
+    assert.equal(payload.properties.campaign_name, "launch26");
+    assert.doesNotMatch(JSON.stringify(payload), /private meal plan|private@example.test/);
+    assert.deepEqual(sanitizeAnalyticsPayload(payload).properties, {
+      campaign_source: "meta", campaign_name: "launch26"
+    });
+  }
+  const personalCampaign = context();
+  personalCampaign.scope.window.location.search = "?utm_campaign=private%40example.test";
+  vm.runInContext('trackEvent("landing_page_view");', personalCampaign.scope);
+  const personalPayload = JSON.parse(await personalCampaign.beacons[0].body.text());
+  assert.equal(personalPayload.properties.campaign_name, undefined);
+});
+
+test("builder chooser is not counted as a builder open in GA and transport failure cannot block the page", () => {
+  const page = context({ consent: true, beaconAccepted: false });
+  page.scope.fetch = () => { throw new Error("offline"); };
+  assert.doesNotThrow(() => vm.runInContext('trackEvent("builder_open", { source: "landing" });', page.scope));
+  assert.equal(page.gtag.length, 0);
+});
+
+test("a failing GA tag cannot interrupt signup or generation telemetry", () => {
+  const page = context({ consent: true });
+  page.scope.window.gtag = () => { throw new Error("tag unavailable"); };
+  assert.doesNotThrow(() => vm.runInContext(`
+    trackEvent("signup_completed", { method: "google" });
+    trackEvent("generate_clicked", { builder: "workout" });
+  `, page.scope));
+  assert.equal(page.beacons.length, 2);
+});
+
+test("each builder wires one Generate click, guest handoff, success, save, and safe failure path", () => {
+  for (const [kind, filename, successName] of [
+    ["workout", "workout-builder.js", "workout_generated"],
+    ["nutrition", "nutrition-builder.js", "nutrition_generated"]
+  ]) {
+    const source = fs.readFileSync(path.join(root, "public/js", filename), "utf8");
+    assert.equal((source.match(/trackEvent\("generate_clicked"/g) || []).length, 1, filename);
+    assert.ok(source.includes(`button?.addEventListener("click", () => trackEvent("generate_clicked", { builder: "${kind}" }));`), filename);
+    assert.ok(source.includes(`trackEvent("signup_handoff", { builder: "${kind}", method })`), filename);
+    assert.equal((source.match(new RegExp(`trackEvent\\("${successName}"`, "g")) || []).length, 1, filename);
+    assert.equal((source.match(/trackEvent\("plan_saved"/g) || []).length, 1, filename);
+    assert.match(source, /await save(?:Workout|Nutrition)Plan\([\s\S]*?trackEvent\("plan_saved"/);
+    assert.match(source, /catch \(error\) \{\s*trackEvent\("generation_failed"/);
+  }
+  const nutritionHtml = fs.readFileSync(path.join(root, "public/nutrition-builder.html"), "utf8");
+  assert.equal((nutritionHtml.match(/trackEvent\('builder_validation_error'/g) || []).length, 2);
+});

@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
-import { trackEvent, trackPageView } from "./analytics.js";
+import { trackEvent, trackPageView, generationFailureCategory } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js?v=20261014-rir-1";
 import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
@@ -20,6 +20,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 const form = document.querySelector("#workout-builder-form");
 const button = document.querySelector("#generate-button");
+button?.addEventListener("click", () => trackEvent("generate_clicked", { builder: "workout" }));
 const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#program-result");
 const currentLanguage =
@@ -505,6 +506,7 @@ function showWizardError(message) {
   if (!wizardError) return;
   wizardError.textContent = message;
   wizardError.classList.remove("hidden");
+  trackEvent("builder_validation_error", { builder: "workout" });
 }
 
 // --- Muscle Focus ------------------------------------------------------
@@ -813,6 +815,7 @@ form.addEventListener("submit", async (event) => {
   const goalSelect = document.querySelector("#goal");
   const goalError = document.querySelector("#goalChoiceError");
   if (!goalSelect?.value) {
+    trackEvent("builder_validation_error", { builder: "workout" });
     if (goalError) {
       goalError.textContent = isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
       goalError.classList.remove("hidden");
@@ -824,7 +827,7 @@ form.addEventListener("submit", async (event) => {
   if (!auth.currentUser) {
     const nextPath = "/workout-builder.html?resumeGuest=workout";
     try { sessionStorage.setItem("fp-guest-trial-v1:workout", JSON.stringify({ savedAt: Date.now(), payload: serializeForm(form) })); } catch {}
-    showSignupPrompt(statusElement, "workout", nextPath, isHebrew);
+    showSignupPrompt(statusElement, "workout", nextPath, isHebrew, (method) => trackEvent("signup_handoff", { builder: "workout", method }));
     return;
   }
 
@@ -866,6 +869,7 @@ form.addEventListener("submit", async (event) => {
     ...muscleFocusPayload()
   };
 
+  let failureReason = "network_or_timeout";
   try {
     const response = await builderFetch("/api/workout-builder", {
       method: "POST",
@@ -873,6 +877,7 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
 
+    failureReason = response.ok ? "empty_result" : generationFailureCategory(response.status);
     const data = await response.json();
 
     if (!response.ok) {
@@ -932,6 +937,7 @@ if (data.program) {
   if (resumedGuestDraft) { clearGuestDraft("workout"); resumedGuestDraft = false; }
   return;
 }
+    trackEvent("generation_failed", { builder: "workout", reason: "empty_result" });
     resultElement.innerHTML = `
       <h2>
         ${
@@ -951,6 +957,7 @@ if (data.program) {
     `;
     resultElement.classList.remove("hidden");
   } catch (error) {
+    trackEvent("generation_failed", { builder: "workout", reason: failureReason });
     console.error(
       "Workout builder request failed:",
       error

@@ -344,11 +344,7 @@ function trackReferralParams() {
   const utmMedium = params.get("utm_medium");
   const utmCampaign = params.get("utm_campaign");
   if (utmSource || utmMedium || utmCampaign) {
-    trackClick("referral_link_opened", {
-      source: utmSource || "unknown",
-      medium: utmMedium || "unknown",
-      campaign: utmCampaign || "unknown"
-    });
+    trackClick("referral_link_opened");
   }
 }
 

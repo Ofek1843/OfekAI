@@ -10,8 +10,9 @@ const { parseHTML } = require("linkedom");
 const ROOT = path.join(__dirname, "..");
 const source = fs.readFileSync(path.join(ROOT, "public/js/google-analytics-consent.js"), "utf8");
 
-function runPage({ stored = null, pathname = "/", search = "" } = {}) {
+function runPage({ stored = null, pathname = "/", search = "", referrer = "" } = {}) {
   const { document, window } = parseHTML("<html lang=\"en\"><head></head><body><main><section id=\"use\"></section></main></body></html>");
+  Object.defineProperty(document, "referrer", { configurable: true, value: referrer });
   const memory = new Map(stored ? [["fp_analytics_consent_v1", stored]] : []);
   const localStorage = {
     getItem: key => memory.get(key) || null,
@@ -40,7 +41,8 @@ test("Google tag is not loaded before consent or after refusal", () => {
 test("consent loads one GA4 tag with sanitized location and no advertising consent", () => {
   const page = runPage({
     pathname: "/auth.html",
-    search: "?utm_source=tiktok&utm_campaign=launch&token=secret&email=user%40example.com"
+    search: "?utm_source=tiktok&utm_campaign=launch&token=secret&email=user%40example.com",
+    referrer: "https://example.test/private-user?email=user%40example.com"
   });
   page.document.querySelector(".fp-analytics-consent-actions button").click();
   assert.equal(page.memory.get("fp_analytics_consent_v1"), "granted");
@@ -55,6 +57,7 @@ test("consent loads one GA4 tag with sanitized location and no advertising conse
   const config = commands.find(command => command[0] === "config");
   assert.equal(config[1], "G-1HG905SBV4");
   assert.equal(config[2].page_location, "https://fuelphysique.com/auth.html?utm_source=tiktok&utm_campaign=launch");
+  assert.equal(config[2].page_referrer, "https://example.test");
   assert.equal(config[2].allow_google_signals, false);
 });
 

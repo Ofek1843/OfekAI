@@ -59,7 +59,8 @@
     if (!document.referrer) return "";
     try {
       const url = new URL(document.referrer);
-      return /^https?:$/.test(url.protocol) ? `${url.origin}${url.pathname}` : "";
+      // Referrer paths can contain account or campaign-specific values.
+      return /^https?:$/.test(url.protocol) ? url.origin : "";
     } catch {
       return "";
     }

@@ -29,8 +29,10 @@ export const ALLOWED_NEXT_PATHS = [
   "workout-builder.html",
   "nutrition-builder.html",
   "daily-nutrition.html",
+  "progress.html",
   "social.html",
-  "workout-tracker.html"
+  "workout-tracker.html",
+  "transformation-submit.html"
 ];
 
 export const DEFAULT_NEXT_PATH = "/dashboard.html";
@@ -68,6 +70,12 @@ export function resolveNextPath(requestedNext) {
       return `${url.pathname}?resumeGuest=${resumeByPage[filename]}`;
     }
     return DEFAULT_NEXT_PATH;
+  }
+
+  // These login CTAs lead to a specific product page, not a parameterized
+  // action. Preserve the destination without widening the redirect surface.
+  if (["progress.html", "transformation-submit.html"].includes(filename)) {
+    return keys.length ? DEFAULT_NEXT_PATH : url.pathname;
   }
 
   const safeId = value => /^[A-Za-z0-9_-]{1,160}$/.test(value || "");

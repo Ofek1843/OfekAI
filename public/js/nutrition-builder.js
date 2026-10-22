@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { trackEvent, trackPageView } from "./analytics.js";
+import { trackEvent, trackPageView, generationFailureCategory } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js?v=20261014-rir-1";
 import { addDoc, collection, getDocs, limit, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
@@ -13,6 +13,7 @@ const builderFetch = (url, options) => fetchWithDeadline(url, options, { languag
 
 const form = document.querySelector("#nutrition-builder-form");
 const button = document.querySelector("#generate-button");
+button?.addEventListener("click", () => trackEvent("generate_clicked", { builder: "nutrition" }));
 const statusElement = document.querySelector("#builder-status");
 const resultElement = document.querySelector("#nutrition-result");
 const currentLanguage =
@@ -321,7 +322,7 @@ form.addEventListener("submit", async (event) => {
   if (!auth.currentUser) {
     const nextPath = "/nutrition-builder.html?resumeGuest=nutrition";
     try { sessionStorage.setItem("fp-guest-trial-v1:nutrition", JSON.stringify({ savedAt: Date.now(), payload: serializeForm(form) })); } catch {}
-    showSignupPrompt(document.querySelector("#builder-status"), "nutrition", nextPath, isHebrew);
+    showSignupPrompt(document.querySelector("#builder-status"), "nutrition", nextPath, isHebrew, (method) => trackEvent("signup_handoff", { builder: "nutrition", method }));
     return;
   }
 
@@ -374,6 +375,7 @@ form.addEventListener("submit", async (event) => {
     language: currentLanguage
   };
 
+  let failureReason = "network_or_timeout";
   try {
     const response = await builderFetch("/api/nutrition-builder", {
       method: "POST",
@@ -381,6 +383,7 @@ form.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
 
+    failureReason = response.ok ? "empty_result" : generationFailureCategory(response.status);
     const data = await response.json();
     if (!response.ok) {
       const mappedMessage = builderErrorMessage({
@@ -409,6 +412,7 @@ if (data.plan) {
 }
 throw new Error(isHebrew ? "לא התקבלה תוכנית. התשובות נשמרו; נסו שוב." : "No plan was returned. Your answers are kept; please retry.");
   } catch (error) {
+    trackEvent("generation_failed", { builder: "nutrition", reason: failureReason });
     console.error(
       "Nutrition builder request failed:",
       error
@@ -534,7 +538,7 @@ function renderShoppingList(plan = {}) {
   shoppingListBody.innerHTML = sections || `<p class="shopping-empty">${isHebrew ? "לא נמצאו פריטי מזון בתוכנית הזאת." : "No food items were found in this plan."}</p>`;
   shoppingListModal.classList.remove("hidden");
   shoppingListModal.setAttribute("aria-hidden", "false");
-  trackEvent("nutrition_shopping_list", { plan: planName });
+  trackEvent("nutrition_shopping_list");
 }
 
 function closeShoppingList() {

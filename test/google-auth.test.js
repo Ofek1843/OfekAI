@@ -637,17 +637,21 @@ test("allowlisted safe product destinations are preserved", () => {
   assert.equal(resolveNextPath("workout-builder.html"), "/workout-builder.html");
   assert.equal(resolveNextPath("nutrition-builder.html"), "/nutrition-builder.html");
   assert.equal(resolveNextPath("daily-nutrition.html"), "/daily-nutrition.html");
+  assert.equal(resolveNextPath("progress.html"), "/progress.html", "SEO progress CTA returns to the intended page");
+  assert.equal(resolveNextPath("transformation-submit.html"), "/transformation-submit.html", "submission login returns to the form");
   assert.equal(resolveNextPath("dashboard.html"), "/dashboard.html");
   assert.equal(resolveNextPath("/app.html?settings=open&section=account"), "/app.html?settings=open&section=account");
   assert.equal(resolveNextPath("/social.html"), "/social.html", "the social landing page is a safe post-auth destination");
   assert.equal(resolveNextPath("/workout-tracker.html"), "/workout-tracker.html", "the tracker landing page is a safe post-auth destination");
-  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "daily-nutrition.html", "social.html", "workout-tracker.html"]);
+  assert.deepEqual(ALLOWED_NEXT_PATHS, ["dashboard.html", "app.html", "workout-builder.html", "nutrition-builder.html", "daily-nutrition.html", "progress.html", "social.html", "workout-tracker.html", "transformation-submit.html"]);
 });
 
 test("any other next value falls back to the dashboard — the login page is not an open redirect", () => {
   assert.equal(resolveNextPath(null), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath(""), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("dashboard.html?admin=1"), DEFAULT_NEXT_PATH);
+  assert.equal(resolveNextPath("progress.html?next=evil"), DEFAULT_NEXT_PATH);
+  assert.equal(resolveNextPath("transformation-submit.html?admin=1"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("/app.html?settings=delete"), DEFAULT_NEXT_PATH);
   assert.equal(resolveNextPath("//evil.example.com"), DEFAULT_NEXT_PATH, "protocol-relative URLs must not be honored");
   assert.equal(resolveNextPath("https://evil.example.com"), DEFAULT_NEXT_PATH);

@@ -7,6 +7,10 @@ const ALLOWED_EVENTS = new Set([
   "signup_completed",
   "onboarding_completed",
   "builder_open",
+  "generate_clicked",
+  "signup_handoff",
+  "builder_validation_error",
+  "generation_failed",
   "plan_saved",
   "pricing_click",
   "pricing_page_view",
@@ -38,6 +42,9 @@ let signupConversionSent = false;
 const SEO_FEATURES = new Set(["features", "workout-plan-generator", "meal-plan-generator", "nutrition-tracker", "workout-tracker", "training-volume", "progress-tracking"]);
 const SEO_STORAGE_KEY = "fp_seo_feature_session_v1";
 const SEO_FUNNEL_EVENTS = new Set(["seo_landing_view", "seo_cta_click", "signup_started", "workout_generated", "nutrition_generated"]);
+const ACTIVATION_FUNNEL_EVENTS = new Set(["landing_page_view", "builder_open", "generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed", "plan_saved"]);
+const BUILDER_VALUES = new Set(["workout", "nutrition"]);
+const FAILURE_REASONS = new Set(["request_rejected", "rate_limited", "server_error", "network_or_timeout", "empty_result"]);
 const signupStartsSent = new Set();
 const SIGNUP_START_STORAGE_KEY = "fp_signup_start_session_v1";
 const SIGNUP_START_TTL_MS = 30 * 60 * 1000;
@@ -79,7 +86,9 @@ function seoAttribution(eventName, properties) {
 }
 
 function cleanCampaignValue(value) {
-  return String(value ?? "")
+  const raw = String(value ?? "");
+  if (raw.includes("@")) return "";
+  return raw
     .toLowerCase()
     .replace(/[^a-z0-9_-]/g, "")
     .slice(0, 60);
@@ -119,6 +128,15 @@ function campaignAttribution() {
   return {};
 }
 
+function sendGaEvent(name, properties) {
+  if (typeof window.gtag !== "function") return;
+  try {
+    window.gtag("event", name, properties);
+  } catch {
+    // Analytics must never interrupt signup, navigation, or generation.
+  }
+}
+
 export function trackEvent(name, properties = {}) {
   if (typeof window === "undefined") return;
   const eventName = cleanText(name, 40);
@@ -132,6 +150,19 @@ export function trackEvent(name, properties = {}) {
       ...(["hero", "footer"].includes(eventProperties.placement) ? { placement: eventProperties.placement } : {}),
       ...(eventName === "nutrition_generated" ? { builder: "nutrition" } : {})
     };
+  }
+  // New activation events have an enum-only contract. Never forward form
+  // values, validation text, HTTP bodies, or account data to either sink.
+  if (["generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed"].includes(eventName)) {
+    eventProperties = {
+      ...(BUILDER_VALUES.has(eventProperties.builder) ? { builder: eventProperties.builder } : {}),
+      ...(eventName === "signup_handoff" && ["google", "email_password"].includes(eventProperties.method) ? { method: eventProperties.method } : {}),
+      ...(eventName === "generation_failed" && FAILURE_REASONS.has(eventProperties.reason) ? { reason: eventProperties.reason } : {})
+    };
+    if (!eventProperties.builder) return;
+  }
+  if (["nutrition_shopping_list", "referral_link_opened"].includes(eventName)) {
+    eventProperties = {};
   }
   if (eventName === "signup_started") {
     const method = ["google", "email_password"].includes(eventProperties.method) ? eventProperties.method : "unknown";
@@ -148,7 +179,7 @@ export function trackEvent(name, properties = {}) {
       const method = ["google", "email_password"].includes(eventProperties.method)
         ? eventProperties.method
         : "unknown";
-      window.gtag("event", "sign_up", { method, ...(seoFeature ? { seo_feature: seoFeature } : {}) });
+      sendGaEvent("sign_up", { method, ...(seoFeature ? { seo_feature: seoFeature } : {}) });
     }
   }
   // Reuse the consent-controlled tag; never forward arbitrary event properties.
@@ -159,7 +190,22 @@ export function trackEvent(name, properties = {}) {
     if (SEO_FEATURES.has(eventProperties.feature)) safe.feature = eventProperties.feature;
     if (["hero", "footer"].includes(eventProperties.placement)) safe.placement = eventProperties.placement;
     if (["google", "email_password"].includes(eventProperties.method)) safe.method = eventProperties.method;
-    window.gtag("event", eventName, safe);
+    sendGaEvent(eventName, safe);
+  }
+  if (ACTIVATION_FUNNEL_EVENTS.has(eventName) && typeof window.gtag === "function") {
+    const builder = BUILDER_VALUES.has(eventProperties.builder) ? eventProperties.builder : null;
+    const type = BUILDER_VALUES.has(eventProperties.type) ? eventProperties.type : null;
+    // The landing's chooser also uses builder_open, but opening a chooser is
+    // not the same stage as opening an actual workout or nutrition builder.
+    if (eventName !== "builder_open" || builder) {
+      const safe = {};
+      if (builder) safe.builder = builder;
+      if (type) safe.type = type;
+      if (eventName === "signup_handoff" && ["google", "email_password"].includes(eventProperties.method)) safe.method = eventProperties.method;
+      if (eventName === "generation_failed" && FAILURE_REASONS.has(eventProperties.reason)) safe.reason = eventProperties.reason;
+      if (seoFeature) safe.seo_feature = seoFeature;
+      sendGaEvent(eventName, safe);
+    }
   }
 
   const attribution = campaignAttribution();
@@ -197,13 +243,24 @@ export function trackEvent(name, properties = {}) {
     // Fall back to fetch below.
   }
 
-  fetch(ANALYTICS_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body,
-    keepalive: true,
-    credentials: "omit"
-  }).catch(() => {});
+  try {
+    fetch(ANALYTICS_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+      credentials: "omit"
+    }).catch(() => {});
+  } catch {
+    // Synchronous transport failures must not affect a form submission.
+  }
+}
+
+export function generationFailureCategory(status = 0) {
+  if (status === 429) return "rate_limited";
+  if (status >= 400 && status < 500) return "request_rejected";
+  if (status >= 500) return "server_error";
+  return "network_or_timeout";
 }
 
 export function trackPageView(properties = {}) {

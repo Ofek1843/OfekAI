@@ -4,7 +4,7 @@ function draftKey(kind) {
   return `${GUEST_DRAFT_PREFIX}:${kind}`;
 }
 
-export function startGuestSignup(kind, nextPath, payload = null, provider = "") {
+export function startGuestSignup(kind, nextPath, payload = null, provider = "", onHandoff = null) {
   try {
     if (payload) sessionStorage.setItem(draftKey(kind), JSON.stringify({ savedAt: Date.now(), payload }));
     sessionStorage.setItem(`${GUEST_DRAFT_PREFIX}:next`, nextPath);
@@ -13,6 +13,7 @@ export function startGuestSignup(kind, nextPath, payload = null, provider = "") 
   }
   const query = new URLSearchParams({ mode: "signup", next: nextPath });
   if (provider === "google") query.set("provider", "google");
+  try { onHandoff?.(provider === "google" ? "google" : "email_password"); } catch { /* Analytics cannot block signup. */ }
   window.location.assign(`/auth.html?${query.toString()}`);
 }
 
@@ -61,7 +62,7 @@ export function restoreForm(form, fields) {
   return true;
 }
 
-export function showSignupPrompt(element, kind, nextPath, isHebrew = false) {
+export function showSignupPrompt(element, kind, nextPath, isHebrew = false, onHandoff = null) {
   if (!element) return;
   element.replaceChildren();
   const message = document.createElement("span");
@@ -74,12 +75,12 @@ export function showSignupPrompt(element, kind, nextPath, isHebrew = false) {
   googleButton.type = "button";
   googleButton.className = "guest-signup-button";
   googleButton.textContent = isHebrew ? "המשך עם Google" : "Continue with Google";
-  googleButton.addEventListener("click", () => startGuestSignup(kind, nextPath, null, "google"));
+  googleButton.addEventListener("click", () => startGuestSignup(kind, nextPath, null, "google", onHandoff));
   const button = document.createElement("button");
   button.type = "button";
   button.className = "guest-signup-button guest-signup-button--secondary";
   button.textContent = isHebrew ? "אימייל או כניסה לחשבון" : "Email or existing account";
-  button.addEventListener("click", () => startGuestSignup(kind, nextPath));
+  button.addEventListener("click", () => startGuestSignup(kind, nextPath, null, "", onHandoff));
   actions.append(googleButton, button);
   element.append(message, actions);
   element.classList.add("guest-signup-prompt");

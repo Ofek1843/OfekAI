@@ -69,6 +69,34 @@ test("guest entry is tracked separately from a real registration", () => {
   assert.equal(summarizePublicStats({ users: [] }).registeredUsers, 0, "the guest event does not create a registered user");
 });
 
+test("activation events keep only fixed categories and campaign enums", () => {
+  for (const event of ["generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed"]) {
+    const payload = sanitizeAnalyticsPayload({
+      event,
+      properties: {
+        builder: "nutrition", method: "google", reason: "rate_limited",
+        campaign_source: "Meta!", campaign_medium: "Paid Social", campaign_name: "Launch-26",
+        email: "private@example.test", food: "private meal", error: "private error"
+      }
+    });
+    assert.equal(payload.properties.builder, "nutrition");
+    assert.equal(payload.properties.campaign_source, "meta");
+    assert.equal(payload.properties.campaign_medium, "paidsocial");
+    assert.equal(payload.properties.campaign_name, "launch-26");
+    assert.equal(payload.properties.email, undefined);
+    assert.equal(payload.properties.food, undefined);
+    assert.equal(payload.properties.error, undefined);
+    assert.equal(payload.properties.method, event === "signup_handoff" ? "google" : undefined);
+    assert.equal(payload.properties.reason, event === "generation_failed" ? "rate_limited" : undefined);
+  }
+  assert.equal(sanitizeAnalyticsPayload({ event: "generate_clicked", properties: { builder: "unknown" } }), null);
+  for (const event of ["nutrition_shopping_list", "referral_link_opened"]) {
+    const safe = sanitizeAnalyticsPayload({ event, properties: { plan: "private meal", source: "private@example.test", campaign_source: "Meta" } });
+    assert.deepEqual(safe.properties, { campaign_source: "meta" });
+    assert.deepEqual(sanitizeAnalyticsPayload({ event, properties: { campaign_name: "private@example.test" } }).properties, {});
+  }
+});
+
 test("public stats summary counts only meaningful records", () => {
   const stats = summarizePublicStats({
     users: [
