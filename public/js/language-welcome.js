@@ -1,5 +1,44 @@
 (() => {
-  const dialog = document.getElementById("languageWelcomeDialog");
+  const createDialog = () => {
+    const existing = document.getElementById("languageWelcomeDialog");
+    if (existing) return existing;
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "language-welcome";
+    dialog.id = "languageWelcomeDialog";
+    dialog.dataset.noAutoTranslate = "";
+    dialog.setAttribute("aria-labelledby", "languageWelcomeTitle");
+    dialog.setAttribute("aria-describedby", "languageWelcomeDescription");
+    dialog.innerHTML = `
+      <div class="language-welcome__content">
+        <p class="language-welcome__eyebrow">FuelPhysique</p>
+        <h1 id="languageWelcomeTitle">Choose your language</h1>
+        <p id="languageWelcomeDescription">English is selected by default. Choose another language before continuing if you prefer.</p>
+        <label id="welcomeLanguageLabel" for="welcomeLanguagePicker">Language</label>
+        <div class="language-welcome__picker">
+          <button type="button" id="welcomeLanguagePicker" class="language-welcome__picker-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="welcomeLanguageOptions">
+            <span id="welcomeLanguageSelected">English</span><span class="language-welcome__picker-chevron" aria-hidden="true"></span>
+          </button>
+          <div id="welcomeLanguageOptions" class="language-welcome__options" role="listbox" aria-labelledby="welcomeLanguageLabel" hidden>
+            <button type="button" role="option" data-language="en" aria-selected="true" lang="en">English</button>
+            <button type="button" role="option" data-language="ar" aria-selected="false" lang="ar" dir="rtl">العربية</button>
+            <button type="button" role="option" data-language="zh" aria-selected="false" lang="zh">中文</button>
+            <button type="button" role="option" data-language="fr" aria-selected="false" lang="fr">Français</button>
+            <button type="button" role="option" data-language="de" aria-selected="false" lang="de">Deutsch</button>
+            <button type="button" role="option" data-language="he" aria-selected="false" lang="he" dir="rtl">עברית</button>
+            <button type="button" role="option" data-language="es" aria-selected="false" lang="es">Español</button>
+          </div>
+        </div>
+        <div class="language-welcome__actions">
+          <button type="button" class="language-welcome__continue" id="welcomeLanguageContinue">Continue in English</button>
+          <button type="button" class="language-welcome__english" id="welcomeLanguageEnglish">Choose a different language</button>
+        </div>
+      </div>`;
+    document.body.append(dialog);
+    return dialog;
+  };
+
+  const dialog = createDialog();
   const picker = document.getElementById("welcomeLanguagePicker");
   const selectedLabel = document.getElementById("welcomeLanguageSelected");
   const optionsList = document.getElementById("welcomeLanguageOptions");
@@ -7,7 +46,7 @@
   const continueButton = document.getElementById("welcomeLanguageContinue");
   const alternateButton = document.getElementById("welcomeLanguageEnglish");
   const openButton = document.getElementById("openLanguageWelcome");
-  if (!(dialog instanceof HTMLDialogElement) || !picker || !selectedLabel || !optionsList || !options.length || !continueButton || !alternateButton || !openButton) return;
+  if (!(dialog instanceof HTMLDialogElement) || !picker || !selectedLabel || !optionsList || !options.length || !continueButton || !alternateButton) return;
 
   const completedKey = "ofek-ai-language-welcome-complete";
   const languageKey = "ofek-ai-language";
@@ -23,12 +62,19 @@
   };
 
   let completed = false;
-  let savedLanguage = "en";
+  let savedLanguage = "";
   try {
     completed = localStorage.getItem(completedKey) === "1";
-    savedLanguage = localStorage.getItem(languageKey) || "en";
+    savedLanguage = localStorage.getItem(languageKey) || "";
   } catch {}
-  let selectedLanguage = savedLanguage in copy ? savedLanguage : "en";
+  const browserLanguages = [
+    ...(Array.isArray(navigator.languages) ? navigator.languages : []),
+    navigator.language || "en"
+  ];
+  const detectedLanguage = browserLanguages
+    .map((language) => String(language).toLowerCase().split("-")[0])
+    .find((language) => language in copy) || "en";
+  let selectedLanguage = savedLanguage in copy ? savedLanguage : detectedLanguage;
 
   const closeOptions = ({ restoreFocus = false } = {}) => {
     optionsList.hidden = true;
@@ -59,6 +105,8 @@
     document.getElementById("welcomeLanguageLabel").textContent = strings.label;
     continueButton.textContent = strings.proceed.replace("{language}", names[selected]);
     alternateButton.textContent = strings.alternate;
+    selectedLabel.textContent = names[selected];
+    for (const option of options) option.setAttribute("aria-selected", String(option.dataset.language === selected));
     dialog.lang = selected;
     dialog.dir = ["he", "ar"].includes(selected) ? "rtl" : "ltr";
   };
@@ -94,7 +142,7 @@
   document.addEventListener("pointerdown", (event) => {
     if (!optionsList.hidden && event.target instanceof Element && !event.target.closest(".language-welcome__picker")) closeOptions();
   });
-  openButton.addEventListener("click", () => {
+  openButton?.addEventListener("click", () => {
     updateCopy();
     if (!dialog.open) dialog.showModal();
   });
@@ -108,5 +156,5 @@
   });
   dialog.addEventListener("cancel", (event) => event.preventDefault());
   updateCopy();
-  if (!completed) dialog.showModal();
+  if (!completed && !savedLanguage) dialog.showModal();
 })();
