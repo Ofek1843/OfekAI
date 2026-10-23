@@ -138,5 +138,5 @@ test("Hebrew uses logical layout, readable RIR and the shared RTL direction", ()
 
 test("the versioned page loads the mobile result assets", () => {
   assert.match(HTML, /workout-builder\.css\?v=20261014-rir-1/);
-  assert.match(HTML, /workout-builder\.js\?v=20261014-rir-1/);
+  assert.match(HTML, /workout-builder\.js\?v=\d{8}-[\w-]+/);
 });

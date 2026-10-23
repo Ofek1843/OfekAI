@@ -11,6 +11,7 @@ import { builderErrorMessage } from "./builder-errors.mjs";
 import { t } from "./i18n.js?v=20261002-brand-quality-1";
 import { fetchWithDeadline } from "./request-deadline.mjs";
 import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignupPrompt } from "./guest-trial.mjs?v=20261020-guest-dashboard-1";
+import { prepareWorkoutJourney, revealWorkoutControl, workoutSuitabilityError, restoreWorkoutAnswers, workoutDraftFields } from "./workout-builder-journey.mjs";
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 import {
@@ -28,12 +29,25 @@ const currentLanguage =
     ? localStorage.getItem("ofek-ai-language")
     : "en";
 let resumedGuestDraft = false;
+let generationInFlight = false;
+
+function restoreWorkoutDraft(fields) {
+  restoreWorkoutAnswers(form, fields, restoreForm);
+  applyMuscleFocus({
+    muscleFocusMode: fields.find(field => field.name === "muscleFocusMode" && field.checked)?.value,
+    selectedMuscles: fields.filter(field => field.name === "selectedMuscles").map(field => field.value)
+  });
+  applyCalisthenicsImplicitBodyweight();
+  updateAvailableDayLimit();
+  wizardStepIndex = wizardSteps.length - 1;
+  renderWizardStep();
+}
 
 function resumeGuestWorkout(user) {
   if (!user || new URLSearchParams(location.search).get("resumeGuest") !== "workout") return;
   const fields = readGuestDraft("workout");
   if (!fields) return;
-  restoreForm(form, fields);
+  restoreWorkoutDraft(fields);
   resumedGuestDraft = true;
   const cleanUrl = new URL(location.href);
   cleanUrl.searchParams.delete("resumeGuest");
@@ -43,7 +57,12 @@ function resumeGuestWorkout(user) {
   setTimeout(() => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })), 0);
 }
 
-guardProtectedPage({ onAuthenticated: resumeGuestWorkout, onSignedOut: () => { document.body.style.visibility = "visible"; } });
+guardProtectedPage({ onAuthenticated: resumeGuestWorkout, onSignedOut: () => {
+  document.body.style.visibility = "visible";
+  // Cancellation/back from auth must recover answers without generating.
+  const fields = readGuestDraft("workout");
+  if (fields) restoreWorkoutDraft(fields);
+} });
 trackPageView({ page: "workout-builder" });
 trackEvent("builder_open", { builder: "workout" });
 async function authHeaders(contentType = "application/json") {
@@ -236,7 +255,8 @@ const builderPageLabels = {
 const builderLabels = builderPageLabels[currentLanguage] || builderPageLabels.en;
 ui.pageTitle = builderLabels.title;
 ui.pageDescription = builderLabels.description;
-ui.pageTitle = window.FuelSimpleUI?.copy('workout') || ui.pageTitle;
+ui.pageTitle = currentLanguage === "en" ? "Build a workout plan that fits your life" : (window.FuelSimpleUI?.copy('workout') || ui.pageTitle);
+if (currentLanguage === "en") ui.pageDescription = "Personalized to your goals, experience, schedule, and equipment.";
 ui.generate = window.FuelSimpleUI?.copy('createWorkout') || ui.generate;
 ui.primaryGoal = t(currentLanguage, "primaryGoal");
 ui.trainingExperience = t(currentLanguage, "trainingExperience");
@@ -396,6 +416,7 @@ function translateFormOptions() {
 translateFormOptions();
 document.documentElement.lang = currentLanguage;
 mountHealthScreening(form, currentLanguage);
+prepareWorkoutJourney(form, currentLanguage);
 document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : "ltr";
 
 
@@ -506,6 +527,7 @@ function showWizardError(message) {
   if (!wizardError) return;
   wizardError.textContent = message;
   wizardError.classList.remove("hidden");
+  revealWorkoutControl(wizardError);
   trackEvent("builder_validation_error", { builder: "workout" });
 }
 
@@ -629,6 +651,8 @@ function toggleMuscle(id) {
   else muscleFocusState.selected.add(id);
   clearMuscleFocusError();
   syncMuscleFocusUi();
+  clearStaleSignupPrompt();
+  if (wizardStepIndex === wizardSteps.length - 1) renderWizardReview();
 }
 
 function clearMuscleFocusError() {
@@ -720,14 +744,17 @@ function validateWizardStep(index) {
   if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
   if (key === "equipment" && !document.querySelector('input[name="equipment"]:checked')) return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
   if (key === "schedule") {
-    const age = Number(document.querySelector("#age")?.value);
     const duration = Number(document.querySelector("#sessionDuration")?.value);
     const days = Number(document.querySelector("#daysPerWeek")?.value);
-    if (!Number.isFinite(age) || age < 10 || age > 100) return isHebrew ? "הזן גיל תקין בין 10 ל־100." : "Enter a valid age between 10 and 100.";
-    if (!Number.isFinite(duration) || duration < 20 || duration > 180) return isHebrew ? "הזן משך אימון בין 20 ל־180 דקות." : "Enter a session duration between 20 and 180 minutes.";
+    if (!Number.isInteger(duration) || duration < 20 || duration > 180) return isHebrew ? "הזן משך אימון בין 20 ל־180 דקות." : "Enter a session duration between 20 and 180 minutes.";
+    if (!Number.isInteger(days) || days < 1 || days > 7) return isHebrew ? "בחר בין יום אחד לשבעה ימים בשבוע." : "Choose between 1 and 7 training days per week.";
     if (selectedAvailableDays().length !== days) return isHebrew ? `בחר בדיוק ${days} ימים זמינים.` : `Choose exactly ${days} available day${days === 1 ? "" : "s"}.`;
   }
-  if (key === "muscleFocus") return validateMuscleFocus();
+  if (key === "muscleFocus") { const error = validateMuscleFocus(); if (error) return error; }
+  if (key === "suitability") {
+    const error = workoutSuitabilityError({ age: document.querySelector("#age")?.value, screeningStatus: form.querySelector('[name="screeningStatus"]')?.value }, currentLanguage);
+    if (error) return error;
+  }
   }
   return "";
 }
@@ -741,13 +768,30 @@ function renderWizardReview() {
   // active locale (currentLanguage), never unconditionally through Hebrew.
   const equipment = buildEquipmentSummaryText(currentLanguage, formData.getAll("equipment"));
   const days = formData.getAll("availableDays").join(", ");
-  review.innerHTML = isHebrew
-    ? `<strong>סיכום:</strong><br>מטרה: ${readable(formData.get("goal"))}<br>ניסיון: ${readable(formData.get("experience"))}<br>סגנון: ${readable(formData.get("trainingStyle"))}<br>ציוד: ${equipment}<br>אימונים: ${formData.get("daysPerWeek")} בשבוע, ${formData.get("sessionDuration")} דקות<br>ימים זמינים: ${days}`
-    : `<strong>Summary:</strong><br>Goal: ${readable(formData.get("goal"))}<br>Experience: ${readable(formData.get("experience"))}<br>Style: ${readable(formData.get("trainingStyle"))}<br>Equipment: ${equipment}<br>Schedule: ${formData.get("daysPerWeek")} days/week, ${formData.get("sessionDuration")} minutes<br>Available days: ${days}`;
+  const focus = muscleFocusPayload();
+  const muscleModeLabel = form.querySelector(`[name="muscleFocusMode"][value="${focus.muscleFocusMode}"]`)?.closest('label')?.querySelector('strong')?.textContent || '';
+  const muscles = FOCUS_MUSCLES.filter(m => focus.selectedMuscles.includes(m.id)).map(muscleLabel).join(', ');
+  const rows = [
+    [isHebrew ? 'מטרה' : 'Goal', readable(formData.get('goal'))],
+    [isHebrew ? 'ניסיון' : 'Experience', readable(formData.get('experience'))],
+    [isHebrew ? 'סגנון' : 'Style', readable(formData.get('trainingStyle'))],
+    [isHebrew ? 'ציוד' : 'Equipment', equipment],
+    [isHebrew ? 'אימונים' : 'Schedule', `${formData.get('daysPerWeek')} ${isHebrew ? 'בשבוע' : 'days/week'} · ${formData.get('sessionDuration')} ${isHebrew ? 'דקות' : 'min'}`],
+    [isHebrew ? 'ימים' : 'Days', days],
+    [isHebrew ? 'מיקוד' : 'Muscle focus', [muscleModeLabel, muscles].filter(Boolean).join(': ')]
+  ];
+  review.innerHTML = `<strong>${isHebrew ? 'סיכום התוכנית שלך' : 'Your plan at a glance'}</strong><dl>${rows.map(([label,value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(value))}</dd></div>`).join('')}</dl>`;
 }
 
-function renderWizardStep() {
-  wizardSteps.forEach((step, index) => step.classList.toggle("is-active", index === wizardStepIndex));
+function clearStaleSignupPrompt() {
+  if (!statusElement.classList.contains('guest-signup-prompt')) return;
+  statusElement.replaceChildren();
+  statusElement.classList.remove('guest-signup-prompt');
+}
+
+function renderWizardStep(focus = false) {
+  clearStaleSignupPrompt();
+  wizardSteps.forEach((step, index) => { step.classList.toggle("is-active", index === wizardStepIndex); step.hidden = index !== wizardStepIndex; });
   const step = wizardSteps[wizardStepIndex];
   const total = wizardSteps.length;
   if (wizardProgressBar) wizardProgressBar.style.width = `${((wizardStepIndex + 1) / total) * 100}%`;
@@ -758,21 +802,49 @@ function renderWizardStep() {
   wizardNextButton?.classList.toggle("hidden", isLast);
   button?.classList.toggle("hidden", !isLast);
   if (isLast) renderWizardReview();
+  form.querySelectorAll('[data-journey-stage]').forEach(control => {
+    const index = Number(control.dataset.journeyStage);
+    control.disabled = generationInFlight || index > wizardStepIndex;
+    if (index === wizardStepIndex) control.setAttribute("aria-current", "step");
+    else control.removeAttribute("aria-current");
+    control.classList.toggle("is-complete", index < wizardStepIndex);
+  });
   clearWizardError();
-  if (wizardStepIndex > 0) form.querySelector('.wizard-progress')?.scrollIntoView({ behavior: "auto", block: "start" });
+  if (focus) {
+    step.querySelector('.simple-step-title')?.focus({ preventScroll: true });
+    form.querySelector('.wizard-progress')?.scrollIntoView({ behavior: "auto", block: "start" });
+  }
 }
 
 wizardNextButton?.addEventListener("click", () => {
   const error = validateWizardStep(wizardStepIndex);
   if (error) return showWizardError(error);
   wizardStepIndex = Math.min(wizardSteps.length - 1, wizardStepIndex + 1);
-  renderWizardStep();
+  renderWizardStep(true);
 });
 
 wizardBackButton?.addEventListener("click", () => {
   wizardStepIndex = Math.max(0, wizardStepIndex - 1);
-  renderWizardStep();
+  renderWizardStep(true);
 });
+
+form.querySelectorAll('[data-journey-stage]').forEach(control => control.addEventListener('click', () => {
+  const index = Number(control.dataset.journeyStage);
+  if (generationInFlight || index > wizardStepIndex) return;
+  wizardStepIndex = index;
+  renderWizardStep(true);
+}));
+form.addEventListener('keydown', event => {
+  // Enter in a field advances a stage, never accidentally generates a plan.
+  if (event.key !== 'Enter' || event.target.closest('button, textarea, summary')) return;
+  event.preventDefault();
+  if (!generationInFlight && wizardStepIndex < wizardSteps.length - 1) wizardNextButton.click();
+});
+form.addEventListener('change', () => {
+  clearStaleSignupPrompt();
+  if (wizardStepIndex === wizardSteps.length - 1) renderWizardReview();
+});
+form.addEventListener('input', clearStaleSignupPrompt);
 
 document.querySelector("#daysPerWeek")?.addEventListener("change", updateAvailableDayLimit);
 document.querySelectorAll('input[name="availableDays"]').forEach(input => input.addEventListener("change", updateAvailableDayLimit));
@@ -802,6 +874,7 @@ const goalCardCopy = isHebrew ? {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
+  if (generationInFlight) return;
 
   const invalid = wizardSteps.findIndex((_,index) => validateWizardStep(index));
   const currentError = invalid < 0 ? '' : validateWizardStep(invalid);
@@ -826,12 +899,15 @@ form.addEventListener("submit", async (event) => {
 
   if (!auth.currentUser) {
     const nextPath = "/workout-builder.html?resumeGuest=workout";
-    try { sessionStorage.setItem("fp-guest-trial-v1:workout", JSON.stringify({ savedAt: Date.now(), payload: serializeForm(form) })); } catch {}
+    try { sessionStorage.setItem("fp-guest-trial-v1:workout", JSON.stringify({ savedAt: Date.now(), payload: workoutDraftFields(serializeForm(form), muscleFocusPayload()) })); } catch {
+      setStatus(isHebrew ? "לא ניתן לשמור את התשובות בדפדפן הזה. אפשר אחסון בדפדפן לפני המעבר להתחברות כדי לא לאבד את התשובות." : "This browser could not save your answers. Enable browser storage before continuing to sign in so your answers are not lost.", true);
+      revealWorkoutControl(statusElement);
+      return;
+    }
     showSignupPrompt(statusElement, "workout", nextPath, isHebrew, (method) => trackEvent("signup_handoff", { builder: "workout", method }));
+    revealWorkoutControl(statusElement);
     return;
   }
-
-  setLoading(true);
 
   setStatus(
     isHebrew
@@ -869,6 +945,7 @@ form.addEventListener("submit", async (event) => {
     ...muscleFocusPayload()
   };
 
+  setLoading(true);
   let failureReason = "network_or_timeout";
   try {
     const response = await builderFetch("/api/workout-builder", {
@@ -938,24 +1015,7 @@ if (data.program) {
   return;
 }
     trackEvent("generation_failed", { builder: "workout", reason: "empty_result" });
-    resultElement.innerHTML = `
-      <h2>
-        ${
-          isHebrew
-            ? "החיבור ל־Workout Builder הצליח"
-            : "Workout Builder Connected"
-        }
-      </h2>
-
-      <p>
-        ${
-          isHebrew
-            ? "הטופס הגיע בהצלחה לשרת."
-            : "The form successfully reached the backend."
-        }
-      </p>
-    `;
-    resultElement.classList.remove("hidden");
+    setStatus(isHebrew ? "לא התקבלה תוכנית. התשובות שלך נשמרו בטופס; אפשר לנסות שוב." : "No plan was returned. Your answers are still here; please try again.", true);
   } catch (error) {
     trackEvent("generation_failed", { builder: "workout", reason: failureReason });
     console.error(
@@ -972,6 +1032,22 @@ if (data.program) {
   }
 });
 function setLoading(isLoading) {
+  generationInFlight = isLoading;
+  form.setAttribute("aria-busy", String(isLoading));
+  // Keep the request and the displayed answers consistent while generating.
+  if (isLoading) {
+    wizardSteps.forEach(step => step.setAttribute('inert', ''));
+    form.querySelectorAll('button').forEach(control => {
+      control.dataset.wasDisabled = String(control.disabled);
+      control.disabled = true;
+    });
+  } else {
+    wizardSteps.forEach(step => step.removeAttribute('inert'));
+    form.querySelectorAll('[data-was-disabled]').forEach(control => {
+      control.disabled = control.dataset.wasDisabled === 'true';
+      delete control.dataset.wasDisabled;
+    });
+  }
   button.disabled = isLoading;
   button.textContent = isLoading
     ? ui.generating
@@ -1010,6 +1086,7 @@ async function saveWorkoutPlan(plan) {
   });
 }
 function setStatus(message, isError = false) {
+  statusElement.classList.remove("guest-signup-prompt");
   statusElement.textContent = message;
   statusElement.classList.toggle("error", isError);
 }

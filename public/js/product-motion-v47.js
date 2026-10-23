@@ -59,6 +59,7 @@
 
   function markChoices() {
     document.querySelectorAll("[data-sync-select], .visual-choice-grid").forEach((group) => {
+      if (group.closest('[data-native-controls]')) return;
       const cards = [...group.querySelectorAll(":scope > .visual-choice-card")];
       if (!cards.length) return;
       cards.forEach((card, index) => {
@@ -169,7 +170,7 @@
     }
     document.addEventListener("change", (event) => {
       const card = event.target.closest(".visual-choice-card");
-      if (card) {
+      if (card && !card.closest('[data-native-controls]')) {
         const group = card.parentElement;
         group?.querySelectorAll(":scope > .visual-choice-card").forEach((item) => { const input = item.querySelector("input"); item.setAttribute("aria-checked", String(Boolean(input?.checked))); item.tabIndex = input?.checked ? 0 : -1; });
         card.classList.remove("fp-v47-selected"); requestAnimationFrame(() => card.classList.add("fp-v47-selected"));

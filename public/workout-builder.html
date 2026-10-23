@@ -47,7 +47,7 @@
 <script defer src="/js/google-analytics-consent.js?v=20261017-1"></script>
 </head>
 
-<body>
+<body class="fp-workout-journey">
   <div class="ocean-depth-layer" aria-hidden="true"></div>
   <div class="ocean-depth-glow" aria-hidden="true"></div>
   <main class="builder-page">
@@ -57,17 +57,18 @@
     </nav>
     <section class="builder-card">
       <div class="builder-header">
-        <span class="builder-badge">FuelPhysique</span>
+        <span class="builder-badge" data-en="Personalized training · Free workout builder" data-he="אימון אישי · בונה תוכניות בחינם">Personalized training · Free workout builder</span>
 
-        <h1>Workout Builder</h1>
+        <h1>Build a workout plan that fits your life</h1>
 
         <p>
-          Build a personalized workout plan based on your goals,
-          experience, schedule, equipment, and limitations.
+          Personalized to your goals, experience, schedule, and equipment.
         </p>
+        <p class="builder-account-note" data-en="Explore the builder first. A free account is required to generate and save your plan. Your answers carry over when you sign in." data-he="אפשר למלא את הטופס לפני ההרשמה. נדרש חשבון חינמי ליצירה ולשמירה של התוכנית. התשובות יישמרו במעבר להתחברות.">Explore the builder first. A free account is required to generate and save your plan. Your answers carry over when you sign in.</p>
+        <p class="builder-scope-note" data-en="For adults 18+. A suitability check is required before generation." data-he="למבוגרים מגיל 18. נדרשת בדיקת התאמה לפני יצירת התוכנית.">For adults 18+. A suitability check is required before generation.</p>
       </div>
 
-      <form id="workout-builder-form" class="builder-wizard" novalidate>
+      <form id="workout-builder-form" class="builder-wizard" data-native-controls novalidate>
         <div class="wizard-progress" aria-label="Builder progress">
           <div class="wizard-progress-topline">
             <span id="wizardStepLabel">Step 1 of 6</span>
@@ -166,7 +167,7 @@
           <div class="wizard-step-heading"><span>05</span><div><h2 data-en="Fit the plan to your week" data-he="התאם את התוכנית לשבוע שלך">Fit the plan to your week</h2><p data-en="Tell us how often, how long and on which days you can train." data-he="ציין כמה פעמים, כמה זמן ובאילו ימים אתה יכול להתאמן.">Tell us how often, how long and on which days you can train.</p></div></div>
           <div class="wizard-fields-grid">
             <label><span data-en="Age (adult automated planning)" data-he="גיל (תכנון אוטומטי למבוגרים)">Age (adult automated planning)</span><input id="age" name="age" type="number" min="18" max="100" required></label>
-            <label><span data-en="Sex (optional)" data-he="מין (אופציונלי)">Sex (optional)</span><select id="gender" name="gender" data-gender-context="training"><option value="" data-en="Prefer not to say" data-he="מעדיפ/ה לא לציין">Prefer not to say</option><option value="male" data-en="Male" data-he="זכר">Male</option><option value="female" data-en="Female" data-he="נקבה">Female</option></select><small data-en="Optional plan context only. It does not change exercise selection or training dosage." data-he="הקשר אופציונלי לתוכנית בלבד. הוא לא משנה בחירת תרגילים או מינון אימון.">Optional plan context only. It does not change exercise selection or training dosage.</small></label>
+            <label><span data-en="Gender (optional)" data-he="מגדר (אופציונלי)">Gender (optional)</span><select id="gender" name="gender" data-gender-context="training"><option value="" data-en="Prefer not to say" data-he="מעדיפ/ה לא לציין">Prefer not to say</option><option value="male" data-en="Male" data-he="זכר">Male</option><option value="female" data-en="Female" data-he="נקבה">Female</option></select><small data-en="Optional plan context only. It does not change exercise selection or training dosage." data-he="הקשר אופציונלי לתוכנית בלבד. הוא לא משנה בחירת תרגילים או מינון אימון.">Optional plan context only. It does not change exercise selection or training dosage.</small></label>
             <label><span data-en="Session duration" data-he="משך אימון בדקות">Session duration</span><input id="sessionDuration" name="sessionDuration" type="number" min="20" max="180" step="5" value="60" required></label>
             <label><span data-en="Training days per week" data-he="מספר אימונים בשבוע">Training days per week</span><select id="daysPerWeek" name="daysPerWeek" required><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></label>
           </div>
@@ -258,7 +259,7 @@
           <p id="muscleFocusError" class="wizard-error hidden" role="alert"></p>
         </section>
 
-        <p id="wizardError" class="wizard-error hidden" role="alert"></p>
+        <p id="wizardError" class="wizard-error hidden" role="alert" tabindex="-1"></p>
 
         <div class="wizard-actions">
           <button id="wizardBackButton" type="button" class="wizard-button wizard-button--back" disabled data-en="Back" data-he="חזרה">Back</button>
@@ -266,7 +267,7 @@
           <button id="generate-button" type="submit" class="wizard-button wizard-button--generate hidden">Generate My Program</button>
         </div>
 
-        <p id="builder-status" class="builder-status"></p>
+        <div id="builder-status" class="builder-status" role="status" aria-live="polite" tabindex="-1"></div>
       </form>
     </section>
 
@@ -279,8 +280,9 @@
 
 <link rel="stylesheet" href="/css/simple-ux.css?v=20261010-workout-paper-2">
 <link rel="stylesheet" href="/css/guest-trial.css?v=20261020-guest-dashboard-1">
+<link rel="stylesheet" href="/css/workout-builder-journey.css?v=20261023-1">
 <script src="/js/simple-ux.js?v=20261014-rir-1"></script>
-<script type="module" src="/js/workout-builder.js?v=20261020-guest-resume-1"></script>
+<script type="module" src="/js/workout-builder.js?v=20261023-journey-1"></script>
   <script type="module" src="/js/push-notifications.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
   <script src="/js/pwa-install.js?v=20261017-dashboard-only-1"></script>

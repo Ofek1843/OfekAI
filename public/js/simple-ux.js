@@ -127,8 +127,12 @@
           box.dispatchEvent(new Event('change',{bubbles:true}));
         });
         const style = document.querySelector(`input[name="visualStyle"][value="${key==='gym'?'gym':'calisthenics'}"]`);
-        style.checked = true;
-        style.dispatchEvent(new Event('change',{bubbles:true}));
+        // In the explicit workout journey, a gear preset must not silently
+        // overwrite an already chosen Hybrid/Gym/Calisthenics preference.
+        if (!workoutForm.hasAttribute('data-native-controls') || !document.querySelector('#trainingStyle').value) {
+          style.checked = true;
+          style.dispatchEvent(new Event('change',{bubbles:true}));
+        }
       });
       presets.append(label);
     });

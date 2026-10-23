@@ -156,7 +156,7 @@ test("prioritize and selected_only require at least one muscle", () => {
 });
 
 test("the wizard runs the focus validation for its step", () => {
-  assert.match(BUILDER_JS, /if \(key === "muscleFocus"\) return validateMuscleFocus\(\);/);
+  assert.match(BUILDER_JS, /if \(key === "muscleFocus"\) \{ const error = validateMuscleFocus\(\); if \(error\) return error; \}/);
 });
 
 test("an invalid focus choice is never silently reset to balanced", () => {
