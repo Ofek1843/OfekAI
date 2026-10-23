@@ -109,6 +109,16 @@ test("robots.txt exists and declares exactly one absolute sitemap", () => {
   assert.equal(declarations[0].trim(), `Sitemap: ${ORIGIN}/sitemap.xml`);
 });
 
+test("homepage declares a crawlable, Google-supported PNG favicon", () => {
+  for (const page of ["index.html", "workout-plan-generator.html"]) {
+    assert.match(read(page), /<link rel="icon" href="\/images\/brand\/fuelphysique-icon-192\.png" type="image\/png">/, page);
+  }
+  const png = fs.readFileSync(path.join(PUBLIC_DIR, "images/brand/fuelphysique-icon-192.png"));
+  assert.equal(png.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+  assert.equal(png.readUInt32BE(16), 192);
+  assert.equal(png.readUInt32BE(20), 192);
+});
+
 test("robots.txt does not block the site or the assets public pages need", () => {
   const robots = read("robots.txt");
   const disallows = robots

@@ -13,6 +13,83 @@ const publicDir = path.join(__dirname, "../public");
 const pages = [...features, hub];
 const generated = page => page === hub ? renderHub() : renderFeature(page);
 
+test("illustrative workout uses supported catalog movements and passes program validation", () => {
+  const { workoutExample: example } = require("../lib/seo-feature-examples");
+  const { validateWorkoutProgram } = require("../lib/workout-validator");
+  const { getCatalogExercise } = require("../lib/workout-exercise-catalog");
+  const result = validateWorkoutProgram(example.program, example.profile);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.deepEqual(result.warnings, []);
+  const { document } = parseHTML(renderFeature(features.find(page => page.id === "workout-plan-generator")));
+  assert.equal(document.querySelectorAll(".week-preview li").length, 7);
+  assert.equal(document.querySelectorAll(".week-preview .training-day").length, example.profile.daysPerWeek);
+  assert.match(document.querySelector("#example").textContent, /editorial example, not a live generated result/);
+  const rows = [...document.querySelectorAll(".session-grid tbody tr")];
+  const exercises = example.program.sessions.flatMap(session => session.exercises);
+  assert.equal(rows.length, exercises.length);
+  exercises.forEach((exercise, index) => {
+    const entry = getCatalogExercise(exercise.exerciseId);
+    assert.ok(entry.publicGeneration && !entry.disabled);
+    assert.equal(rows[index].querySelector("th").textContent, entry.title);
+    assert.equal(rows[index].querySelector("td").textContent, `${exercise.sets} × ${exercise.reps}`);
+  });
+});
+
+test("meal ingredients, displayed portions, meal estimates and both daily totals agree", () => {
+  const { mealExample, mealTotals } = require("../lib/seo-feature-examples");
+  const { FOODS, getMealById } = require("../lib/meal-catalog");
+  const { document } = parseHTML(renderFeature(features.find(page => page.id === "meal-plan-generator")));
+  assert.match(document.querySelector(".intro").textContent, /personalized one-day meal plan/);
+  const cards = [...document.querySelectorAll(".meal-example-grid .example-card")];
+  assert.equal(cards.length, mealExample.length);
+  let dayCalories = 0, dayProtein = 0;
+  mealExample.forEach((meal, index) => {
+    assert.ok(getMealById(meal.mealId));
+    const rows = [...cards[index].querySelectorAll("tbody tr")];
+    assert.equal(rows.length, meal.foods.length);
+    let calories = 0, protein = 0;
+    meal.foods.forEach((food, rowIndex) => {
+      const reference = FOODS[food.catalogKey];
+      assert.ok(reference);
+      assert.ok(food.grams > 0);
+      // Independently verify the product's per-100g arithmetic and displayed rows.
+      assert.equal(food.calories, Math.round(reference.kcal * food.grams / 100));
+      assert.equal(food.proteinGrams, Math.round(reference.p * food.grams / 100));
+      const cells = [...rows[rowIndex].querySelectorAll("th,td")].map(cell => cell.textContent);
+      assert.deepEqual(cells, [food.name, food.amount, String(food.calories), `${food.proteinGrams} g`]);
+      calories += food.calories;
+      protein += food.proteinGrams;
+    });
+    assert.equal(meal.optionCalories, calories);
+    assert.equal(meal.optionProteinGrams, protein);
+    assert.deepEqual([...cards[index].querySelectorAll("tfoot td")].map(cell => cell.textContent), [String(calories), `${protein} g`]);
+    dayCalories += calories;
+    dayProtein += protein;
+  });
+  assert.deepEqual(mealTotals, { calories: dayCalories, proteinGrams: dayProtein });
+  assert.equal(document.querySelectorAll(".example-totals").length, 2);
+  for (const summary of document.querySelectorAll(".example-totals")) {
+    assert.deepEqual([...summary.querySelectorAll("dd")].map(cell => cell.textContent), [`${dayCalories.toLocaleString("en-US")} kcal`, `${dayProtein} g`]);
+  }
+});
+
+test("generator examples have accessible table headings and connected workflow links", () => {
+  const connectedIds = ["workout-plan-generator", "meal-plan-generator", "nutrition-tracker", "training-volume"];
+  for (const id of connectedIds) {
+    const page = features.find(item => item.id === id);
+    const { document } = parseHTML(renderFeature(page));
+    for (const other of connectedIds.filter(item => item !== id)) {
+      const target = features.find(item => item.id === other);
+      assert.ok(document.querySelector(`[aria-labelledby="related-title"] a[href="${target.route}"]`), `${id} -> ${other}`);
+    }
+    for (const table of document.querySelectorAll(".example-table")) {
+      assert.ok(table.querySelector("caption")?.textContent);
+      assert.ok(table.querySelectorAll('th[scope="col"]').length >= 3);
+      assert.equal(table.querySelectorAll("tbody tr").length, table.querySelectorAll('tbody th[scope="row"]').length);
+    }
+  }
+});
+
 test("committed HTML equals the deterministic renderer; no browser rendering needed", () => {
   for (const page of pages) {
     const source = fs.readFileSync(path.join(publicDir, page.file), "utf8").replace(/\r\n/g, "\n");
@@ -21,6 +98,7 @@ test("committed HTML equals the deterministic renderer; no browser rendering nee
     assert.equal(document.querySelectorAll("h1").length, 1);
     assert.equal(document.querySelector("h1").textContent, page.h1);
     assert.equal(document.querySelector('link[rel="canonical"]').href, ORIGIN + page.route);
+    assert.equal(document.querySelector('link[rel="icon"]').href, "/images/brand/fuelphysique-icon-192.png");
     assert.equal(document.querySelectorAll('meta[name="description"]').length, 1);
     assert.equal(document.querySelector('meta[name="robots"]').content, "index,follow");
     assert.equal(document.querySelectorAll('script[src*="google-analytics-consent"]').length, 1);
@@ -101,4 +179,13 @@ test("public routing works without auth; aliases redirect, unknown routes are re
   }
   assert.equal((await fetch(base + "/sitemap.xml")).status, 200);
   assert.equal((await fetch(base + "/robots.txt")).status, 200);
+  const favicon = await fetch(base + "/favicon.ico", { redirect: "manual" });
+  assert.equal(favicon.status, 301);
+  assert.equal(favicon.headers.get("location"), "/images/brand/fuelphysique-icon-192.png");
+  const faviconHead = await fetch(base + "/favicon.ico", { method: "HEAD", redirect: "manual" });
+  assert.equal(faviconHead.status, 301);
+  assert.equal(faviconHead.headers.get("location"), favicon.headers.get("location"));
+  const icon = await fetch(base + favicon.headers.get("location"));
+  assert.equal(icon.status, 200);
+  assert.match(icon.headers.get("content-type"), /image\/png/);
 });
