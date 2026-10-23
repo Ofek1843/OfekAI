@@ -587,8 +587,12 @@ export function exerciseImageResolutionDetails(exercise = {}) {
 export function exerciseImageUrl(exercise = {}) {
   const details = exerciseImageResolutionDetails(exercise);
   if (!details.usedFallback) {
-    // All consumers must bypass the previous week-long cache after the guide audit.
-    return details.imageUrl + "?v=20261018-guides-6";
+    // The plank source was replaced; use a one-off cache key so browsers do not
+    // keep showing its previous image. Other exercise images retain their key.
+    const cacheKey = details.attemptedSlug === "plank"
+      ? "20261023-plank-1"
+      : "20261018-guides-6";
+    return `${details.imageUrl}?v=${cacheKey}`;
   }
 
   if (details.attemptedSlug) {

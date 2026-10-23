@@ -33,3 +33,9 @@ test("plank catalog image is a real wide image with a matching WebP delivery sib
   assert.ok(source.width >= 960 && source.height >= 500, "catalog source should have enough detail for the exercise card");
   assert.ok(webp.width >= 960 && webp.height >= 500, "WebP should retain useful detail for the exercise card");
 });
+
+test("replaced plank image has a fresh cache key without invalidating other exercise images", () => {
+  const resolver = fs.readFileSync(path.join(ROOT, "public", "js", "exercise-image.js"), "utf8");
+  assert.match(resolver, /details\.attemptedSlug === "plank"[\s\S]*?"20261023-plank-1"/);
+  assert.match(resolver, /: "20261018-guides-6"/);
+});
