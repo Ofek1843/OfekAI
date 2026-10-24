@@ -1,0 +1,44 @@
+/* Scoped to the personal profile; no shared product layout changes. */
+html:has(body.personal-profile) { background: #f7f9fe; }
+body.personal-profile { background: var(--fp-bg-page); color: var(--fp-text-primary); }
+.personal-profile .profile-wrap { width: min(1000px, calc(100% - 40px)); margin-inline: auto; }
+.personal-profile .legal-nav { margin-bottom: 56px; padding-block: 26px; }
+.personal-profile .profile-nav-actions { display: flex; align-items: center; gap: 22px; }
+.personal-profile .profile-language { color: var(--fp-brand-primary); font-size: 14px; font-weight: 700; padding-block: 10px; }
+.personal-profile .profile-back { color: var(--fp-text-secondary); font-size: 14px; padding-block: 10px; }
+.personal-profile a:focus-visible { outline: 3px solid var(--fp-focus-ring); outline-offset: 5px; }
+.personal-profile .profile-skip { position: absolute; left: 20px; top: -100px; padding: 12px; background: #fff; z-index: 2; }
+.personal-profile .profile-skip:focus { top: 12px; }
+.personal-profile .profile-intro { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 64px; align-items: center; }
+.personal-profile .profile-portrait { overflow: hidden; border-radius: var(--fp-radius-lg); }
+.personal-profile .profile-portrait img { display: block; width: 100%; height: 460px; object-fit: cover; object-position: 50% 57%; }
+.personal-profile .profile-eyebrow { margin: 0 0 16px; color: var(--fp-brand-primary); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.personal-profile h1 { margin: 0 0 24px; font-family: var(--fp-display); font-size: clamp(38px, 5vw, 58px); line-height: 1.08; letter-spacing: -.04em; }
+.personal-profile .profile-bio { margin: 0 0 20px; color: var(--fp-text-secondary); font-size: 17px; line-height: 1.75; }
+.personal-profile .profile-socials { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 24px; }
+.personal-profile .profile-socials a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--fp-brand-primary); font-size: 15px; font-weight: 700; }
+.personal-profile .profile-training { margin-top: 72px; }
+.personal-profile .profile-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.personal-profile h2 { font-family: var(--fp-display); font-size: 23px; line-height: 1.3; margin: 0; letter-spacing: -.02em; }
+.personal-profile .profile-section-heading > span { color: var(--fp-text-secondary); font-size: 16px; }
+.personal-profile .profile-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.personal-profile figure { margin: 0; min-width: 0; }
+.personal-profile figure img { display: block; width: 100%; height: auto; border-radius: var(--fp-radius-lg); }
+.personal-profile figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 12px; color: var(--fp-text-secondary); font-size: 13px; }
+.personal-profile .profile-connection { border-top: 1px solid var(--fp-border); margin-top: 56px; padding-top: 32px; max-width: 720px; }
+.personal-profile .profile-connection p { color: var(--fp-text-secondary); margin: 16px 0 0; }
+.personal-profile .profile-connection a { text-decoration: underline; text-underline-offset: 3px; }
+.personal-profile .profile-footer { display: flex; gap: 28px; border-top: 1px solid var(--fp-border); padding-block: 24px; margin-top: 56px; font-size: 13px; }
+.personal-profile .profile-footer a { color: var(--fp-text-secondary); padding-block: 8px; }
+@media (max-width: 700px) {
+  .personal-profile .legal-nav { margin-bottom: 30px; padding-block: 16px; gap: 16px; }
+  .personal-profile .legal-nav-brand { font-size: 20px; }
+  .personal-profile .profile-nav-actions { gap: 12px; }
+  .personal-profile .profile-language, .personal-profile .profile-back { font-size: 12px; }
+  .personal-profile .profile-intro { grid-template-columns: 1fr; gap: 30px; }
+  .personal-profile .profile-portrait img { height: auto; aspect-ratio: 4 / 5; }
+  .personal-profile .profile-training { margin-top: 44px; }
+  .personal-profile .profile-gallery { grid-template-columns: 1fr; gap: 28px; }
+  .personal-profile .profile-connection { margin-top: 36px; padding-top: 28px; }
+  .personal-profile .profile-footer { margin-top: 36px; }
+}

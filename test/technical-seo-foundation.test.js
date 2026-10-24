@@ -45,6 +45,8 @@ const PUBLIC_INDEXABLE = Object.freeze({
   ...Object.fromEntries(FEATURE_FILES.map(page => [page.file, page.route])),
   "index.html": "/",
   "about.html": "/about.html",
+  "people/ofek-zehavi.html": "/people/ofek-zehavi.html",
+  "people/ofek-zehavi-he.html": "/people/ofek-zehavi-he.html",
   "pricing.html": "/pricing.html",
   "workout-plan-generator.html": "/workout-plan-generator.html",
   "faq.html": "/faq.html",
@@ -60,7 +62,7 @@ const PUBLIC_INDEXABLE = Object.freeze({
 });
 
 const PUBLIC_SITEMAP_ROUTES = Object.freeze([
-  "/", "/about.html", "/workout-plan-generator.html", "/exercise-library",
+  "/", "/about.html", "/people/ofek-zehavi.html", "/people/ofek-zehavi-he.html", "/workout-plan-generator.html", "/exercise-library",
   "/pricing.html", "/faq.html", "/contact.html", "/terms.html", "/privacy.html",
   "/refund-policy.html", "/subscription-policy.html", "/accessibility.html",
   "/community-guidelines.html", "/copyright.html", "/subprocessors.html",
@@ -402,14 +404,74 @@ test("landing JSON-LD asserts no rating, review, offer or price", () => {
   }
 });
 
-test("JSON-LD is confined to the homepage and reviewed feature templates", () => {
+test("JSON-LD is confined to reviewed product and personal profile pages", () => {
   for (const file of Object.keys(PUBLIC_INDEXABLE)) {
-    if (file === "index.html" || FEATURE_FILES.some(page => page.file === file)) continue;
+    if (file === "index.html" || file === "people/ofek-zehavi.html" || file === "people/ofek-zehavi-he.html" || FEATURE_FILES.some(page => page.file === file)) continue;
     assert.ok(
       !/application\/ld\+json/i.test(read(file)),
       `${file} should not carry structured data in this foundation`
     );
   }
+});
+
+test("localized personal profiles have matching content, metadata and one confirmed identity", () => {
+  const { parseHTML } = require("linkedom");
+  const socials = [
+    "https://www.instagram.com/ofek_zehavi10/",
+    "https://www.tiktok.com/@ofek_zehavi",
+    "https://www.youtube.com/@Ofek_Zehavi"
+  ];
+  const expectedAlternates = {
+    en: `${ORIGIN}/people/ofek-zehavi.html`,
+    he: `${ORIGIN}/people/ofek-zehavi-he.html`,
+    "x-default": `${ORIGIN}/people/ofek-zehavi.html`
+  };
+  const persons = [];
+  for (const [language, file, name, title] of [
+    ["en", "people/ofek-zehavi.html", "Ofek Zehavi", "Fitness & Calisthenics Content Creator"],
+    ["he", "people/ofek-zehavi-he.html", "אופק זהבי", "יוצר תוכן בתחום הכושר והקליסטניקס"]
+  ]) {
+    const html = read(file);
+    const { document } = parseHTML(html);
+    assert.equal(document.documentElement.getAttribute("lang"), language);
+    assert.equal(document.documentElement.getAttribute("dir"), language === "he" ? "rtl" : "ltr");
+    assert.equal(document.querySelector("h1").textContent, name);
+    assert.ok(document.querySelector(".profile-eyebrow").textContent.includes(title));
+    assert.equal(document.querySelectorAll("h1").length, 1);
+    assert.equal(document.querySelectorAll("iframe").length, 0);
+    assert.equal(document.querySelector('link[rel="canonical"]').getAttribute("href"), expectedAlternates[language]);
+    for (const [alternateLanguage, url] of Object.entries(expectedAlternates)) {
+      assert.equal(document.querySelector(`link[rel="alternate"][hreflang="${alternateLanguage}"]`).getAttribute("href"), url);
+    }
+    const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+    assert.equal(scripts.length, 1);
+    const profile = JSON.parse(scripts[0].textContent);
+    assert.equal(profile["@type"], "ProfilePage");
+    assert.equal(profile.inLanguage, language);
+    assert.equal(profile.url, expectedAlternates[language]);
+    const person = profile.mainEntity;
+    persons.push(person);
+    assert.equal(person["@type"], "Person");
+    assert.equal(person.name, name);
+    assert.equal(person.url, expectedAlternates[language]);
+    assert.deepEqual(person.sameAs, socials);
+    for (const url of socials) assert.ok(document.querySelector(`a[href="${url}"]`));
+    assert.equal(person.image, ORIGIN + document.querySelector(".profile-portrait img").getAttribute("src"));
+    for (const img of document.querySelectorAll("img")) {
+      assert.ok(img.getAttribute("alt"));
+      assert.ok(language === "he" ? /[א-ת]/.test(img.getAttribute("alt")) : !/[א-ת]/.test(img.getAttribute("alt")));
+    }
+    assert.doesNotMatch(html, /ofek\.fitness|linktr\.ee|עופק|interactionStatistic/);
+    for (const field of ["award", "hasCredential", "birthDate", "address"]) assert.equal(person[field], undefined);
+  }
+  assert.equal(persons[0]["@id"], persons[1]["@id"]);
+  assert.doesNotMatch(read("people/ofek-zehavi.html"), /[\u0590-\u05ff]/);
+  assert.equal(persons[0].alternateName, undefined);
+  assert.equal(persons[1].alternateName, "Ofek Zehavi");
+  const { document: about } = parseHTML(read("about.html"));
+  assert.equal(about.querySelector('[data-legal-language="en"] a[href="/people/ofek-zehavi.html"]').textContent, "Ofek Zehavi");
+  assert.equal(about.querySelector('[data-legal-language="he"] a[href="/people/ofek-zehavi-he.html"]').textContent, "אופק זהבי");
+  assert.doesNotMatch(read("index.html"), /people\/ofek-zehavi|ofek_zehavi10|images\/people/);
 });
 
 // --- brand, origin hygiene and initial HTML ----------------------------
