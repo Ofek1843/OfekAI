@@ -128,13 +128,33 @@ function campaignAttribution() {
   return {};
 }
 
+// Only the current landing view may be emitted on a late opt-in. Never queue
+// interactions, signup events or builder answers from before consent.
+let currentLandingView = null;
+const sentLandingViews = new Set();
 function sendGaEvent(name, properties) {
+  const isLandingView = name === "seo_landing_view" || name === "landing_page_view";
+  const key = `${window.location.pathname}:${name}`;
+  if (isLandingView) {
+    currentLandingView = { name, properties, path: window.location.pathname };
+    if (sentLandingViews.has(key)) return;
+  }
+  if (window.fpAnalyticsConsent === "denied") return;
   if (typeof window.gtag !== "function") return;
   try {
     window.gtag("event", name, properties);
+    if (isLandingView) sentLandingViews.add(key);
   } catch {
     // Analytics must never interrupt signup, navigation, or generation.
   }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener?.("fp:analytics-ready", () => {
+    if (currentLandingView?.path === window.location.pathname) {
+      sendGaEvent(currentLandingView.name, currentLandingView.properties);
+    }
+  });
 }
 
 export function trackEvent(name, properties = {}) {
@@ -184,7 +204,7 @@ export function trackEvent(name, properties = {}) {
   }
   // Reuse the consent-controlled tag; never forward arbitrary event properties.
   // In particular, workout goals, food descriptions and body metrics stay out.
-  if (SEO_FUNNEL_EVENTS.has(eventName) && typeof window.gtag === "function") {
+  if (SEO_FUNNEL_EVENTS.has(eventName)) {
     const safe = {};
     if (seoFeature) safe.seo_feature = seoFeature;
     if (SEO_FEATURES.has(eventProperties.feature)) safe.feature = eventProperties.feature;
@@ -192,7 +212,7 @@ export function trackEvent(name, properties = {}) {
     if (["google", "email_password"].includes(eventProperties.method)) safe.method = eventProperties.method;
     sendGaEvent(eventName, safe);
   }
-  if (ACTIVATION_FUNNEL_EVENTS.has(eventName) && typeof window.gtag === "function") {
+  if (ACTIVATION_FUNNEL_EVENTS.has(eventName)) {
     const builder = BUILDER_VALUES.has(eventProperties.builder) ? eventProperties.builder : null;
     const type = BUILDER_VALUES.has(eventProperties.type) ? eventProperties.type : null;
     // The landing's chooser also uses builder_open, but opening a chooser is

@@ -81,11 +81,13 @@
       allow_google_signals: false,
       allow_ad_personalization_signals: false
     });
+    window.fpAnalyticsConsent = "granted";
 
     const script = document.createElement("script");
     script.async = true;
     script.src = SCRIPT_URL;
     document.head.append(script);
+    window.dispatchEvent(new window.Event("fp:analytics-ready"));
   }
 
   function language() {
@@ -96,6 +98,7 @@
 
   function setChoice(nextChoice) {
     choice = nextChoice;
+    window.fpAnalyticsConsent = nextChoice;
     try { localStorage.setItem(STORAGE_KEY, nextChoice); } catch { /* session-only consent */ }
     document.getElementById("fp-analytics-consent")?.remove();
     if (nextChoice === "granted") {

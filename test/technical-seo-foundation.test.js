@@ -269,7 +269,7 @@ test("the landing title describes the product rather than only the brand", () =>
 
 test("workout plan generator explains real inputs and guest-first conversion", () => {
   const page = read("workout-plan-generator.html");
-  assert.match(page, /A workout plan built around your real week/);
+  assert.match(page, /Build your workout plan for the gym or home/);
   assert.match(page, /experience[\s\S]*equipment[\s\S]*schedule/i);
   assert.match(page, /injuries, pain or movement limitations/i);
   assert.match(page, /Generated plans are general fitness suggestions/);

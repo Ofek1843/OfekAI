@@ -10,8 +10,13 @@ const { parseHTML } = require("linkedom");
 const ROOT = path.join(__dirname, "..");
 const source = fs.readFileSync(path.join(ROOT, "public/js/google-analytics-consent.js"), "utf8");
 
-function runPage({ stored = null, pathname = "/", search = "", referrer = "" } = {}) {
-  const { document, window } = parseHTML("<html lang=\"en\"><head></head><body><main><section id=\"use\"></section></main></body></html>");
+function runPage({ stored = null, pathname = "/", search = "", referrer = "", withAnalytics = false } = {}) {
+  const { document, window: domWindow } = parseHTML("<html lang=\"en\"><head></head><body><main><section id=\"use\"></section></main></body></html>");
+  const window = {
+    Event: domWindow.Event,
+    addEventListener: domWindow.addEventListener.bind(domWindow),
+    dispatchEvent: domWindow.dispatchEvent.bind(domWindow)
+  };
   Object.defineProperty(document, "referrer", { configurable: true, value: referrer });
   const memory = new Map(stored ? [["fp_analytics_consent_v1", stored]] : []);
   const localStorage = {
@@ -24,9 +29,43 @@ function runPage({ stored = null, pathname = "/", search = "", referrer = "" } =
     search,
     reload() { throw new Error("reload requested"); }
   };
-  vm.runInNewContext(source, { window, document, localStorage, URL, URLSearchParams }, { filename: "google-analytics-consent.js" });
-  return { document, window, memory };
+  const scope = vm.createContext({ window, document, localStorage, URL, URLSearchParams,
+    navigator: { sendBeacon: () => true }, Blob });
+  if (withAnalytics) {
+    vm.runInContext(fs.readFileSync(path.join(ROOT, "public/js/analytics.js"), "utf8").replace(/^export /gm, ""), scope);
+  }
+  vm.runInContext(source, scope, { filename: "google-analytics-consent.js" });
+  return { document, window, memory, scope };
 }
+
+for (const event of ["seo_landing_view", "landing_page_view"]) {
+  for (const stored of [null, "granted", "denied"]) {
+    test(`${event}: consent ${stored || "granted after load"} emits the current view once without replaying clicks`, () => {
+      const page = runPage({ stored, withAnalytics: true });
+      vm.runInContext(`trackEvent("${event}", {feature:"meal-plan-generator"});
+        trackEvent("${event}", {feature:"meal-plan-generator"});
+        trackEvent("seo_cta_click", {feature:"meal-plan-generator",placement:"hero"});`, page.scope);
+      if (!stored) {
+        assert.equal(page.window.dataLayer, undefined);
+        page.document.querySelector(".fp-analytics-consent-actions button").click();
+      }
+      for (let i = 0; i < 3; i++) page.window.dispatchEvent(new page.window.Event("fp:analytics-ready"));
+      const events = (page.window.dataLayer || []).filter(call => call[0] === "event");
+      assert.equal(events.filter(call => call[1] === event).length, stored === "denied" ? 0 : 1);
+      assert.equal(events.filter(call => call[1] === "seo_cta_click").length, stored === "granted" ? 1 : 0);
+      assert.equal(events.filter(call => call[1] === "page_view").length, 0);
+      assert.equal((page.window.dataLayer || []).filter(call => call[0] === "config").length, stored === "denied" ? 0 : 1);
+    });
+  }
+}
+
+test("late consent does not replay a landing view after the path changes", () => {
+  const page = runPage({ withAnalytics: true });
+  vm.runInContext('trackEvent("seo_landing_view", {feature:"meal-plan-generator"});', page.scope);
+  page.window.location.pathname = "/auth.html";
+  page.document.querySelector(".fp-analytics-consent-actions button").click();
+  assert.equal(page.window.dataLayer.filter(call => call[0] === "event").length, 0);
+});
 
 test("Google tag is not loaded before consent or after refusal", () => {
   const page = runPage();
