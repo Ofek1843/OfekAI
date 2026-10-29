@@ -7,7 +7,7 @@ test('hero selection, no preference, and bounded failure preserve dimensions',as
  const {personalizeImage}=await import('../public/js/visual-personalization-core.mjs');
  const image={dataset:{},src:'/assets/dashboard/training.webp',width:305,height:324,getAttribute(k){return this[k]}};
  image.alt='Athlete training';
- personalizeImage(image,'female');assert.match(image.src,/training-female-v3.webp$/);assert.equal(image.alt,'Athletic woman in a modern gym');
+ personalizeImage(image,'female');assert.match(image.src,/training-female-v4.webp$/);assert.equal(image.alt,'Athletic woman in a modern gym');
  image.onerror();assert.equal(image.src,'/assets/dashboard/training.webp');assert.equal(image.onerror,null);assert.equal(image.alt,'Athlete training');
  personalizeImage(image,'male');assert.equal(image.src,'/assets/dashboard/training.webp');
  personalizeImage(image,'female');personalizeImage(image,'default');assert.equal(image.src,'/assets/dashboard/training.webp');
