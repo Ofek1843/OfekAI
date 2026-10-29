@@ -1,0 +1,3066 @@
+{
+  "exerciseCount": 129,
+  "uniqueDefaultAssets": 123,
+  "note": "123 exact WebP assets explicitly human-approved against SHA-256. Human visual approval is not professional exercise certification. Original male media preserved.",
+  "sharedMedia": {
+    "/images/exercises/barbell-shoulder-press.png": [
+      "barbell-shoulder-press",
+      "overhead-press"
+    ],
+    "/images/exercises/dumbbell-bulgarian-split-squat.png": [
+      "bulgarian-split-squat",
+      "dumbbell-bulgarian-split-squat"
+    ],
+    "/images/exercises/dumbbell-bicep-curl.png": [
+      "dumbbell-bicep-curl",
+      "dumbbell-curl"
+    ],
+    "/images/exercises/lying-leg-curl.png": [
+      "leg-curl",
+      "lying-leg-curl"
+    ],
+    "/images/exercises/machine-chest-fly.png": [
+      "machine-chest-fly",
+      "pec-deck"
+    ],
+    "/images/exercises/standing-calf-raise.png": [
+      "standing-calf-raise",
+      "standing-calf-raise-machine"
+    ]
+  },
+  "exercises": [
+    {
+      "exerciseId": "back-extension",
+      "name": "Back Extension",
+      "defaultMedia": "/images/exercises/back-extension.png",
+      "requiredPath": "/images/exercises/female/back-extension.webp",
+      "requiredWidth": 1200,
+      "requiredHeight": 800,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/back-extension.webp",
+      "sha256": "8d8f152a226b3bf0d96871b95fc735b516b3685decba8d742076cea201a1acac"
+    },
+    {
+      "exerciseId": "incline-chest-press-machine",
+      "name": "Incline Chest Press Machine",
+      "defaultMedia": "/images/exercises/incline-chest-press-machine.png",
+      "requiredPath": "/images/exercises/female/incline-chest-press-machine.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/incline-chest-press-machine.webp",
+      "sha256": "5162c7fd6dab97d84b5870261f07bef0f3a573e3f1319583738b2d68fe71c0e0"
+    },
+    {
+      "exerciseId": "sit-up",
+      "name": "Sit Up",
+      "defaultMedia": "/images/exercises/sit-up.png",
+      "requiredPath": "/images/exercises/female/sit-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/sit-up.webp",
+      "sha256": "16e263a736f60c8fcd337cb59af5780ee124edb95b364ce2cbe90e557f1c292b"
+    },
+    {
+      "exerciseId": "dumbbell-floor-press",
+      "name": "Dumbbell Floor Press",
+      "defaultMedia": "/images/exercises/dumbbell-floor-press.png",
+      "requiredPath": "/images/exercises/female/dumbbell-floor-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-floor-press.webp",
+      "sha256": "8e575541f52c2bb4ca3ecadafa4b80c0d5c9bfd92ba72fa28ffdd90499fcf678"
+    },
+    {
+      "exerciseId": "dumbbell-reverse-lunge",
+      "name": "Dumbbell Reverse Lunge",
+      "defaultMedia": "/images/exercises/dumbbell-reverse-lunge.png",
+      "requiredPath": "/images/exercises/female/dumbbell-reverse-lunge.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-reverse-lunge.webp",
+      "sha256": "ff5fb0ca3a209dac6d90dff6f3bf92c083b70cbebcb221daf02a739a8a58e6ad"
+    },
+    {
+      "exerciseId": "bodyweight-glute-bridge",
+      "name": "Bodyweight Glute Bridge",
+      "defaultMedia": "/images/exercises/bodyweight-glute-bridge.png",
+      "requiredPath": "/images/exercises/female/bodyweight-glute-bridge.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/bodyweight-glute-bridge.webp",
+      "sha256": "3672af3ad527b1b2ca5646a493769648f793fa2f507ef40dbfa0a00049ab4ca6"
+    },
+    {
+      "exerciseId": "dead-bug",
+      "name": "Dead Bug",
+      "defaultMedia": "/images/exercises/dead-bug.png",
+      "requiredPath": "/images/exercises/female/dead-bug.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dead-bug.webp",
+      "sha256": "6cf0969fba3b6927c220303ba1111d6cfdffd33c154c8d62a2ee64c685714374"
+    },
+    {
+      "exerciseId": "standing-bodyweight-calf-raise",
+      "name": "Standing Bodyweight Calf Raise",
+      "defaultMedia": "/images/exercises/standing-bodyweight-calf-raise.png",
+      "requiredPath": "/images/exercises/female/standing-bodyweight-calf-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/standing-bodyweight-calf-raise.webp",
+      "sha256": "8f5a09ee4cbdf98b03d7026baa93e08778c5885a3e5c760731f347c2da067a8a"
+    },
+    {
+      "exerciseId": "ring-row",
+      "name": "Ring Row",
+      "defaultMedia": "/images/exercises/ring-row.png",
+      "requiredPath": "/images/exercises/female/ring-row.webp",
+      "requiredWidth": 1774,
+      "requiredHeight": 887,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/ring-row.webp",
+      "sha256": "32db20eec84112ac7ae19a65e8e921c5d4cd6c98ac12e8320210db4e32178f91"
+    },
+    {
+      "exerciseId": "ab-wheel-rollout",
+      "name": "Ab Wheel Rollout",
+      "defaultMedia": "/images/exercises/ab-wheel-rollout.png",
+      "requiredPath": "/images/exercises/female/ab-wheel-rollout.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/ab-wheel-rollout.webp",
+      "sha256": "7d41e4868a601799f655cb8d7dbea62913ac006cd7b480160cc2838c7eed9fb1"
+    },
+    {
+      "exerciseId": "abductors",
+      "name": "Abductors",
+      "defaultMedia": "/images/exercises/abductors.png",
+      "requiredPath": "/images/exercises/female/abductors.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/abductors.webp",
+      "sha256": "01245f942ca9bee17d9745657eab27bb83a3fa46d26ac61327f11a5ef65257e6"
+    },
+    {
+      "exerciseId": "adductors",
+      "name": "Adductors",
+      "defaultMedia": "/images/exercises/adductors.png",
+      "requiredPath": "/images/exercises/female/adductors.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/adductors.webp",
+      "sha256": "7424f3047fe21186358203ed1b0355c07bd05037d316c3063e5e36af835024a1"
+    },
+    {
+      "exerciseId": "archer-push-up",
+      "name": "Archer Push Up",
+      "defaultMedia": "/images/exercises/archer-push-up.png",
+      "requiredPath": "/images/exercises/female/archer-push-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/archer-push-up.webp",
+      "sha256": "65048871d7139ba8ca434a4be0ca28903cfca2c53931e5155d4515e3de9a597a"
+    },
+    {
+      "exerciseId": "arnold-press",
+      "name": "Arnold Press",
+      "defaultMedia": "/images/exercises/arnold-press.png",
+      "requiredPath": "/images/exercises/female/arnold-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/arnold-press.webp",
+      "sha256": "7f8430f2a3d13a4c1f56c1237979d1381d0520d4d52ab23ea07c983d346ffb16"
+    },
+    {
+      "exerciseId": "australian-row",
+      "name": "Australian Row",
+      "defaultMedia": "/images/exercises/australian-row.png",
+      "requiredPath": "/images/exercises/female/australian-row.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/australian-row.webp",
+      "sha256": "ab9d470dbc6d296757b5c74292bc5bd613f9cf0a6deca2bbe270d0e3dc6ff24e"
+    },
+    {
+      "exerciseId": "barbell-bench-press",
+      "name": "Barbell Bench Press",
+      "defaultMedia": "/images/exercises/bench-press.png",
+      "requiredPath": "/images/exercises/female/bench-press.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 3,
+      "candidatePath": "outputs/female-media-pilot/bench-press.png",
+      "femaleMedia": "/images/exercises/female/bench-press.webp",
+      "sha256": "7f3d3b7742aeafcab670a947914f2e5a2984ad10515196f86e0ce78dfcfe7f7d"
+    },
+    {
+      "exerciseId": "barbell-bicep-curl",
+      "name": "Barbell Bicep Curl",
+      "defaultMedia": "/images/exercises/barbell-bicep-curl.png",
+      "requiredPath": "/images/exercises/female/barbell-bicep-curl.webp",
+      "requiredWidth": 1149,
+      "requiredHeight": 1369,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/barbell-bicep-curl.webp",
+      "sha256": "a9adf0d78356d6993c0b73ecb7bea6b86e48b56b4461b759efe9644524e1b9c5"
+    },
+    {
+      "exerciseId": "barbell-front-squat",
+      "name": "Barbell Front Squat",
+      "defaultMedia": "/images/exercises/barbell-front-squat.png",
+      "requiredPath": "/images/exercises/female/barbell-front-squat.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/barbell-front-squat.webp",
+      "sha256": "bef16f68dd41ce933d35be6550b3671ba1981e2c2b2c1b33d31263c19d187d2a"
+    },
+    {
+      "exerciseId": "barbell-hip-thrust",
+      "name": "Barbell Hip Thrust",
+      "defaultMedia": "/images/exercises/barbell-hip-thrust.png",
+      "requiredPath": "/images/exercises/female/barbell-hip-thrust.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 22,
+      "candidatePath": "outputs/female-media-batch20/barbell-hip-thrust.png",
+      "reviewFlags": [],
+      "femaleMedia": "/images/exercises/female/barbell-hip-thrust.webp",
+      "sha256": "d9afb3941dd39504e53d70e144b87f776513df994697cf5c749e0ac1f604fff6"
+    },
+    {
+      "exerciseId": "barbell-row",
+      "name": "Barbell Row",
+      "defaultMedia": "/images/exercises/barbell-row.png",
+      "requiredPath": "/images/exercises/female/barbell-row.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/barbell-row.webp",
+      "sha256": "55c5d48c94a0e8668cb437b79261c00a260de8eff57c9a2decd2cd22df8f1bc9"
+    },
+    {
+      "exerciseId": "barbell-shoulder-press",
+      "name": "Barbell Shoulder Press",
+      "defaultMedia": "/images/exercises/barbell-shoulder-press.png",
+      "requiredPath": "/images/exercises/female/barbell-shoulder-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 11,
+      "candidatePath": "outputs/female-media-pilot/barbell-shoulder-press.png",
+      "femaleMedia": "/images/exercises/female/barbell-shoulder-press.webp",
+      "sha256": "3982084968960b8ba55dfdf981a8d9cb1380929b1e787c35acabfe03658797d7"
+    },
+    {
+      "exerciseId": "barbell-shrug",
+      "name": "Barbell Shrug",
+      "defaultMedia": "/images/exercises/barbell-shrug.png",
+      "requiredPath": "/images/exercises/female/barbell-shrug.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/barbell-shrug.webp",
+      "sha256": "5a2b1a0cf3f2a75b1d9f6bfc57d16dd33ced529426d59f42a806d8f212c0391a"
+    },
+    {
+      "exerciseId": "barbell-squat",
+      "name": "Barbell Squat",
+      "defaultMedia": "/images/exercises/barbell-squat.png",
+      "requiredPath": "/images/exercises/female/barbell-squat.webp",
+      "requiredWidth": 1400,
+      "requiredHeight": 1123,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 1,
+      "candidatePath": "outputs/female-media-pilot/barbell-squat.png",
+      "femaleMedia": "/images/exercises/female/barbell-squat.webp",
+      "sha256": "b71460b97dfcf084cec28fb3e3ac2f48001dffad7c7c46f83b0090e891324054"
+    },
+    {
+      "exerciseId": "barbell-upright-row",
+      "name": "Barbell Upright Row",
+      "defaultMedia": "/images/exercises/barbell-upright-row.png",
+      "requiredPath": "/images/exercises/female/barbell-upright-row.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/barbell-upright-row.webp",
+      "sha256": "b39356a213c60a2ee41256d85f2a47ff35336c13538366deb6c7831926001388"
+    },
+    {
+      "exerciseId": "bulgarian-split-squat",
+      "name": "Dumbbell Bulgarian Split Squat",
+      "defaultMedia": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "requiredPath": "/images/exercises/female/dumbbell-bulgarian-split-squat.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-bulgarian-split-squat.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "rear-foot-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-bulgarian-split-squat.webp",
+      "sha256": "7e0c0a38153723cb672eeb36531965c90550f14f01b6e7ff9e6101fe5c06445d"
+    },
+    {
+      "exerciseId": "cable-bicep-curl",
+      "name": "Cable Bicep Curl",
+      "defaultMedia": "/images/exercises/cable-bicep-curl.png",
+      "requiredPath": "/images/exercises/female/cable-bicep-curl.webp",
+      "requiredWidth": 1149,
+      "requiredHeight": 1369,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-bicep-curl.webp",
+      "sha256": "8a65241e3dbf0a80b8af00a6e6ec2d01f7905882088059dd6af91c7f6eb279c0"
+    },
+    {
+      "exerciseId": "cable-crossover",
+      "name": "Cable Crossover",
+      "defaultMedia": "/images/exercises/cable-crossover.png",
+      "requiredPath": "/images/exercises/female/cable-crossover.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-crossover.webp",
+      "sha256": "824920d79d2725f790fa358b54a86e24304b3e2f40f8b9fdf385a35ddcbcfae0"
+    },
+    {
+      "exerciseId": "cable-crunch",
+      "name": "Cable Crunch",
+      "defaultMedia": "/images/exercises/cable-crunch.png",
+      "requiredPath": "/images/exercises/female/cable-crunch.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-crunch.webp",
+      "sha256": "8df21db9f9f782e6bff7cb2aae2e8b102bcff254d036661e9d8c016f955cda4e"
+    },
+    {
+      "exerciseId": "crunch",
+      "name": "Crunch",
+      "defaultMedia": "/images/exercises/crunch.png",
+      "requiredPath": "/images/exercises/female/crunch.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/crunch.webp",
+      "sha256": "e22a2459359621163188c8362df59f19746c6a280534321d1fbcef73d0195b7a"
+    },
+    {
+      "exerciseId": "cable-lateral-raise",
+      "name": "Cable Lateral Raise",
+      "defaultMedia": "/images/exercises/cable-lateral-raise.png",
+      "requiredPath": "/images/exercises/female/cable-lateral-raise.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-lateral-raise.webp",
+      "sha256": "c8a6cb01505b133d3436d82852f8ce1f8ea11901e32ec12a0766e2b69f3c61ba"
+    },
+    {
+      "exerciseId": "cable-tricep-pushdown",
+      "name": "Cable Tricep Pushdown",
+      "defaultMedia": "/images/exercises/cable-tricep-pushdown.png",
+      "requiredPath": "/images/exercises/female/cable-tricep-pushdown.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 19,
+      "candidatePath": "outputs/female-media-batch20/cable-tricep-pushdown.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "inherited-sequence-label-error"
+      ],
+      "femaleMedia": "/images/exercises/female/cable-tricep-pushdown.webp",
+      "sha256": "2ea483a97f8798766a341195a57cd8686721216d27fee49d9321e0a3c60e7c34"
+    },
+    {
+      "exerciseId": "cable-woodchopper",
+      "name": "Cable Woodchopper",
+      "defaultMedia": "/images/exercises/cable-woodchopper.png",
+      "requiredPath": "/images/exercises/female/cable-woodchopper.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-woodchopper.webp",
+      "sha256": "53dd9543ef23ae54254b5e3282387776b9a9ff62e6d16c722712f098dc5b115c"
+    },
+    {
+      "exerciseId": "chin-up",
+      "name": "Chin Up",
+      "defaultMedia": "/images/exercises/chin-up.png",
+      "requiredPath": "/images/exercises/female/chin-up.webp",
+      "requiredWidth": 1149,
+      "requiredHeight": 1369,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/chin-up.webp",
+      "sha256": "48eb0b1cbac585e1745c4362e90f06dbda9fd711200a5eae3d10c5b93bfea3d6"
+    },
+    {
+      "exerciseId": "close-grip-bench-press",
+      "name": "Close Grip Bench Press",
+      "defaultMedia": "/images/exercises/close-grip-bench-press.png",
+      "requiredPath": "/images/exercises/female/close-grip-bench-press.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/close-grip-bench-press.webp",
+      "sha256": "f1db31870d970f6a236d0da66d375477ca22e49c1e283e8e805125e76ab0161b"
+    },
+    {
+      "exerciseId": "close-grip-lat-pulldown",
+      "name": "Close Grip Lat Pulldown",
+      "defaultMedia": "/images/exercises/close-grip-lat-pulldown.png",
+      "requiredPath": "/images/exercises/female/close-grip-lat-pulldown.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/close-grip-lat-pulldown.webp",
+      "sha256": "cfe82ececfdcab22eff708fec487c9372325ddb86637f7a8523e149b3dd7ab65"
+    },
+    {
+      "exerciseId": "concentration-curl",
+      "name": "Concentration Curl",
+      "defaultMedia": "/images/exercises/concentration-curl.png",
+      "requiredPath": "/images/exercises/female/concentration-curl.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/concentration-curl.webp",
+      "sha256": "7ebad7dcee09d501ec8ba8946f3834fb261a6928a6d2a9e1aeab7af53cfacae0"
+    },
+    {
+      "exerciseId": "diamond-push-up",
+      "name": "Diamond Push Up",
+      "defaultMedia": "/images/exercises/diamond-push-up.png",
+      "requiredPath": "/images/exercises/female/diamond-push-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/diamond-push-up.webp",
+      "sha256": "f0dae12557874bab161173452d4b992ecafb6d1a198618b53013114bd5e27d8c"
+    },
+    {
+      "exerciseId": "dip",
+      "name": "Dip",
+      "defaultMedia": "/images/exercises/dip.png",
+      "requiredPath": "/images/exercises/female/dip.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dip.webp",
+      "sha256": "f85db2c5e7b140fc7dc80c52b407d24ed6d48998417278e4c7007cb4369144e4"
+    },
+    {
+      "exerciseId": "dumbbell-bench-press",
+      "name": "Dumbbell Bench Press",
+      "defaultMedia": "/images/exercises/dumbbell-bench-press.png",
+      "requiredPath": "/images/exercises/female/dumbbell-bench-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-bench-press.webp",
+      "sha256": "042f2aaa254ba3279563fd4138d3486facd44b4956c59ebab05ee9c60e6334a0"
+    },
+    {
+      "exerciseId": "dumbbell-bicep-curl",
+      "name": "Dumbbell Bicep Curl",
+      "defaultMedia": "/images/exercises/dumbbell-bicep-curl.png",
+      "requiredPath": "/images/exercises/female/dumbbell-bicep-curl.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 18,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-bicep-curl.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-bicep-curl.webp",
+      "sha256": "3f09d2ee6b965aa037e8c27db2319d725bfe6f9ec8c94f778a5832642333e8fc"
+    },
+    {
+      "exerciseId": "dumbbell-bulgarian-split-squat",
+      "name": "Dumbbell Bulgarian Split Squat",
+      "defaultMedia": "/images/exercises/dumbbell-bulgarian-split-squat.png",
+      "requiredPath": "/images/exercises/female/dumbbell-bulgarian-split-squat.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 15,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-bulgarian-split-squat.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "rear-foot-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-bulgarian-split-squat.webp",
+      "sha256": "7e0c0a38153723cb672eeb36531965c90550f14f01b6e7ff9e6101fe5c06445d"
+    },
+    {
+      "exerciseId": "dumbbell-calf-raise",
+      "name": "Dumbbell Calf Raise",
+      "defaultMedia": "/images/exercises/dumbbell-calf-raise.png",
+      "requiredPath": "/images/exercises/female/dumbbell-calf-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-calf-raise.webp",
+      "sha256": "067bb13f5b8fda3744e7eca1e458f85fecef8caf6f248dd4f48ebf81574bb0b5"
+    },
+    {
+      "exerciseId": "dumbbell-curl",
+      "name": "Dumbbell Curl",
+      "defaultMedia": "/images/exercises/dumbbell-bicep-curl.png",
+      "requiredPath": "/images/exercises/female/dumbbell-bicep-curl.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-bicep-curl.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-bicep-curl.webp",
+      "sha256": "3f09d2ee6b965aa037e8c27db2319d725bfe6f9ec8c94f778a5832642333e8fc"
+    },
+    {
+      "exerciseId": "dumbbell-fly",
+      "name": "Dumbbell Fly",
+      "defaultMedia": "/images/exercises/dumbbell-fly.png",
+      "requiredPath": "/images/exercises/female/dumbbell-fly.webp",
+      "requiredWidth": 1774,
+      "requiredHeight": 887,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-fly.webp",
+      "sha256": "1ec0626165e1fa7bee732a3f2f83897d972a24938193128b4b853a3e52472621"
+    },
+    {
+      "exerciseId": "dumbbell-front-raise",
+      "name": "Dumbbell Front Raise",
+      "defaultMedia": "/images/exercises/dumbbell-front-raise.png",
+      "requiredPath": "/images/exercises/female/dumbbell-front-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-front-raise.webp",
+      "sha256": "3a2ce9bd098afaf842052715a813a248bb9818169503280c3f2b3fca3aa5da63"
+    },
+    {
+      "exerciseId": "dumbbell-goblet-squat",
+      "name": "Dumbbell Goblet Squat",
+      "defaultMedia": "/images/exercises/dumbbell-goblet-squat.png",
+      "requiredPath": "/images/exercises/female/dumbbell-goblet-squat.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 2,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-goblet-squat.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-goblet-squat.webp",
+      "sha256": "42187df08c981b9cd03368b69a125c9ae6cb34e16afd015b8d57fc5ce3293d51"
+    },
+    {
+      "exerciseId": "dumbbell-hip-thrust",
+      "name": "Dumbbell Hip Thrust",
+      "defaultMedia": "/images/exercises/dumbbell-hip-thrust.png",
+      "requiredPath": "/images/exercises/female/dumbbell-hip-thrust.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-hip-thrust.webp",
+      "sha256": "858d0b2e1d3628157fe1dfe229b9ca68629cb39fdd21854851186ac2aa4ad6a8"
+    },
+    {
+      "exerciseId": "dumbbell-lateral-raise",
+      "name": "Dumbbell Lateral Raise",
+      "defaultMedia": "/images/exercises/dumbbell-lateral-raise.png",
+      "requiredPath": "/images/exercises/female/dumbbell-lateral-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 12,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-lateral-raise.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-lateral-raise.webp",
+      "sha256": "8e5365a2909902d88a4c4d21074305a1894d938593d5bd664ba60939c40275ef"
+    },
+    {
+      "exerciseId": "dumbbell-reverse-fly",
+      "name": "Dumbbell Reverse Fly",
+      "defaultMedia": "/images/exercises/dumbbell-reverse-fly.png",
+      "requiredPath": "/images/exercises/female/dumbbell-reverse-fly.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-reverse-fly.webp",
+      "sha256": "1fad36191aa071cd2b69f586f7009e4feee2bf123c115f069aca55c50e2c44d0"
+    },
+    {
+      "exerciseId": "dumbbell-row",
+      "name": "Dumbbell Row",
+      "defaultMedia": "/images/exercises/dumbbell-row.png",
+      "requiredPath": "/images/exercises/female/dumbbell-row.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 10,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-row.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-row.webp",
+      "sha256": "0820d89776a22a8cd95a23f35fdf503817ba8aaa8e86f09da8c2fc251f525bab"
+    },
+    {
+      "exerciseId": "dumbbell-shoulder-press",
+      "name": "Dumbbell Shoulder Press",
+      "defaultMedia": "/images/exercises/dumbbell-shoulder-press.png",
+      "requiredPath": "/images/exercises/female/dumbbell-shoulder-press.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-shoulder-press.webp",
+      "sha256": "5cf92cd37b2278b336460f92b24c3a8bf5782a43d84e2b6bd27ebd1343d4cdce"
+    },
+    {
+      "exerciseId": "dumbbell-shrug",
+      "name": "Dumbbell Shrug",
+      "defaultMedia": "/images/exercises/dumbbell-shrug.png",
+      "requiredPath": "/images/exercises/female/dumbbell-shrug.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dumbbell-shrug.webp",
+      "sha256": "eb4e7866713b93337991c1c8f36b4c3c4b53eed60576a2537369dc1804838f08"
+    },
+    {
+      "exerciseId": "dumbbell-walking-lunge",
+      "name": "Dumbbell Walking Lunge",
+      "defaultMedia": "/images/exercises/dumbbell-walking-lunge.png",
+      "requiredPath": "/images/exercises/female/dumbbell-walking-lunge.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 14,
+      "candidatePath": "outputs/female-media-batch20/dumbbell-walking-lunge.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/dumbbell-walking-lunge.webp",
+      "sha256": "dc07b8b6ebd6d869ade726192f155d23eaff0301f8a9d93acedd707943832324"
+    },
+    {
+      "exerciseId": "face-pull",
+      "name": "Face Pull",
+      "defaultMedia": "/images/exercises/face-pull.png",
+      "requiredPath": "/images/exercises/female/face-pull.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 24,
+      "candidatePath": "outputs/female-media-batch20/face-pull.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "inherited-muscle-diagram-review"
+      ],
+      "femaleMedia": "/images/exercises/female/face-pull.webp",
+      "sha256": "0c43f826166d7a30c1d038e305eaba6fd2f098fe7f3d8a8048cdb33683b173db"
+    },
+    {
+      "exerciseId": "good-morning",
+      "name": "Good Morning",
+      "defaultMedia": "/images/exercises/good-morning.png",
+      "requiredPath": "/images/exercises/female/good-morning.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/good-morning.webp",
+      "sha256": "fba95d58b35cc0a95a0fbe65bd4ba8b7f8a4ff1121a73401a2d1bf5149591ed9"
+    },
+    {
+      "exerciseId": "hack-squat",
+      "name": "Hack Squat",
+      "defaultMedia": "/images/exercises/hack-squat.png",
+      "requiredPath": "/images/exercises/female/hack-squat.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/hack-squat.webp",
+      "sha256": "2fcf110a0acd79a469a929788f1abafee28175df71edfe08977a3bcfbf8c39a3"
+    },
+    {
+      "exerciseId": "hammer-curl",
+      "name": "Hammer Curl",
+      "defaultMedia": "/images/exercises/hammer-curl.png",
+      "requiredPath": "/images/exercises/female/hammer-curl.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/hammer-curl.webp",
+      "sha256": "f51c0696bfb160129150b1540674cd4569dc41838625c76247e3ecccd8d1969a"
+    },
+    {
+      "exerciseId": "handstand",
+      "name": "Handstand",
+      "defaultMedia": "/images/exercises/handstand.png",
+      "requiredPath": "/images/exercises/female/handstand.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/handstand.webp",
+      "sha256": "ec51daecff0d41603e88d0ba9855da4b115c68de8902f747b84979150cc3fddb"
+    },
+    {
+      "exerciseId": "handstand-push-up",
+      "name": "Handstand Push Up",
+      "defaultMedia": "/images/exercises/handstand-push-up.png",
+      "requiredPath": "/images/exercises/female/handstand-push-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/handstand-push-up.webp",
+      "sha256": "42f093a54d2b98fa174a2854a2a087b43210bc78a6122da60ff6a74035b7a17c"
+    },
+    {
+      "exerciseId": "hanging-leg-raise",
+      "name": "Hanging Leg Raise",
+      "defaultMedia": "/images/exercises/hanging-leg-raise.png",
+      "requiredPath": "/images/exercises/female/hanging-leg-raise.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/hanging-leg-raise.webp",
+      "sha256": "f36d58907dc4c387bda0cdfd06966837f37e3d1b87b20f8dec717e04a4242e69"
+    },
+    {
+      "exerciseId": "kettlebell-swing",
+      "name": "Kettlebell Swing",
+      "defaultMedia": "/images/exercises/kettlebell-swing.png",
+      "requiredPath": "/images/exercises/female/kettlebell-swing.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/kettlebell-swing.webp",
+      "sha256": "21216f166aff9b56cc96466ae9cf5c0e8521a578ff6d23a1c59c07550d18b120"
+    },
+    {
+      "exerciseId": "incline-bench-press",
+      "name": "Incline Bench Press",
+      "defaultMedia": "/images/exercises/incline-bench-press.png",
+      "requiredPath": "/images/exercises/female/incline-bench-press.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/incline-bench-press.webp",
+      "sha256": "5193e683f285899620063958233ef4eb21d108dd16c3984195218cf298730866"
+    },
+    {
+      "exerciseId": "incline-dumbbell-bench-press",
+      "name": "Incline Dumbbell Bench Press",
+      "defaultMedia": "/images/exercises/incline-dumbbell-bench-press.png",
+      "requiredPath": "/images/exercises/female/incline-dumbbell-bench-press.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 4,
+      "candidatePath": "outputs/female-media-batch20/incline-dumbbell-bench-press.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/incline-dumbbell-bench-press.webp",
+      "sha256": "dd48debdd1602985faa32d0a4d89c4f17f1856733af6216a0a58c5a5a1355ad5"
+    },
+    {
+      "exerciseId": "incline-dumbbell-curl",
+      "name": "Incline Dumbbell Curl",
+      "defaultMedia": "/images/exercises/incline-dumbbell-curl.png",
+      "requiredPath": "/images/exercises/female/incline-dumbbell-curl.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/incline-dumbbell-curl.webp",
+      "sha256": "1dedd99492a088a9c559d63ead4e37dbd98bd770c5c6ec0255c90d7d0490931f"
+    },
+    {
+      "exerciseId": "lat-pulldown",
+      "name": "Lat Pulldown",
+      "defaultMedia": "/images/exercises/lat-pulldown.png",
+      "requiredPath": "/images/exercises/female/lat-pulldown.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 7,
+      "candidatePath": "outputs/female-media-pilot/lat-pulldown.png",
+      "femaleMedia": "/images/exercises/female/lat-pulldown.webp",
+      "sha256": "3e4a3e462749928ee0ec8c4f5ac873295dd98efd0bbef63b547cc834a4b5507e"
+    },
+    {
+      "exerciseId": "leg-curl",
+      "name": "Lying Leg Curl",
+      "defaultMedia": "/images/exercises/lying-leg-curl.png",
+      "requiredPath": "/images/exercises/female/lying-leg-curl.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "candidatePath": "outputs/female-media-batch20/lying-leg-curl.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "roller-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/lying-leg-curl.webp",
+      "sha256": "f497dc3c3e0f6affbfd1aa8a622f2c4f1769af6ffa165f397f35de3a6e3e7048"
+    },
+    {
+      "exerciseId": "leg-extension",
+      "name": "Leg Extension",
+      "defaultMedia": "/images/exercises/leg-extension.png",
+      "requiredPath": "/images/exercises/female/leg-extension.webp",
+      "requiredWidth": 1122,
+      "requiredHeight": 1402,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 23,
+      "candidatePath": "outputs/female-media-batch20/leg-extension.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "roller-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/leg-extension.webp",
+      "sha256": "9ce49f88ed49ac2ecb9892732706fc8d80d7a26f406424900db3e66d684de521"
+    },
+    {
+      "exerciseId": "leg-press",
+      "name": "Leg Press",
+      "defaultMedia": "/images/exercises/leg-press.png",
+      "requiredPath": "/images/exercises/female/leg-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 16,
+      "candidatePath": "outputs/female-media-batch20/leg-press.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "inherited-muscle-diagram-review"
+      ],
+      "femaleMedia": "/images/exercises/female/leg-press.webp",
+      "sha256": "461469059fa23e438fdbb9d442dbf0a6d066a04fb991126b5627c84e83a8789b"
+    },
+    {
+      "exerciseId": "lying-leg-curl",
+      "name": "Lying Leg Curl",
+      "defaultMedia": "/images/exercises/lying-leg-curl.png",
+      "requiredPath": "/images/exercises/female/lying-leg-curl.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 17,
+      "candidatePath": "outputs/female-media-batch20/lying-leg-curl.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "roller-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/lying-leg-curl.webp",
+      "sha256": "f497dc3c3e0f6affbfd1aa8a622f2c4f1769af6ffa165f397f35de3a6e3e7048"
+    },
+    {
+      "exerciseId": "machine-chest-fly",
+      "name": "Machine Chest Fly",
+      "defaultMedia": "/images/exercises/machine-chest-fly.png",
+      "requiredPath": "/images/exercises/female/machine-chest-fly.webp",
+      "requiredWidth": 1774,
+      "requiredHeight": 887,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/machine-chest-fly.webp",
+      "sha256": "e6f50e7dbe1f36311ec9e10bea6795e6afe09426e71af8ef27b3388eeab0259f"
+    },
+    {
+      "exerciseId": "machine-chest-press",
+      "name": "Machine Chest Press",
+      "defaultMedia": "/images/exercises/machine-chest-press.png",
+      "requiredPath": "/images/exercises/female/machine-chest-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/machine-chest-press.webp",
+      "sha256": "5fe5b5a1fae9a205fd02e034faff6834e2fb65526b6a29a2c5f1665dff807016"
+    },
+    {
+      "exerciseId": "machine-shoulder-press",
+      "name": "Machine Shoulder Press",
+      "defaultMedia": "/images/exercises/machine-shoulder-press.png",
+      "requiredPath": "/images/exercises/female/machine-shoulder-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/machine-shoulder-press.webp",
+      "sha256": "5171a874cfd6e7ebd4308e715f8d572f26b942f4c7c6c6a1f456164b58481a50"
+    },
+    {
+      "exerciseId": "muscle-up",
+      "name": "Muscle Up",
+      "defaultMedia": "/images/exercises/muscle-up.png",
+      "requiredPath": "/images/exercises/female/muscle-up.webp",
+      "requiredWidth": 1122,
+      "requiredHeight": 1402,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/muscle-up.webp",
+      "sha256": "1595b45418173f6c32ca838d52b875db9599244c630a5c4b2cdc2b3547416aaa"
+    },
+    {
+      "exerciseId": "neutral-grip-pull-up",
+      "name": "Neutral Grip Pull Up",
+      "defaultMedia": "/images/exercises/neutral-grip-pull-up.png",
+      "requiredPath": "/images/exercises/female/neutral-grip-pull-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/neutral-grip-pull-up.webp",
+      "sha256": "1a6a23fbfa4a642b73f88c3318f356f40198aee0f54e96c2d3a66a4a69d416f7"
+    },
+    {
+      "exerciseId": "one-arm-pull-up",
+      "name": "One Arm Pull Up",
+      "defaultMedia": "/images/exercises/one-arm-pull-up.png",
+      "requiredPath": "/images/exercises/female/one-arm-pull-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/one-arm-pull-up.webp",
+      "sha256": "b1050d6bf11995fccd81e07c6b4db0640d7af89b15653fbad9be073150b38e98"
+    },
+    {
+      "exerciseId": "overhead-press",
+      "name": "Barbell Shoulder Press",
+      "defaultMedia": "/images/exercises/barbell-shoulder-press.png",
+      "requiredPath": "/images/exercises/female/barbell-shoulder-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "candidatePath": "outputs/female-media-pilot/barbell-shoulder-press.png",
+      "femaleMedia": "/images/exercises/female/barbell-shoulder-press.webp",
+      "sha256": "3982084968960b8ba55dfdf981a8d9cb1380929b1e787c35acabfe03658797d7"
+    },
+    {
+      "exerciseId": "overhead-tricep-extension",
+      "name": "Overhead Tricep Extension",
+      "defaultMedia": "/images/exercises/overhead-tricep-extension.png",
+      "requiredPath": "/images/exercises/female/overhead-tricep-extension.webp",
+      "requiredWidth": 1122,
+      "requiredHeight": 1402,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/overhead-tricep-extension.webp",
+      "sha256": "fa0dc39547c9b61398ae316cfcebbf9d3a5660f5df5caa12c334b36ee416900b"
+    },
+    {
+      "exerciseId": "pec-deck",
+      "name": "Pec Deck",
+      "defaultMedia": "/images/exercises/machine-chest-fly.png",
+      "requiredPath": "/images/exercises/female/machine-chest-fly.webp",
+      "requiredWidth": 1774,
+      "requiredHeight": 887,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/machine-chest-fly.webp",
+      "sha256": "e6f50e7dbe1f36311ec9e10bea6795e6afe09426e71af8ef27b3388eeab0259f"
+    },
+    {
+      "exerciseId": "pike-push-up",
+      "name": "Pike Push Up",
+      "defaultMedia": "/images/exercises/pike-push-up.png",
+      "requiredPath": "/images/exercises/female/pike-push-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/pike-push-up.webp",
+      "sha256": "5e30e7e9700d3e6e24c44d9e2dc2f7dfba965d9903e7adc380f655a0204ff641"
+    },
+    {
+      "exerciseId": "pistol-squat",
+      "name": "Pistol Squat",
+      "defaultMedia": "/images/exercises/pistol-squat.png",
+      "requiredPath": "/images/exercises/female/pistol-squat.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/pistol-squat.webp",
+      "sha256": "655035d8335080cbeb341f89406c2f031cdd0d644ecd1e231ccbe34c59ab6864"
+    },
+    {
+      "exerciseId": "plank",
+      "name": "Plank",
+      "defaultMedia": "/images/exercises/plank.png",
+      "requiredPath": "/images/exercises/female/plank.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 20,
+      "candidatePath": "outputs/female-media-batch20/plank.png",
+      "reviewFlags": [],
+      "femaleMedia": "/images/exercises/female/plank.webp",
+      "sha256": "be34714233568fe02aab79e936349e2311f0388c66044af4092de529fb03ff76"
+    },
+    {
+      "exerciseId": "preacher-curl",
+      "name": "Preacher Curl",
+      "defaultMedia": "/images/exercises/preacher-curl.png",
+      "requiredPath": "/images/exercises/female/preacher-curl.webp",
+      "requiredWidth": 1149,
+      "requiredHeight": 1369,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/preacher-curl.webp",
+      "sha256": "68eea33e0bb05c66cf373f52f9815fea59e64dfca5d7e64569393b13dbb2543a"
+    },
+    {
+      "exerciseId": "pull-up",
+      "name": "Pull Up",
+      "defaultMedia": "/images/exercises/pull-up.png",
+      "requiredPath": "/images/exercises/female/pull-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 8,
+      "candidatePath": "outputs/female-media-batch20/pull-up.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/pull-up.webp",
+      "sha256": "3df972529efd00ebc5a584a123519375ec5215636c755699e836dcc377539111"
+    },
+    {
+      "exerciseId": "push-up",
+      "name": "Push Up",
+      "defaultMedia": "/images/exercises/push-up.png",
+      "requiredPath": "/images/exercises/female/push-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 13,
+      "candidatePath": "outputs/female-media-batch20/push-up.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "inherited-muscle-diagram-review"
+      ],
+      "femaleMedia": "/images/exercises/female/push-up.webp",
+      "sha256": "51d2646429258f6c7cc1f5bd8f1dd7cbe644309cd2d043c2c5f179dd6a6a4f13"
+    },
+    {
+      "exerciseId": "rack-pull",
+      "name": "Rack Pull",
+      "defaultMedia": "/images/exercises/rack-pull.png",
+      "requiredPath": "/images/exercises/female/rack-pull.webp",
+      "requiredWidth": 1149,
+      "requiredHeight": 1369,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/rack-pull.webp",
+      "sha256": "c9ab2d523abeaa51d6857c4eb9eb047c3d63bdeb3b9c16d8e969ae76e188a7c9"
+    },
+    {
+      "exerciseId": "reverse-pec-deck",
+      "name": "Reverse Pec Deck",
+      "defaultMedia": "/images/exercises/reverse-pec-deck.png",
+      "requiredPath": "/images/exercises/female/reverse-pec-deck.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/reverse-pec-deck.webp",
+      "sha256": "529299054cf5966cc25618cd39ec753638858aa6ac6f535f2678cbe79656e0c2"
+    },
+    {
+      "exerciseId": "reverse-lunge",
+      "name": "Reverse Lunge",
+      "defaultMedia": "/images/exercises/reverse-lunge.png",
+      "requiredPath": "/images/exercises/female/reverse-lunge.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/reverse-lunge.webp",
+      "sha256": "d9413e34defc8a09b6bcd43c719ab1e47a9813eef6252ea44df474ce3f8542f2"
+    },
+    {
+      "exerciseId": "romanian-deadlift",
+      "name": "Romanian Deadlift",
+      "defaultMedia": "/images/exercises/romanian-deadlift.png",
+      "requiredPath": "/images/exercises/female/romanian-deadlift.webp",
+      "requiredWidth": 1122,
+      "requiredHeight": 1402,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 5,
+      "candidatePath": "outputs/female-media-pilot/romanian-deadlift.png",
+      "femaleMedia": "/images/exercises/female/romanian-deadlift.webp",
+      "sha256": "bcc743e448f4f6cfe2928634a4bef83e321fd97e3ee2530e63928397a53d0c8c"
+    },
+    {
+      "exerciseId": "russian-twist",
+      "name": "Russian Twist",
+      "defaultMedia": "/images/exercises/russian-twist.png",
+      "requiredPath": "/images/exercises/female/russian-twist.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/russian-twist.webp",
+      "sha256": "7793b11ddc19a27f76c7ec789b2a9547b9f83bf5a57472387e16bfa2ef3488f0"
+    },
+    {
+      "exerciseId": "l-sit",
+      "name": "L Sit",
+      "defaultMedia": "/images/exercises/l-sit.png",
+      "requiredPath": "/images/exercises/female/l-sit.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/l-sit.webp",
+      "sha256": "f9b7d34c2997309597ea68238eb86b69367d51d63fd984bc5e2e9d24be222c20"
+    },
+    {
+      "exerciseId": "seated-cable-row",
+      "name": "Seated Cable Row",
+      "defaultMedia": "/images/exercises/seated-cable-row.png",
+      "requiredPath": "/images/exercises/female/seated-cable-row.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 9,
+      "candidatePath": "outputs/female-media-batch20/seated-cable-row.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "equipment-detail-drift"
+      ],
+      "femaleMedia": "/images/exercises/female/seated-cable-row.webp",
+      "sha256": "ad63213f9d8d1411bac2be2d74f4484377bfa81488aa4ef5b54007e9ef9ba9bf"
+    },
+    {
+      "exerciseId": "seated-calf-raise",
+      "name": "Seated Calf Raise",
+      "defaultMedia": "/images/exercises/seated-calf-raise.png",
+      "requiredPath": "/images/exercises/female/seated-calf-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/seated-calf-raise.webp",
+      "sha256": "2d49ce01c31219bd9b214c9fcc64b70051b252246c18d1e1b6a2f77fa32680aa"
+    },
+    {
+      "exerciseId": "seated-leg-curl",
+      "name": "Seated Leg Curl",
+      "defaultMedia": "/images/exercises/seated-leg-curl.png",
+      "requiredPath": "/images/exercises/female/seated-leg-curl.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/seated-leg-curl.webp",
+      "sha256": "69b3f61e8ca6b7d7b6ce690a108567cc1ca8a47f79aad3b4b8265687f2a5467c"
+    },
+    {
+      "exerciseId": "side-plank",
+      "name": "Side Plank",
+      "defaultMedia": "/images/exercises/side-plank.png",
+      "requiredPath": "/images/exercises/female/side-plank.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/side-plank.webp",
+      "sha256": "f45fe06442649083fe65d970199deb0b34c4bd2621eab792e2044306a0fe6e24"
+    },
+    {
+      "exerciseId": "skull-crusher",
+      "name": "Skull Crusher",
+      "defaultMedia": "/images/exercises/skull-crusher.png",
+      "requiredPath": "/images/exercises/female/skull-crusher.webp",
+      "requiredWidth": 1448,
+      "requiredHeight": 1086,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/skull-crusher.webp",
+      "sha256": "246cd0763dae99f5babe0174f1787efbfe1191bd47dbd1349ac0b8a71ad99aa9"
+    },
+    {
+      "exerciseId": "standing-calf-raise",
+      "name": "Standing Calf Raise",
+      "defaultMedia": "/images/exercises/standing-calf-raise.png",
+      "requiredPath": "/images/exercises/female/standing-calf-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 25,
+      "candidatePath": "outputs/female-media-batch20/standing-calf-raise.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "forefoot-platform-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/standing-calf-raise.webp",
+      "sha256": "1eaa23d67ea0bb8c139e03e90f3f39701990b27014dfe3df4cb2020735798c75"
+    },
+    {
+      "exerciseId": "standing-calf-raise-machine",
+      "name": "Standing Calf Raise Machine",
+      "defaultMedia": "/images/exercises/standing-calf-raise.png",
+      "requiredPath": "/images/exercises/female/standing-calf-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "candidatePath": "outputs/female-media-batch20/standing-calf-raise.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "forefoot-platform-contact-review"
+      ],
+      "femaleMedia": "/images/exercises/female/standing-calf-raise.webp",
+      "sha256": "1eaa23d67ea0bb8c139e03e90f3f39701990b27014dfe3df4cb2020735798c75"
+    },
+    {
+      "exerciseId": "step-up",
+      "name": "Step Up",
+      "defaultMedia": "/images/exercises/step-up.png",
+      "requiredPath": "/images/exercises/female/step-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/step-up.webp",
+      "sha256": "d1ae7745d524802d9d2716e51f7042981d70429809178a74a34e6a6aca094776"
+    },
+    {
+      "exerciseId": "sumo-deadlift",
+      "name": "Sumo Deadlift",
+      "defaultMedia": "/images/exercises/sumo-deadlift.png",
+      "requiredPath": "/images/exercises/female/sumo-deadlift.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/sumo-deadlift.webp",
+      "sha256": "24cec8a49db4de99bb35e39759591c6e9bb499aa7a85157563e4ffe358a082d7"
+    },
+    {
+      "exerciseId": "t-bar-row",
+      "name": "T Bar Row",
+      "defaultMedia": "/images/exercises/t-bar-row.png",
+      "requiredPath": "/images/exercises/female/t-bar-row.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/t-bar-row.webp",
+      "sha256": "1e30306bf6a6150343edf426b888d8e0a63bdd31db298e002f31ecedb260439f"
+    },
+    {
+      "exerciseId": "tricep-dip",
+      "name": "Tricep Dip",
+      "defaultMedia": "/images/exercises/tricep-dip.png",
+      "requiredPath": "/images/exercises/female/tricep-dip.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/tricep-dip.webp",
+      "sha256": "142c48bed84fbbb5476d1415f065da683c06be0e99773b5cb3af3bc42559ded3"
+    },
+    {
+      "exerciseId": "typewriter-pull-ups",
+      "name": "Typewriter Pull Ups",
+      "defaultMedia": "/images/exercises/typewriter-pull-ups.png",
+      "requiredPath": "/images/exercises/female/typewriter-pull-ups.webp",
+      "requiredWidth": 1402,
+      "requiredHeight": 1122,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/typewriter-pull-ups.webp",
+      "sha256": "09ed6d53dabcbce501cdb15727f0a4b217ffa17531f02a891140a5cf57ebd74a"
+    },
+    {
+      "exerciseId": "wide-grip-push-up",
+      "name": "Wide Grip Push Up",
+      "defaultMedia": "/images/exercises/wide-grip-push-up.png",
+      "requiredPath": "/images/exercises/female/wide-grip-push-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/wide-grip-push-up.webp",
+      "sha256": "81ee5e8e3520a69d2f7da85d8f29aeec1807f39785c38b2f26fe6bdedfb1f688"
+    },
+    {
+      "exerciseId": "planche",
+      "name": "Planche",
+      "defaultMedia": "/images/exercises/planche.png",
+      "requiredPath": "/images/exercises/female/planche.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/planche.webp",
+      "sha256": "6a0e6cc0295125270b8675c0020702509963c71a2da7009e0e091b7a8be796cb"
+    },
+    {
+      "exerciseId": "front-lever",
+      "name": "Front Lever",
+      "defaultMedia": "/images/exercises/front-lever.png",
+      "requiredPath": "/images/exercises/female/front-lever.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/front-lever.webp",
+      "sha256": "b894860af4cadd71e131e7926b83e5516f872bdfd27f44a56e09974a84ae57e9"
+    },
+    {
+      "exerciseId": "assisted-pull-up",
+      "name": "Assisted Pull Up",
+      "defaultMedia": "/images/exercises/assisted-pull-up.png",
+      "requiredPath": "/images/exercises/female/assisted-pull-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/assisted-pull-up.webp",
+      "sha256": "fa523981af1f5b4c1e2c9817341a2c01c6548cc006795add67c572dcde36b890"
+    },
+    {
+      "exerciseId": "assisted-chin-up",
+      "name": "Assisted Chin Up",
+      "defaultMedia": "/images/exercises/assisted-chin-up.png",
+      "requiredPath": "/images/exercises/female/assisted-chin-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/assisted-chin-up.webp",
+      "sha256": "e1d5a6732b52d454f418354c4bb1f8f22a64c797ecfe487d6b223490d6a1f70d"
+    },
+    {
+      "exerciseId": "bench-dip",
+      "name": "Bench Dip",
+      "defaultMedia": "/images/exercises/bench-dip.png",
+      "requiredPath": "/images/exercises/female/bench-dip.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/bench-dip.webp",
+      "sha256": "c195ea093d343f57b4fde508924e3fbfc754bcef2ae31dbe8751e1e83e993005"
+    },
+    {
+      "exerciseId": "hip-thrust-machine",
+      "name": "Hip Thrust Machine",
+      "defaultMedia": "/images/exercises/hip-thrust-machine.png",
+      "requiredPath": "/images/exercises/female/hip-thrust-machine.webp",
+      "requiredWidth": 1774,
+      "requiredHeight": 887,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/hip-thrust-machine.webp",
+      "sha256": "d85b676a1474c4eace109ce0ed50091f848e1ab8ddbfa02f73455c56986dc43b"
+    },
+    {
+      "exerciseId": "chest-supported-row",
+      "name": "Chest Supported Row",
+      "defaultMedia": "/images/exercises/chest-supported-row.png",
+      "requiredPath": "/images/exercises/female/chest-supported-row.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/chest-supported-row.webp",
+      "sha256": "2039e5df21d3ce3ee85126b07ce45dc01784559155faffd2229199f28563b7f9"
+    },
+    {
+      "exerciseId": "seated-machine-row",
+      "name": "Seated Machine Row",
+      "defaultMedia": "/images/exercises/seated-machine-row.png",
+      "requiredPath": "/images/exercises/female/seated-machine-row.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/seated-machine-row.webp",
+      "sha256": "a7a34c92fb9e799907dfcda37a251ec6ee790bd9a017685c0e8a0af5caf16bd3"
+    },
+    {
+      "exerciseId": "single-arm-cable-row",
+      "name": "Single Arm Cable Row",
+      "defaultMedia": "/images/exercises/single-arm-cable-row.png",
+      "requiredPath": "/images/exercises/female/single-arm-cable-row.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/single-arm-cable-row.webp",
+      "sha256": "619fa568b63be2fb8e039c2d36d5f962ec210968d957e87794c93c97f36f673b"
+    },
+    {
+      "exerciseId": "cable-overhead-triceps-extension",
+      "name": "Cable Overhead Triceps Extension",
+      "defaultMedia": "/images/exercises/cable-overhead-triceps-extension.png",
+      "requiredPath": "/images/exercises/female/cable-overhead-triceps-extension.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-overhead-triceps-extension.webp",
+      "sha256": "ff3311b923c4949761238456b5fa5e63f062138a4904997c9210cce2967de40d"
+    },
+    {
+      "exerciseId": "hanging-knee-raise",
+      "name": "Hanging Knee Raise",
+      "defaultMedia": "/images/exercises/hanging-knee-raise.png",
+      "requiredPath": "/images/exercises/female/hanging-knee-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 21,
+      "candidatePath": "outputs/female-media-batch20/hanging-knee-raise.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review",
+        "inherited-muscle-diagram-review"
+      ],
+      "femaleMedia": "/images/exercises/female/hanging-knee-raise.webp",
+      "sha256": "7ed53b20efc16ce4e5f7e150f3f4dab617ca5911f44f592f95be4bf397ca0538"
+    },
+    {
+      "exerciseId": "conventional-deadlift",
+      "name": "Conventional Deadlift",
+      "defaultMedia": "/images/exercises/conventional-deadlift.png",
+      "requiredPath": "/images/exercises/female/conventional-deadlift.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": 6,
+      "candidatePath": "outputs/female-media-batch20/conventional-deadlift.png",
+      "reviewFlags": [
+        "protected-region-pixel-drift-review"
+      ],
+      "femaleMedia": "/images/exercises/female/conventional-deadlift.webp",
+      "sha256": "8fd34d39e09d148631815e676fbec09328c6745e905f3c79214bb4e4ac2cdb32"
+    },
+    {
+      "exerciseId": "wide-grip-pull-up",
+      "name": "Wide Grip Pull Up",
+      "defaultMedia": "/images/exercises/wide-grip-pull-up.png",
+      "requiredPath": "/images/exercises/female/wide-grip-pull-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/wide-grip-pull-up.webp",
+      "sha256": "df83b44ae9880f32cbc71cc72a075c2085aa8e6e4878be7deab172cbc88293d6"
+    },
+    {
+      "exerciseId": "forward-lunge",
+      "name": "Forward Lunge",
+      "defaultMedia": "/images/exercises/forward-lunge.png",
+      "requiredPath": "/images/exercises/female/forward-lunge.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/forward-lunge.webp",
+      "sha256": "ef39b8fe5c58587e58644b4109cfe1ba1616ac885fc93b6ec33cb36353c72042"
+    },
+    {
+      "exerciseId": "nordic-hamstring-curl",
+      "name": "Nordic Hamstring Curl",
+      "defaultMedia": "/images/exercises/nordic-hamstring-curl.png",
+      "requiredPath": "/images/exercises/female/nordic-hamstring-curl.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/nordic-hamstring-curl.webp",
+      "sha256": "01b206f0d03d8ae6d8eeed5011cce92c8d2ff77b8b98ae6b04115d72678e9614"
+    },
+    {
+      "exerciseId": "dragon-flag",
+      "name": "Dragon Flag",
+      "defaultMedia": "/images/exercises/dragon-flag.png",
+      "requiredPath": "/images/exercises/female/dragon-flag.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/dragon-flag.webp",
+      "sha256": "34a4e90cfb4acf862bab2c011cc7ebf14294356a8985d6dcc2d0aa1ddc73c8df"
+    },
+    {
+      "exerciseId": "ring-muscle-up",
+      "name": "Ring Muscle Up",
+      "defaultMedia": "/images/exercises/ring-muscle-up.png",
+      "requiredPath": "/images/exercises/female/ring-muscle-up.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/ring-muscle-up.webp",
+      "sha256": "dbe20efc20a86893ef42032f35b9459281de75f9d868f664d965611f347f4eb8"
+    },
+    {
+      "exerciseId": "landmine-press",
+      "name": "Landmine Press",
+      "defaultMedia": "/images/exercises/landmine-press.png",
+      "requiredPath": "/images/exercises/female/landmine-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/landmine-press.webp",
+      "sha256": "29162304a55f5e6a062cfba66b7683cdeab8ea9212be46d09e020d4b2588ea7a"
+    },
+    {
+      "exerciseId": "sissy-squat",
+      "name": "Sissy Squat",
+      "defaultMedia": "/images/exercises/sissy-squat.png",
+      "requiredPath": "/images/exercises/female/sissy-squat.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/sissy-squat.webp",
+      "sha256": "22dfae7fc7281b9a84439653eebce36b30d6d6cb7141c4b0c3a23edaa497b61e"
+    },
+    {
+      "exerciseId": "cable-glute-kickback",
+      "name": "Cable Glute Kickback",
+      "defaultMedia": "/images/exercises/cable-glute-kickback.png",
+      "requiredPath": "/images/exercises/female/cable-glute-kickback.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/cable-glute-kickback.webp",
+      "sha256": "36ae66300c92b7ba4f0b92146abb1253eac146fed6a933875f49684dc50169ee"
+    },
+    {
+      "exerciseId": "bayesian-cable-curl",
+      "name": "Bayesian Cable Curl",
+      "defaultMedia": "/images/exercises/bayesian-cable-curl.png",
+      "requiredPath": "/images/exercises/female/bayesian-cable-curl.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/bayesian-cable-curl.webp",
+      "sha256": "1f7051c1a00e494a4f48f438c65dd698ca0ad3f43ef4b32cc2e8d415278b02f1"
+    },
+    {
+      "exerciseId": "pallof-press",
+      "name": "Pallof Press",
+      "defaultMedia": "/images/exercises/pallof-press.png",
+      "requiredPath": "/images/exercises/female/pallof-press.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/pallof-press.webp",
+      "sha256": "8d383e53dd6f1e5d495909f6397f881c4825dd7f1de9729bf6d30ab4c9f99427"
+    },
+    {
+      "exerciseId": "ring-dip",
+      "name": "Ring Dip",
+      "defaultMedia": "/images/exercises/ring-dip.png",
+      "requiredPath": "/images/exercises/female/ring-dip.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/ring-dip.webp",
+      "sha256": "82de90f7f37df64c9b22a827c5e51f6fe956513d81c61805540580e9f9d2f609"
+    },
+    {
+      "exerciseId": "pseudo-planche-push-up",
+      "name": "Pseudo Planche Push Up",
+      "defaultMedia": "/images/exercises/pseudo-planche-push-up.png",
+      "requiredPath": "/images/exercises/female/pseudo-planche-push-up.webp",
+      "requiredWidth": 800,
+      "requiredHeight": 800,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/pseudo-planche-push-up.webp",
+      "sha256": "1ef55d5600b542a9b677c390109c2a3a82cdf3754249bffb613469d5ff1b8fac"
+    },
+    {
+      "exerciseId": "toes-to-bar",
+      "name": "Toes To Bar",
+      "defaultMedia": "/images/exercises/toes-to-bar.png",
+      "requiredPath": "/images/exercises/female/toes-to-bar.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/toes-to-bar.webp",
+      "sha256": "52269df9109cba0e104b7cff3c92ccef1f77477739f2a100c4c9e5650c225552"
+    },
+    {
+      "exerciseId": "tibialis-raise",
+      "name": "Tibialis Raise",
+      "defaultMedia": "/images/exercises/tibialis-raise.png",
+      "requiredPath": "/images/exercises/female/tibialis-raise.webp",
+      "requiredWidth": 1536,
+      "requiredHeight": 1024,
+      "existingFormat": "Combined demonstration image (PNG with WebP delivery where available)",
+      "requiredFormat": "One WebP infographic: English title, START/FINISH, target-muscle diagram; adult female athlete",
+      "status": "human-approved",
+      "batchPriority": null,
+      "femaleMedia": "/images/exercises/female/tibialis-raise.webp",
+      "sha256": "2e1198cf16487c21fa3558330cffcdbee0530dfbb4fca30277767ecba5820a1b"
+    }
+  ],
+  "humanApprovedFemaleAssets": 123,
+  "approvedAssets": [
+    {
+      "slug": "ab-wheel-rollout",
+      "exerciseIds": [
+        "ab-wheel-rollout"
+      ],
+      "path": "/images/exercises/female/ab-wheel-rollout.webp",
+      "sha256": "7d41e4868a601799f655cb8d7dbea62913ac006cd7b480160cc2838c7eed9fb1",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "abductors",
+      "exerciseIds": [
+        "abductors"
+      ],
+      "path": "/images/exercises/female/abductors.webp",
+      "sha256": "01245f942ca9bee17d9745657eab27bb83a3fa46d26ac61327f11a5ef65257e6",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "adductors",
+      "exerciseIds": [
+        "adductors"
+      ],
+      "path": "/images/exercises/female/adductors.webp",
+      "sha256": "7424f3047fe21186358203ed1b0355c07bd05037d316c3063e5e36af835024a1",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "archer-push-up",
+      "exerciseIds": [
+        "archer-push-up"
+      ],
+      "path": "/images/exercises/female/archer-push-up.webp",
+      "sha256": "65048871d7139ba8ca434a4be0ca28903cfca2c53931e5155d4515e3de9a597a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "arnold-press",
+      "exerciseIds": [
+        "arnold-press"
+      ],
+      "path": "/images/exercises/female/arnold-press.webp",
+      "sha256": "7f8430f2a3d13a4c1f56c1237979d1381d0520d4d52ab23ea07c983d346ffb16",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "assisted-chin-up",
+      "exerciseIds": [
+        "assisted-chin-up"
+      ],
+      "path": "/images/exercises/female/assisted-chin-up.webp",
+      "sha256": "e1d5a6732b52d454f418354c4bb1f8f22a64c797ecfe487d6b223490d6a1f70d",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "assisted-pull-up",
+      "exerciseIds": [
+        "assisted-pull-up"
+      ],
+      "path": "/images/exercises/female/assisted-pull-up.webp",
+      "sha256": "fa523981af1f5b4c1e2c9817341a2c01c6548cc006795add67c572dcde36b890",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "australian-row",
+      "exerciseIds": [
+        "australian-row"
+      ],
+      "path": "/images/exercises/female/australian-row.webp",
+      "sha256": "ab9d470dbc6d296757b5c74292bc5bd613f9cf0a6deca2bbe270d0e3dc6ff24e",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "back-extension",
+      "exerciseIds": [
+        "back-extension"
+      ],
+      "path": "/images/exercises/female/back-extension.webp",
+      "sha256": "8d8f152a226b3bf0d96871b95fc735b516b3685decba8d742076cea201a1acac",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-bicep-curl",
+      "exerciseIds": [
+        "barbell-bicep-curl"
+      ],
+      "path": "/images/exercises/female/barbell-bicep-curl.webp",
+      "sha256": "a9adf0d78356d6993c0b73ecb7bea6b86e48b56b4461b759efe9644524e1b9c5",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-front-squat",
+      "exerciseIds": [
+        "barbell-front-squat"
+      ],
+      "path": "/images/exercises/female/barbell-front-squat.webp",
+      "sha256": "bef16f68dd41ce933d35be6550b3671ba1981e2c2b2c1b33d31263c19d187d2a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-hip-thrust",
+      "exerciseIds": [
+        "barbell-hip-thrust"
+      ],
+      "path": "/images/exercises/female/barbell-hip-thrust.webp",
+      "sha256": "d9afb3941dd39504e53d70e144b87f776513df994697cf5c749e0ac1f604fff6",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-row",
+      "exerciseIds": [
+        "barbell-row"
+      ],
+      "path": "/images/exercises/female/barbell-row.webp",
+      "sha256": "55c5d48c94a0e8668cb437b79261c00a260de8eff57c9a2decd2cd22df8f1bc9",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-shoulder-press",
+      "exerciseIds": [
+        "barbell-shoulder-press",
+        "overhead-press"
+      ],
+      "path": "/images/exercises/female/barbell-shoulder-press.webp",
+      "sha256": "3982084968960b8ba55dfdf981a8d9cb1380929b1e787c35acabfe03658797d7",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-shrug",
+      "exerciseIds": [
+        "barbell-shrug"
+      ],
+      "path": "/images/exercises/female/barbell-shrug.webp",
+      "sha256": "5a2b1a0cf3f2a75b1d9f6bfc57d16dd33ced529426d59f42a806d8f212c0391a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-squat",
+      "exerciseIds": [
+        "barbell-squat"
+      ],
+      "path": "/images/exercises/female/barbell-squat.webp",
+      "sha256": "b71460b97dfcf084cec28fb3e3ac2f48001dffad7c7c46f83b0090e891324054",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "barbell-upright-row",
+      "exerciseIds": [
+        "barbell-upright-row"
+      ],
+      "path": "/images/exercises/female/barbell-upright-row.webp",
+      "sha256": "b39356a213c60a2ee41256d85f2a47ff35336c13538366deb6c7831926001388",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "bayesian-cable-curl",
+      "exerciseIds": [
+        "bayesian-cable-curl"
+      ],
+      "path": "/images/exercises/female/bayesian-cable-curl.webp",
+      "sha256": "1f7051c1a00e494a4f48f438c65dd698ca0ad3f43ef4b32cc2e8d415278b02f1",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "bench-dip",
+      "exerciseIds": [
+        "bench-dip"
+      ],
+      "path": "/images/exercises/female/bench-dip.webp",
+      "sha256": "c195ea093d343f57b4fde508924e3fbfc754bcef2ae31dbe8751e1e83e993005",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "bench-press",
+      "exerciseIds": [
+        "barbell-bench-press"
+      ],
+      "path": "/images/exercises/female/bench-press.webp",
+      "sha256": "7f3d3b7742aeafcab670a947914f2e5a2984ad10515196f86e0ce78dfcfe7f7d",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "bodyweight-glute-bridge",
+      "exerciseIds": [
+        "bodyweight-glute-bridge"
+      ],
+      "path": "/images/exercises/female/bodyweight-glute-bridge.webp",
+      "sha256": "3672af3ad527b1b2ca5646a493769648f793fa2f507ef40dbfa0a00049ab4ca6",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-bicep-curl",
+      "exerciseIds": [
+        "cable-bicep-curl"
+      ],
+      "path": "/images/exercises/female/cable-bicep-curl.webp",
+      "sha256": "8a65241e3dbf0a80b8af00a6e6ec2d01f7905882088059dd6af91c7f6eb279c0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-crossover",
+      "exerciseIds": [
+        "cable-crossover"
+      ],
+      "path": "/images/exercises/female/cable-crossover.webp",
+      "sha256": "824920d79d2725f790fa358b54a86e24304b3e2f40f8b9fdf385a35ddcbcfae0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-crunch",
+      "exerciseIds": [
+        "cable-crunch"
+      ],
+      "path": "/images/exercises/female/cable-crunch.webp",
+      "sha256": "8df21db9f9f782e6bff7cb2aae2e8b102bcff254d036661e9d8c016f955cda4e",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-glute-kickback",
+      "exerciseIds": [
+        "cable-glute-kickback"
+      ],
+      "path": "/images/exercises/female/cable-glute-kickback.webp",
+      "sha256": "36ae66300c92b7ba4f0b92146abb1253eac146fed6a933875f49684dc50169ee",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-lateral-raise",
+      "exerciseIds": [
+        "cable-lateral-raise"
+      ],
+      "path": "/images/exercises/female/cable-lateral-raise.webp",
+      "sha256": "c8a6cb01505b133d3436d82852f8ce1f8ea11901e32ec12a0766e2b69f3c61ba",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-overhead-triceps-extension",
+      "exerciseIds": [
+        "cable-overhead-triceps-extension"
+      ],
+      "path": "/images/exercises/female/cable-overhead-triceps-extension.webp",
+      "sha256": "ff3311b923c4949761238456b5fa5e63f062138a4904997c9210cce2967de40d",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-tricep-pushdown",
+      "exerciseIds": [
+        "cable-tricep-pushdown"
+      ],
+      "path": "/images/exercises/female/cable-tricep-pushdown.webp",
+      "sha256": "2ea483a97f8798766a341195a57cd8686721216d27fee49d9321e0a3c60e7c34",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "cable-woodchopper",
+      "exerciseIds": [
+        "cable-woodchopper"
+      ],
+      "path": "/images/exercises/female/cable-woodchopper.webp",
+      "sha256": "53dd9543ef23ae54254b5e3282387776b9a9ff62e6d16c722712f098dc5b115c",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "chest-supported-row",
+      "exerciseIds": [
+        "chest-supported-row"
+      ],
+      "path": "/images/exercises/female/chest-supported-row.webp",
+      "sha256": "2039e5df21d3ce3ee85126b07ce45dc01784559155faffd2229199f28563b7f9",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "chin-up",
+      "exerciseIds": [
+        "chin-up"
+      ],
+      "path": "/images/exercises/female/chin-up.webp",
+      "sha256": "48eb0b1cbac585e1745c4362e90f06dbda9fd711200a5eae3d10c5b93bfea3d6",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "close-grip-bench-press",
+      "exerciseIds": [
+        "close-grip-bench-press"
+      ],
+      "path": "/images/exercises/female/close-grip-bench-press.webp",
+      "sha256": "f1db31870d970f6a236d0da66d375477ca22e49c1e283e8e805125e76ab0161b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "close-grip-lat-pulldown",
+      "exerciseIds": [
+        "close-grip-lat-pulldown"
+      ],
+      "path": "/images/exercises/female/close-grip-lat-pulldown.webp",
+      "sha256": "cfe82ececfdcab22eff708fec487c9372325ddb86637f7a8523e149b3dd7ab65",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "concentration-curl",
+      "exerciseIds": [
+        "concentration-curl"
+      ],
+      "path": "/images/exercises/female/concentration-curl.webp",
+      "sha256": "7ebad7dcee09d501ec8ba8946f3834fb261a6928a6d2a9e1aeab7af53cfacae0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "conventional-deadlift",
+      "exerciseIds": [
+        "conventional-deadlift"
+      ],
+      "path": "/images/exercises/female/conventional-deadlift.webp",
+      "sha256": "8fd34d39e09d148631815e676fbec09328c6745e905f3c79214bb4e4ac2cdb32",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "crunch",
+      "exerciseIds": [
+        "crunch"
+      ],
+      "path": "/images/exercises/female/crunch.webp",
+      "sha256": "e22a2459359621163188c8362df59f19746c6a280534321d1fbcef73d0195b7a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dead-bug",
+      "exerciseIds": [
+        "dead-bug"
+      ],
+      "path": "/images/exercises/female/dead-bug.webp",
+      "sha256": "6cf0969fba3b6927c220303ba1111d6cfdffd33c154c8d62a2ee64c685714374",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "diamond-push-up",
+      "exerciseIds": [
+        "diamond-push-up"
+      ],
+      "path": "/images/exercises/female/diamond-push-up.webp",
+      "sha256": "f0dae12557874bab161173452d4b992ecafb6d1a198618b53013114bd5e27d8c",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dip",
+      "exerciseIds": [
+        "dip"
+      ],
+      "path": "/images/exercises/female/dip.webp",
+      "sha256": "f85db2c5e7b140fc7dc80c52b407d24ed6d48998417278e4c7007cb4369144e4",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dragon-flag",
+      "exerciseIds": [
+        "dragon-flag"
+      ],
+      "path": "/images/exercises/female/dragon-flag.webp",
+      "sha256": "34a4e90cfb4acf862bab2c011cc7ebf14294356a8985d6dcc2d0aa1ddc73c8df",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-bench-press",
+      "exerciseIds": [
+        "dumbbell-bench-press"
+      ],
+      "path": "/images/exercises/female/dumbbell-bench-press.webp",
+      "sha256": "042f2aaa254ba3279563fd4138d3486facd44b4956c59ebab05ee9c60e6334a0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-bicep-curl",
+      "exerciseIds": [
+        "dumbbell-bicep-curl",
+        "dumbbell-curl"
+      ],
+      "path": "/images/exercises/female/dumbbell-bicep-curl.webp",
+      "sha256": "3f09d2ee6b965aa037e8c27db2319d725bfe6f9ec8c94f778a5832642333e8fc",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-bulgarian-split-squat",
+      "exerciseIds": [
+        "bulgarian-split-squat",
+        "dumbbell-bulgarian-split-squat"
+      ],
+      "path": "/images/exercises/female/dumbbell-bulgarian-split-squat.webp",
+      "sha256": "7e0c0a38153723cb672eeb36531965c90550f14f01b6e7ff9e6101fe5c06445d",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-calf-raise",
+      "exerciseIds": [
+        "dumbbell-calf-raise"
+      ],
+      "path": "/images/exercises/female/dumbbell-calf-raise.webp",
+      "sha256": "067bb13f5b8fda3744e7eca1e458f85fecef8caf6f248dd4f48ebf81574bb0b5",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-floor-press",
+      "exerciseIds": [
+        "dumbbell-floor-press"
+      ],
+      "path": "/images/exercises/female/dumbbell-floor-press.webp",
+      "sha256": "8e575541f52c2bb4ca3ecadafa4b80c0d5c9bfd92ba72fa28ffdd90499fcf678",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-fly",
+      "exerciseIds": [
+        "dumbbell-fly"
+      ],
+      "path": "/images/exercises/female/dumbbell-fly.webp",
+      "sha256": "1ec0626165e1fa7bee732a3f2f83897d972a24938193128b4b853a3e52472621",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-front-raise",
+      "exerciseIds": [
+        "dumbbell-front-raise"
+      ],
+      "path": "/images/exercises/female/dumbbell-front-raise.webp",
+      "sha256": "3a2ce9bd098afaf842052715a813a248bb9818169503280c3f2b3fca3aa5da63",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-goblet-squat",
+      "exerciseIds": [
+        "dumbbell-goblet-squat"
+      ],
+      "path": "/images/exercises/female/dumbbell-goblet-squat.webp",
+      "sha256": "42187df08c981b9cd03368b69a125c9ae6cb34e16afd015b8d57fc5ce3293d51",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-hip-thrust",
+      "exerciseIds": [
+        "dumbbell-hip-thrust"
+      ],
+      "path": "/images/exercises/female/dumbbell-hip-thrust.webp",
+      "sha256": "858d0b2e1d3628157fe1dfe229b9ca68629cb39fdd21854851186ac2aa4ad6a8",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-lateral-raise",
+      "exerciseIds": [
+        "dumbbell-lateral-raise"
+      ],
+      "path": "/images/exercises/female/dumbbell-lateral-raise.webp",
+      "sha256": "8e5365a2909902d88a4c4d21074305a1894d938593d5bd664ba60939c40275ef",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-reverse-fly",
+      "exerciseIds": [
+        "dumbbell-reverse-fly"
+      ],
+      "path": "/images/exercises/female/dumbbell-reverse-fly.webp",
+      "sha256": "1fad36191aa071cd2b69f586f7009e4feee2bf123c115f069aca55c50e2c44d0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-reverse-lunge",
+      "exerciseIds": [
+        "dumbbell-reverse-lunge"
+      ],
+      "path": "/images/exercises/female/dumbbell-reverse-lunge.webp",
+      "sha256": "ff5fb0ca3a209dac6d90dff6f3bf92c083b70cbebcb221daf02a739a8a58e6ad",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-row",
+      "exerciseIds": [
+        "dumbbell-row"
+      ],
+      "path": "/images/exercises/female/dumbbell-row.webp",
+      "sha256": "0820d89776a22a8cd95a23f35fdf503817ba8aaa8e86f09da8c2fc251f525bab",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-shoulder-press",
+      "exerciseIds": [
+        "dumbbell-shoulder-press"
+      ],
+      "path": "/images/exercises/female/dumbbell-shoulder-press.webp",
+      "sha256": "5cf92cd37b2278b336460f92b24c3a8bf5782a43d84e2b6bd27ebd1343d4cdce",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-shrug",
+      "exerciseIds": [
+        "dumbbell-shrug"
+      ],
+      "path": "/images/exercises/female/dumbbell-shrug.webp",
+      "sha256": "eb4e7866713b93337991c1c8f36b4c3c4b53eed60576a2537369dc1804838f08",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "dumbbell-walking-lunge",
+      "exerciseIds": [
+        "dumbbell-walking-lunge"
+      ],
+      "path": "/images/exercises/female/dumbbell-walking-lunge.webp",
+      "sha256": "dc07b8b6ebd6d869ade726192f155d23eaff0301f8a9d93acedd707943832324",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "face-pull",
+      "exerciseIds": [
+        "face-pull"
+      ],
+      "path": "/images/exercises/female/face-pull.webp",
+      "sha256": "0c43f826166d7a30c1d038e305eaba6fd2f098fe7f3d8a8048cdb33683b173db",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "forward-lunge",
+      "exerciseIds": [
+        "forward-lunge"
+      ],
+      "path": "/images/exercises/female/forward-lunge.webp",
+      "sha256": "ef39b8fe5c58587e58644b4109cfe1ba1616ac885fc93b6ec33cb36353c72042",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "front-lever",
+      "exerciseIds": [
+        "front-lever"
+      ],
+      "path": "/images/exercises/female/front-lever.webp",
+      "sha256": "b894860af4cadd71e131e7926b83e5516f872bdfd27f44a56e09974a84ae57e9",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "good-morning",
+      "exerciseIds": [
+        "good-morning"
+      ],
+      "path": "/images/exercises/female/good-morning.webp",
+      "sha256": "fba95d58b35cc0a95a0fbe65bd4ba8b7f8a4ff1121a73401a2d1bf5149591ed9",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "hack-squat",
+      "exerciseIds": [
+        "hack-squat"
+      ],
+      "path": "/images/exercises/female/hack-squat.webp",
+      "sha256": "2fcf110a0acd79a469a929788f1abafee28175df71edfe08977a3bcfbf8c39a3",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "hammer-curl",
+      "exerciseIds": [
+        "hammer-curl"
+      ],
+      "path": "/images/exercises/female/hammer-curl.webp",
+      "sha256": "f51c0696bfb160129150b1540674cd4569dc41838625c76247e3ecccd8d1969a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "handstand",
+      "exerciseIds": [
+        "handstand"
+      ],
+      "path": "/images/exercises/female/handstand.webp",
+      "sha256": "ec51daecff0d41603e88d0ba9855da4b115c68de8902f747b84979150cc3fddb",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "handstand-push-up",
+      "exerciseIds": [
+        "handstand-push-up"
+      ],
+      "path": "/images/exercises/female/handstand-push-up.webp",
+      "sha256": "42f093a54d2b98fa174a2854a2a087b43210bc78a6122da60ff6a74035b7a17c",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "hanging-knee-raise",
+      "exerciseIds": [
+        "hanging-knee-raise"
+      ],
+      "path": "/images/exercises/female/hanging-knee-raise.webp",
+      "sha256": "7ed53b20efc16ce4e5f7e150f3f4dab617ca5911f44f592f95be4bf397ca0538",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "hanging-leg-raise",
+      "exerciseIds": [
+        "hanging-leg-raise"
+      ],
+      "path": "/images/exercises/female/hanging-leg-raise.webp",
+      "sha256": "f36d58907dc4c387bda0cdfd06966837f37e3d1b87b20f8dec717e04a4242e69",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "hip-thrust-machine",
+      "exerciseIds": [
+        "hip-thrust-machine"
+      ],
+      "path": "/images/exercises/female/hip-thrust-machine.webp",
+      "sha256": "d85b676a1474c4eace109ce0ed50091f848e1ab8ddbfa02f73455c56986dc43b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "incline-bench-press",
+      "exerciseIds": [
+        "incline-bench-press"
+      ],
+      "path": "/images/exercises/female/incline-bench-press.webp",
+      "sha256": "5193e683f285899620063958233ef4eb21d108dd16c3984195218cf298730866",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "incline-chest-press-machine",
+      "exerciseIds": [
+        "incline-chest-press-machine"
+      ],
+      "path": "/images/exercises/female/incline-chest-press-machine.webp",
+      "sha256": "5162c7fd6dab97d84b5870261f07bef0f3a573e3f1319583738b2d68fe71c0e0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "incline-dumbbell-bench-press",
+      "exerciseIds": [
+        "incline-dumbbell-bench-press"
+      ],
+      "path": "/images/exercises/female/incline-dumbbell-bench-press.webp",
+      "sha256": "dd48debdd1602985faa32d0a4d89c4f17f1856733af6216a0a58c5a5a1355ad5",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "incline-dumbbell-curl",
+      "exerciseIds": [
+        "incline-dumbbell-curl"
+      ],
+      "path": "/images/exercises/female/incline-dumbbell-curl.webp",
+      "sha256": "1dedd99492a088a9c559d63ead4e37dbd98bd770c5c6ec0255c90d7d0490931f",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "kettlebell-swing",
+      "exerciseIds": [
+        "kettlebell-swing"
+      ],
+      "path": "/images/exercises/female/kettlebell-swing.webp",
+      "sha256": "21216f166aff9b56cc96466ae9cf5c0e8521a578ff6d23a1c59c07550d18b120",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "l-sit",
+      "exerciseIds": [
+        "l-sit"
+      ],
+      "path": "/images/exercises/female/l-sit.webp",
+      "sha256": "f9b7d34c2997309597ea68238eb86b69367d51d63fd984bc5e2e9d24be222c20",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "landmine-press",
+      "exerciseIds": [
+        "landmine-press"
+      ],
+      "path": "/images/exercises/female/landmine-press.webp",
+      "sha256": "29162304a55f5e6a062cfba66b7683cdeab8ea9212be46d09e020d4b2588ea7a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "lat-pulldown",
+      "exerciseIds": [
+        "lat-pulldown"
+      ],
+      "path": "/images/exercises/female/lat-pulldown.webp",
+      "sha256": "3e4a3e462749928ee0ec8c4f5ac873295dd98efd0bbef63b547cc834a4b5507e",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "leg-extension",
+      "exerciseIds": [
+        "leg-extension"
+      ],
+      "path": "/images/exercises/female/leg-extension.webp",
+      "sha256": "9ce49f88ed49ac2ecb9892732706fc8d80d7a26f406424900db3e66d684de521",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "leg-press",
+      "exerciseIds": [
+        "leg-press"
+      ],
+      "path": "/images/exercises/female/leg-press.webp",
+      "sha256": "461469059fa23e438fdbb9d442dbf0a6d066a04fb991126b5627c84e83a8789b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "lying-leg-curl",
+      "exerciseIds": [
+        "leg-curl",
+        "lying-leg-curl"
+      ],
+      "path": "/images/exercises/female/lying-leg-curl.webp",
+      "sha256": "f497dc3c3e0f6affbfd1aa8a622f2c4f1769af6ffa165f397f35de3a6e3e7048",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "machine-chest-fly",
+      "exerciseIds": [
+        "machine-chest-fly",
+        "pec-deck"
+      ],
+      "path": "/images/exercises/female/machine-chest-fly.webp",
+      "sha256": "e6f50e7dbe1f36311ec9e10bea6795e6afe09426e71af8ef27b3388eeab0259f",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "machine-chest-press",
+      "exerciseIds": [
+        "machine-chest-press"
+      ],
+      "path": "/images/exercises/female/machine-chest-press.webp",
+      "sha256": "5fe5b5a1fae9a205fd02e034faff6834e2fb65526b6a29a2c5f1665dff807016",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "machine-shoulder-press",
+      "exerciseIds": [
+        "machine-shoulder-press"
+      ],
+      "path": "/images/exercises/female/machine-shoulder-press.webp",
+      "sha256": "5171a874cfd6e7ebd4308e715f8d572f26b942f4c7c6c6a1f456164b58481a50",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "muscle-up",
+      "exerciseIds": [
+        "muscle-up"
+      ],
+      "path": "/images/exercises/female/muscle-up.webp",
+      "sha256": "1595b45418173f6c32ca838d52b875db9599244c630a5c4b2cdc2b3547416aaa",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "neutral-grip-pull-up",
+      "exerciseIds": [
+        "neutral-grip-pull-up"
+      ],
+      "path": "/images/exercises/female/neutral-grip-pull-up.webp",
+      "sha256": "1a6a23fbfa4a642b73f88c3318f356f40198aee0f54e96c2d3a66a4a69d416f7",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "nordic-hamstring-curl",
+      "exerciseIds": [
+        "nordic-hamstring-curl"
+      ],
+      "path": "/images/exercises/female/nordic-hamstring-curl.webp",
+      "sha256": "01b206f0d03d8ae6d8eeed5011cce92c8d2ff77b8b98ae6b04115d72678e9614",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "one-arm-pull-up",
+      "exerciseIds": [
+        "one-arm-pull-up"
+      ],
+      "path": "/images/exercises/female/one-arm-pull-up.webp",
+      "sha256": "b1050d6bf11995fccd81e07c6b4db0640d7af89b15653fbad9be073150b38e98",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "overhead-tricep-extension",
+      "exerciseIds": [
+        "overhead-tricep-extension"
+      ],
+      "path": "/images/exercises/female/overhead-tricep-extension.webp",
+      "sha256": "fa0dc39547c9b61398ae316cfcebbf9d3a5660f5df5caa12c334b36ee416900b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "pallof-press",
+      "exerciseIds": [
+        "pallof-press"
+      ],
+      "path": "/images/exercises/female/pallof-press.webp",
+      "sha256": "8d383e53dd6f1e5d495909f6397f881c4825dd7f1de9729bf6d30ab4c9f99427",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "pike-push-up",
+      "exerciseIds": [
+        "pike-push-up"
+      ],
+      "path": "/images/exercises/female/pike-push-up.webp",
+      "sha256": "5e30e7e9700d3e6e24c44d9e2dc2f7dfba965d9903e7adc380f655a0204ff641",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "pistol-squat",
+      "exerciseIds": [
+        "pistol-squat"
+      ],
+      "path": "/images/exercises/female/pistol-squat.webp",
+      "sha256": "655035d8335080cbeb341f89406c2f031cdd0d644ecd1e231ccbe34c59ab6864",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "planche",
+      "exerciseIds": [
+        "planche"
+      ],
+      "path": "/images/exercises/female/planche.webp",
+      "sha256": "6a0e6cc0295125270b8675c0020702509963c71a2da7009e0e091b7a8be796cb",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "plank",
+      "exerciseIds": [
+        "plank"
+      ],
+      "path": "/images/exercises/female/plank.webp",
+      "sha256": "be34714233568fe02aab79e936349e2311f0388c66044af4092de529fb03ff76",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "preacher-curl",
+      "exerciseIds": [
+        "preacher-curl"
+      ],
+      "path": "/images/exercises/female/preacher-curl.webp",
+      "sha256": "68eea33e0bb05c66cf373f52f9815fea59e64dfca5d7e64569393b13dbb2543a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "pseudo-planche-push-up",
+      "exerciseIds": [
+        "pseudo-planche-push-up"
+      ],
+      "path": "/images/exercises/female/pseudo-planche-push-up.webp",
+      "sha256": "1ef55d5600b542a9b677c390109c2a3a82cdf3754249bffb613469d5ff1b8fac",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "pull-up",
+      "exerciseIds": [
+        "pull-up"
+      ],
+      "path": "/images/exercises/female/pull-up.webp",
+      "sha256": "3df972529efd00ebc5a584a123519375ec5215636c755699e836dcc377539111",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "push-up",
+      "exerciseIds": [
+        "push-up"
+      ],
+      "path": "/images/exercises/female/push-up.webp",
+      "sha256": "51d2646429258f6c7cc1f5bd8f1dd7cbe644309cd2d043c2c5f179dd6a6a4f13",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "rack-pull",
+      "exerciseIds": [
+        "rack-pull"
+      ],
+      "path": "/images/exercises/female/rack-pull.webp",
+      "sha256": "c9ab2d523abeaa51d6857c4eb9eb047c3d63bdeb3b9c16d8e969ae76e188a7c9",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "reverse-lunge",
+      "exerciseIds": [
+        "reverse-lunge"
+      ],
+      "path": "/images/exercises/female/reverse-lunge.webp",
+      "sha256": "d9413e34defc8a09b6bcd43c719ab1e47a9813eef6252ea44df474ce3f8542f2",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "reverse-pec-deck",
+      "exerciseIds": [
+        "reverse-pec-deck"
+      ],
+      "path": "/images/exercises/female/reverse-pec-deck.webp",
+      "sha256": "529299054cf5966cc25618cd39ec753638858aa6ac6f535f2678cbe79656e0c2",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "ring-dip",
+      "exerciseIds": [
+        "ring-dip"
+      ],
+      "path": "/images/exercises/female/ring-dip.webp",
+      "sha256": "82de90f7f37df64c9b22a827c5e51f6fe956513d81c61805540580e9f9d2f609",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "ring-muscle-up",
+      "exerciseIds": [
+        "ring-muscle-up"
+      ],
+      "path": "/images/exercises/female/ring-muscle-up.webp",
+      "sha256": "dbe20efc20a86893ef42032f35b9459281de75f9d868f664d965611f347f4eb8",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "ring-row",
+      "exerciseIds": [
+        "ring-row"
+      ],
+      "path": "/images/exercises/female/ring-row.webp",
+      "sha256": "32db20eec84112ac7ae19a65e8e921c5d4cd6c98ac12e8320210db4e32178f91",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "romanian-deadlift",
+      "exerciseIds": [
+        "romanian-deadlift"
+      ],
+      "path": "/images/exercises/female/romanian-deadlift.webp",
+      "sha256": "bcc743e448f4f6cfe2928634a4bef83e321fd97e3ee2530e63928397a53d0c8c",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "russian-twist",
+      "exerciseIds": [
+        "russian-twist"
+      ],
+      "path": "/images/exercises/female/russian-twist.webp",
+      "sha256": "7793b11ddc19a27f76c7ec789b2a9547b9f83bf5a57472387e16bfa2ef3488f0",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "seated-cable-row",
+      "exerciseIds": [
+        "seated-cable-row"
+      ],
+      "path": "/images/exercises/female/seated-cable-row.webp",
+      "sha256": "ad63213f9d8d1411bac2be2d74f4484377bfa81488aa4ef5b54007e9ef9ba9bf",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "seated-calf-raise",
+      "exerciseIds": [
+        "seated-calf-raise"
+      ],
+      "path": "/images/exercises/female/seated-calf-raise.webp",
+      "sha256": "2d49ce01c31219bd9b214c9fcc64b70051b252246c18d1e1b6a2f77fa32680aa",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "seated-leg-curl",
+      "exerciseIds": [
+        "seated-leg-curl"
+      ],
+      "path": "/images/exercises/female/seated-leg-curl.webp",
+      "sha256": "69b3f61e8ca6b7d7b6ce690a108567cc1ca8a47f79aad3b4b8265687f2a5467c",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "seated-machine-row",
+      "exerciseIds": [
+        "seated-machine-row"
+      ],
+      "path": "/images/exercises/female/seated-machine-row.webp",
+      "sha256": "a7a34c92fb9e799907dfcda37a251ec6ee790bd9a017685c0e8a0af5caf16bd3",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "side-plank",
+      "exerciseIds": [
+        "side-plank"
+      ],
+      "path": "/images/exercises/female/side-plank.webp",
+      "sha256": "f45fe06442649083fe65d970199deb0b34c4bd2621eab792e2044306a0fe6e24",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "single-arm-cable-row",
+      "exerciseIds": [
+        "single-arm-cable-row"
+      ],
+      "path": "/images/exercises/female/single-arm-cable-row.webp",
+      "sha256": "619fa568b63be2fb8e039c2d36d5f962ec210968d957e87794c93c97f36f673b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "sissy-squat",
+      "exerciseIds": [
+        "sissy-squat"
+      ],
+      "path": "/images/exercises/female/sissy-squat.webp",
+      "sha256": "22dfae7fc7281b9a84439653eebce36b30d6d6cb7141c4b0c3a23edaa497b61e",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "sit-up",
+      "exerciseIds": [
+        "sit-up"
+      ],
+      "path": "/images/exercises/female/sit-up.webp",
+      "sha256": "16e263a736f60c8fcd337cb59af5780ee124edb95b364ce2cbe90e557f1c292b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "skull-crusher",
+      "exerciseIds": [
+        "skull-crusher"
+      ],
+      "path": "/images/exercises/female/skull-crusher.webp",
+      "sha256": "246cd0763dae99f5babe0174f1787efbfe1191bd47dbd1349ac0b8a71ad99aa9",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "standing-bodyweight-calf-raise",
+      "exerciseIds": [
+        "standing-bodyweight-calf-raise"
+      ],
+      "path": "/images/exercises/female/standing-bodyweight-calf-raise.webp",
+      "sha256": "8f5a09ee4cbdf98b03d7026baa93e08778c5885a3e5c760731f347c2da067a8a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "standing-calf-raise",
+      "exerciseIds": [
+        "standing-calf-raise",
+        "standing-calf-raise-machine"
+      ],
+      "path": "/images/exercises/female/standing-calf-raise.webp",
+      "sha256": "1eaa23d67ea0bb8c139e03e90f3f39701990b27014dfe3df4cb2020735798c75",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "step-up",
+      "exerciseIds": [
+        "step-up"
+      ],
+      "path": "/images/exercises/female/step-up.webp",
+      "sha256": "d1ae7745d524802d9d2716e51f7042981d70429809178a74a34e6a6aca094776",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "sumo-deadlift",
+      "exerciseIds": [
+        "sumo-deadlift"
+      ],
+      "path": "/images/exercises/female/sumo-deadlift.webp",
+      "sha256": "24cec8a49db4de99bb35e39759591c6e9bb499aa7a85157563e4ffe358a082d7",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "t-bar-row",
+      "exerciseIds": [
+        "t-bar-row"
+      ],
+      "path": "/images/exercises/female/t-bar-row.webp",
+      "sha256": "1e30306bf6a6150343edf426b888d8e0a63bdd31db298e002f31ecedb260439f",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "tibialis-raise",
+      "exerciseIds": [
+        "tibialis-raise"
+      ],
+      "path": "/images/exercises/female/tibialis-raise.webp",
+      "sha256": "2e1198cf16487c21fa3558330cffcdbee0530dfbb4fca30277767ecba5820a1b",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "toes-to-bar",
+      "exerciseIds": [
+        "toes-to-bar"
+      ],
+      "path": "/images/exercises/female/toes-to-bar.webp",
+      "sha256": "52269df9109cba0e104b7cff3c92ccef1f77477739f2a100c4c9e5650c225552",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "tricep-dip",
+      "exerciseIds": [
+        "tricep-dip"
+      ],
+      "path": "/images/exercises/female/tricep-dip.webp",
+      "sha256": "142c48bed84fbbb5476d1415f065da683c06be0e99773b5cb3af3bc42559ded3",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "typewriter-pull-ups",
+      "exerciseIds": [
+        "typewriter-pull-ups"
+      ],
+      "path": "/images/exercises/female/typewriter-pull-ups.webp",
+      "sha256": "09ed6d53dabcbce501cdb15727f0a4b217ffa17531f02a891140a5cf57ebd74a",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "wide-grip-pull-up",
+      "exerciseIds": [
+        "wide-grip-pull-up"
+      ],
+      "path": "/images/exercises/female/wide-grip-pull-up.webp",
+      "sha256": "df83b44ae9880f32cbc71cc72a075c2085aa8e6e4878be7deab172cbc88293d6",
+      "approval": "explicit-human-approval"
+    },
+    {
+      "slug": "wide-grip-push-up",
+      "exerciseIds": [
+        "wide-grip-push-up"
+      ],
+      "path": "/images/exercises/female/wide-grip-push-up.webp",
+      "sha256": "81ee5e8e3520a69d2f7da85d8f29aeec1807f39785c38b2f26fe6bdedfb1f688",
+      "approval": "explicit-human-approval"
+    }
+  ]
+}

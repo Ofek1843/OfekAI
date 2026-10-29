@@ -11,8 +11,10 @@ const ROOT = path.join(__dirname, "..");
 
 test("workout builder labels the optional profile field professionally in English and Hebrew", () => {
   const html = fs.readFileSync(path.join(ROOT, "public", "workout-builder.html"), "utf8");
-  assert.match(html, /data-en="Gender \(optional\)" data-he="מגדר \(אופציונלי\)"/);
+  assert.match(html, /data-en="Plan recipient gender \(optional\)" data-he="מגדר הנמען בתוכנית \(אופציונלי\)"/);
   assert.match(html, /<select id="gender" name="gender"/);
+  assert.match(html, /Defaults to your account preference\. You can plan for someone else without changing your account\./);
+  assert.match(html, /This does not change exercise selection or training dosage\./);
 });
 
 test("plank catalog image is a real wide image with a matching WebP delivery sibling", async () => {

@@ -354,7 +354,7 @@
 
   <link rel="stylesheet" href="/css/simple-ux.css?v=20261018-nutrition-light-1">
   <link rel="stylesheet" href="/css/guest-trial.css?v=20261020-guest-dashboard-1">
-  <script src="/js/language-welcome.js?v=20261023-language-first-1"></script>
+  <script src="/js/language-welcome.js?v=20261027-primary-language-1"></script>
   <script src="/js/simple-ux.js?v=20261017-nutrition-nav-1"></script>
   <!-- Wizard navigation script (must run before nutrition-builder.js) -->
   <script type="module">
@@ -415,7 +415,7 @@
       if (key === 'about') {
         const age = Number(document.querySelector('#age')?.value);
         if (!age || age < 15 || age > 100) return text('Enter a valid age between 15 and 100.', 'הזינו גיל בין 15 ל־100.');
-        if (!document.querySelector('#gender')?.value) return text('Select your gender.', 'בחרו מין.');
+        if (!document.querySelector('#gender')?.value) return text('Select a physiological equation coefficient.', 'יש לבחור מקדם פיזיולוגי במשוואה.');
         const isYouth = age >= 15 && age < 18;
         if (isYouth && !document.querySelector('#youthGuardianConsent')?.checked) return text('Guardian consent is required for users under 18.', 'מתחת לגיל 18 נדרש אישור הורה.');
       }
@@ -471,5 +471,6 @@
   <script type="module" src="/js/push-notifications.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
   <script src="/js/pwa-install.js?v=20261017-dashboard-only-1"></script>
+<script type="module" src="/js/account-personalization.js"></script>
 </body>
 </html>

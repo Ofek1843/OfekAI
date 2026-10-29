@@ -67,7 +67,7 @@ test("landing language menu uses an in-page accessible picker instead of the nat
   assert.doesNotMatch(css, /\.language-welcome__options:not\(\[hidden\]\)\s*\{[^}]*overflow-y:\s*auto/);
   assert.equal((html.match(/role="option" id="welcomeLanguageOption-/g) || []).length, 7);
   assert.match(html, /landing\.css\?v=20261020-google-entry-1/);
-  assert.match(html, /language-welcome\.js\?v=20261023-language-first-1/);
+  assert.match(html, /language-welcome\.js\?v=20261027-primary-language-1/);
 });
 
 test("landing mobile cards are forced into readable single-column layout", () => {

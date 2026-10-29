@@ -31,6 +31,7 @@ const { voiceMessageConfig } = require("./lib/voice-message-domain");
 const { cleanupAccountVoiceMessages: cleanupVoiceMessages } = require("./lib/voice-account-lifecycle");
 const { hasAcceptedCurrentTerms, publicLegalPolicy } = require("./lib/legal-policy");
 const { getFuelPhysiqueFirestore } = require("./lib/firebase-admin");
+const { loadAccountAddress, accountAddressInstruction } = require("./lib/account-address");
 const { normalizeDailyNutritionWrite } = require("./lib/daily-nutrition-write");
 const { FirestorePushStore } = require("./lib/push-store");
 const { PushNotificationService } = require("./lib/push-service");
@@ -1281,7 +1282,7 @@ app.get("/exercise-library", (req, res) => {
   const muscles = [...new Set(exercises.map((exercise) => exercise.primaryMuscle))].sort();
   const cardsByMuscle = muscles.map((muscle) => {
     const cards = exercises.filter((exercise) => exercise.primaryMuscle === muscle).map((exercise) => `
-      <article class="exercise-card" data-exercise-card data-search="${escapeHtml(exercise.searchText)}">
+      <article class="exercise-card" data-exercise-card data-exercise-id="${escapeHtml(exercise.exerciseId)}" data-search="${escapeHtml(exercise.searchText)}">
         <a class="exercise-image-link" href="${escapeHtml(exercise.image)}?v=20261018-guides-6" target="_blank" rel="noopener" aria-label="${escapeHtml(exercise.title)} — open full-size guide">
           <img src="${escapeHtml(exercise.image)}?v=20261018-guides-6" alt="${escapeHtml(exercise.title)} exercise guide" width="320" height="220" loading="lazy" decoding="async">
         </a>
@@ -1300,7 +1301,7 @@ app.get("/exercise-library", (req, res) => {
   <meta name="description" content="${escapeHtml(description)}"><link rel="canonical" href="https://fuelphysique.com/exercise-library">
   <meta property="og:type" content="website"><meta property="og:site_name" content="FuelPhysique"><meta property="og:title" content="Exercise Library: Browse by Muscle and Equipment | FuelPhysique"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="https://fuelphysique.com/exercise-library">
   <meta name="twitter:card" content="summary"><meta name="twitter:title" content="Exercise Library | FuelPhysique"><meta name="twitter:description" content="${escapeHtml(description)}">
-  <title>Exercise Library: Browse by Muscle and Equipment | FuelPhysique</title><link rel="icon" href="/images/brand/fuelphysique-icon-192.png" type="image/png"><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/legal.css"><link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1"><script defer src="/js/google-analytics-consent.js?v=20261017-1"></script><script defer src="/js/exercise-library.js"></script>
+  <title>Exercise Library: Browse by Muscle and Equipment | FuelPhysique</title><link rel="icon" href="/images/brand/fuelphysique-icon-192.png" type="image/png"><link rel="stylesheet" href="/css/theme.css"><link rel="stylesheet" href="/css/legal.css"><link rel="stylesheet" href="/css/redesign-v1.css?v=20260914-i18n-dashboard-1"><script defer src="/js/google-analytics-consent.js?v=20261017-1"></script><script type="module" src="/js/exercise-library.js"></script>
   <style>
     .exercise-library{width:min(1180px,calc(100% - 32px));margin:0 auto;padding:24px 0 80px}.exercise-library .legal-nav{margin-bottom:36px}.library-intro{max-width:850px;margin:0 auto 32px;text-align:center}.library-intro h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin:16px 0}.library-intro>p{color:var(--fp-text-muted);font-size:18px}.library-tools{position:sticky;top:8px;z-index:2;display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:16px;align-items:center;padding:14px;background:var(--fp-surface);border:1px solid var(--fp-border);border-radius:16px;margin:28px 0}.library-tools input{width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--fp-border);border-radius:10px;background:var(--fp-bg-page);color:var(--fp-text-primary)}.muscle-jumps{display:flex;flex-wrap:wrap;gap:8px}.muscle-jumps a{padding:7px 10px;border:1px solid var(--fp-border);border-radius:999px;font-size:13px}.muscle-section{scroll-margin-top:110px;margin:44px 0}.muscle-section>h2{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--fp-border);padding-bottom:12px}.muscle-section>h2 span{font-size:13px;color:var(--fp-text-muted);font-weight:500}.exercise-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.exercise-card{overflow:hidden;border:1px solid var(--fp-border);border-radius:14px;background:var(--fp-surface)}.exercise-card[hidden],.muscle-section[hidden]{display:none}.exercise-card img{display:block;width:100%;height:180px;object-fit:cover;background:#091526}.exercise-card-copy{padding:14px}.exercise-card h3{font-size:18px;margin:0 0 12px}.exercise-card p{font-size:14px;margin:6px 0;color:var(--fp-text-muted)}.library-note{padding:16px;border-inline-start:3px solid var(--fp-brand-primary);background:var(--fp-surface);border-radius:8px;color:var(--fp-text-muted)}.library-cta{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0}.library-cta a{display:inline-block;padding:12px 18px;border-radius:10px;background:var(--fp-brand-primary);color:#06111c;font-weight:800}.library-cta a.secondary{background:transparent;color:var(--fp-text-primary);border:1px solid var(--fp-border)}@media(max-width:720px){.library-tools{position:static;grid-template-columns:1fr}.muscle-jumps{max-height:126px;overflow:auto}.exercise-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.exercise-card img{height:130px}.exercise-card-copy{padding:10px}.exercise-card h3{font-size:15px}}
   </style>
@@ -2327,12 +2328,13 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
+    const accountAddress = await loadAccountAddress(getFuelPhysiqueFirestore, user.uid);
     const cleanedMessages = messages
       .filter(
         (message) =>
           message &&
           typeof message === "object" &&
-          typeof message.role === "string" &&
+          ["user", "assistant"].includes(message.role) &&
           typeof message.content === "string"
       )
       .map((message) => ({
@@ -2674,6 +2676,7 @@ GOAL:
 - Help build a stronger, more aesthetic, and more capable body.
           `.trim()
         },
+        { role: "system", content: accountAddressInstruction(accountAddress, language) },
         ...cleanedMessages
       ]
     });

@@ -38,6 +38,7 @@ async function harness({ signedIn = false, storageFails = false } = {}) {
     createWeeklyScheduleDays:n=>Array(n).fill('monday'), ...helpers
   });
   vm.runInContext(read('public/js/simple-ux.js'),context);
+  vm.runInContext(read('public/js/exercise-demo-preference.js').replace(/^export /gm,''),context);
   // Use the real shared screening and draft functions inside this DOM realm.
   vm.runInContext(read('public/js/health-screening.mjs').replaceAll('export function','function'),context);
   vm.runInContext(read('public/js/guest-trial.mjs').replaceAll('export function','function'),context);
@@ -155,6 +156,7 @@ test('blocked storage never redirects a guest with a false saved-answers promise
 
 test('authenticated generation keeps payload intact, emits one success and clears busy state',async()=>{
   const h=await harness({signedIn:true}); h.valid();
+  h.change('#gender','female');
   h.context.response={ok:true,json:async()=>({program:{sessions:[{exercises:[]}],daysPerWeek:1}})};
   await h.submit();
   assert.equal(h.requests.length,1);
@@ -162,6 +164,7 @@ test('authenticated generation keeps payload intact, emits one success and clear
   assert.equal(h.requests[0].payload.screeningStatus,'none');
   assert.deepEqual(Array.from(h.requests[0].payload.equipment),['dumbbell']);
   assert.equal(h.events.filter(([name])=>name==='workout_generated').length,1);
+  assert.equal(h.context.window.currentWorkoutProgram.demonstrationModel,'female');
   assert.equal(h.form.getAttribute('aria-busy'),'false');
   assert.equal(h.document.querySelector('#age').disabled,false);
 });

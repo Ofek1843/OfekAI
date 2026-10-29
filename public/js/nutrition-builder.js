@@ -74,7 +74,7 @@ const ui = isHebrew
 
       goal: "מטרה עיקרית",
       age: "גיל",
-      gender: "מין",
+      gender: "מקדם פיזיולוגי במשוואה",
       height: "גובה בסנטימטרים",
       weight: "משקל בקילוגרמים",
       activity: "רמת פעילות יומית",
@@ -118,7 +118,7 @@ const ui = isHebrew
 
       goal: "Primary goal",
       age: "Age",
-      gender: "Gender",
+      gender: "Physiological equation coefficient",
       height: "Height in centimeters",
       weight: "Weight in kilograms",
       activity: "Daily activity level",
@@ -292,7 +292,7 @@ function translateFormOptions() {
 
   const placeholderTranslations = {
     goal: "בחר מטרה",
-    gender: "בחר מין",
+    gender: "יש לבחור מקדם פיזיולוגי",
     activityLevel: "בחר רמת פעילות"
   };
 

@@ -9,14 +9,15 @@ const ROOT = path.join(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(ROOT, file), "utf8");
 
 test("direct entry to both plan builders loads the shared first-visit language chooser", () => {
-  const version = "20261023-language-first-1";
+  const scriptVersion = "20261027-primary-language-1";
+  const styleVersion = "20261023-language-first-1";
   for (const [page, moduleScript] of [
     ["public/workout-builder.html", "/js/workout-builder.js"],
     ["public/nutrition-builder.html", "/js/nutrition-builder.js"]
   ]) {
     const html = read(page);
-    assert.match(html, new RegExp(`/css/language-welcome\\.css\\?v=${version}`), `${page} must style the shared dialog`);
-    assert.match(html, new RegExp(`/js/language-welcome\\.js\\?v=${version}`), `${page} must load the shared chooser`);
+    assert.match(html, new RegExp(`/css/language-welcome\\.css\\?v=${styleVersion}`), `${page} must style the shared dialog`);
+    assert.match(html, new RegExp(`/js/language-welcome\\.js\\?v=${scriptVersion}`), `${page} must load the shared chooser`);
     assert.ok(html.indexOf("language-welcome.js") < html.indexOf(moduleScript), `${page} must show the chooser before its builder module initializes`);
   }
 });

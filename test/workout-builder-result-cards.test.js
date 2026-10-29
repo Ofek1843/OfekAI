@@ -47,14 +47,14 @@ test("exercise cards use the canonical exerciseId-first image resolver with a br
     workoutBuilderJs,
     /import \{ exerciseImageUrl, fallbackExerciseImageUrl \} from "\.\/exercise-image\.js";/
   );
-  assert.match(workoutBuilderJs, /exerciseImageUrl\(exercise\)/);
+  assert.match(workoutBuilderJs, /resolveExerciseMedia\(exercise,/);
   assert.match(workoutBuilderJs, /data-src="\$\{imageSource\}"/);
   assert.match(workoutBuilderJs, /decoding="async"/);
   assert.match(workoutBuilderJs, /function syncExerciseImageLoading\(activeDayIndex\)/);
   assert.match(workoutBuilderJs, /data-fallback-src="\$\{escapeHtml\(fallbackExerciseImageUrl\(\)\)\}"/);
   assert.match(
     workoutBuilderJs,
-    /image\.src = image\.dataset\.fallbackSrc/,
+    /setExerciseMedia\(card\.querySelector\('\.exercise-card-image'\), exercise, model/,
     "a broken/missing demo image must fall back to the branded image, not a broken-image icon"
   );
 });

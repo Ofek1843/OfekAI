@@ -1,7 +1,21 @@
+import { setExerciseMedia } from './exercise-media.js';
+import { mountDemonstrationChoice } from './exercise-demo-preference.js';
+
 const search = document.getElementById("exercise-search");
 const cards = [...document.querySelectorAll("[data-exercise-card]")];
 const sections = [...document.querySelectorAll("[data-muscle-section]")];
 const count = document.getElementById("exercise-count");
+
+if (search) mountDemonstrationChoice(search.closest('.library-tools'), {
+  onChange(model) {
+    cards.forEach(card => {
+      const image = card.querySelector('img');
+      const media = setExerciseMedia(image, {exerciseId: card.dataset.exerciseId}, model);
+      card.querySelector('.exercise-image-link').href = media.url;
+      image.onload = () => { card.querySelector('.exercise-image-link').href = image.src; };
+    });
+  }
+});
 
 search?.addEventListener("input", () => {
   const query = search.value.trim().toLowerCase();

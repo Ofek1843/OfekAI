@@ -168,7 +168,7 @@
           <div class="wizard-step-heading"><span>05</span><div><h2 data-en="Fit the plan to your week" data-he="התאם את התוכנית לשבוע שלך">Fit the plan to your week</h2><p data-en="Tell us how often, how long and on which days you can train." data-he="ציין כמה פעמים, כמה זמן ובאילו ימים אתה יכול להתאמן.">Tell us how often, how long and on which days you can train.</p></div></div>
           <div class="wizard-fields-grid">
             <label><span data-en="Age (adult automated planning)" data-he="גיל (תכנון אוטומטי למבוגרים)">Age (adult automated planning)</span><input id="age" name="age" type="number" min="18" max="100" required></label>
-            <label><span data-en="Gender (optional)" data-he="מגדר (אופציונלי)">Gender (optional)</span><select id="gender" name="gender" data-gender-context="training"><option value="" data-en="Prefer not to say" data-he="מעדיפ/ה לא לציין">Prefer not to say</option><option value="male" data-en="Male" data-he="זכר">Male</option><option value="female" data-en="Female" data-he="נקבה">Female</option></select><small data-en="Optional plan context only. It does not change exercise selection or training dosage." data-he="הקשר אופציונלי לתוכנית בלבד. הוא לא משנה בחירת תרגילים או מינון אימון.">Optional plan context only. It does not change exercise selection or training dosage.</small></label>
+            <label><span data-en="Plan recipient gender (optional)" data-he="מגדר הנמען בתוכנית (אופציונלי)">Plan recipient gender (optional)</span><select id="gender" name="gender" data-gender-context="training"><option value="" data-en="Prefer not to say" data-he="מעדיפ/ה לא לציין">Prefer not to say</option><option value="male" data-en="Male" data-he="זכר">Male</option><option value="female" data-en="Female" data-he="נקבה">Female</option></select><small data-en="Defaults to your account preference. You can plan for someone else without changing your account. This does not change exercise selection or training dosage." data-he="ברירת המחדל מגיעה מהחשבון. אפשר לתכנן עבור אדם אחר בלי לשנות את החשבון. הבחירה אינה משנה תרגילים או מינון אימון.">Defaults to your account preference. You can plan for someone else without changing your account. This does not change exercise selection or training dosage.</small></label>
             <label><span data-en="Session duration" data-he="משך אימון בדקות">Session duration</span><input id="sessionDuration" name="sessionDuration" type="number" min="20" max="180" step="5" value="60" required></label>
             <label><span data-en="Training days per week" data-he="מספר אימונים בשבוע">Training days per week</span><select id="daysPerWeek" name="daysPerWeek" required><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option></select></label>
           </div>
@@ -282,11 +282,13 @@
 <link rel="stylesheet" href="/css/simple-ux.css?v=20261010-workout-paper-2">
 <link rel="stylesheet" href="/css/guest-trial.css?v=20261020-guest-dashboard-1">
 <link rel="stylesheet" href="/css/workout-builder-journey.css?v=20261023-1">
-<script src="/js/language-welcome.js?v=20261023-language-first-1"></script>
+<script src="/js/language-welcome.js?v=20261027-primary-language-1"></script>
 <script src="/js/simple-ux.js?v=20261014-rir-1"></script>
 <script type="module" src="/js/workout-builder.js?v=20261023-journey-1"></script>
   <script type="module" src="/js/push-notifications.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
   <script src="/js/pwa-install.js?v=20261017-dashboard-only-1"></script>
+<script type="module" src="/js/visual-personalization.js"></script>
+<script type="module" src="/js/account-personalization.js"></script>
 </body>
 </html>

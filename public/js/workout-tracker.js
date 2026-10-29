@@ -1,6 +1,8 @@
 import { auth, db } from "./firebase-config.js";
 import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { exerciseImageUrl } from "./exercise-image.js";
+import { resolveExerciseMedia, setExerciseMedia } from './exercise-media.js';
+import { demonstrationModel, startDemonstrationPreference, onDemonstrationChange } from './exercise-demo-preference.js';
 import { guardProtectedPage } from "./verification-gate.js";
 
 const $ = selector => document.querySelector(selector);
@@ -751,7 +753,12 @@ function workoutCompletionPercent(session) {
 // The container now stays visible at a fixed size (CSS aspect-ratio:1) the
 // whole time; only a loading-skeleton/error state toggles inside it, so
 // there is never a layout shift and never a giant blank region.
+let displayedExerciseMedia = null;
+onDemonstrationChange(() => {
+  if (displayedExerciseMedia) updateFocusExerciseImage(...displayedExerciseMedia);
+});
 function updateFocusExerciseImage(exercise, nextExercise) {
+  displayedExerciseMedia = [exercise, nextExercise];
   const media = $("#focusExerciseMedia");
   const img = $("#focusExerciseImage");
   if (!media || !img) return;
@@ -769,15 +776,7 @@ function updateFocusExerciseImage(exercise, nextExercise) {
     media.classList.add("image-loaded");
     preloadExerciseImage(nextExercise);
   };
-  img.onerror = () => {
-    console.error("Workout tracker: exercise image failed to load.", {
-      name: exercise?.name,
-      exerciseId: exercise?.exerciseId,
-      src: img.src
-    });
-    media.classList.add("image-error");
-  };
-  img.src = exerciseImageUrl(exercise);
+  setExerciseMedia(img, exercise, demonstrationModel(savedPlan?.plan?.demonstrationModel));
 }
 
 // Warms the browser cache for the next exercise's image once the current
@@ -787,7 +786,7 @@ function preloadExerciseImage(exercise) {
   const source = exercise?.demoName || exercise?.name || exercise?.exerciseId || "";
   if (!source) return;
   const preloadImg = new Image();
-  preloadImg.src = exerciseImageUrl(exercise);
+  preloadImg.src = resolveExerciseMedia(exercise, demonstrationModel(savedPlan?.plan?.demonstrationModel)).url;
 }
 
 function syncFocusFromRow() {
@@ -1552,6 +1551,7 @@ async function load() {
   const planSnap = await getDoc(doc(db, "users", user.uid, "workoutPlans", activePlanId));
   if (!planSnap.exists()) return show("#emptyPanel");
   savedPlan = { id: planSnap.id, ...planSnap.data() };
+  startDemonstrationPreference();
   try {
     const savedBudget = JSON.parse(localStorage.getItem(timeBudgetKey()) || "null");
     const savedSessionIndex = Number(savedBudget?.sessionIndex);

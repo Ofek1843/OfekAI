@@ -3,6 +3,9 @@ import {
   fallbackExerciseImageUrl,
   slugifyExerciseName
 } from "./exercise-image.js";
+import { setExerciseMedia } from './exercise-media.js';
+import { demonstrationModel, mountDemonstrationChoice } from './exercise-demo-preference.js';
+let disposeModelChoice = () => {};
 
 const MODAL_ID = "exerciseDemoModal";
 
@@ -48,29 +51,34 @@ function closeDemoModal() {
   const modal = document.getElementById(MODAL_ID);
   if (!modal) return;
   modal.classList.add("hidden");
+  disposeModelChoice();
   document.body.classList.remove("exercise-demo-open");
 }
 
-function openDemoModal(exerciseName) {
+function openDemoModal(exerciseName, model, exerciseId) {
   const modal = ensureModal();
   const title = modal.querySelector("#exerciseDemoTitle");
   const status = modal.querySelector("#exerciseDemoStatus");
   const image = modal.querySelector("#exerciseDemoImage");
-  const fallbackUrl = fallbackExerciseImageUrl();
-  const sourceUrl = exerciseImageUrl(exerciseName);
 
   title.textContent = exerciseName || "Exercise demo";
-  status.textContent = "Verified movement illustration.";
+  status.textContent = "Loading demonstration…";
   image.alt = `${exerciseName || "Exercise"} demonstration`;
-  image.dataset.expectedExercise = slugifyExerciseName(exerciseName);
-  image.src = sourceUrl || fallbackUrl;
-
-  image.onerror = () => {
-    image.onerror = null;
-    image.src = fallbackUrl;
-    status.textContent =
-      "No verified demonstration image exists yet. The exercise remains usable.";
+  image.onload = () => {
+    status.textContent = image.getAttribute('src') === fallbackExerciseImageUrl()
+      ? 'No verified demonstration image exists yet. The exercise remains usable.'
+      : 'Exercise movement illustration.';
   };
+  image.dataset.expectedExercise = slugifyExerciseName(exerciseName);
+  disposeModelChoice();
+  modal.querySelector('.demonstration-choice')?.remove();
+  disposeModelChoice = mountDemonstrationChoice(modal.querySelector('.exercise-demo-copy'), {
+    context: model,
+    onChange(value) {
+      status.textContent = 'Loading demonstration…';
+      setExerciseMedia(image, {exerciseId, name: exerciseName}, value);
+    }
+  });
 
   modal.classList.remove("hidden");
   document.body.classList.add("exercise-demo-open");
@@ -86,7 +94,9 @@ export function setupExerciseDemos(root = document) {
         button.dataset.exercise ||
         button.getAttribute("aria-label") ||
         button.textContent ||
-        ""
+        "",
+      button.dataset.demoModel || demonstrationModel(),
+      button.dataset.exerciseId
     );
   });
 }

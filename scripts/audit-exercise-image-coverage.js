@@ -417,7 +417,10 @@ function buildAudit() {
   const resolver = loadResolver();
   const knownSlugs = [...resolver.KNOWN_EXERCISE_IMAGE_SLUGS].sort();
   const aliases = resolver.ALIASES;
-  const allFiles = fs.readdirSync(EXERCISE_DIR).sort();
+  // Gender variants live in their own registry; directories are not images.
+  // Their exact approval hashes and ID coverage have a separate release test.
+  const allFiles = fs.readdirSync(EXERCISE_DIR, {withFileTypes:true})
+    .filter(entry => entry.isFile()).map(entry => entry.name).sort();
 
   // scripts/optimize-images.js writes a downscaled .webp next to each source
   // image; server.js serves it via Accept negotiation while every URL, the

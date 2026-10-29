@@ -191,7 +191,7 @@ test("workout-tracker.js updates the focus image when switching exercises", () =
   );
   assert.match(
     source,
-    /img\.src\s*=\s*exerciseImageUrl\(exercise\)/,
+    /setExerciseMedia\(img, exercise, demonstrationModel\(savedPlan\?\.plan\?\.demonstrationModel\)\)/,
     "the <img> src must come from the canonical exerciseImageUrl(), not a hand-built path"
   );
 });
@@ -286,7 +286,7 @@ test("regression: updateFocusExerciseImage never re-introduces the hidden-class 
     "must not gate visibility on removing a 'hidden' class inside the load handler — that IS the deadlock"
   );
   assert.match(fnBody, /img\.onload\s*=/, "expected an onload handler");
-  assert.match(fnBody, /img\.onerror\s*=/, "expected an onerror handler that shows the compact error state, not a blank box");
+  assert.match(fnBody, /setExerciseMedia\(img, exercise,/, "expected the bounded default/branded image fallback handler");
   assert.match(fnBody, /media\.classList\.add\(["']image-loaded["']\)/);
   assert.match(fnBody, /media\.classList\.add\(["']image-error["']\)/);
 });

@@ -6,6 +6,9 @@ import { createWeeklyScheduleDays } from "./schedule-utils.js";
 import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.mjs";
 import { derivePriorityFromGoal } from "./workout-priority.js";
 import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
+import { resolveExerciseMedia, setExerciseMedia } from './exercise-media.js';
+import { demonstrationModel, mountDemonstrationChoice } from './exercise-demo-preference.js';
+let disposeDemonstrationChoice = () => {};
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 import { t } from "./i18n.js?v=20261002-brand-quality-1";
@@ -982,6 +985,8 @@ form.addEventListener("submit", async (event) => {
     setStatus("");
 
 if (data.program) {
+  data.program.recipientGender = document.querySelector('#gender')?.value || 'default';
+  data.program.demonstrationModel = demonstrationModel(document.querySelector('#gender')?.value || 'default');
   const sessionCount = Array.isArray(data.program.sessions)
     ? data.program.sessions.length
     : Number(data.program.daysPerWeek) || 0;
@@ -1461,6 +1466,8 @@ async function adjustWeeklyVolume(root, muscle, delta) {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.program) throw new Error(data.error || (isHebrew ? "לא ניתן לעדכן את נפח האימון." : "Could not update training volume."));
+    data.program.demonstrationModel = demonstrationModel(program.demonstrationModel);
+    if (program.recipientGender) data.program.recipientGender = program.recipientGender;
     window.currentWorkoutProgram = data.program;
     window.currentWeeklyVolume = data.weeklyVolume;
     const url = new URL(window.location.href);
@@ -1567,7 +1574,8 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
       exercises.forEach((exercise, exerciseIndex) => {
           const exerciseName = translateWorkoutValue(exercise.name);
           const muscleName = translateWorkoutValue(exercise.muscleGroup || ui.general);
-          const imageSource = escapeHtml(exerciseImageUrl(exercise));
+          const imageSource = escapeHtml(resolveExerciseMedia(exercise,
+            demonstrationModel(program.demonstrationModel || document.querySelector('#gender')?.value)).url);
           // The old title="" tooltip was hover-only: unreachable by keyboard,
           // by touch, and by screen readers. Replaced by the focusable
           // .rir-help-trigger button and the shared #rirHelpPopover dialog.
@@ -1593,7 +1601,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
                   data-session="${sessionIndex}"
                   data-exercise="${exerciseIndex}"
                 >${isHebrew ? "החלפה" : "Replace"}</button>
-                <button type="button" class="exercise-demo-button" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">${isHebrew ? "הדגמה" : "Demo"}</button>
+                <button type="button" class="exercise-demo-button" data-exercise-id="${escapeHtml(exercise.exerciseId || '')}" data-exercise-demo="${escapeHtml(exercise.demoName || exercise.name)}">${isHebrew ? "הדגמה" : "Demo"}</button>
               </div>
 
               <div class="exercise-card-body">
@@ -1897,11 +1905,18 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
 
   resultElement.classList.remove("hidden");
 
-  resultElement.querySelectorAll(".exercise-card-image").forEach((image) => {
-    image.addEventListener("error", () => {
-      image.onerror = null;
-      image.src = image.dataset.fallbackSrc;
-    }, { once: true });
+  disposeDemonstrationChoice();
+  disposeDemonstrationChoice = mountDemonstrationChoice(resultElement.querySelector('.program-header'), {
+    context: program.demonstrationModel || document.querySelector('#gender')?.value,
+    onChange(model) {
+      program.demonstrationModel = model;
+      resultElement.querySelectorAll('.exercise-card').forEach(card => {
+        const exercise = sessions[Number(card.dataset.session)]?.exercises[Number(card.dataset.exercise)];
+        setExerciseMedia(card.querySelector('.exercise-card-image'), exercise, model, undefined,
+          {load: !card.closest('[data-program-day]').hidden});
+        card.querySelector('[data-exercise-demo]').dataset.demoModel = model;
+      });
+    }
   });
 
 resultElement
@@ -1990,18 +2005,13 @@ try {
 
     const image = card.querySelector(".exercise-card-image");
     if (image) {
-      image.onerror = null;
-      image.dataset.src = exerciseImageUrl(data.exercise);
-      image.src = image.dataset.src;
+      setExerciseMedia(image, data.exercise, demonstrationModel(window.currentWorkoutProgram?.demonstrationModel));
       image.alt = exerciseName;
-      image.addEventListener("error", () => {
-        image.onerror = null;
-        image.src = image.dataset.fallbackSrc;
-      }, { once: true });
     }
 
     const demoButton = card.querySelector("[data-exercise-demo]");
     if (demoButton) {
+      demoButton.dataset.exerciseId = data.exercise.exerciseId || '';
       demoButton.dataset.exerciseDemo = data.exercise.demoName || data.exercise.name;
     }
 
