@@ -1,5 +1,5 @@
 export const visualVariants = Object.freeze({
-  '/assets/dashboard/training.webp': '/assets/dashboard/training-female-v2.webp',
+  '/assets/dashboard/training.webp': '/assets/dashboard/training-female-v3.webp',
   '/assets/dashboard/landing-training.webp': '/assets/dashboard/landing-training-female-v2.webp'
 });
 

@@ -21,6 +21,7 @@ export function demonstrationModel(context = '') {
 }
 export function accountPreference() { return choice || 'default'; }
 export function accountIsSignedIn() { return !!account && !account.isAnonymous; }
+export function accountPreferenceUserId() { return accountIsSignedIn() ? account.uid : null; }
 export function accountPlanningDefaults() { return accountIsSignedIn() ? {...profileDefaults} : {}; }
 export function hasDemonstrationPreference() { return choice !== null; }
 export function onDemonstrationChange(fn) {

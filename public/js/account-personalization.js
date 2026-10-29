@@ -1,3 +1,4 @@
+import './personalization-onboarding.js';
 import {accountPreference, accountPlanningDefaults, accountIsSignedIn,
   onDemonstrationChange, startDemonstrationPreference} from './exercise-demo-preference.js';
 

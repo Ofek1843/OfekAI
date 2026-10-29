@@ -1,0 +1,20 @@
+.personalization-onboarding{box-sizing:border-box;width:min(640px,calc(100% - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #dedbd5;border-radius:18px;padding:32px;background:#faf9f6;color:#151719;box-shadow:0 24px 80px #0004;font-family:Arial,sans-serif}
+.personalization-onboarding::backdrop{background:#0b172cb3;backdrop-filter:blur(5px)}
+.onboarding-brand{color:#0765b5;font-size:12px;font-weight:800;letter-spacing:2px}
+.personalization-onboarding h2{font-size:28px;line-height:1.25;margin:12px 0}
+.personalization-onboarding p{line-height:1.5}.personalization-onboarding fieldset{border:0;padding:0;margin:20px 0}
+.onboarding-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.onboarding-option{position:relative;cursor:pointer;text-align:center;min-width:0}
+.onboarding-option>input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.onboarding-photo{position:relative;display:block;border:3px solid transparent;border-radius:14px;overflow:hidden;background:#e4e1dc;transition:border-color .15s}
+.onboarding-photo img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover}
+.onboarding-option strong{display:block;padding:10px;font-size:18px}
+.onboarding-option input:checked+.onboarding-photo{border-color:#006ae0;box-shadow:0 0 0 3px #006ae025}
+.onboarding-option input:focus-visible+.onboarding-photo{outline:3px solid #006ae0;outline-offset:3px}
+.onboarding-check{display:none;position:absolute;inset-block-start:10px;inset-inline-end:10px;background:#006ae0;color:white;border-radius:50%;width:28px;height:28px;line-height:28px}
+.onboarding-option input:checked+.onboarding-photo .onboarding-check{display:block}
+.onboarding-neutral{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;margin:12px 0 0;color:#52606d}
+.onboarding-continue{display:block;width:100%;min-height:48px;border:0;border-radius:8px;background:#0765b5;color:white;font:700 17px Arial;cursor:pointer}
+.onboarding-continue:disabled{opacity:.45;cursor:default}.onboarding-status:empty{display:none}.onboarding-sync-notice{padding:12px;background:#edf6fc;color:#1d465f}
+.onboarding-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:480px){.personalization-onboarding{padding:22px 18px}.personalization-onboarding h2{font-size:23px}.onboarding-options{gap:12px}}

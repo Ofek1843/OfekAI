@@ -195,6 +195,8 @@ function showMessage(text, type) {
 }
 
 function trackSignupCompletion(method) {
+  // Local handoff only; never send the account preference to analytics.
+  try { if (auth.currentUser?.uid) sessionStorage.setItem('fp_personalization_onboarding_uid', auth.currentUser.uid); } catch {}
   if (signupCompletionTracked) return;
   signupCompletionTracked = true;
   trackEvent("signup_completed", { method });
@@ -393,7 +395,8 @@ async function finalizeGoogleUser(user, { isNewLink = false, isNewUser = false }
   }
 
   authenticationCompleted = true;
-  trackEvent("login", { method: "google" });
+  if (isNewUser) trackSignupCompletion('google');
+  else trackEvent("login", { method: "google" });
   showMessage(strings.signingIn, "success");
   setGoogleAuthStage("return_redirect");
   redirectToProduct();
