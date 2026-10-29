@@ -8,7 +8,7 @@ import { personalizeDashboardAddress } from './dashboard-address.mjs';
 let host, dispose, mountedLanguage;
 function refresh() {
   personalizeDashboardAddress(document.querySelector('#dashboardRoot'), accountIsSignedIn() ? demonstrationModel() : 'default');
-  document.querySelectorAll('.session-photo, .editorial-hero-photo').forEach(image =>
+  document.querySelectorAll('.session-photo, .editorial-hero-photo, .editorial-landing-media img').forEach(image =>
     personalizeImage(image, accountIsSignedIn() ? demonstrationModel() : 'default'));
   const target = document.querySelector('.dashboard-main') || document.querySelector('#profileDescription')?.parentElement;
   if (!target) return;

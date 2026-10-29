@@ -1,4 +1,8 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('fs'),vm=require('vm');
+test('hero integration includes the image rebuilt by the existing landing UI',()=>{
+ assert.match(fs.readFileSync('public/js/simple-ux.js','utf8'),/editorialMedia.className = 'editorial-landing-media'/);
+ assert.match(fs.readFileSync('public/js/visual-personalization.js','utf8'),/\.editorial-landing-media img/);
+});
 test('hero selection, no preference, and bounded failure preserve dimensions',async()=>{
  const {personalizeImage}=await import('../public/js/visual-personalization-core.mjs');
  const image={dataset:{},src:'/assets/dashboard/training.webp',width:305,height:324,getAttribute(k){return this[k]}};
