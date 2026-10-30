@@ -142,7 +142,7 @@ export function mountDashboard(root, initial={}, options={}) {
  async function showPlan(kind,id) {
   const saved=(model[kind==='workout'?'workouts':'meals']||[]).find(p=>p.id===id);if(!saved)return;
   if(kind==='workout'){
-   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261030-compact-2');
+   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261030-fullscreen-1');
    await openSavedWorkout(saved,options.workoutUser,language);
    return;
   }

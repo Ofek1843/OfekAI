@@ -24,3 +24,5 @@
  .saved-exercise dl{gap:8px;flex-wrap:wrap;margin-top:8px}
  .saved-exercise dd{font-size:15px}
 }
+
+.saved-workout-dialog{position:fixed;inset:0;width:100%;height:100dvh;max-width:none;max-height:none;margin:0;border:0;border-radius:0}.saved-volume-muscle{display:flex;align-items:center;gap:10px;min-width:0}.saved-volume-muscle svg{width:36px;height:64px;flex:none}.saved-volume-muscle .anatomy-body{fill:#dbe5eb}.saved-volume-muscle .anatomy-region{fill:#b9cbd6}.saved-volume-muscle .anatomy-region.is-targeted{fill:#e64c52}

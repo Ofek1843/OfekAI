@@ -1,3 +1,4 @@
+import { muscleAnatomySvg } from './muscle-anatomy.mjs';
 import { exerciseImageUrl, fallbackExerciseImageUrl } from './exercise-image.js';
 import { setExerciseMedia } from './exercise-media.js';
 import { demonstrationModel } from './exercise-demo-preference.js';
@@ -22,7 +23,7 @@ export function workoutReviewMarkup(program, weeklyVolume, language = 'en', sele
       const within = entry.total >= entry.preferredMin && entry.total <= entry.preferredMax;
       const showTarget = Number.isFinite(entry.preferredMin)&&!weeklyVolume.assumedExperience&&!weeklyVolume.assumedGoal;
       const status = weeklyVolume.unknownExercises ? (he?'חלקי':'Incomplete') : within ? (he?'בטווח היעד':'Within target') : entry.total < entry.preferredMin ? (he?'מתחת ליעד':'Below target') : (he?'מעל ליעד':'Above target');
-      return `<article class="saved-volume-row" data-muscle="${esc(key)}"><header><strong>${esc(he?muscles[key]||key:key.replaceAll('_',' '))}</strong>${showTarget?`<span class="volume-status ${within&&!weeklyVolume.unknownExercises?'within':''}">${status}</span>`:''}</header><b data-weekly-sets="${esc(entry.total)}">${esc(Math.round(entry.total*10)/10)} ${he?'סטים בשבוע':'sets / week'}</b>${showTarget?`<span>${he?'טווח יעד':'Target'}: ${esc(entry.preferredMin)}–${esc(entry.preferredMax)}</span>`:''}<small>${esc(entry.direct)} ${he?'ישירים':'direct'} + ${esc(entry.fractional)} ${he?'עקיפים משוקללים':'weighted indirect'}</small></article>`;
+      return `<article class="saved-volume-row" data-muscle="${esc(key)}"><header><span class="saved-volume-muscle">${muscleAnatomySvg(key)}<strong>${esc(he?muscles[key]||key:key.replaceAll('_',' '))}</strong></span>${showTarget?`<span class="volume-status ${within&&!weeklyVolume.unknownExercises?'within':''}">${status}</span>`:''}</header><b data-weekly-sets="${esc(entry.total)}">${esc(Math.round(entry.total*10)/10)} ${he?'סטים בשבוע':'sets / week'}</b>${showTarget?`<span>${he?'טווח יעד':'Target'}: ${esc(entry.preferredMin)}–${esc(entry.preferredMax)}</span>`:''}<small>${esc(entry.direct)} ${he?'ישירים':'direct'} + ${esc(entry.fractional)} ${he?'עקיפים משוקללים':'weighted indirect'}</small></article>`;
     }).join('')}</div></section>` : '';
   const tabs = sessions.map((session,index) => ({key:`day-${index}`,label:session.name||session.title||`${he?'אימון':'Session'} ${index+1}`,detail:`${(session.exercises||[]).length} ${he?'תרגילים':'exercises'}`}));
   tabs.push({key:'volume',label:he?'סטים שבועיים':'Weekly sets',detail:he?'סיכום לפי שריר':'Muscle breakdown'});
