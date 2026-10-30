@@ -325,7 +325,7 @@ const hebrewOptionLabels = {
   loseFat: "ירידה באחוזי שומן",
   increaseStrength: "שיפור כוח",
   improveSkills: "שיפור מיומנויות קליסטניקס",
-  maintainPerformance: "שמירה על הביצועים",
+  maintainPerformance: "שמירה על מסת שריר",
 
   beginner: "מתחיל",
   intermediate: "בינוני",
@@ -421,6 +421,22 @@ document.documentElement.lang = currentLanguage;
 mountHealthScreening(form, currentLanguage);
 prepareWorkoutJourney(form, currentLanguage);
 document.documentElement.dir = ["he", "ar"].includes(currentLanguage) ? "rtl" : "ltr";
+
+function localizeWeekdays() {
+  const locale = document.documentElement.lang || 'en';
+  const formatter = new Intl.DateTimeFormat(locale, {weekday:'long', timeZone:'UTC'});
+  document.querySelectorAll('.weekday-grid input[name="availableDays"]').forEach((input,index) => {
+    const label = input.nextElementSibling;
+    if (label) {
+      // These names come from Intl, not the legacy English/Hebrew-only copier.
+      label.removeAttribute('data-en'); label.removeAttribute('data-he');
+      label.setAttribute('data-no-auto-translate','');
+      label.textContent = formatter.format(new Date(Date.UTC(2024,0,1 + index)));
+    }
+  });
+}
+localizeWeekdays();
+if (typeof MutationObserver !== 'undefined') new MutationObserver(localizeWeekdays).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 
 
 const wizardSteps = [...document.querySelectorAll(".wizard-step")];
@@ -744,7 +760,6 @@ function validateWizardStep(index) {
   for (const key of keys) {
   if (key === "goal" && !document.querySelector("#goal")?.value) return isHebrew ? "בחר מטרה עיקרית כדי להמשיך." : "Choose a primary goal to continue.";
   if (key === "experience" && !document.querySelector("#experience")?.value) return isHebrew ? "בחר את רמת הניסיון שלך." : "Choose your training experience.";
-  if (key === "style" && !document.querySelector("#trainingStyle")?.value) return isHebrew ? "בחר סגנון אימון." : "Choose a training style.";
   if (key === "equipment" && !document.querySelector('input[name="equipment"]:checked')) return isHebrew ? "בחר לפחות אפשרות ציוד אחת." : "Choose at least one equipment option.";
   if (key === "schedule") {
     const duration = Number(document.querySelector("#sessionDuration")?.value);
@@ -777,9 +792,8 @@ function renderWizardReview() {
   const rows = [
     [isHebrew ? 'מטרה' : 'Goal', readable(formData.get('goal'))],
     [isHebrew ? 'ניסיון' : 'Experience', readable(formData.get('experience'))],
-    [isHebrew ? 'סגנון' : 'Style', readable(formData.get('trainingStyle'))],
     [isHebrew ? 'ציוד' : 'Equipment', equipment],
-    [isHebrew ? 'אימונים' : 'Schedule', `${formData.get('daysPerWeek')} ${isHebrew ? 'בשבוע' : 'days/week'} · ${formData.get('sessionDuration')} ${isHebrew ? 'דקות' : 'min'}`],
+    [isHebrew ? 'אימונים' : 'Schedule', `${formData.get('daysPerWeek')} ${isHebrew ? 'בשבוע' : 'days/week'}`],
     [isHebrew ? 'ימים' : 'Days', days],
     [isHebrew ? 'מיקוד' : 'Muscle focus', [muscleModeLabel, muscles].filter(Boolean).join(': ')]
   ];
@@ -866,13 +880,13 @@ const goalCardCopy = isHebrew ? {
   loseFat: ["ירידה באחוזי שומן", "שיפור החיטוב והרכב הגוף"],
   increaseStrength: ["שיפור כוח", "הרמת משקלים גבוהים יותר ושיפור ביצועים"],
   improveSkills: ["שיפור מיומנויות קליסטניקס", "פיתוח שליטה לתרגילים כמו פלאנץ'"],
-  maintainPerformance: ["שמירה על הביצועים", "שמירה על עקביות, יכולת ואתלטיות"]
+  maintainPerformance: ["שמירה על מסת שריר", "שמירה על שריר באמצעות אימון עקבי"]
 } : {
   buildMuscle: ["Build muscle", "Add size and muscular development"],
   loseFat: ["Lose fat", "Improve definition and body composition"],
   increaseStrength: ["Increase strength", "Lift more and improve performance"],
   improveSkills: ["Improve calisthenics skills", "Build control for skills such as planche"],
-  maintainPerformance: ["Maintain performance", "Stay consistent, capable and athletic"]
+  maintainPerformance: ["Maintain muscle", "Maintain muscle with consistent training"]
 };
 
 form.addEventListener("submit", async (event) => {
@@ -1172,7 +1186,7 @@ const hebrewWorkoutTerms = {
   loseFat: "ירידה באחוזי שומן",
   increaseStrength: "שיפור כוח",
   improveSkills: "שיפור מיומנויות",
-  maintainPerformance: "שמירה על הביצועים"
+  maintainPerformance: "שמירה על מסת שריר"
 };
 
 // A saved program can predate the language sanitizer or arrive from a shared
@@ -1195,7 +1209,7 @@ const englishWorkoutDisplayTerms = Object.freeze({
   loseFat: "Fat Loss",
   increaseStrength: "Increase Strength",
   improveSkills: "Improve Skills",
-  maintainPerformance: "Maintain Performance"
+  maintainPerformance: "Maintain Muscle"
 });
 
 function translateWorkoutValue(value = "") {
@@ -2045,12 +2059,9 @@ try {
   // Muscle Volume numbers are now stale — never leave the pre-reroll
   // summary displayed next to a program that no longer matches it.
   window.currentWeeklyVolume = data.weeklyVolume || null;
-  const volumeContainer = resultElement.querySelector("#weekly-volume-container");
+  const volumeContainer = resultElement.querySelector("#weekly-volume-focus-panel");
   if (volumeContainer) {
-    volumeContainer.innerHTML = `
-      <summary><span>${isHebrew ? "סטים שבועיים" : "Weekly Sets"}</span><span class="weekly-volume-open-hint">${isHebrew ? "לחצו כאן להצגה" : "Tap to view"}</span></summary>
-      ${renderWeeklyVolumeSummary(data.weeklyVolume)}
-    `;
+    volumeContainer.innerHTML = renderWeeklyVolumeSummary(data.weeklyVolume);
   }
   }
 

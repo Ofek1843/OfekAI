@@ -67,6 +67,23 @@ body.fp-workout-journey .builder-page .weekday-grid { display:grid; grid-templat
 body.fp-workout-journey .builder-page .weekday-grid label { padding:10px 4px!important; min-height:44px; border:1px solid var(--journey-border)!important; border-radius:8px!important; background:#fff!important; text-align:center; cursor:pointer; }
 body.fp-workout-journey .builder-page .weekday-grid label:has(input:checked) { border-color:var(--journey-blue)!important; background:#eff6fd!important; }
 body.fp-workout-journey .builder-page .weekday-grid label:has(input:disabled) { opacity:.55; cursor:default; }
+body.fp-workout-journey .builder-page .weekday-grid span {color:#263746!important;background:#f0f1f2!important;opacity:1!important;overflow-wrap:anywhere;font-size:13px!important;}
+body.fp-workout-journey .builder-page .weekday-grid input:checked+span {color:#07579f!important;background:#dceffa!important;}
+body.fp-workout-journey .builder-page .weekday-grid label:has(input:disabled) {opacity:1;background:#eceeef!important;}
+@media(max-width:700px){body.fp-workout-journey .builder-page .weekday-grid {grid-template-columns:repeat(2,minmax(0,1fr));}}
+body.fp-workout-journey .builder-page :is(.visual-choice-card--goal-strength,.visual-choice-card--goal-skills,[data-wizard-step="style"]) {display:none!important;}
+body.fp-workout-journey .builder-page details:has([data-wizard-step="style"]){display:none!important;}
+body.fp-workout-journey .builder-page label:has(#sessionDuration){display:none!important;}
+body.fp-workout-journey .builder-page .visual-choice-grid--equipment .visual-choice-card {grid-template-columns:48px minmax(0,1fr) 20px!important;}
+body.fp-workout-journey .builder-page .visual-choice-grid--equipment .visual-choice-image {display:block!important;background-size:cover!important;background-position:center!important;}
+body.fp-workout-journey .builder-page .visual-choice-grid--equipment .visual-choice-content {grid-column:2!important;}
+body.fp-workout-journey .builder-page .visual-choice-grid--equipment input {grid-column:3!important;}
+body.fp-workout-journey .builder-page .weekday-grid input {position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;}
+body.fp-workout-journey .builder-page .weekday-grid label:focus-within {outline:3px solid #0866bd;outline-offset:2px;}
+@media(max-width:700px){body.fp-workout-journey .builder-page .weekday-grid {grid-template-columns:repeat(2,minmax(0,1fr))!important;}}
+@media(max-width:480px){body.fp-workout-journey .builder-page .visual-choice-grid--equipment .visual-choice-card {grid-template-columns:32px minmax(0,1fr) 18px!important;gap:6px!important;padding:8px!important;}
+body.fp-workout-journey .builder-page .visual-choice-grid--equipment .visual-choice-image{width:32px!important;height:32px!important;}
+body.fp-workout-journey .builder-page .visual-choice-grid--equipment .visual-choice-content strong{font-size:12px!important;overflow-wrap:anywhere;}}
 body.fp-workout-journey .builder-page .simple-options { background:#fff!important; border:1px solid var(--journey-border)!important; border-radius:10px!important; color:var(--journey-ink)!important; margin:16px 0!important; }
 body.fp-workout-journey .builder-page .simple-options>summary { color:#07559f!important; font:600 14px/1.5 system-ui,sans-serif!important; padding:14px 0!important; min-height:44px; }
 body.fp-workout-journey .builder-page .builder-health-screening { border:1px solid var(--journey-border)!important; background:#f8fafc!important; color:var(--journey-ink)!important; padding:16px!important; margin:22px 0!important; border-radius:10px!important; min-width:0; }

@@ -223,6 +223,11 @@
   color: #52606d !important;
 }
 #program-result .muscle-volume-bar { background: #dce2e7 !important; }
+#program-result .muscle-volume-grid {grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));}
+#program-result .muscle-volume-row, #program-result .weekly-volume-focus-panel, #program-result .program-days {min-width:0;max-width:100%;}
+#program-result .muscle-volume-row-header {flex-wrap:wrap;}
+#program-result .muscle-volume-status {white-space:normal;overflow-wrap:anywhere;}
+#program-result .muscle-volume-bar {max-width:100%;}
 #program-result .muscle-volume-bar-target { background: #b5cbdc !important; }
 #program-result .muscle-volume-adjust {
   border-color: #8bb7dc !important;

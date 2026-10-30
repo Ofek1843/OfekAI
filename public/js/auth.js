@@ -196,7 +196,7 @@ function showMessage(text, type) {
 
 function trackSignupCompletion(method) {
   // Local handoff only; never send the account preference to analytics.
-  try { if (auth.currentUser?.uid) sessionStorage.setItem('fp_personalization_onboarding_uid', auth.currentUser.uid); } catch {}
+  try { if (auth.currentUser?.uid && !sessionStorage.getItem('fp_visual_handoff')) sessionStorage.setItem('fp_personalization_onboarding_uid', auth.currentUser.uid); } catch {}
   if (signupCompletionTracked) return;
   signupCompletionTracked = true;
   trackEvent("signup_completed", { method });

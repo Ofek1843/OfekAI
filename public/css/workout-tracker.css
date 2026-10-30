@@ -20,6 +20,18 @@ body{
   color:var(--text);
   background:radial-gradient(circle at top,rgba(53, 207, 223,.18),transparent 34%),linear-gradient(180deg,#060913 0%,#09111e 100%);
 }
+.tracker-time-controls-hidden{display:none!important}
+body{color-scheme:light;background:#f8f7f4;color:#171b21}
+.page-nav{background:transparent!important}
+.page-nav a{color:#171b21!important}
+.tracker-header p,.status{color:#52606d!important}
+.panel{background:#fff!important;color:#171b21!important;border-color:#dadfe4!important;box-shadow:none!important}
+#setupPanel select{background:#fff!important;color:#171b21!important;border-color:#bdc9d3!important}
+.page-nav{border:0!important;background:transparent!important}
+#setupPanel label{color:#344b5e!important}
+#setupPanel .eyebrow,.brand-badge{color:#075b9f!important}
+.setup-actions{grid-template-columns:minmax(0,1fr) auto!important}
+@media(max-width:650px){.setup-actions{grid-template-columns:1fr!important}}
 button,input,select,textarea{font:inherit}
 .tracker-page{
   width:min(1180px,calc(100% - 24px));

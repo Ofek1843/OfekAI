@@ -58,23 +58,23 @@
         <span id="sessionLabel">Choose today's workout</span>
         <select id="sessionSelect"></select>
       </label>
-      <label>
+      <label class="tracker-time-controls-hidden" hidden>
         <span id="timeBudgetLabel">Time available today</span>
         <div class="time-budget-input">
           <input id="timeBudgetMinutes" type="number" min="10" max="240" step="5" inputmode="numeric" placeholder="35">
           <span id="timeBudgetSuffix">min</span>
         </div>
       </label>
-      <div class="time-presets" aria-label="Quick time presets">
+      <div class="time-presets tracker-time-controls-hidden" hidden aria-label="Quick time presets">
         <button type="button" class="ghost-button time-preset-button" data-time-preset="20">20m</button>
         <button type="button" class="ghost-button time-preset-button" data-time-preset="30">30m</button>
         <button type="button" class="ghost-button time-preset-button" data-time-preset="45">45m</button>
         <button type="button" class="ghost-button time-preset-button" data-time-preset="60">60m</button>
       </div>
-      <button id="timeBudgetButton" class="ghost-button time-budget-button" type="button">Fit workout to time</button>
+      <button id="timeBudgetButton" class="ghost-button time-budget-button tracker-time-controls-hidden" hidden type="button">Fit workout to time</button>
       <button id="startWorkoutButton" class="primary-button" type="button">Start Workout</button>
     </div>
-    <div id="timeFitSummary" class="time-fit-summary" aria-live="polite"></div>
+    <div id="timeFitSummary" class="time-fit-summary tracker-time-controls-hidden" hidden aria-live="polite"></div>
   </section>
 
   <section id="emptyPanel" class="panel empty hidden">

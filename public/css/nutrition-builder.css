@@ -1164,6 +1164,33 @@ html[dir="ltr"] .nutrition-food-table td {
 .wizard-fields-grid label,.limitations-field{display:grid;gap:8px}
 .wizard-fields-grid label>span,.limitations-field>span{color:#d3dbd7;font-size:14px;font-weight:800}
 
+/* Keep the frequency field compact even when activity choices occupy several rows. */
+.simple-builder .wizard-fields-grid.nutrition-activity-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(10rem, 14rem);
+  gap: 24px;
+  align-items: start;
+}
+.nutrition-activity-grid > label {
+  min-width: 0;
+  align-content: start;
+}
+.nutrition-activity-grid > label > span {
+  color: #394859;
+}
+.nutrition-activity-grid .nutrition-training-days input {
+  box-sizing: border-box;
+  width: min(100%, 7rem);
+  height: 48px;
+  min-height: 48px;
+  justify-self: start;
+}
+@media (max-width: 700px) {
+  .simple-builder .wizard-fields-grid.nutrition-activity-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+}
+
 /* Youth consent */
 .youth-consent{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:14px;border:1px solid rgba(255,200,0,.2);border-radius:12px;background:rgba(255,200,0,.06);color:#e8cfa2;font-size:13px;line-height:1.5;cursor:pointer}
 .youth-consent input{margin-top:2px;accent-color:#52c98a}

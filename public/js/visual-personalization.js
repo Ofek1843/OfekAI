@@ -8,9 +8,9 @@ import { personalizeDashboardAddress } from './dashboard-address.mjs';
 // No profile answers are sent to analytics or to the workout engine.
 let host, dispose, mountedLanguage;
 function refresh() {
-  personalizeDashboardAddress(document.querySelector('#dashboardRoot'), accountIsSignedIn() ? demonstrationModel() : 'default');
+  personalizeDashboardAddress(document.querySelector('#dashboardRoot'), demonstrationModel());
   document.querySelectorAll('.session-photo, .editorial-hero-photo, .editorial-landing-media img').forEach(image =>
-    personalizeImage(image, accountIsSignedIn() ? demonstrationModel() : 'default'));
+    personalizeImage(image, demonstrationModel()));
   const target = document.querySelector('#profileDescription')?.parentElement;
   if (!target) return;
   const language = document.documentElement.lang;

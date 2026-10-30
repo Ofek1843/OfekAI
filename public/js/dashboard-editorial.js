@@ -21,6 +21,12 @@ function showGuestDashboard() {
  ++dashboardRequest;
  document.body.style.visibility='visible';
  try {
+  if (sessionStorage.getItem('fp_guest_choice_completed') !== '1') {
+   sessionStorage.setItem('fp_guest_onboarding_pending', '1');
+   window.dispatchEvent(new Event('fuelphysique:guest-onboarding'));
+  }
+ } catch {}
+ try {
   if (sessionStorage.getItem('fp_guest_dashboard_seen') !== '1') {
    sessionStorage.setItem('fp_guest_dashboard_seen','1');
    trackEvent('guest_started',{source:'dashboard'});
@@ -73,11 +79,6 @@ async function load(user) {
   else {model.loadFailures.push({section:key,code:active[key].code});if(!model[key].length)model[key+'Failed']=true;}
  }));
  if(request!==dashboardRequest||auth.currentUser?.uid!==user.uid)return;
- try {
-  const response=await fetch('/api/social/identity',{headers:{Authorization:`Bearer ${await user.getIdToken()}`},signal:AbortSignal.timeout(6000)});
-  if(response.ok){const social=await response.json();model.photoURL=social.profile?.photoURL||model.photoURL;}
- } catch {}
- if(request!==dashboardRequest||auth.currentUser?.uid!==user.uid)return;
  const options={language,workoutUser:user,loadDay:key=>loadVisibleDay(user.uid,key),onRetry:()=>load(user),onLogout:async()=>{
   try{await disassociateCurrentInstallation();await signOut(auth);window.location.assign('/auth.html');}
   catch{root.querySelector('.status').textContent=copy.error;}
@@ -85,6 +86,15 @@ async function load(user) {
  if(dashboard&&!dashboardIsGuest)dashboard.update(model);
  else dashboard=mountDashboard(root,model,options);
  dashboardIsGuest=false;
+ // The social avatar is optional and should never delay the dashboard.
+ void (async()=>{
+  try {
+   const response=await fetch('/api/social/identity',{headers:{Authorization:`Bearer ${await user.getIdToken()}`},signal:AbortSignal.timeout(6000)});
+   if(!response.ok)return;
+   const social=await response.json(), photo=social.profile?.photoURL;
+   if(photo&&request===dashboardRequest&&auth.currentUser?.uid===user.uid&&!dashboardIsGuest){model.photoURL=photo;dashboard.update(model);}
+  } catch {}
+ })();
 }
 guardProtectedPage({onSignedOut:showGuestDashboard,onAuthenticated:async(user)=>{
  try{

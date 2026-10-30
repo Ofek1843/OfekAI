@@ -3292,7 +3292,7 @@ Do not mix English into the workout.
           content: `
 Create a workout program using these preferences:
 
-Goal: ${String(goal)}
+Goal: ${goal === 'maintainPerformance' ? 'Maintain existing muscle mass through consistent resistance training' : String(goal)}
 Experience: ${String(experience)}
 ${parsedAge ? `Age: ${parsedAge}\n` : ""}Training days per week: ${parsedDays}
 Session duration: ${parsedDuration} minutes

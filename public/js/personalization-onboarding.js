@@ -4,10 +4,11 @@ import {accountPreferenceUserId, chooseDemonstrationModel, onDemonstrationChange
 const key = 'fp_personalization_onboarding_uid';
 let dialog, owner, completedLocally;
 function pending(uid) {
-  try { return !!uid && sessionStorage.getItem(key) === uid; } catch { return false; }
+  try { return uid === 'guest' ? sessionStorage.getItem('fp_guest_onboarding_pending') === '1' : !!uid && sessionStorage.getItem(key) === uid; } catch { return false; }
 }
 function refresh() {
-  const uid = accountPreferenceUserId();
+  let uid = accountPreferenceUserId();
+  if (!uid && pending('guest')) uid = 'guest';
   if (dialog && uid !== owner) { dialog.close(); dialog.remove(); dialog = null; }
   if (dialog || uid === completedLocally || !pending(uid)) return;
   owner = uid;
@@ -34,7 +35,7 @@ function refresh() {
   const form = current.querySelector('form'), submit = form.querySelector('button');
   form.addEventListener('change', () => { submit.disabled = false; });
   form.addEventListener('submit', async event => {
-    event.preventDefault(); if (submit.disabled || accountPreferenceUserId() !== uid) return;
+    event.preventDefault(); if (submit.disabled || (uid !== 'guest' && accountPreferenceUserId() !== uid)) return;
     const value = new FormData(form).get('preference');
     if (!['male','female','default'].includes(value)) return;
     submit.disabled = true;
@@ -47,6 +48,7 @@ function refresh() {
       new Promise(resolve => { timer = setTimeout(() => resolve(false), 6000); })
     ]).finally(() => clearTimeout(timer));
     completedLocally = uid;
+    if (uid === 'guest') { try { sessionStorage.removeItem('fp_guest_onboarding_pending'); sessionStorage.setItem('fp_guest_choice_completed', '1'); } catch {} }
     if (saved) { try { if (sessionStorage.getItem(key) === uid) sessionStorage.removeItem(key); } catch {} }
     if (!saved && uid === accountPreferenceUserId()) {
       const notice = document.createElement('p'); notice.setAttribute('role','status');
@@ -59,5 +61,6 @@ function refresh() {
   document.body.append(current); current.showModal();
 }
 onDemonstrationChange(refresh);
+globalThis.addEventListener?.('fuelphysique:guest-onboarding', refresh);
 startDemonstrationPreference();
 refresh();

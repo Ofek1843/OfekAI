@@ -3,9 +3,9 @@
   'use strict';
   const keys = ['title','intro','choose','workout','workoutText','nutrition','nutritionText','diary','diaryText','open','more','advanced','basics','routine','safety','simpleFood','daysHint','gym','home','custom','gymText','homeText','example','next','back','createWorkout','createNutrition'];
   const translations = {
-    en: ['Your fitness. Made simple.','Create a workout plan, get a simple meal plan, or log what you ate. Choose one tool to start.','What would you like to do?','Create a workout plan','A plan for your goal, experience and available equipment.','Create a meal plan','Familiar foods, short preparation and portions for your goal.','Log today’s food','Write what you ate. See your totals. Your entries save automatically.','Open food diary','More tools','Optional preferences','Your goal & profile','Your routine','Safety & finish','Quick, familiar meals are selected by default. You can change this below.','We suggest training days for you. Open the optional preferences to change them.','Gym equipment','Bodyweight only','Choose my equipment','Machines, dumbbells, barbell and cables. Choose this only if all are available.','No weights or apparatus. For bars or rings, choose your equipment.','Example only — your plan is personalized.','Continue','Back','Create my workout plan','Create my meal plan'],
-    he: ['הכושר שלך. פשוט יותר.','צרו תוכנית אימון, קבלו תפריט פשוט או רשמו מה אכלתם. בחרו כלי אחד כדי להתחיל.','מה תרצו לעשות?','יצירת תוכנית אימון','תוכנית לפי המטרה, הניסיון והציוד שיש לכם.','יצירת תפריט','מאכלים מוכרים, הכנה קצרה וכמויות שמתאימות למטרה שלכם.','יומן תזונה','כתבו מה אכלתם, ראו את הסיכום. הרישומים נשמרים אוטומטית.','פתיחת יומן התזונה','כלים נוספים','העדפות נוספות — לא חובה','המטרה והפרטים שלכם','השגרה שלכם','בטיחות ויצירה','ברירת המחדל היא ארוחות מהירות עם מאכלים מוכרים. אפשר לשנות למטה.','אנחנו מציעים ימי אימון. אפשר לשנות אותם בהעדפות הנוספות.','ציוד חדר כושר','משקל גוף בלבד','בחירת הציוד שלי','מכונות, דאמבלים, מוט וכבלים. בחרו רק אם כל הציוד זמין לכם.','ללא משקולות או מתקנים. למתח או טבעות, בחרו את הציוד שלכם.','דוגמה בלבד — התוכנית שלכם מותאמת אישית.','המשך','חזרה','יצירת תוכנית האימון שלי','יצירת התפריט שלי'],
-    ar: ['لياقتك. ببساطة.','أنشئ خطة تمارين أو خطة وجبات بسيطة أو سجّل ما أكلت. اختر أداة للبدء.','ماذا تريد أن تفعل؟','إنشاء خطة تمارين','خطة لهدفك وخبرتك والمعدات المتاحة لك.','إنشاء خطة وجبات','أطعمة مألوفة وتحضير سريع وحصص تناسب هدفك.','سجل الطعام','اكتب ما أكلت وشاهد المجموع. تُحفظ الإدخالات تلقائيًا.','فتح سجل الطعام','أدوات إضافية','تفضيلات اختيارية','هدفك وبياناتك','روتينك','السلامة والإنشاء','وجبات سريعة ومألوفة افتراضيًا. يمكنك تغيير ذلك أدناه.','نقترح أيام التدريب. يمكنك تغييرها في التفضيلات الاختيارية.','معدات النادي','وزن الجسم فقط','اختيار معداتي','أجهزة ودمبل وبار وكابلات. اختر فقط إذا كانت كلها متاحة.','بدون أوزان أو أجهزة. للعقلة أو الحلقات، اختر معداتك.','مثال فقط — خطتك مخصصة لك.','متابعة','رجوع','إنشاء خطة تماريني','إنشاء خطة وجباتي'],
+    en: ['Your fitness. Made simple.','Create a workout plan, get a simple meal plan, or log what you ate. Choose one tool to start.','What would you like to do?','Create a workout plan','A plan for your goal, experience and available equipment.','Create a meal plan','Familiar foods, short preparation and portions for your goal.','Log today’s food','Write what you ate. See your totals. Your entries save automatically.','Open food diary','More tools','Optional preferences','Your goal & profile','Your routine','Safety & finish','Quick, familiar meals are selected by default. You can change this below.','Choose your available training days.','Gym equipment','Bodyweight','Choose my equipment','Machines, dumbbells, barbell and cables. Choose this only if all are available.','No weights or apparatus. For bars or rings, choose your equipment.','Example only — your plan is personalized.','Continue','Back','Create my workout plan','Create my meal plan'],
+    he: ['הכושר שלך. פשוט יותר.','צרו תוכנית אימון, קבלו תפריט פשוט או רשמו מה אכלתם. בחרו כלי אחד כדי להתחיל.','מה תרצו לעשות?','יצירת תוכנית אימון','תוכנית לפי המטרה, הניסיון והציוד שיש לכם.','יצירת תפריט','מאכלים מוכרים, הכנה קצרה וכמויות שמתאימות למטרה שלכם.','יומן תזונה','כתבו מה אכלתם, ראו את הסיכום. הרישומים נשמרים אוטומטית.','פתיחת יומן התזונה','כלים נוספים','העדפות נוספות — לא חובה','המטרה והפרטים שלכם','השגרה שלכם','בטיחות ויצירה','ברירת המחדל היא ארוחות מהירות עם מאכלים מוכרים. אפשר לשנות למטה.','אנחנו מציעים ימי אימון. אפשר לשנות אותם בהעדפות הנוספות.','ציוד חדר כושר','משקל גוף','בחירת הציוד שלי','מכונות, דאמבלים, מוט וכבלים. בחרו רק אם כל הציוד זמין לכם.','ללא משקולות או מתקנים. למתח או טבעות, בחרו את הציוד שלכם.','דוגמה בלבד — התוכנית שלכם מותאמת אישית.','המשך','חזרה','יצירת תוכנית האימון שלי','יצירת התפריט שלי'],
+    ar: ['لياقتك. ببساطة.','أنشئ خطة تمارين أو خطة وجبات بسيطة أو سجّل ما أكلت. اختر أداة للبدء.','ماذا تريد أن تفعل؟','إنشاء خطة تمارين','خطة لهدفك وخبرتك والمعدات المتاحة لك.','إنشاء خطة وجبات','أطعمة مألوفة وتحضير سريع وحصص تناسب هدفك.','سجل الطعام','اكتب ما أكلت وشاهد المجموع. تُحفظ الإدخالات تلقائيًا.','فتح سجل الطعام','أدوات إضافية','تفضيلات اختيارية','هدفك وبياناتك','روتينك','السلامة والإنشاء','وجبات سريعة ومألوفة افتراضيًا. يمكنك تغيير ذلك أدناه.','نقترح أيام التدريب. يمكنك تغييرها في التفضيلات الاختيارية.','معدات النادي','وزن الجسم','اختيار معداتي','أجهزة ودمبل وبار وكابلات. اختر فقط إذا كانت كلها متاحة.','بدون أوزان أو أجهزة. للعقلة أو الحلقات، اختر معداتك.','مثال فقط — خطتك مخصصة لك.','متابعة','رجوع','إنشاء خطة تماريني','إنشاء خطة وجباتي'],
     es: ['Tu fitness. Más sencillo.','Crea un plan de entrenamiento, consigue comidas sencillas o registra lo que comiste. Elige una herramienta.','¿Qué quieres hacer?','Crear un plan de entrenamiento','Un plan para tu objetivo, experiencia y equipo disponible.','Crear un plan de comidas','Alimentos familiares, poca preparación y porciones para tu objetivo.','Diario de alimentos','Escribe lo que comiste y consulta los totales. Se guarda automáticamente.','Abrir diario de alimentos','Más herramientas','Preferencias opcionales','Objetivo y perfil','Tu rutina','Seguridad y finalizar','Comidas rápidas y familiares por defecto. Puedes cambiarlo abajo.','Sugerimos los días de entrenamiento. Puedes cambiarlos en las preferencias opcionales.','Equipo de gimnasio','Solo peso corporal','Elegir mi equipo','Máquinas, mancuernas, barra y poleas. Elige solo si tienes todo disponible.','Sin pesas ni aparatos. Para barras o anillas, elige tu equipo.','Solo un ejemplo: tu plan es personalizado.','Continuar','Atrás','Crear mi entrenamiento','Crear mi plan de comidas'],
     fr: ['Votre forme. En toute simplicité.','Créez un programme, obtenez des repas simples ou notez ce que vous avez mangé. Choisissez un outil.','Que souhaitez-vous faire ?','Créer un programme sportif','Un programme pour votre objectif, votre niveau et votre matériel.','Créer un plan alimentaire','Des aliments familiers, peu de préparation et des portions adaptées.','Journal alimentaire','Notez vos aliments et consultez les totaux. Enregistrement automatique.','Ouvrir le journal alimentaire','Autres outils','Préférences facultatives','Objectif et profil','Votre routine','Sécurité et création','Des repas rapides et familiers par défaut. Vous pouvez modifier ce choix ci-dessous.','Nous proposons les jours d’entraînement. Modifiez-les dans les préférences facultatives.','Matériel de salle','Poids du corps uniquement','Choisir mon matériel','Machines, haltères, barre et poulies. Choisissez uniquement si tout est disponible.','Sans poids ni appareils. Pour une barre de traction ou des anneaux, choisissez votre matériel.','Exemple uniquement : votre programme est personnalisé.','Continuer','Retour','Créer mon programme','Créer mon plan alimentaire'],
     ru: ['Ваш фитнес. Проще.','Создайте тренировку, получите простой план питания или запишите съеденное. Выберите инструмент.','Что вы хотите сделать?','Создать план тренировок','План с учётом цели, опыта и доступного оборудования.','Создать план питания','Знакомые продукты, быстрое приготовление и подходящие порции.','Дневник питания','Запишите съеденное и проверьте итоги. Записи сохраняются автоматически.','Открыть дневник питания','Другие инструменты','Дополнительные настройки','Цель и профиль','Ваш режим','Безопасность и создание','По умолчанию — быстрые блюда из знакомых продуктов. Выбор можно изменить ниже.','Мы предлагаем дни тренировок. Их можно изменить в дополнительных настройках.','Оборудование зала','Только вес тела','Выбрать оборудование','Тренажёры, гантели, штанга и блоки. Выбирайте, только если всё доступно.','Без весов и снарядов. Для турника или колец выберите оборудование.','Только пример — ваш план будет персональным.','Продолжить','Назад','Создать мои тренировки','Создать мой план питания'],
@@ -104,15 +104,22 @@
     const schedule = workoutForm.querySelector('[data-wizard-step="schedule"]');
     const gender = document.querySelector('#gender')?.closest('label');
     const weekdays = schedule.querySelector('.available-days-fieldset');
-    schedule.append(text('p','daysHint','simple-note'),details([gender,weekdays],'schedule'));
+    schedule.append(details([gender],'schedule'),weekdays);
     const review = document.querySelector('#wizardReview');
     if (review) wrap(review,'review');
     const gear = workoutForm.querySelector('[data-wizard-step="equipment"]');
     const gearGrid = gear.querySelector('.visual-choice-grid');
+    const gearPictures = {bodyweight:'/images/workout-builder/equipment/bodyweight-preview.webp',pullupbar:'/images/workout-builder/equipment/pullup-preview.webp',rings:'/images/workout-builder/equipment/rings.webp',dumbbell:'/images/workout-builder/equipment/dumbbells.webp',barbell:'/images/workout-builder/equipment/barbell.webp',machine:'/images/workout-builder/equipment/machines.webp',kettlebell:'/images/workout-builder/equipment/kettlebell-preview.webp',parallelbar:'/images/workout-builder/equipment/parallelbar-preview.webp',romanchair:'/images/workout-builder/equipment/romanchair-preview.webp',cable:'/images/workout-builder/equipment/cable-preview.webp'};
     const cable = document.createElement('label');
     cable.className = 'visual-choice-card';
     cable.innerHTML = '<input type="checkbox" name="equipment" value="cable"><span class="visual-choice-content"><strong data-en="Cables" data-he="כבלים">Cables</strong></span>';
     gearGrid.append(cable);
+    gearGrid.querySelectorAll('input[name="equipment"]').forEach(input => {
+      const image = input.parentElement.querySelector('.visual-choice-image') || document.createElement('span');
+      image.className = 'visual-choice-image'; image.setAttribute('aria-hidden','true');
+      if (gearPictures[input.value]) image.style.setProperty('background-image', `url('${gearPictures[input.value]}')`, 'important');
+      if (!image.isConnected) input.after(image);
+    });
     const presets = document.createElement('div');
     presets.className = 'simple-equipment-presets';
     [['gym','gymText'],['home','homeText']].forEach(([key,description]) => {
@@ -120,12 +127,24 @@
       const input = document.createElement('input');
       input.type = 'radio'; input.name = 'equipmentPreset'; input.value = key;
       label.append(input,text('strong',key),text('small',description));
-      input.addEventListener('change',() => {
+      input.addEventListener('change',event => {
         const ids = key === 'gym' ? ['machine','dumbbell','barbell','cable'] : ['bodyweight'];
+        if (event.isTrusted) {
+          workoutForm.dataset.userEquipmentPreset = '1';
+          // Do not let the old calisthenics constraint re-check bodyweight
+          // while the preset is being applied one control at a time.
+          document.querySelector('#trainingStyle').value = 'gym';
+        }
         gearGrid.querySelectorAll('input').forEach(box => {
           box.checked = ids.includes(box.value);
           box.dispatchEvent(new Event('change',{bubbles:true}));
         });
+        delete workoutForm.dataset.userEquipmentPreset;
+        if (event.isTrusted) {
+          const select = document.querySelector('#trainingStyle');
+          select.value = key === 'gym' ? 'gym' : 'calisthenics';
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+        }
         const style = document.querySelector(`input[name="visualStyle"][value="${key==='gym'?'gym':'calisthenics'}"]`);
         // In the explicit workout journey, a gear preset must not silently
         // overwrite an already chosen Hybrid/Gym/Calisthenics preference.
@@ -138,6 +157,11 @@
     });
     gearGrid.querySelectorAll('input').forEach(box => box.addEventListener('change',event => {
       if (event.isTrusted) presets.querySelectorAll('input').forEach(input => { input.checked = false; });
+      if (workoutForm.dataset.userEquipmentPreset === '1' || !event.isTrusted) return;
+      const chosen = [...gearGrid.querySelectorAll('input[name="equipment"]:checked')].map(input=>input.value);
+      const weighted = chosen.some(value=>['machine','dumbbell','barbell','cable','kettlebell'].includes(value));
+      const body = chosen.some(value=>['bodyweight','pullupbar','rings','parallelbar'].includes(value));
+      document.querySelector('#trainingStyle').value = weighted && body ? 'hybrid' : weighted ? 'gym' : 'calisthenics';
     }));
     gearGrid.before(presets);
     const customEquipment = wrap(gearGrid,'equipment');

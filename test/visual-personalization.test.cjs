@@ -24,6 +24,15 @@ test('new account receives explicit guest handoff; returning account retains sav
  data={demonstrationModel:'male'};session.set('fp_visual_handoff','female');await callback({uid:'returning'});assert.equal(scope.demonstrationModel(),'male');assert.equal(writes.length,1);
  await callback(null);assert.equal(scope.demonstrationModel(),'default');
 });
+test('a guest choice carries through signup into the new account settings',async()=>{
+ const memory=new Map(),session=new Map(),writes=[];let callback;
+ const scope=vm.createContext({localStorage:{getItem:k=>memory.get(k),setItem:(k,v)=>memory.set(k,v)},sessionStorage:{getItem:k=>session.get(k),removeItem:k=>session.delete(k),setItem:(k,v)=>session.set(k,v)},config:{auth:{},db:{}},mockAuth:{onAuthStateChanged:(_,fn)=>callback=fn},mockStore:{doc:(_, ...p)=>p.join('/'),getDoc:async()=>({data:()=>({})}),setDoc:async(ref,d)=>writes.push({ref,d})}});
+ const source=fs.readFileSync('public/js/exercise-demo-preference.js','utf8').replace(/^export /gm,'').replace("import('./firebase-config.js')",'Promise.resolve(config)').replace("import('https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js')",'Promise.resolve(mockAuth)').replace("import('https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js')",'Promise.resolve(mockStore)');
+ vm.runInContext(source,scope);await scope.startDemonstrationPreference();await callback(null);
+ await scope.chooseDemonstrationModel('female');assert.equal(session.get('fp_visual_handoff'),'female');
+ await callback({uid:'new-user'});assert.equal(scope.demonstrationModel(),'female');
+ assert.equal(writes[0].ref,'users/new-user/settings/main');assert.equal(writes[0].d.demonstrationModel,'female');
+});
 test('presentation assets exist and active exercise assets have exact human-approved hashes',async()=>{
  const {visualVariants}=await import('../public/js/visual-personalization-core.mjs');
  for(const [a,b]of Object.entries(visualVariants)){assert.ok(fs.existsSync('public'+a));assert.ok(fs.existsSync('public'+b));}

@@ -42,6 +42,11 @@
   const picker = document.getElementById("welcomeLanguagePicker");
   const selectedLabel = document.getElementById("welcomeLanguageSelected");
   const optionsList = document.getElementById("welcomeLanguageOptions");
+  const flags = {en:'🇺🇸',he:'🇮🇱',es:'🇪🇸',fr:'🇫🇷',de:'🇩🇪',ar:'🇸🇦',zh:'🇨🇳'};
+  optionsList?.querySelectorAll('[data-language]').forEach(option => {
+    const flag = document.createElement('span'); flag.setAttribute('aria-hidden','true');
+    flag.textContent = flags[option.dataset.language] + ' '; option.prepend(flag);
+  });
   const options = [...(optionsList?.querySelectorAll('[role="option"][data-language]') || [])];
   const continueButton = document.getElementById("welcomeLanguageContinue");
   const alternateButton = document.getElementById("welcomeLanguageEnglish");

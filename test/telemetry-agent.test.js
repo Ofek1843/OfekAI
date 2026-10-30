@@ -4,7 +4,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { createTelemetryAgent } = require("../lib/telemetry-agent");
 
-test("only a verified registration sends an immediate private Telegram alert", async (t) => {
+test("a new registration sends one private Telegram alert without exposing account details", async (t) => {
   const originalFetch = global.fetch;
   const sent = [];
   global.fetch = async (_url, options) => {
@@ -23,8 +23,8 @@ test("only a verified registration sends an immediate private Telegram alert", a
 
   agent.recordAnalytics("signup_completed");
   assert.equal(agent.getSnapshot().registrationsToday, 0, "public analytics cannot count a verified signup");
-  assert.equal(await agent.recordVerifiedRegistration({ uid: "user-123" }), true);
-  assert.equal(await agent.recordVerifiedRegistration({ uid: "user-123" }), false, "same user is deduplicated");
+  assert.equal(await agent.recordNewRegistration({ uid: "user-123" }), true);
+  assert.equal(await agent.recordNewRegistration({ uid: "user-123" }), false, "same user is deduplicated");
   assert.equal(sent.length, 1);
   assert.match(sent[0].text, /משתמש חדש נרשם/);
   assert.match(sent[0].text, /נרשמים חדשים היום: 1/);
@@ -34,7 +34,21 @@ test("only a verified registration sends an immediate private Telegram alert", a
 
 test("signup notification copy does not contain personal data fields", () => {
   const source = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "lib", "telemetry-agent.js"), "utf8");
-  const registrationBlock = source.slice(source.indexOf("async function recordVerifiedRegistration"), source.indexOf("function maybeAlert"));
+  const registrationBlock = source.slice(source.indexOf("async function recordNewRegistration"), source.indexOf("function maybeAlert"));
   assert.doesNotMatch(registrationBlock, /email|displayName|name:/i);
   assert.match(registrationBlock, /אינה כוללת שם, אימייל או מזהה משתמש/);
+});
+
+test("a Telegram outage does not throw from the signup notification", async (t) => {
+  const originalFetch = global.fetch;
+  global.fetch = async () => { throw new Error("temporary network error"); };
+  t.after(() => { global.fetch = originalFetch; });
+  const agent = createTelemetryAgent({
+    telegramBotToken: "test-token",
+    telegramChatId: "12345",
+    enabled: true,
+    logger: { log() {}, error() {} }
+  });
+  await assert.doesNotReject(agent.recordNewRegistration({ uid: "new-user" }));
+  assert.equal(agent.getSnapshot().registrationsToday, 1);
 });

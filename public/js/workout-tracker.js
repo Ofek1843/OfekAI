@@ -1552,20 +1552,10 @@ async function load() {
   if (!planSnap.exists()) return show("#emptyPanel");
   savedPlan = { id: planSnap.id, ...planSnap.data() };
   startDemonstrationPreference();
-  try {
-    const savedBudget = JSON.parse(localStorage.getItem(timeBudgetKey()) || "null");
-    const savedSessionIndex = Number(savedBudget?.sessionIndex);
-    const savedMinutes = Number(savedBudget?.timeBudgetMinutes);
-    if (savedBudget && savedBudget.activePlanId === activePlanId && Number.isFinite(savedSessionIndex) && savedPlan.plan?.sessions?.[savedSessionIndex] && Number.isFinite(savedMinutes)) {
-      sessionOverride = {
-        sessionIndex: savedSessionIndex,
-        session: shortenSessionToBudget(savedPlan.plan.sessions[savedSessionIndex], savedMinutes)
-      };
-      timeBudgetMinutes = Math.max(10, Math.round(savedMinutes));
-    }
-  } catch {
-    localStorage.removeItem(timeBudgetKey());
-  }
+  // The time-fit controls are no longer offered. Do not silently shorten a
+  // workout using a previously saved budget when the controls are hidden.
+  sessionOverride = null;
+  timeBudgetMinutes = null;
   renderSetup();
   const params = new URLSearchParams(window.location.search);
   const requestedPlan = params.get("plan");
