@@ -78,3 +78,11 @@ test('new state labels and guest guidance are localized in every supported langu
   assert.doesNotMatch(root.textContent,/undefined/);
  }
 });
+test('dashboard shortcuts use real active plans and current calorie totals without inventing a target',()=>{
+ const meal={id:'m1',name:'My meals',plan:{dailyCalories:2000}};
+ const model={...active(),meals:[meal],activeMealId:'m1',diary:{entries:[{calories:720}]} };
+ const {root}=render(model);const cards=root.querySelectorAll('.quick-card');assert.equal(cards.length,4);
+ assert.equal(cards[0].getAttribute('data-plan-id'),'w1');assert.equal(cards[1].getAttribute('data-plan-id'),'m1');assert.match(cards[2].textContent,/720 \/ 2,000 kcal/);assert.equal(cards[2].getAttribute('href'),'/daily-nutrition.html');
+ const noGoal=render({diary:{entries:[{calories:320}]}}).root.querySelectorAll('.quick-card')[2].textContent;assert.match(noGoal,/320/);assert.doesNotMatch(noGoal,/2,000/);
+ const failure=render({diaryFailed:true}).root.querySelectorAll('.quick-card')[2].textContent;assert.doesNotMatch(failure,/0 \/ /);
+});
