@@ -39,11 +39,7 @@ test('a queued offline Firestore write cannot leave the mandatory dialog locked'
  assert.equal(f.memory.get('fp_personalization_onboarding_uid'),'new-user');
  assert.ok(f.document.querySelector('.onboarding-sync-notice'));
 });
-test('a guest is asked once and their selected preference remains available for signup',async()=>{
+test('a guest is not asked to select a model before signup',async()=>{
  const f=fixture({pending:false,user:null});f.memory.set('fp_guest_onboarding_pending','1');f.refresh();
- const form=f.document.querySelector('form');assert.ok(form);f.select('female');
- form.dispatchEvent(new f.Event('change'));form.dispatchEvent(new f.Event('submit',{cancelable:true}));
- await new Promise(setImmediate);assert.deepEqual(f.writes,['female']);
- assert.equal(f.memory.get('fp_guest_choice_completed'),'1');assert.equal(f.memory.has('fp_guest_onboarding_pending'),false);
- f.refresh();assert.equal(!!f.document.querySelector('dialog'),false);
+ assert.equal(f.document.querySelector('dialog'),null);assert.deepEqual(f.writes,[]);
 });
