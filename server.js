@@ -434,6 +434,31 @@ app.get("/api/public-social-proof", async (req, res) => {
   }
 });
 
+app.post("/api/reviews", async (req, res) => {
+  try {
+    rateLimiters.feedback(req, clientIp(req));
+    const user = await requireFirebaseUser(req, res);
+    if (!user) return;
+    const { rating, message, publicationConsent } = req.body || {};
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5 || typeof message !== 'string' || !message.trim() || message.trim().length > 1000 || typeof publicationConsent !== 'boolean') {
+      return res.status(400).json({ error: 'Invalid review.' });
+    }
+    const { getFuelPhysiqueAuth } = require('./lib/firebase-admin');
+    const account = await getFuelPhysiqueAuth().getUser(user.uid);
+    if (account.providerData.length === 0) return res.status(403).json({ error: 'Sign in to submit a review.' });
+    const photo = typeof account.photoURL === 'string' && /^https:\/\//i.test(account.photoURL) ? account.photoURL.slice(0, 2048) : '';
+    await getFuelPhysiqueFirestore().collection('userReviews').doc(user.uid).set({
+      uid: user.uid, rating, message: message.trim(), publicationConsent,
+      displayName: String(account.displayName || '').slice(0, 100), photoURL: photo,
+      status: 'pending', updatedAt: FieldValue.serverTimestamp()
+    });
+    res.status(201).json({ ok: true });
+  } catch (error) {
+    console.error('Review submission failed:', error.message);
+    res.status(503).json({ error: 'Could not submit review.' });
+  }
+});
+
 app.post("/api/site-feedback", (req, res) => {
   try {
     rateLimiters.feedback(req, clientIp(req));
