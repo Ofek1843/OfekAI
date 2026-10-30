@@ -25,7 +25,7 @@ export function savedNutritionMarkup(saved, language = 'en') {
       const differs=foods.length&&values[0]!==null&&declaredCalories!==null&&Math.abs(values[0]-declaredCalories)>0.1;
       return `${photo?`<img class="saved-meal-image" src="${esc(photo)}" alt="" loading="lazy">`:''}
         <h4>${esc(text(option.mealName || option.name || meal.title || meal.name || `${he?'ארוחה':'Meal'} ${index+1}`,he))}</h4>
-        <p class="saved-meal-macros">${values.map((value,i)=>`${labels[i]}: ${display(value)} ${i?'g':'kcal'}`).join(' · ')}</p>
+        <p class="saved-meal-macros">${values.map((value,i)=>`<span class="saved-macro saved-macro-${i}">${labels[i]}: ${display(value)} ${i?'g':'kcal'}</span>`).join('')}</p>
         ${differs?`<p role="status">${he?'הסיכום השמור שונה מסכום הרכיבים. מוצג סכום הרכיבים; הרשומה המקורית לא שונתה.':'The saved summary differs from the ingredient sum. Ingredient totals are shown; the original snapshot is unchanged.'}</p>`:''}
         ${option.keepsPlanValid===false?`<p role="status">${he?'החלופה השמורה הזאת אינה מאוזנת ליעד היומי.':'This saved alternative is not balanced for the daily target.'}</p>`:''}
         ${foods.length?`<div class="saved-food-table"><table><thead><tr><th>${he?'מזון':'Food'}</th><th>${he?'כמות':'Amount'}</th>${labels.map(label=>`<th>${label}</th>`).join('')}</tr></thead><tbody>${foods.map(food=>`<tr><th scope="row">${esc(text(food.name || food.foodName,he))}</th><td>${esc(food.amount ?? (numeric(food.grams)!==null?`${food.grams} g`:'—'))}${typeof food.amount==='number'&&food.unit?' '+esc(food.unit):''}</td>${keys.map((key,i)=>`<td>${display(food[key])} ${i?'g':'kcal'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<p role="status">${he?'ברשומה הישנה לא נשמר פירוט רכיבים. מוצגים הפרטים שנשמרו בלבד.':'This older snapshot has no ingredient breakdown. Only saved details are shown.'}</p>`}
@@ -34,8 +34,9 @@ export function savedNutritionMarkup(saved, language = 'en') {
     return `<section class="saved-meal"><h3>${index+1}. ${esc(text(meal.name || meal.title || chosen.mealName || chosen.name || (he?'ארוחה':'Meal'),he))}</h3>${optionMarkup(chosen)}${options.filter(o=>o!==chosen).map((option,i)=>`<details><summary>${he?'חלופה שמורה':'Saved alternative'} ${i+1}</summary>${optionMarkup(option)}</details>`).join('')}</section>`;
   }).join('');
   const target=saved.targetSummary || plan;
+  const sameCalories = meals.length > 0 && complete[0] && numeric(target.dailyCalories) !== null && display(target.dailyCalories) === display(totals[0]);
   return `<p>${he?'תצוגת התפריט השמור — פתיחה אינה משנה את התוכנית הפעילה או את הכמויות.':'Your saved menu — viewing does not change the active plan or portions.'}</p>
-    <dl class="saved-nutrition-summary"><div><dt>${he?'יעד קלורי יומי':'Daily calorie target'}</dt><dd>${display(target.dailyCalories)} kcal</dd></div><div><dt>${he?'קלוריות בארוחות השמורות':'Saved menu calories'}</dt><dd>${meals.length&&complete[0]?display(totals[0]):'—'} kcal</dd></div><div><dt>${he?'חלבון בארוחות השמורות':'Saved menu protein'}</dt><dd>${meals.length&&complete[1]?display(totals[1]):'—'} g</dd></div></dl>
+    <dl class="saved-nutrition-summary">${sameCalories?'':`<div><dt>${he?'יעד קלורי יומי':'Daily calorie target'}</dt><dd>${display(target.dailyCalories)} kcal</dd></div>`}<div><dt>${sameCalories?(he?'יעד יומי וקלוריות בתפריט':'Daily target and saved menu calories'):(he?'קלוריות בארוחות השמורות':'Saved menu calories')}</dt><dd>${meals.length&&complete[0]?display(totals[0]):'—'} kcal</dd></div><div><dt>${he?'חלבון בארוחות השמורות':'Saved menu protein'}</dt><dd>${meals.length&&complete[1]?display(totals[1]):'—'} g</dd></div></dl>
     ${cards||`<p role="status">${he?'ברשומה הזו לא נשמרו ארוחות. לא ניתן לשחזר מאכלים מכותרת וסיכום בלבד.':'This snapshot contains no meals. Foods cannot be reconstructed from a title and totals alone.'}</p>`}`;
 }
 export function openSavedNutrition(saved, language = 'en') {

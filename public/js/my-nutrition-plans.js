@@ -3,7 +3,7 @@ import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
-import { openSavedNutrition } from './saved-nutrition-view.mjs';
+import { openSavedNutrition } from './saved-nutrition-view.mjs?v=20261030-macros-1';
 
 const grid = document.querySelector("#plansGrid");
 const status = document.querySelector("#plansStatus");

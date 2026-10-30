@@ -75,3 +75,5 @@ body.dashboard-editorial {
   .dashboard-editorial .wordmark { font-size: 27px; }
   .dashboard-editorial .account-area .account-name { display: none; }
 }
+
+body.dashboard-editorial{--paper:#dbeaf4;--wash:#c4dced;--line:#aac6d9;--muted:#405569;background:var(--paper)}.dashboard-editorial .topbar{background:#a9c9df}.dashboard-editorial .sidebar{background:#d0e3f0}.dashboard-editorial .guest-dashboard-banner{background:#d4e9f7;border-color:#9abed7}.dashboard-editorial .menu-toggle{width:44px;height:44px;min-width:44px;padding:0;place-items:center}

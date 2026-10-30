@@ -247,3 +247,5 @@ body.fp-route-auth .panel-cancel:hover {
     padding-inline: 16px !important;
   }
 }
+
+body.fp-route-auth,html body.fp-route-auth.fp-v45-deep-ocean{background:#dbeaf4!important}

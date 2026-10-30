@@ -46,3 +46,13 @@ test('Hebrew labels and both owner-facing entry points use the same full saved-m
   for(const file of ['my-nutrition-plans.js','dashboard-editorial-view.mjs'])assert.match(fs.readFileSync(new URL('../public/js/'+file,import.meta.url),'utf8'),/openSavedNutrition/);
   const page=fs.readFileSync(new URL('../public/js/my-nutrition-plans.js',import.meta.url),'utf8');assert.match(page,/view-nutrition-button/);
 });
+test('equal displayed calorie target and menu totals appear once, while distinct totals remain separate',()=>{
+ const equal=structuredClone(saved); equal.plan.dailyCalories=190;
+ const html=savedNutritionMarkup(equal); const {document}=parseHTML(html);
+ assert.equal(document.querySelectorAll('.saved-nutrition-summary > div').length,2);
+ assert.match(document.querySelector('.saved-nutrition-summary').textContent,/Daily target and saved menu calories190 kcal/);
+ const different=parseHTML(savedNutritionMarkup(saved)).document;
+ assert.equal(different.querySelectorAll('.saved-nutrition-summary > div').length,3);
+ const incomplete=parseHTML(savedNutritionMarkup({plan:{dailyCalories:190}})).document;
+ assert.equal(incomplete.querySelectorAll('.saved-nutrition-summary > div').length,3);
+});

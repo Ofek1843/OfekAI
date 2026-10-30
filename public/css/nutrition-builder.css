@@ -1923,3 +1923,6 @@ body.fp-redesign.fp-route-nutrition-builder .food-amount {
 }
 /* Localized recommendation hint under the food-style selector. */
 .builder-field-hint{display:block;margin-top:8px;color:#77dce7;font-size:12px;line-height:1.45}
+
+/* Match the food diary macro colours while keeping calorie totals distinct. */
+.meal-option-macros{background:transparent;border:0;padding:0;gap:8px}.meal-option-macros span{padding:12px 8px;border-radius:9px;min-width:0}.meal-option-macros span:nth-child(1){background:#0a5da9;color:#fff}.meal-option-macros span:nth-child(1) strong{color:#fff}.meal-option-macros span:nth-child(2){background:#dcecff;color:#07569d}.meal-option-macros span:nth-child(3){background:#fff0d1;color:#805000}.meal-option-macros span:nth-child(4){background:#eee5ff;color:#5936a8}.meal-option-macros span:nth-child(n+2) strong{color:inherit}

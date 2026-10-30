@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261030-compact-1";
+import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261030-compact-2";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import {

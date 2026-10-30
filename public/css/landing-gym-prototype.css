@@ -1,21 +1,21 @@
 /* Homepage-only gym environment; inner app surfaces keep their own layout. */
-html.landing-gym { background: #e6dcd0 !important; }
+html.landing-gym { background: #759fbe !important; }
 html.landing-gym {
-  --ed-paper: #c9ad87;
-  --ed-paper-strong: #ead6b6;
+  --ed-paper: #759fbe;
+  --ed-paper-strong: #c4dced;
   --ed-rule: #a68a66;
-  --ed-muted: #4c3d2f;
+  --ed-muted: #243d50;
 }
 html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index {
-  background: #c9ad87 !important;
+  background: #759fbe !important;
   background-image: none !important;
 }
 /* Warm honey and oak tones echo the gym's oak and warm stone, without effects. */
 html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero {
-  background: #dcc29d !important;
-  border-color: #b49369 !important;
+  background: #9fc1d9 !important;
+  border-color: #719db9 !important;
 }
-.landing-gym .landing-entry-hint { color: #4c3d2f !important; }
+.landing-gym .landing-entry-hint { color: #243d50 !important; }
 .landing-gym .landing-tool-actions {
   margin-block: 22px 8px;
   display: flex;
@@ -29,10 +29,10 @@ html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.
   background: #0866bd; color: #fff;
   font: 700 15px/1.3 Arial, sans-serif; text-decoration: none;
 }
-.landing-gym .landing-tool-actions a + a { background: #ead6b6; color: #064d91; }
-.landing-gym .landing-tool-actions a:focus-visible { outline: 3px solid #a76627; outline-offset: 4px; }
+.landing-gym .landing-tool-actions a + a { background: #c4dced; color: #064d91; }
+.landing-gym .landing-tool-actions a:focus-visible { outline: 3px solid #0866bd; outline-offset: 4px; }
 .landing-gym .gym-free {
-  margin-block: 16px 0; color: #66421e;
+  margin-block: 16px 0; color: #23455c;
   font: 700 12px/1.5 Arial, sans-serif;
   letter-spacing: .05em;
 }
@@ -42,21 +42,21 @@ html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.
   html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index {
     width: min(1180px, 78%) !important;
     min-width: 0 !important; margin: 72px auto 48px !important;
-    border: 1px solid #ae8c60; border-radius: 18px;
-    box-shadow: 0 22px 70px #3d2b222b;
+    border: 1px solid #719db9; border-radius: 18px;
+    box-shadow: 0 22px 70px #193b552b;
   }
   html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index > .navbar {
     position: sticky !important; top: 0 !important;
     padding: 20px 34px !important; min-height: 74px !important;
     border-radius: 17px 17px 0 0 !important;
-    background: #c9ad87 !important;
+    background: #759fbe !important;
   }
   .landing-gym .hero { padding: 26px !important; }
   html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero {
     padding: 34px !important; border-radius: 12px !important;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 0 36px !important; min-height: 0 !important;
-    background: #dcc29d !important;
+    background: #9fc1d9 !important;
   }
   html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero #landingHeroTitle {
     font-size: clamp(48px, 4.2vw, 67px) !important;
@@ -74,7 +74,7 @@ html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.
 /* An outer photograph surrounds the readable surface; no nested scroller. */
 @media (min-width: 600px) {
   html.landing-gym[data-gym-background-ready]:not([data-gym-save-data]) {
-    background-image: url('/assets/landing/gym-environment-v2.webp') !important;
+    background-image: url('/assets/landing/gym-blue-v3.webp') !important;
   }
 }
 @media (min-width: 1280px) {
@@ -111,15 +111,15 @@ html.landing-gym body.landing-page .product-loop-demo,
 html.landing-gym body.landing-page .product-loop-panel,
 html.landing-gym body.landing-page .result-story,
 html.landing-gym body.landing-page .result-story-header {
-  background: #e4ccaa !important;
+  background: #c4dced !important;
 }
-html.landing-gym body.landing-page .landing-footer { background: #bea079 !important; }
-html.landing-gym body.landing-page .landing-footer a { color: #40372d !important; }
+html.landing-gym body.landing-page .landing-footer { background: #87abc4 !important; }
+html.landing-gym body.landing-page .landing-footer a { color: #203647 !important; }
 .landing-gym .landing-entry-login { color: #064d91 !important; }
 @media (max-width: 599px) {
-  html.landing-gym { background: #e6dcd0 !important; }
+  html.landing-gym { background: #759fbe !important; }
   html.landing-gym[data-gym-background-ready]:not([data-gym-save-data]) {
-    background-image: url('/assets/landing/gym-environment-v2-mobile.webp') !important;
+    background-image: url('/assets/landing/gym-blue-v3-mobile.webp') !important;
     background-size: auto 440px !important;
     background-position: center top !important;
     background-repeat: no-repeat !important;
@@ -128,12 +128,12 @@ html.landing-gym body.landing-page .landing-footer a { color: #40372d !important
   html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index {
     width: calc(100% - 16px) !important; min-width: 0 !important;
     margin: 68px auto 12px !important;
-    border-radius: 12px; border: 1px solid #ae8c60;
-    box-shadow: 0 10px 30px #3d2b2220;
+    border-radius: 12px; border: 1px solid #719db9;
+    box-shadow: 0 10px 30px #193b5520;
   }
   html.landing-gym body.landing-page.fp-v45-deep-ocean.fp-route-index > .navbar {
     position: sticky !important; top: 0 !important; border-radius: 11px 11px 0 0 !important;
-    background: #c9ad87 !important;
+    background: #759fbe !important;
   }
   .landing-gym .landing-tool-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .landing-gym .landing-tool-actions a { min-width: 0; padding-inline: 8px; font-size: 14px; }
@@ -179,3 +179,5 @@ html.landing-gym body.landing-page .hero-content .landing-entry-login { grid-col
 html.landing-gym body.landing-page .hero-content .landing-entry-hint { grid-column:1/-1; }
 html.landing-gym body.landing-page .hero-content .landing-entry-link:not(.landing-entry-link--google),
 html.landing-gym body.landing-page .hero-content .landing-entry-login { justify-content:flex-start; text-align:start; }
+
+html.landing-gym body.landing-page .hero-content .landing-entry-link:not(.landing-entry-link--google),html.landing-gym body.landing-page .hero-content .landing-entry-login{display:flex;align-items:center;justify-content:center;min-height:48px;padding:10px 14px;border:1px solid #6998b7;border-radius:8px;background:#fff;color:#064d91;text-align:center;text-decoration:none}
