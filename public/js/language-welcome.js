@@ -42,10 +42,17 @@
   const picker = document.getElementById("welcomeLanguagePicker");
   const selectedLabel = document.getElementById("welcomeLanguageSelected");
   const optionsList = document.getElementById("welcomeLanguageOptions");
-  const flags = {en:'🇺🇸',he:'🇮🇱',es:'🇪🇸',fr:'🇫🇷',de:'🇩🇪',ar:'🇸🇦',zh:'🇨🇳'};
+  const flags = {en:'us',he:'il',es:'es',fr:'fr',de:'de',ar:'sa',zh:'cn'};
   optionsList?.querySelectorAll('[data-language]').forEach(option => {
-    const flag = document.createElement('span'); flag.setAttribute('aria-hidden','true');
-    flag.textContent = flags[option.dataset.language] + ' '; option.prepend(flag);
+    const code = flags[option.dataset.language];
+    if (!code) return;
+    const flag = document.createElement('img');
+    flag.src = `/assets/flags/${code}.svg`;
+    flag.alt = '';
+    flag.setAttribute('aria-hidden', 'true');
+    flag.width = 24; flag.height = 18;
+    flag.style.cssText = 'display:inline-block;vertical-align:middle;object-fit:cover;margin-inline-end:8px;border-radius:2px';
+    option.prepend(flag);
   });
   const options = [...(optionsList?.querySelectorAll('[role="option"][data-language]') || [])];
   const continueButton = document.getElementById("welcomeLanguageContinue");

@@ -9,7 +9,7 @@ const ROOT = path.join(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(ROOT, file), "utf8");
 
 test("direct entry to both plan builders loads the shared first-visit language chooser", () => {
-  const scriptVersion = "20261027-primary-language-1";
+  const scriptVersion = "20261030-flag-images-1";
   const styleVersion = "20261023-language-first-1";
   for (const [page, moduleScript] of [
     ["public/workout-builder.html", "/js/workout-builder.js"],
@@ -32,5 +32,12 @@ test("shared language chooser injects its dialog on builder pages and respects e
   assert.match(source, /openButton\?\.addEventListener/);
   for (const language of ["en", "he", "es", "fr", "de", "ar", "zh"]) {
     assert.match(source, new RegExp(`data-language="${language}"`));
+  }
+});
+test('language flags are local SVG images instead of platform-dependent emoji', () => {
+  const source = read('public/js/language-welcome.js');
+  assert.match(source, /document\.createElement\('img'\)/);
+  for (const code of ['us','il','es','fr','de','sa','cn']) {
+    assert.match(read(`public/assets/flags/${code}.svg`), /<svg/);
   }
 });
