@@ -698,3 +698,5 @@ body.landing-page.fp-v45-deep-ocean.fp-route-index .landing-section.final-cta {
   .premium-card,
   .hero-social-link { animation: none !important; transition: none !important; transform: none !important; }
 }
+
+.editorial-hero-photo[src*="landing-training-female-v5.webp"] { object-position: center top !important; }

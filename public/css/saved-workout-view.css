@@ -2,4 +2,25 @@
 .saved-volume{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid #d9d6cf}.saved-volume-total{padding:10px 12px;background:#eaf3fb;color:#095399!important;border-radius:4px}.saved-volume-row>[data-weekly-sets]{font-size:21px;color:#095399}.saved-volume-grid{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:900px){.saved-volume-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){.saved-volume-grid{grid-template-columns:1fr}}
 .saved-workout-content{display:grid;grid-template-columns:225px minmax(0,1fr);gap:0;padding:0;min-height:420px}.saved-workout-nav{padding:16px;display:flex;flex-direction:column;gap:8px;border-inline-end:1px solid #d9d6cf;background:#f0eee9}.saved-workout-nav button{display:flex;align-items:center;gap:10px;width:100%;padding:14px 10px;border:1px solid transparent;border-radius:8px;background:transparent;text-align:start;color:#283746;font:inherit;cursor:pointer}.saved-workout-nav button>span:last-child{min-width:0}.saved-workout-nav strong{display:block;font-size:14px;line-height:1.45;overflow-wrap:anywhere}.saved-workout-nav small{display:block;margin-top:4px;font-size:12px;color:#526171}.saved-workout-nav [aria-selected=true]{background:#fff;border-color:#0867b6;box-shadow:0 2px 6px #0a345414;color:#095399}.saved-workout-nav [data-workout-tab=volume]{margin-top:16px;border-top:1px solid #d0d5db}.saved-tab-number{display:grid;place-items:center;flex:0 0 28px;height:28px;border-radius:6px;background:#e0e8f0;font-size:14px;font-weight:700}.saved-workout-nav [aria-selected=true] .saved-tab-number{background:#095399;color:#fff}.saved-workout-pane{min-width:0;padding:24px}.saved-workout-pane:focus{outline:none}.saved-workout-nav button:focus-visible,.saved-workout-pane:focus-visible{outline:3px solid #1388e3;outline-offset:-3px}.saved-session,.saved-volume{margin:0;border:0;padding:0}.saved-volume-grid{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:700px){.saved-workout-content{grid-template-columns:1fr}.saved-workout-nav{border-inline-end:0;border-bottom:1px solid #d9d6cf;padding:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.saved-workout-nav [data-workout-tab=volume]{grid-column:1/-1;margin-top:4px}.saved-workout-pane{padding:16px}.saved-exercises{grid-template-columns:1fr}}@media(max-width:450px){.saved-volume-grid{grid-template-columns:1fr}.saved-workout-nav button{padding:10px 8px}}
 .saved-workout-dialog{display:none;height:min(800px,90dvh);overflow:hidden}.saved-workout-dialog[open]{display:flex;flex-direction:column}.saved-workout-header{position:relative;flex-shrink:0}.saved-workout-dialog>[data-content]{min-height:0;flex:1}.saved-workout-content{height:100%;min-height:0}.saved-workout-nav,.saved-workout-pane{overflow:auto}.saved-workout-pane{scrollbar-gutter:stable}@media(max-width:700px){.saved-workout-content{grid-template-rows:auto minmax(0,1fr)}.saved-workout-nav{max-height:200px}}
+.saved-workout-dialog h2,.saved-workout-dialog h3,.saved-workout-dialog h4 { color:#121315 !important; }
+.saved-workout-nav small { color:#526171 !important; }
 @media(max-width:700px){.saved-workout-nav strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.saved-workout-nav{max-height:230px}}
+@media(max-width:700px){
+ .saved-workout-content{grid-template-columns:78px minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+ .saved-workout-nav{display:flex;flex-direction:column;max-height:none;overflow:auto;padding:8px 4px;border-bottom:0;border-inline-end:1px solid #d9d6cf}
+ .saved-workout-nav button{display:flex;flex-direction:column;gap:3px;padding:8px 3px;text-align:center}
+ .saved-workout-nav strong{font-size:11px;line-height:1.2;overflow-wrap:anywhere}
+ .saved-workout-nav small{font-size:10px;margin-top:2px}
+ .saved-workout-nav [data-workout-tab=volume]{margin-top:4px;grid-column:auto}
+ .saved-workout-pane{padding:10px;scrollbar-gutter:auto}
+ .saved-session h3{font-size:18px;margin-bottom:10px}
+ .saved-exercises{gap:10px}
+ .saved-exercise{display:grid;grid-template-columns:minmax(84px,40%) minmax(0,1fr)}
+ .saved-exercise figure img{height:108px;object-fit:contain}
+ .saved-exercise figcaption{font-size:10px;padding:4px}
+ .saved-exercise>div{padding:10px;min-width:0}
+ .saved-exercise h4{font-size:15px;overflow-wrap:anywhere}
+ .saved-exercise p{font-size:12px}
+ .saved-exercise dl{gap:8px;flex-wrap:wrap;margin-top:8px}
+ .saved-exercise dd{font-size:15px}
+}

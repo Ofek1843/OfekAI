@@ -75,7 +75,7 @@ function render() {
   });
   grid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => button.addEventListener("click", () => activate(button.closest(".plan-card").dataset.id)));
   grid.querySelectorAll('.view-nutrition-button').forEach(button=>button.addEventListener('click',()=>openSavedNutrition(plans.find(plan=>plan.id===button.closest('.plan-card').dataset.id),isHebrew?'he':'en')));
-  grid.querySelectorAll(".rename-button").forEach((button) => button.addEventListener("click", () => rename(button.closest(".plan-card").dataset.id)));
+  grid.querySelectorAll(".rename-button").forEach((button) => button.addEventListener("click", () => rename(button.closest(".plan-card"))));
   grid.querySelectorAll(".delete-button").forEach((button) => button.addEventListener("click", () => remove(button.closest(".plan-card").dataset.id)));
 }
 
@@ -84,14 +84,35 @@ async function activate(id) {
   catch (error) { console.error(error); showError(); }
 }
 
-async function rename(id) {
+function rename(card) {
+  const id = card.dataset.id;
   const saved = plans.find((item) => item.id === id);
-  const name = window.prompt(ui.prompt, saved?.name || saved?.plan?.planName || "Nutrition Plan");
-  if (name === null) return;
-  const clean = name.trim();
-  if (!clean || clean.length > 80) return showError();
-  try { await updateDoc(doc(db, "users", user.uid, "nutritionPlans", id), { name: clean, updatedAt: serverTimestamp() }); saved.name = clean; render(); }
-  catch (error) { console.error(error); showError(); }
+  const heading = card.querySelector("h2");
+  if (!saved || !heading || card.querySelector('.nutrition-rename')) return;
+  const form = document.createElement('form');
+  form.className = 'nutrition-rename';
+  const input = document.createElement('input');
+  input.type = 'text'; input.required = true; input.maxLength = 80;
+  input.value = saved.name || saved.plan?.planName || ui.defaultPlan;
+  input.setAttribute('aria-label', isHebrew ? 'שם התפריט' : 'Meal plan name');
+  const confirm = document.createElement('button');
+  confirm.type = 'submit'; confirm.textContent = isHebrew ? 'אישור' : 'Confirm';
+  const cancel = document.createElement('button');
+  cancel.type = 'button'; cancel.textContent = isHebrew ? 'ביטול' : 'Cancel';
+  const message = document.createElement('span'); message.className = 'nutrition-rename-error'; message.setAttribute('role', 'alert');
+  form.append(input, confirm, cancel, message);
+  heading.replaceWith(form); input.focus(); input.select();
+  const dismiss = () => { form.replaceWith(heading); card.querySelector('.rename-button')?.focus(); };
+  cancel.addEventListener('click', dismiss);
+  form.addEventListener('keydown', event => { if (event.key === 'Escape' && !confirm.disabled) { event.preventDefault(); dismiss(); } });
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const clean = input.value.trim();
+    if (!clean || clean.length > 80) { message.textContent = isHebrew ? 'יש להזין שם של עד 80 תווים.' : 'Enter a name of up to 80 characters.'; input.focus(); return; }
+    confirm.disabled = true; cancel.disabled = true;
+    try { await updateDoc(doc(db, 'users', user.uid, 'nutritionPlans', id), { name: clean, updatedAt: serverTimestamp() }); saved.name = clean; render(); }
+    catch (error) { console.error(error); message.textContent = ui.error; confirm.disabled = false; cancel.disabled = false; }
+  });
 }
 
 async function remove(id) {

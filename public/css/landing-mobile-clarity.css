@@ -34,6 +34,80 @@ body.landing-page .landing-entry-hint {
   color: #5f6368;
   font: 13px/1.5 Arial, sans-serif;
 }
+/* The two tools lead; account entry stays available at a quieter level. */
+body.landing-page .landing-tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-block: 24px 10px;
+}
+body.landing-page .landing-tool-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  min-width: 0;
+  padding: 12px 18px;
+  border: 1px solid #0866bd;
+  border-radius: 8px;
+  background: #0866bd;
+  color: #fff;
+  font: 700 16px/1.35 Arial, sans-serif;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+body.landing-page .landing-tool-actions a + a { background: #fff; color: #064d91; }
+body.landing-page .landing-sample-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #064d91;
+  font: 600 14px/1.5 Arial, sans-serif;
+  text-underline-offset: 3px;
+}
+body.landing-page .hero-content .landing-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  margin-top: 14px;
+}
+body.landing-page .hero-content .landing-entry-link {
+  min-height: 44px;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #064d91;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+body.landing-page .hero-content .landing-entry-link--google {
+  padding-inline: 12px;
+  border: 1px solid #8d9bac;
+  border-radius: 7px;
+  background: #fff;
+  color: #253345;
+  text-decoration: none;
+}
+body.landing-page .hero-content .landing-entry-login {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+body.landing-page .hero-content .landing-entry-hint { flex-basis: 100%; }
+body.landing-page .landing-tool-actions a:focus-visible,
+body.landing-page .landing-sample-link:focus-visible { outline: 3px solid #0866bd; outline-offset: 4px; }
+@media (max-width: 599px) {
+  body.landing-page .landing-tool-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  body.landing-page .landing-tool-actions a { padding-inline: 10px; font-size: 14px; }
+}
+@media (max-width: 360px) {
+  body.landing-page .landing-tool-actions { grid-template-columns: 1fr; }
+}
 body.landing-page .product-preview .preview-example-note {
   display: inline-block;
   align-self: flex-start;

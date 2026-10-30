@@ -68,7 +68,7 @@ export function showSignupPrompt(element, kind, nextPath, isHebrew = false, onHa
   const message = document.createElement("span");
   message.textContent = kind === "diary"
     ? (isHebrew ? "רשומות המזון נשמרו זמנית במכשיר. התחברו בחינם כדי לשמור ולהמשיך להוסיף." : "Your food log is stored temporarily on this device. Sign in for free to save it and keep adding.")
-    : (isHebrew ? "הפרטים נשמרו במכשיר הזה. התחברו בחינם כדי ליצור ולשמור את התוכנית." : "Your answers are saved on this device. Sign in for free to generate and save your plan.");
+    : (isHebrew ? "הבחירות שלך נשמרו זמנית בלשונית הזאת. התחברו בחינם כדי ליצור ולשמור את התוכנית." : "Your choices are saved temporarily in this browser tab. Sign in for free to generate and save your plan.");
   const actions = document.createElement("div");
   actions.className = "guest-signup-actions";
   const googleButton = document.createElement("button");
@@ -83,5 +83,13 @@ export function showSignupPrompt(element, kind, nextPath, isHebrew = false, onHa
   button.addEventListener("click", () => startGuestSignup(kind, nextPath, null, "", onHandoff));
   actions.append(googleButton, button);
   element.append(message, actions);
+  if (kind === 'workout') {
+    const example = document.createElement('a');
+    example.href = '/workout-plan-generator.html#example';
+    example.target = '_blank';
+    example.rel = 'noopener noreferrer';
+    example.textContent = isHebrew ? 'צפייה בתוכנית לדוגמה (לא מותאמת אישית)' : 'See an illustrative example plan';
+    element.append(example);
+  }
   element.classList.add("guest-signup-prompt");
 }

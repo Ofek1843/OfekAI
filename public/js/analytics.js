@@ -7,6 +7,9 @@ const ALLOWED_EVENTS = new Set([
   "signup_completed",
   "onboarding_completed",
   "builder_open",
+  "builder_form_started",
+  "builder_form_completed",
+  "builder_auth_required",
   "generate_clicked",
   "signup_handoff",
   "builder_validation_error",
@@ -42,7 +45,7 @@ let signupConversionSent = false;
 const SEO_FEATURES = new Set(["features", "workout-plan-generator", "meal-plan-generator", "nutrition-tracker", "workout-tracker", "training-volume", "progress-tracking"]);
 const SEO_STORAGE_KEY = "fp_seo_feature_session_v1";
 const SEO_FUNNEL_EVENTS = new Set(["seo_landing_view", "seo_cta_click", "signup_started", "workout_generated", "nutrition_generated"]);
-const ACTIVATION_FUNNEL_EVENTS = new Set(["landing_page_view", "builder_open", "generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed", "plan_saved"]);
+const ACTIVATION_FUNNEL_EVENTS = new Set(["landing_page_view", "builder_open", "builder_form_started", "builder_form_completed", "builder_auth_required", "generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed", "plan_saved"]);
 const BUILDER_VALUES = new Set(["workout", "nutrition"]);
 const FAILURE_REASONS = new Set(["request_rejected", "rate_limited", "server_error", "network_or_timeout", "empty_result"]);
 const signupStartsSent = new Set();
@@ -173,7 +176,7 @@ export function trackEvent(name, properties = {}) {
   }
   // New activation events have an enum-only contract. Never forward form
   // values, validation text, HTTP bodies, or account data to either sink.
-  if (["generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed"].includes(eventName)) {
+  if (["builder_form_started", "builder_form_completed", "builder_auth_required", "generate_clicked", "signup_handoff", "builder_validation_error", "generation_failed"].includes(eventName)) {
     eventProperties = {
       ...(BUILDER_VALUES.has(eventProperties.builder) ? { builder: eventProperties.builder } : {}),
       ...(eventName === "signup_handoff" && ["google", "email_password"].includes(eventProperties.method) ? { method: eventProperties.method } : {}),

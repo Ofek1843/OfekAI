@@ -1,3 +1,4 @@
+import { openShoppingList } from "./shopping-list.mjs";
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView, generationFailureCategory } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js?v=20261014-rir-1";
@@ -12,6 +13,14 @@ import { clearGuestDraft, readGuestDraft, restoreForm, serializeForm, showSignup
 const builderFetch = (url, options) => fetchWithDeadline(url, options, { language: currentLanguage });
 
 const form = document.querySelector("#nutrition-builder-form");
+const measuredFormStages = new Set();
+function measureFormStage(stage) {
+  if (window.fpAnalyticsConsent !== 'granted' || measuredFormStages.has(stage)) return;
+  measuredFormStages.add(stage);
+  try { trackEvent(stage, { builder: 'nutrition' }); } catch { /* Analytics cannot block the form. */ }
+}
+form?.addEventListener('change', event => { if (event.isTrusted) measureFormStage('builder_form_started'); });
+form?.addEventListener('input', event => { if (event.isTrusted) measureFormStage('builder_form_started'); });
 const button = document.querySelector("#generate-button");
 button?.addEventListener("click", () => trackEvent("generate_clicked", { builder: "nutrition" }));
 const statusElement = document.querySelector("#builder-status");
@@ -27,6 +36,7 @@ function resumeGuestNutrition(user) {
   const fields = readGuestDraft("nutrition");
   if (!fields) return;
   restoreForm(form, fields);
+  measuredFormStages.add('builder_form_completed');
   resumedGuestDraft = true;
   const cleanUrl = new URL(location.href);
   cleanUrl.searchParams.delete("resumeGuest");
@@ -46,12 +56,6 @@ async function authHeaders(contentType = "application/json") {
 const ageInput = document.querySelector("#age");
 const youthConsentField = document.querySelector("#youth-consent-field");
 const youthGuardianConsent = document.querySelector("#youthGuardianConsent");
-const shoppingListModal = document.querySelector("#shoppingListModal");
-const shoppingListBody = document.querySelector("#shoppingListBody");
-const shoppingListTitle = document.querySelector("#shoppingListTitle");
-const shoppingListSubtitle = document.querySelector("#shoppingListSubtitle");
-const copyShoppingListButton = document.querySelector("#copyShoppingListButton");
-const shoppingListCloseButtons = document.querySelectorAll("[data-close-shopping-modal]");
 
 function updateYouthMode() {
   const isYouth = Number(ageInput?.value) >= 15 && Number(ageInput?.value) < 18;
@@ -319,9 +323,12 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (button.disabled) return;
 
+  measureFormStage('builder_form_completed');
+
   if (!auth.currentUser) {
     const nextPath = "/nutrition-builder.html?resumeGuest=nutrition";
     try { sessionStorage.setItem("fp-guest-trial-v1:nutrition", JSON.stringify({ savedAt: Date.now(), payload: serializeForm(form) })); } catch {}
+    measureFormStage('builder_auth_required');
     showSignupPrompt(document.querySelector("#builder-status"), "nutrition", nextPath, isHebrew, (method) => trackEvent("signup_handoff", { builder: "nutrition", method }));
     return;
   }
@@ -449,124 +456,6 @@ async function saveNutritionPlan(plan) {
     updatedAt: serverTimestamp()
   });
 }
-
-function normaliseFoodName(name = "") {
-  return String(name)
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function categorizeFood(name = "") {
-  const value = String(name).toLowerCase();
-  if (/(chicken|beef|turkey|fish|salmon|tuna|egg|eggs|yogurt|yoghurt|cottage cheese|protein|whey|tofu|lentil|beans|meat)/.test(value)) return "Protein";
-  if (/(rice|pasta|bread|oat|potato|sweet potato|quinoa|cereal|wrap|pita|bagel|granola|corn|noodle)/.test(value)) return "Carbs";
-  if (/(avocado|nuts|peanut|almond|olive oil|oil|butter|seeds|chia|flax|salmon|tahini)/.test(value)) return "Fats";
-  if (/(apple|banana|orange|berries|berry|grape|tomato|cucumber|lettuce|spinach|broccoli|carrot|pepper|onion|fruit|vegetable)/.test(value)) return "Produce";
-  if (/(milk|cheese|cottage|cream|kefir|lassi)/.test(value)) return "Dairy";
-  return "Other";
-}
-
-function buildShoppingList(plan = {}) {
-  const items = new Map();
-  const meals = Array.isArray(plan.meals) ? plan.meals : [];
-
-  for (const meal of meals) {
-    const options = Array.isArray(meal.options) ? meal.options : [];
-    for (const option of options) {
-      const foods = Array.isArray(option.foods) ? option.foods : [];
-      for (const food of foods) {
-        const rawName = normaliseFoodName(food?.name || "");
-        if (!rawName) continue;
-        const amount = normaliseFoodName(food?.amount || "");
-        const key = `${rawName.toLowerCase()}|${amount.toLowerCase()}`;
-        if (items.has(key)) continue;
-        items.set(key, {
-          name: rawName,
-          amount,
-          category: categorizeFood(rawName)
-        });
-      }
-    }
-  }
-
-  const grouped = new Map([
-    ["Protein", []],
-    ["Carbs", []],
-    ["Produce", []],
-    ["Fats", []],
-    ["Dairy", []],
-    ["Other", []]
-  ]);
-
-  for (const item of items.values()) {
-    grouped.get(item.category)?.push(item);
-  }
-
-  return grouped;
-}
-
-function renderShoppingList(plan = {}) {
-  const grouped = buildShoppingList(plan);
-  const planName = plan.planName || (isHebrew ? "תוכנית תזונה" : "Nutrition Plan");
-  const categoryLabels = isHebrew ? {
-    Protein: "חלבון",
-    Carbs: "פחמימות",
-    Produce: "פירות וירקות",
-    Fats: "שומנים",
-    Dairy: "מוצרי חלב",
-    Other: "אחר"
-  } : {};
-  shoppingListTitle.textContent = isHebrew ? "רשימת קניות" : "Shopping list";
-  shoppingListSubtitle.textContent = isHebrew
-    ? `מוצרים מתוך ${planName}`
-    : `Ingredients pulled from ${planName}`;
-
-  const sections = [...grouped.entries()]
-    .filter(([, items]) => items.length)
-    .map(([category, items]) => `
-      <section class="shopping-section">
-        <h3>${escapeHtml(categoryLabels[category] || category)}</h3>
-        <ul>
-          ${items
-            .map((item) => `<li>${escapeHtml(item.name)}${item.amount ? ` <span style="color:#8e9d99">(${escapeHtml(item.amount)})</span>` : ""}</li>`)
-            .join("")}
-        </ul>
-      </section>
-    `)
-    .join("");
-
-  shoppingListBody.innerHTML = sections || `<p class="shopping-empty">${isHebrew ? "לא נמצאו פריטי מזון בתוכנית הזאת." : "No food items were found in this plan."}</p>`;
-  shoppingListModal.classList.remove("hidden");
-  shoppingListModal.setAttribute("aria-hidden", "false");
-  trackEvent("nutrition_shopping_list");
-}
-
-function closeShoppingList() {
-  shoppingListModal.classList.add("hidden");
-  shoppingListModal.setAttribute("aria-hidden", "true");
-}
-
-copyShoppingListButton?.addEventListener("click", async () => {
-  const lines = [...shoppingListBody.querySelectorAll("li")].map((item) => item.textContent?.trim()).filter(Boolean);
-  if (!lines.length) return;
-  try {
-    await navigator.clipboard.writeText(lines.join("\n"));
-    copyShoppingListButton.textContent = isHebrew ? "הועתק ללוח" : "Copied";
-    window.setTimeout(() => {
-      copyShoppingListButton.textContent = isHebrew ? "העתקת הרשימה" : "Copy list";
-    }, 1200);
-  } catch (error) {
-    console.error("Could not copy shopping list:", error);
-  }
-});
-
-shoppingListCloseButtons.forEach((button) => button.addEventListener("click", closeShoppingList));
-shoppingListModal?.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeShoppingList();
-});
-shoppingListModal?.addEventListener("click", (event) => {
-  if (event.target === shoppingListModal || event.target?.dataset?.closeShoppingModal !== undefined) closeShoppingList();
-});
 
 function hideResult() {
   resultElement.classList.add("hidden");
@@ -851,7 +740,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
   const saveButton = resultElement.querySelector("#save-nutrition-button");
   const shoppingListButton = resultElement.querySelector("#shopping-list-button");
   setupPlanSharing(resultElement.querySelector("#share-nutrition-button"), { type: "nutrition", getPlan: () => prepareNutritionPlanForSave(window.currentNutritionPlan) });
-  shoppingListButton?.addEventListener("click", () => renderShoppingList(window.currentNutritionPlan));
+  shoppingListButton?.addEventListener("click", () => { openShoppingList(window.currentNutritionPlan, isHebrew ? "he" : "en"); trackEvent("nutrition_shopping_list"); });
   saveButton?.addEventListener("click", async () => {
     saveButton.disabled = true;
     saveButton.textContent = isHebrew ? "שומר..." : "Saving...";

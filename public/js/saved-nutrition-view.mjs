@@ -1,3 +1,4 @@
+import { openShoppingList } from "./shopping-list.mjs";
 // Read-only rendering of the saved snapshot. Never regenerate or replace meals.
 import {mealPhotoFor} from './meal-photo.mjs';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -43,8 +44,9 @@ export function openSavedNutrition(saved, language = 'en') {
   dialog.id='savedNutritionDialog'; dialog.className='saved-nutrition-dialog'; dialog.dir=he?'rtl':'ltr';
   const name=saved.name||saved.plan?.planName||(he?'תוכנית תזונה':'Nutrition plan');
   dialog.setAttribute('aria-label',name);
-  dialog.innerHTML=`<header><h2>${esc(name)}</h2><button type="button" data-close aria-label="${he?'סגירה':'Close'}">×</button></header><div class="saved-nutrition-body">${savedNutritionMarkup(saved,language)}</div>`;
+  dialog.innerHTML=`<header><h2>${esc(name)}</h2><button type="button" data-close aria-label="${he?'סגירה':'Close'}">×</button></header><div class="saved-nutrition-body"><button type="button" class="saved-shopping-button">${he?"רשימת קניות":"Shopping list"}</button>${savedNutritionMarkup(saved,language)}</div>`;
   document.body.append(dialog);
+  dialog.querySelector('.saved-shopping-button').addEventListener('click',()=>openShoppingList(saved.plan || {},language));
   dialog.querySelector('[data-close]').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('close',()=>dialog.remove(),{once:true});
   dialog.showModal(); dialog.querySelector('[data-close]').focus();

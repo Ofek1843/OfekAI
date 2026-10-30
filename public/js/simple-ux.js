@@ -208,16 +208,34 @@
       placeSocial();desktop.addEventListener('change',placeSocial);
     }
     const heroTitle = hero.querySelector('#landingHeroTitle');
-    heroTitle.replaceChildren(text('span','title'));
-    if (language === 'en') heroTitle.textContent = 'Your fitness, made simple.';
-    if (language === 'he') heroTitle.textContent = 'הכושר שלך, פשוט יותר.';
+    const landingCopy = {
+      en: ['Your workout and meal plans. Built for you. Free.', 'Create a personalized workout plan and a one-day meal plan. Track your training and food in one place.', 'Build my workout', 'Plan my meals', 'See an illustrative workout example', 'Choose where to start'],
+      he: ['תוכנית אימון ותפריט. מותאמים לך. בחינם.', 'יוצרים תוכנית אימון אישית ותפריט ליום אחד. עוקבים אחרי האימונים והתזונה במקום אחד.', 'בניית תוכנית אימון', 'בניית תפריט', 'לצפייה בתוכנית אימון לדוגמה', 'בוחרים מאיפה להתחיל'],
+      ar: ['خطط تمارين ووجبات. مخصصة لك. مجاناً.', 'أنشئ خطة تمارين مخصصة وخطة وجبات ليوم واحد. تابع تدريبك وطعامك في مكان واحد.', 'أنشئ خطة تماريني', 'خطط وجباتي', 'شاهد مثالاً توضيحياً لخطة تمارين', 'اختر من أين تبدأ'],
+      es: ['Tus planes de ejercicio y comidas. A tu medida. Gratis.', 'Crea un plan de entrenamiento personalizado y un plan de comidas para un día. Registra tu entrenamiento y alimentación en un solo lugar.', 'Crear mi entrenamiento', 'Planificar mis comidas', 'Ver un ejemplo ilustrativo de entrenamiento', 'Elige por dónde empezar'],
+      fr: ['Sport et repas. Des programmes pour vous. Gratuits.', 'Créez un programme sportif personnalisé et un plan de repas pour une journée. Suivez votre entraînement et votre alimentation au même endroit.', 'Créer mon programme', 'Planifier mes repas', 'Voir un exemple de programme sportif', 'Choisissez par où commencer'],
+      de: ['Deine Trainings- und Essenspläne. Für dich. Kostenlos.', 'Erstelle einen persönlichen Trainingsplan und einen Essensplan für einen Tag. Verfolge Training und Ernährung an einem Ort.', 'Training erstellen', 'Mahlzeiten planen', 'Einen beispielhaften Trainingsplan ansehen', 'Wähle deinen Einstieg'],
+      zh: ['你的训练与饮食计划。为你定制。免费。', '制定个性化训练计划和一日饮食计划。在同一处记录训练与饮食。', '制定训练计划', '规划我的饮食', '查看训练计划示例', '选择从哪里开始']
+    };
+    const words = landingCopy[language] || landingCopy.en;
+    heroTitle.textContent = words[0];
     const lede = hero.querySelector('.hero-lede');
     lede.removeAttribute('data-i18n');
-    lede.textContent = language === 'en'
-      ? 'Build a workout or meal plan, log food, and track progress in one place.'
-      : language === 'he'
-        ? 'בונים תוכנית אימון או תפריט, רושמים ארוחות ועוקבים אחרי ההתקדמות במקום אחד.'
-        : copy('intro');
+    lede.textContent = words[1];
+    const toolActions = document.createElement('nav');
+    toolActions.className = 'landing-tool-actions';
+    toolActions.setAttribute('aria-label', words[5]);
+    ['/workout-builder.html', '/nutrition-builder.html'].forEach((href, index) => {
+      const link = document.createElement('a');
+      link.href = href;
+      link.textContent = words[index + 2];
+      toolActions.append(link);
+    });
+    const sampleLink = document.createElement('a');
+    sampleLink.className = 'landing-sample-link';
+    sampleLink.href = '/workout-plan-generator.html#example';
+    sampleLink.textContent = words[4];
+    lede.after(toolActions, sampleLink);
     const entryCopy = {
       en: ['Continue with Google', 'Sign up with email', 'Continue as a Guest', 'Log in', 'Explore the dashboard and try a tool. Sign up only when you are ready to generate or save.'],
       he: ['ממשיכים עם Google', 'הרשמה עם אימייל', 'המשך כאורח', 'כניסה לחשבון', 'אפשר לראות את הדשבורד ולנסות כלי. נרשמים רק כשרוצים ליצור או לשמור.'],
@@ -254,7 +272,7 @@
     entryHint.className = 'landing-entry-hint';
     entryHint.textContent = entryCopy[4];
     entryActions.append(startLink, emailLink, guestLink, loginLink, entryHint);
-    lede.after(entryActions);
+    sampleLink.after(entryActions);
     const editorialMedia = document.createElement('figure');
     editorialMedia.className = 'editorial-landing-media';
     const editorialPhoto = document.createElement('img');

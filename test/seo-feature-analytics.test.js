@@ -231,3 +231,14 @@ test("each builder wires one Generate click, guest handoff, success, save, and s
   const nutritionHtml = fs.readFileSync(path.join(root, "public/nutrition-builder.html"), "utf8");
   assert.equal((nutritionHtml.match(/trackEvent\('builder_validation_error'/g) || []).length, 2);
 });
+
+test("workout form stages retain only the builder enum", async () => {
+  const page = context({consent:true});
+  for (const stage of ['builder_form_started','builder_form_completed','builder_auth_required']) {
+    vm.runInContext(`trackEvent("${stage}", {builder:"workout", email:"private@example.test", age:42});`, page.scope);
+    const payload=JSON.parse(await page.beacons.at(-1).body.text());
+    assert.deepEqual(JSON.parse(JSON.stringify(sanitizeAnalyticsPayload(payload).properties)),{builder:'workout'});
+  }
+  assert.equal(page.gtag.length,3);
+  assert.doesNotMatch(JSON.stringify(page.gtag),/private|age/);
+});

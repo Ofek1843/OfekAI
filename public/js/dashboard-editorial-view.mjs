@@ -1,4 +1,4 @@
-import { dashboardCopy } from './dashboard-editorial-i18n.mjs';
+import { dashboardCopy } from './dashboard-editorial-i18n.mjs?v=20261030-focus-1';
 export const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function asDate(value) {
  const d=value?.toDate ? value.toDate() : value?.seconds != null ? new Date(value.seconds*1000) : new Date(value);
@@ -14,6 +14,26 @@ export function nextSession(workout, logs=[]) {
  const index=latest ? ((Number(latest.sessionIndex)||0)+1)%sessions.length : 0;
  return {session:sessions[index],index};
 }
+// Present stored schedules only. Legacy plans retain the existing next-session
+// order; the dashboard must not invent training/rest dates for those plans.
+export function dashboardSession(model, today=new Date()) {
+ const workouts=model.workouts||[], workout=workouts.find(p=>p.id===model.activeWorkoutId);
+ if(model.workoutsFailed||(model.loadFailures||[]).some(f=>f.section==='profile')||
+    (model.activeWorkoutId&&(!workout||model.logsFailed))) return {state:'error'};
+ if(!workout?.plan?.sessions?.length) return workouts.length ? {state:'saved',workout:workout||workouts[0]} : {state:'empty'};
+ const plan=workout.plan, sessions=plan.sessions;
+ const source=[plan.weeklyScheduleDays,plan.trainingDaysOfWeek,plan.scheduleDays].find(Array.isArray);
+ const explicit=source?.length===sessions.length && source.every(day=>day!==null&&day!==''&&Number.isInteger(Number(day))&&Number(day)>=0&&Number(day)<=6) && new Set(source.map(Number)).size===source.length;
+ if(!explicit) return {state:'next',workout,...nextSession(workout,model.logs)};
+ const days=source.map(Number), index=days.indexOf(today.getDay());
+ if(index<0) {
+  const upcoming=days.map((day,index)=>({index,offset:(day-today.getDay()+7)%7})).sort((a,b)=>a.offset-b.offset)[0];
+  const date=new Date(today);date.setDate(date.getDate()+upcoming.offset);
+  return {state:'rest',workout,session:sessions[upcoming.index],index:upcoming.index,date};
+ }
+ const completed=(model.logs||[]).some(log=>log.workoutPlanId===workout.id&&log.sessionIndex!=null&&Number(log.sessionIndex)===index&&log.completedAt&&asDate(log.completedAt)&&dateKey(asDate(log.completedAt))===dateKey(today));
+ return {state:completed?'completed':'today',workout,session:sessions[index],index};
+}
 export function diaryTotals(log) {
  return (log?.entries || []).reduce((acc,e) => {
   for(const key of Object.keys(acc)) acc[key]+=Math.max(0,Number(e[key])||0);
@@ -28,9 +48,7 @@ const btn=(action,label,name,cls='')=>'<button type="button" class="icon-button 
 export function mountDashboard(root, initial={}, options={}) {
  let model=initial, language=options.language||'en', t=dashboardCopy(language);
  const guest=options.guest===true;
- const guestLabels=()=>language==='he'
-  ? {name:'אורח',title:'אפשר להתחיל בלי חשבון',body:'גלו את הדשבורד ומלאו פרטים לתוכנית. נבקש הרשמה רק כשתרצו ליצור ולשמור אותה.',signup:'הרשמה בחינם',login:'כניסה'}
-  : {name:'Guest',title:'Explore before you sign up',body:'Try the dashboard and fill in a workout or meal plan. Sign up only when you are ready to generate and save it.',signup:'Sign up for free',login:'Log in'};
+ const guestLabels=()=>({name:t.guestName,title:t.guestTitle,body:t.guestBody,signup:t.signup,login:t.login});
  let today=options.today||new Date(), selectedDay=new Date(today), weekOffset=0, dayRequest=0;
  let diary=initial.diary||null, diaryFailed=!!initial.diaryFailed;
  const locale=()=>language==='zh'?'zh-CN':language;
@@ -64,9 +82,13 @@ export function mountDashboard(root, initial={}, options={}) {
  }
  function diaryHTML() {
   const active=(model.meals||[]).find(p=>p.id===model.activeMealId)?.plan;
-  const targets=diary?.targetSnapshot||active||{}, totals=diaryTotals(diary), goal=targets.dailyCalories||targets.calories;
+  const targets=diary?.targetSnapshot||active||{}, totals=diaryTotals(diary);
+  const calories=Number(targets.dailyCalories||targets.calories), goal=Number.isFinite(calories)&&calories>0?calories:null;
   return '<header class="section-heading"><div class="title-icon">'+icon('tools-kitchen-2')+'<h2>'+t.diary+'</h2></div>'+(guest?'':'<div class="diary-nav">'+btn('day-back',t.previousDay,'chevron-right','back')+'<span>'+ (dateKey(selectedDay)===dateKey(today)?t.today:new Intl.DateTimeFormat(locale(),{month:'short',day:'numeric'}).format(selectedDay))+'</span>'+btn('day-next',t.nextDay,'chevron-right')+'</div>')+'</header>'+
-   (diaryFailed?'<p class="activity-empty" role="status">'+t.error+'</p>':'<div class="diary-data"><div class="ring" role="img" aria-label="'+escapeHTML(number(totals.calories)+(goal?' / '+number(goal):'')+' kcal')+'"><canvas width="256" height="256" aria-hidden="true"></canvas><div class="ring-label"><strong>'+number(totals.calories)+'</strong><small>'+(goal?'/ '+number(goal)+' kcal':t.noTarget)+'</small></div></div><div class="macros">'+[['protein','proteinGrams'],['carbs','carbsGrams'],['fats','fatGrams']].map(([label,key])=>'<div class="macro"><strong>'+number(totals[key])+'g</strong><small>'+t[label]+'</small><progress max="'+Math.max(1,Number(targets[key])||totals[key]||1)+'" value="'+totals[key]+'" aria-label="'+t[label]+'"></progress></div>').join('')+'</div></div>')+
+   (diaryFailed?'<p class="activity-empty" role="status">'+t.error+'</p>':'<div class="diary-data"><div class="ring" role="img" aria-label="'+escapeHTML(number(totals.calories)+(goal?' / '+number(goal):'')+' kcal')+'"><canvas width="256" height="256" aria-hidden="true"></canvas><div class="ring-label"><strong>'+number(totals.calories)+'</strong><small>'+(goal?'/ '+number(goal)+' kcal':t.noTarget)+'</small></div></div><div class="macros">'+[['protein','proteinGrams'],['carbs','carbsGrams'],['fats','fatGrams']].map(([label,key])=>{
+    const target=Number(targets[key]);
+    return '<div class="macro"><strong>'+number(totals[key])+'g</strong><small>'+t[label]+'</small>'+(Number.isFinite(target)&&target>0?'<progress max="'+target+'" value="'+totals[key]+'" aria-label="'+t[label]+'"></progress>':'')+'</div>';
+   }).join('')+'</div></div>'+(!goal?'<p class="diary-target-note">'+(model.mealsFailed?t.error:t.nutritionNoTarget+' '+link('/nutrition-builder.html',t.nutritionNoTargetLink))+'</p>':''))+
    (diary?.pendingSync ? '<p role="status">'+(language==='he'?'מוצגים הנתונים שנשמרו במכשיר; הסנכרון לענן ממתין.':'Showing entries saved on this device; cloud sync is pending.')+'</p>' : '')+
    link('/daily-nutrition.html',t.log+icon('arrow-right'),'button primary');
  }
@@ -83,12 +105,14 @@ export function mountDashboard(root, initial={}, options={}) {
   document.documentElement.lang=language;document.documentElement.dir=['he','ar'].includes(language)?'rtl':'ltr';
   const name=String(model.name||'').trim().split(/\s+/)[0];
   const greeting=t[today.getHours()<12?'morning':today.getHours()<18?'afternoon':'evening'];
-  const workout=(model.workouts||[]).find(p=>p.id===model.activeWorkoutId), next=nextSession(workout,model.logs);
+  const focus=dashboardSession(model,today), workout=focus.workout;
+  const next=['today','next'].includes(focus.state)?focus:null;
   const session=next?.session, plan=workout?.plan||{};
-  const title=session?.name||session?.title||t.emptyWorkout;
-  const duration=session?.estimatedDurationMinutes||session?.durationMinutes||plan.sessionDurationMinutes||plan.sessionDuration;
-  const detail=plan.description||plan.goalDescription||t.ready;
+  const title=focus.state==='rest'?t.restDay:focus.state==='completed'?t.completedWorkout:focus.state==='saved'?t.savedWorkout:focus.state==='error'?t.workoutUnavailable:session?.name||session?.title||t.emptyWorkout;
+  const duration=next?(session?.estimatedDurationMinutes||session?.durationMinutes||plan.sessionDurationMinutes||plan.sessionDuration):null;
+  const detail=focus.state==='rest'?t.restDescription+' '+(focus.session.name||focus.session.title||t.next)+' · '+new Intl.DateTimeFormat(locale(),{weekday:'long',month:'short',day:'numeric'}).format(focus.date):focus.state==='completed'?t.completedDescription:focus.state==='saved'?t.savedDescription:focus.state==='error'?t.error:next?(plan.description||plan.goalDescription||t.ready):t.setup;
   const tracking=next?'/workout-tracker.html?plan='+encodeURIComponent(workout.id)+'&session='+encodeURIComponent(session.id??next.index):'/workout-builder.html';
+  const focusLabel=focus.state==='today'?t.todayWorkout:focus.state==='next'?t.next:focus.state==='error'?t.workouts:['empty','saved'].includes(focus.state)?t.yourPlans:t.today;
   const safePhoto=safeImage(model.photoURL);
   const addPhoto=language==='he'?'הוספת תמונת פרופיל':'Add profile picture';
   const avatar='<span class="avatar avatar-placeholder">'+escapeHTML(addPhoto)+'</span>';
@@ -96,11 +120,11 @@ export function mountDashboard(root, initial={}, options={}) {
   const failureMessage=failedSections.length?`${t.loadFailurePrefix}: ${[...new Set(failedSections)].join(', ')}.`:model.error||'';
   root.innerHTML='<header class="topbar">'+btn('menu',t.more,'menu-2','menu-toggle')+link('/dashboard.html','Fuel<span>Physique</span>','wordmark')+'<nav class="top-links" aria-label="'+t.home+'">'+[['home','/dashboard.html'],['plans','#plans'],['exercises','/exercise-library'],['nutrition','/daily-nutrition.html'],['guides','/faq.html']].map(([key,url])=>link(url,t[key])).join('')+btn('search',t.search,'search')+'</nav><div class="account-area">'+(guest?link('/auth.html?mode=signup',guestLabels().signup,'guest-account-link')+link('/auth.html',guestLabels().login,'guest-login-link'):link('/app.html?settings=open',safePhoto?'<img class="avatar" src="'+safePhoto+'" alt="'+escapeHTML(addPhoto)+'" data-profile-photo>':avatar,'avatar-link')+'<details class="account"><summary><span class="account-name">'+escapeHTML(name)+'</span>'+icon('chevron-right','chevron')+'</summary><div class="account-menu">'+link('/app.html?settings=open',t.settings)+link('/social.html',t.more)+'<button data-action="language">Language</button><button data-action="logout">'+t.logout+'</button></div></details>')+'</div></header>'+
   '<button class="mobile-backdrop" data-action="menu-close" tabindex="-1" aria-label="'+t.close+'"></button><aside class="sidebar" id="dashboardSidebar"><nav aria-label="'+t.dashboard+'">'+navItems().map(([key,url,ic])=>link(url,icon(ic)+t[key],'side-link '+(key==='dashboard'?'active':''))).join('')+'<div class="side-divider"></div>'+link('/app.html?settings=open',icon('settings')+t.settings,'side-link')+'</nav><p class="side-motto">'+escapeHTML(t.motto).replaceAll(' ','<br>')+'</p></aside>'+
-  '<main class="dashboard-main">'+(guest?'<section class="guest-dashboard-banner" role="note"><div><strong>'+escapeHTML(guestLabels().title)+'</strong><p>'+escapeHTML(guestLabels().body)+'</p></div>'+link('/auth.html?mode=signup',guestLabels().signup,'button primary')+'</section>':'')+'<div class="status" role="status">'+escapeHTML(failureMessage)+(failureMessage?'<button class="button" data-action="retry-dashboard">'+t.retry+'</button>':'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header><section class="week" aria-label="'+t.week+'">'+weekHTML()+'</section>'+
-  '<article class="session '+(!next?'empty':'')+'"><img class="session-photo" src="'+asset('training')+'" alt="" width="305" height="324" fetchpriority="high"><div class="session-copy"><div class="session-topline"><span class="eyebrow">'+t.next+'</span>'+(plan.durationWeeks?link('/my-workout-plans.html',escapeHTML(plan.durationWeeks)+' '+t.weeks+icon('chevron-right'),'session-week'):'')+'</div><h2>'+escapeHTML(title)+'</h2><p class="session-description">'+escapeHTML(next?detail:t.setup)+'</p><div class="session-meta">'+(duration?'<span>'+icon('clock')+escapeHTML(duration)+' '+t.minutes+'</span>':'')+(plan.experienceLevel||plan.level?'<span>'+icon('chart-bar')+escapeHTML(level(plan.experienceLevel||plan.level))+'</span>':'')+(session?'<span>'+icon('barbell')+(session.exercises||[]).length+' '+t.exerciseCount+'</span>':'')+'</div><div class="session-actions">'+link(tracking,t[next?'start':'createNow']+icon('arrow-right'),'button primary')+(next?'<button class="button" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':'')+'</div></div></article>'+
+  '<main class="dashboard-main">'+(guest?'<section class="guest-dashboard-banner" role="note"><div><strong>'+escapeHTML(guestLabels().title)+'</strong><p>'+escapeHTML(guestLabels().body)+'</p></div>'+link('/auth.html?mode=signup',guestLabels().signup,'button primary')+'</section>':'')+'<div class="status" role="status">'+escapeHTML(failureMessage)+(failureMessage?'<button class="button" data-action="retry-dashboard">'+t.retry+'</button>':'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header>'+
+  '<article class="session '+(!next?'empty':'')+'" data-session-state="'+focus.state+'"><img class="session-photo" src="'+asset('training')+'" alt="" width="305" height="324" fetchpriority="high"><div class="session-copy"><div class="session-topline"><span class="eyebrow">'+focusLabel+'</span>'+(plan.durationWeeks?link('/my-workout-plans.html',escapeHTML(plan.durationWeeks)+' '+t.weeks+icon('chevron-right'),'session-week'):'')+'</div><h2>'+escapeHTML(title)+'</h2><p class="session-description">'+escapeHTML(detail)+'</p><div class="session-meta">'+(duration?'<span>'+icon('clock')+escapeHTML(duration)+' '+t.minutes+'</span>':'')+(plan.experienceLevel||plan.level?'<span>'+icon('chart-bar')+escapeHTML(level(plan.experienceLevel||plan.level))+'</span>':'')+(session?'<span>'+icon('barbell')+(session.exercises||[]).length+' '+t.exerciseCount+'</span>':'')+'</div><div class="session-actions">'+(focus.state==='saved'||focus.state==='rest'?'<button class="button primary" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':focus.state==='error'?'<button class="button primary" data-action="retry-dashboard">'+t.retry+'</button>':focus.state==='completed'?link('/workout-history.html',t.viewLog,'button primary'):link(tracking,t[next?'start':'createNow']+icon('arrow-right'),'button primary'))+(next?'<button class="button" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':focus.state==='empty'?link('/nutrition-builder.html',t.meals,'button'):'')+'</div></div></article>'+
   '<section class="diary" aria-label="'+t.diary+'">'+diaryHTML()+'</section></div>'+
   '<section class="plans" id="plans" tabindex="-1"><header class="section-heading"><h2>'+t.yourPlans+'</h2>'+link('/my-workout-plans.html',t.viewAll+icon('arrow-right'),'text-link')+'</header><div class="plan-columns">'+panel('workout')+panel('meal')+'</div></section>'+
-  '<section class="activity"><header class="section-heading"><h2>'+t.recent+'</h2>'+link('/workout-history.html',t.viewLog+icon('arrow-right'),'text-link')+'</header>'+
+  '<section class="week" aria-label="'+t.week+'">'+weekHTML()+'</section><section class="activity"><header class="section-heading"><h2>'+t.recent+'</h2>'+link('/workout-history.html',t.viewLog+icon('arrow-right'),'text-link')+'</header>'+
   ((model.logs||[]).length?model.logs.slice(0,3).map(log=>{
    const date=asDate(log.completedAt||log.startedAt), exerciseCount=Array.isArray(log.exercises)?log.exercises.length:0;
    const minutes=Number(log.durationMinutes)||Math.round((Number(log.durationSeconds)||0)/60);
@@ -118,7 +142,7 @@ export function mountDashboard(root, initial={}, options={}) {
  async function showPlan(kind,id) {
   const saved=(model[kind==='workout'?'workouts':'meals']||[]).find(p=>p.id===id);if(!saved)return;
   if(kind==='workout'){
-   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261015-plan-tabs-1');
+   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261030-compact-1');
    await openSavedWorkout(saved,options.workoutUser,language);
    return;
   }

@@ -33,6 +33,45 @@ test('landing exposes three direct tools before secondary features, without a ch
   assert.equal(document.querySelector('.simple-preview-card.is-active').dataset.toolIndex,'0');
   assert.doesNotMatch(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/preload" as="image" href="\/assets\/athlete-motion/);
 });
+
+test('landing leads with real builders, then a public illustrative sample, before account entry', () => {
+  for (const language of ['en','he','ar','es','fr','de','zh']) {
+    const {document} = render('index.html', language);
+    const actions = document.querySelector('.landing-tool-actions');
+    assert.equal(document.querySelectorAll('.landing-tool-actions').length, 1);
+    assert.ok(actions.getAttribute('aria-label'));
+    assert.deepEqual([...actions.querySelectorAll('a')].map(link => link.getAttribute('href')), ['/workout-builder.html','/nutrition-builder.html']);
+    assert.ok([...actions.querySelectorAll('a')].every(link => link.textContent.trim()));
+    const sample = actions.nextElementSibling;
+    assert.equal(sample.className, 'landing-sample-link');
+    assert.equal(sample.getAttribute('href'), '/workout-plan-generator.html#example');
+    assert.equal(sample.nextElementSibling.className, 'landing-entry-actions');
+    assert.equal(document.querySelectorAll('#continueGoogleCta').length, 1);
+    if (language === 'en') {
+      assert.equal(document.querySelector('#landingHeroTitle').textContent, 'Your workout and meal plans. Built for you. Free.');
+      assert.match(document.querySelector('.hero-lede').textContent, /one-day meal plan/);
+      assert.match(sample.textContent, /illustrative/);
+    }
+    if (language === 'he') {
+      assert.match(document.querySelector('#landingHeroTitle').textContent, /בחינם/);
+      assert.match(document.querySelector('.hero-lede').textContent, /ליום אחד/);
+      assert.match(sample.textContent, /לדוגמה/);
+    }
+  }
+  const sampleHtml = fs.readFileSync(path.join(root, 'public/workout-plan-generator.html'), 'utf8');
+  assert.match(sampleHtml, /id="example"/);
+});
+
+test('the selected gym shell loads once on the ordinary homepage, without changing inner app surfaces',()=>{
+ const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
+ assert.match(html,/<html class="landing-gym"/);
+ assert.equal((html.match(/href="\/css\/landing-gym-prototype\.css/g)||[]).length,1);
+ assert.equal((html.match(/src="\/js\/landing-gym-prototype\.js/g)||[]).length,1);
+ for(const page of ['dashboard.html','auth.html','workout-builder.html','nutrition-builder.html']) {
+  const inner=fs.readFileSync(path.join(root,'public',page),'utf8');
+  assert.doesNotMatch(inner,/landing-gym-prototype\.(css|js)/);
+ }
+});
 test('the new landing layout overrides the legacy forced grid and remains visible on mobile',() => {
   const css=fs.readFileSync(path.join(root,'public/css/landing-editorial.css'),'utf8');
   const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');

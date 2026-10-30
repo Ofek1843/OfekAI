@@ -12,6 +12,7 @@ import {
   browserSessionPersistence,
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithCredential,
   signInWithRedirect,
   getRedirectResult,
   getAdditionalUserInfo,
@@ -196,7 +197,7 @@ function showMessage(text, type) {
 
 function trackSignupCompletion(method) {
   // Local handoff only; never send the account preference to analytics.
-  try { if (auth.currentUser?.uid && !sessionStorage.getItem('fp_visual_handoff')) sessionStorage.setItem('fp_personalization_onboarding_uid', auth.currentUser.uid); } catch {}
+  try { if (auth.currentUser?.uid) sessionStorage.setItem('fp_personalization_onboarding_uid', auth.currentUser.uid); } catch {}
   if (signupCompletionTracked) return;
   signupCompletionTracked = true;
   trackEvent("signup_completed", { method });
@@ -456,6 +457,41 @@ async function startGoogleSignIn({ forceRedirect = false } = {}) {
     // onAuthStateChanged guard cannot redirect past the terms gate.
     if (!isPanelOpen()) googleFlowInProgress = false;
   }
+}
+
+// One Tap is optional: the existing button remains available when Google or
+// the browser cannot display it. Reuse the same terms and profile bootstrap.
+let oneTapRequested = false;
+function offerGoogleOneTap() {
+  if (oneTapRequested || auth.emulatorConfig || auth.currentUser || googleFlowInProgress || isPanelOpen()) return;
+  oneTapRequested = true;
+  const script = document.createElement("script");
+  script.src = "https://accounts.google.com/gsi/client";
+  script.async = true;
+  script.onload = () => {
+    if (auth.currentUser || googleFlowInProgress || isPanelOpen() || !window.google?.accounts?.id) return;
+    window.google.accounts.id.initialize({
+      client_id: "644398760036-7p2v9d9iqep1jdd9fv7qfpdej2q5i215.apps.googleusercontent.com",
+      auto_select: false,
+      callback: async ({ credential }) => {
+        if (!credential || auth.currentUser || googleFlowInProgress || isPanelOpen()) return;
+        googleFlowInProgress = true;
+        setGoogleButtonBusy(true);
+        try {
+          await setPersistence(auth, rememberMeInput?.checked ? browserLocalPersistence : browserSessionPersistence);
+          const result = await signInWithCredential(auth, GoogleAuthProvider.credential(credential));
+          await finalizeGoogleUser(result.user, { isNewUser: getAdditionalUserInfo(result)?.isNewUser === true });
+        } catch (error) {
+          handleGoogleError(error);
+        } finally {
+          setGoogleButtonBusy(false);
+          if (!isPanelOpen()) googleFlowInProgress = false;
+        }
+      }
+    });
+    window.google.accounts.id.prompt();
+  };
+  document.head.append(script);
 }
 
 function isStandaloneDisplayMode() {
@@ -973,6 +1009,7 @@ async function bootstrap() {
     }
 
     revealPage();
+    if (!user) offerGoogleOneTap();
   });
 }
 

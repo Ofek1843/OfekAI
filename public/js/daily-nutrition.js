@@ -392,13 +392,13 @@ function renderMacroDistribution(totals) {
   $("#proteinPercent").textContent = `${number(macro.protein, 1)}%`;
   $("#carbsPercent").textContent = `${number(macro.carbs, 1)}%`;
   $("#fatPercent").textContent = `${number(macro.fat, 1)}%`;
-  if (window.fpV47AnimateMacroRing) window.fpV47AnimateMacroRing($("#macroRing"), macro);
-  else {
+  {
     const proteinEnd = macro.protein;
     const carbEnd = macro.protein + macro.carbs;
-    $("#macroRing").style.background = macro.macroCalories
+    const background = macro.macroCalories
       ? `conic-gradient(var(--daily-blue) 0 ${proteinEnd}%, var(--daily-amber) ${proteinEnd}% ${carbEnd}%, var(--daily-purple) ${carbEnd}% 100%)`
       : "conic-gradient(rgba(131, 194, 239, 0.14) 0 100%)";
+    $("#macroRing").style.setProperty("background", background, "important");
   }
   $("#macroRing").setAttribute("aria-label", `${copy.protein} ${number(macro.protein, 1)}%, ${copy.carbs} ${number(macro.carbs, 1)}%, ${copy.fat} ${number(macro.fat, 1)}%`);
 }

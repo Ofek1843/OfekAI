@@ -1,6 +1,6 @@
 export const visualVariants = Object.freeze({
   '/assets/dashboard/training.webp': '/assets/dashboard/training-female-v4.webp',
-  '/assets/dashboard/landing-training.webp': '/assets/dashboard/landing-training-female-v2.webp'
+  '/assets/dashboard/landing-training.webp': '/assets/dashboard/landing-training-female-v5.webp'
 });
 
 // Fixed allowlist: profile data can never become an arbitrary image URL.

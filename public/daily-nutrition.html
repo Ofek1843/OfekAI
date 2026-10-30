@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/css/v45-deep-ocean.css?v=20260914-i18n-dashboard-1">
   <link rel="stylesheet" href="/css/daily-nutrition.css?v=20260918-daily-resilience-1">
   <link rel="stylesheet" href="/css/product-editorial.css?v=20261020-calendar-1">
-  <link rel="stylesheet" href="/css/daily-nutrition-refresh.css?v=20261020-calendar-1">
+  <link rel="stylesheet" href="/css/daily-nutrition-refresh.css?v=20261030-macro-layout-1">
   <link rel="stylesheet" href="/css/guest-trial.css?v=20261020-guest-dashboard-1">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
 <script defer src="/js/google-analytics-consent.js?v=20261017-1"></script>
@@ -56,6 +56,31 @@
     </section>
 
     <p id="pageStatus" class="daily-page-status" role="status" aria-live="polite" data-copy="loading">Loading your nutrition log…</p>
+
+    <section class="daily-goals-summary" aria-label="Daily targets">
+        <article class="daily-surface daily-goals-card" id="calorieCard">
+          <div class="goal-stat goal-stat--calories">
+            <span class="metric-eyebrow" data-copy="calories">Calories</span>
+            <strong class="goal-stat-value" id="calorieConsumed">0</strong>
+            <p><span data-copy="goalTarget">Goal calorie target</span> <b id="calorieTarget">—</b></p>
+            <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
+          </div>
+          <div class="goal-stat goal-stat--protein">
+            <span class="metric-eyebrow" data-copy="protein">Protein</span>
+            <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
+            <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
+            <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
+          </div>
+          <div id="targetSetup" class="target-setup" role="note">
+            <h3 data-copy="targetSetupTitle">To see your daily calorie target, create a nutrition plan</h3>
+            <p id="targetMessage" data-copy="targetMissing">Build and save a nutrition plan, then set it as your active plan. Your calorie and protein targets will appear here.</p>
+            <div class="target-setup-actions">
+              <a class="target-setup-primary" href="/nutrition-builder.html" data-copy="setupTargets">Build a nutrition plan</a>
+              <a class="target-setup-secondary" href="/my-nutrition-plans.html" data-copy="activateSavedPlan">Already have a plan? Activate it</a>
+            </div>
+          </div>
+        </article>
+    </section>
 
     <section class="food-composer daily-surface" aria-labelledby="foodComposerTitle">
       <div class="section-heading-row">
@@ -108,28 +133,7 @@
           <p class="metric-note" data-copy="macroNote">The split updates from the food you log today.</p>
         </article>
 
-        <article class="daily-surface daily-goals-card" id="calorieCard">
-          <div class="goal-stat goal-stat--calories">
-            <span class="metric-eyebrow" data-copy="calories">Calories</span>
-            <strong class="goal-stat-value" id="calorieConsumed">0</strong>
-            <p><span data-copy="goalTarget">Goal calorie target</span> <b id="calorieTarget">—</b></p>
-            <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
-          </div>
-          <div class="goal-stat goal-stat--protein">
-            <span class="metric-eyebrow" data-copy="protein">Protein</span>
-            <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
-            <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
-            <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
-          </div>
-          <div id="targetSetup" class="target-setup" role="note">
-            <h3 data-copy="targetSetupTitle">To see your daily calorie target, create a nutrition plan</h3>
-            <p id="targetMessage" data-copy="targetMissing">Build and save a nutrition plan, then set it as your active plan. Your calorie and protein targets will appear here.</p>
-            <div class="target-setup-actions">
-              <a class="target-setup-primary" href="/nutrition-builder.html" data-copy="setupTargets">Build a nutrition plan</a>
-              <a class="target-setup-secondary" href="/my-nutrition-plans.html" data-copy="activateSavedPlan">Already have a plan? Activate it</a>
-            </div>
-          </div>
-        </article>
+
       </div>
     </section>
 
@@ -162,7 +166,7 @@
   </main>
   <link rel="stylesheet" href="/css/simple-ux.css?v=20261007-motion-1">
   <script src="/js/simple-ux.js?v=20261007-motion-1"></script>
-  <script type="module" src="/js/daily-nutrition.js?v=20261020-calendar-1"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20261030-macro-layout-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

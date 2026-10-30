@@ -7,8 +7,7 @@ import { getEquipmentLabel, buildEquipmentSummaryText } from "./equipment-i18n.m
 import { derivePriorityFromGoal } from "./workout-priority.js";
 import { exerciseImageUrl, fallbackExerciseImageUrl } from "./exercise-image.js";
 import { resolveExerciseMedia, setExerciseMedia } from './exercise-media.js';
-import { demonstrationModel, mountDemonstrationChoice } from './exercise-demo-preference.js';
-let disposeDemonstrationChoice = () => {};
+import { demonstrationModel } from './exercise-demo-preference.js';
 import { guardProtectedPage } from "./verification-gate.js";
 import { builderErrorMessage } from "./builder-errors.mjs";
 import { t } from "./i18n.js?v=20261002-brand-quality-1";
@@ -23,6 +22,14 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 const form = document.querySelector("#workout-builder-form");
+const measuredFormStages = new Set();
+function measureFormStage(stage) {
+  if (window.fpAnalyticsConsent !== 'granted' || measuredFormStages.has(stage)) return;
+  measuredFormStages.add(stage);
+  try { trackEvent(stage, { builder: 'workout' }); } catch { /* Analytics must never block the form. */ }
+}
+form?.addEventListener('change', event => { if (event.isTrusted) measureFormStage('builder_form_started'); });
+form?.addEventListener('input', event => { if (event.isTrusted) measureFormStage('builder_form_started'); });
 const button = document.querySelector("#generate-button");
 button?.addEventListener("click", () => trackEvent("generate_clicked", { builder: "workout" }));
 const statusElement = document.querySelector("#builder-status");
@@ -51,6 +58,9 @@ function resumeGuestWorkout(user) {
   const fields = readGuestDraft("workout");
   if (!fields) return;
   restoreWorkoutDraft(fields);
+  // This completion was already measured on the guest form. Resuming after
+  // authentication submits the same answers; it is not another completion.
+  measuredFormStages.add('builder_form_completed');
   resumedGuestDraft = true;
   const cleanUrl = new URL(location.href);
   cleanUrl.searchParams.delete("resumeGuest");
@@ -785,7 +795,9 @@ function renderWizardReview() {
   // Equipment values are canonical ids — resolve display text through the
   // active locale (currentLanguage), never unconditionally through Hebrew.
   const equipment = buildEquipmentSummaryText(currentLanguage, formData.getAll("equipment"));
-  const days = formData.getAll("availableDays").join(", ");
+  const days = [...form.querySelectorAll('.weekday-grid input[name="availableDays"]:checked')]
+    .map(input => input.closest('label')?.querySelector('span')?.textContent?.trim() || input.value)
+    .join(', ');
   const focus = muscleFocusPayload();
   const muscleModeLabel = form.querySelector(`[name="muscleFocusMode"][value="${focus.muscleFocusMode}"]`)?.closest('label')?.querySelector('strong')?.textContent || '';
   const muscles = FOCUS_MUSCLES.filter(m => focus.selectedMuscles.includes(m.id)).map(muscleLabel).join(', ');
@@ -914,6 +926,8 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  measureFormStage('builder_form_completed');
+
   if (!auth.currentUser) {
     const nextPath = "/workout-builder.html?resumeGuest=workout";
     try { sessionStorage.setItem("fp-guest-trial-v1:workout", JSON.stringify({ savedAt: Date.now(), payload: workoutDraftFields(serializeForm(form), muscleFocusPayload()) })); } catch {
@@ -921,6 +935,7 @@ form.addEventListener("submit", async (event) => {
       revealWorkoutControl(statusElement);
       return;
     }
+    measureFormStage('builder_auth_required');
     showSignupPrompt(statusElement, "workout", nextPath, isHebrew, (method) => trackEvent("signup_handoff", { builder: "workout", method }));
     revealWorkoutControl(statusElement);
     return;
@@ -1918,20 +1933,6 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
   });
 
   resultElement.classList.remove("hidden");
-
-  disposeDemonstrationChoice();
-  disposeDemonstrationChoice = mountDemonstrationChoice(resultElement.querySelector('.program-header'), {
-    context: program.demonstrationModel || document.querySelector('#gender')?.value,
-    onChange(model) {
-      program.demonstrationModel = model;
-      resultElement.querySelectorAll('.exercise-card').forEach(card => {
-        const exercise = sessions[Number(card.dataset.session)]?.exercises[Number(card.dataset.exercise)];
-        setExerciseMedia(card.querySelector('.exercise-card-image'), exercise, model, undefined,
-          {load: !card.closest('[data-program-day]').hidden});
-        card.querySelector('[data-exercise-demo]').dataset.demoModel = model;
-      });
-    }
-  });
 
 resultElement
   .querySelectorAll(".reroll-button")

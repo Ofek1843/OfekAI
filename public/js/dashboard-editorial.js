@@ -5,8 +5,8 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-aut
 import { disassociateCurrentInstallation } from './push-notifications.js';
 import { loadDailyLog, normalizeLog } from './daily-nutrition-store.mjs?v=20261013-nutrition-recovery-1';
 import { loadDashboardDay } from './dashboard-diary.mjs';
-import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261020-guest-dashboard-1';
-import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs';
+import { mountDashboard, dateKey, asDate } from './dashboard-editorial-view.mjs?v=20261030-compact-1';
+import { dashboardCopy, dashboardLanguages } from './dashboard-editorial-i18n.mjs?v=20261030-focus-1';
 import { trackEvent, trackPageView } from './analytics.js?v=20261020-guest-dashboard-1';
 import { loadDashboardSections } from './dashboard-load.mjs';
 let language='en';
@@ -20,12 +20,6 @@ let dashboardIsGuest=false;
 function showGuestDashboard() {
  ++dashboardRequest;
  document.body.style.visibility='visible';
- try {
-  if (sessionStorage.getItem('fp_guest_choice_completed') !== '1') {
-   sessionStorage.setItem('fp_guest_onboarding_pending', '1');
-   window.dispatchEvent(new Event('fuelphysique:guest-onboarding'));
-  }
- } catch {}
  try {
   if (sessionStorage.getItem('fp_guest_dashboard_seen') !== '1') {
    sessionStorage.setItem('fp_guest_dashboard_seen','1');

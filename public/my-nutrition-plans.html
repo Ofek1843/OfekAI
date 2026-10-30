@@ -14,6 +14,15 @@
   <link rel="stylesheet" href="/css/product-editorial.css?v=20261010-product-editorial-3">
   <script defer src="/js/redesign-shell.js?v=20261011-paper-1"></script>
 <script defer src="/js/google-analytics-consent.js?v=20261017-1"></script>
+  <link rel="stylesheet" href="/css/shopping-list.css?v=20261030-1">
+  <style>
+    .nutrition-rename { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; }
+    .nutrition-rename input { flex:1 1 100%; min-width:0; padding:10px 12px; border:1px solid #7894ae; border-radius:6px; background:#fff; color:#172333; font:inherit; }
+    .nutrition-rename button { padding:9px 16px; border:1px solid #0963bc; border-radius:6px; background:#fff; color:#095aa9; font-weight:700; cursor:pointer; }
+    .nutrition-rename button[type="submit"] { background:#0963bc; color:#fff; }
+    .nutrition-rename button:disabled { opacity:.6; cursor:wait; }
+    .nutrition-rename-error { flex-basis:100%; color:#a32b26; }
+  </style>
 </head>
 <body>
   <main class="plans-page">

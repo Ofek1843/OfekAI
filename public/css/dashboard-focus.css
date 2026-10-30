@@ -1,0 +1,77 @@
+/* Existing dashboard, with daily actions before the weekly overview. */
+body.dashboard-editorial {
+  --paper: #f1e8d9;
+  --wash: #e4d2b7;
+  --line: #d9cebd;
+  --muted: #5d554b;
+  background: var(--paper);
+}
+.dashboard-editorial .topbar { background: #dcc5a5; }
+.dashboard-editorial .sidebar { background: #e9dcc7; }
+.dashboard-editorial .dashboard-main { padding-bottom: 32px; }
+.dashboard-editorial .overview {
+  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 1fr);
+  grid-template-areas: 'greeting greeting' 'session diary';
+  grid-template-rows: auto auto;
+  gap: 22px;
+}
+.dashboard-editorial .greeting { padding: 4px 0 0; }
+.dashboard-editorial .greeting h1 { font-size: clamp(32px, 3.4vw, 48px); }
+.dashboard-editorial .greeting p { letter-spacing: 1.8px; font-size: 12px; line-height: 1.6; }
+.dashboard-editorial .session,
+.dashboard-editorial .diary,
+.dashboard-editorial .plan-panel,
+.dashboard-editorial .week,
+.dashboard-editorial .activity { background: #fffdf9; border-radius: 10px; }
+.dashboard-editorial .session { grid-template-columns: 42% minmax(0, 1fr); }
+.dashboard-editorial .session-photo { max-height: none; }
+.dashboard-editorial .session-copy { padding: 24px 20px; }
+.dashboard-editorial .session h2 { font-size: clamp(27px, 2.6vw, 40px); line-height: 1.15; }
+.dashboard-editorial .session-description { font-size: 17px; line-height: 1.5; }
+.dashboard-editorial .eyebrow { font: 700 11px/1.5 Arial, sans-serif; letter-spacing: 1px; color: #5d554b; }
+.dashboard-editorial .session-actions { margin-top: 22px; gap: 8px; }
+.dashboard-editorial .session-actions .button { font-size: 15px; padding-inline: 12px; }
+.dashboard-editorial .diary { padding: 22px; min-height: 0; align-self: stretch; display: flex; flex-direction: column; gap: 18px; }
+.dashboard-editorial .diary > .button { margin-top: auto; }
+.dashboard-editorial .diary-data { min-width: 0; gap: 16px; }
+.dashboard-editorial .diary-target-note { font: 14px/1.6 Arial, sans-serif; color: var(--muted); }
+.dashboard-editorial .diary-target-note a { color: var(--blue); text-decoration: underline; text-underline-offset: 3px; }
+.dashboard-editorial .plans { margin-top: 26px; }
+.dashboard-editorial .plans > .section-heading { padding-inline: 0; }
+.dashboard-editorial .plan-panel { padding: 18px; }
+.dashboard-editorial .plan-row { padding-block: 14px; }
+.dashboard-editorial .plan-row > .button { white-space: normal; text-align: center; min-width: 0; }
+.dashboard-editorial .week { margin-top: 24px; border: 1px solid var(--line); padding: 20px; min-height: 0; }
+.dashboard-editorial .week-days { margin-block: 18px 8px; }
+.dashboard-editorial .activity { margin-top: 20px; padding: 16px 20px; }
+.dashboard-editorial .guest-dashboard-banner { background: #ead6b6; border-color: #c7aa82; color: #222b34; }
+.dashboard-editorial .guest-dashboard-banner p { color: #4c4439; }
+@media (max-width: 1100px) {
+  .dashboard-editorial .overview { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'greeting' 'session' 'diary'; }
+  .dashboard-editorial .diary { gap: 18px; }
+  .dashboard-editorial .ring { width: 128px; height: 128px; }
+}
+@media (max-width: 650px) {
+  .dashboard-editorial .dashboard-main { padding: 20px 12px 32px; }
+  .dashboard-editorial .overview { gap: 18px; }
+  .dashboard-editorial .session { grid-template-columns: 42% minmax(0, 1fr); min-height: 320px; }
+  .dashboard-editorial .session-copy { padding: 18px 12px; }
+  .dashboard-editorial .session h2 { font-size: 26px; }
+  .dashboard-editorial .session-description { font-size: 15px; line-height: 1.4; }
+  .dashboard-editorial .session-actions .button { font-size: 14px; }
+  .dashboard-editorial .plan-panel,
+  .dashboard-editorial .diary,
+  .dashboard-editorial .week,
+  .dashboard-editorial .activity { padding: 16px 12px; }
+  .dashboard-editorial .plans > .section-heading { flex-wrap: wrap; }
+  .dashboard-editorial .plan-panel > .section-heading { flex-wrap: wrap; }
+  .dashboard-editorial .diary .ring { width: 106px; height: 106px; flex-shrink: 0; }
+  .dashboard-editorial .week-date { font: 11px/1.5 Arial, sans-serif; }
+  .dashboard-editorial .week-day { padding-inline: 2px; }
+  .dashboard-editorial .section-heading h2 { font-size: 23px; }
+}
+@media (max-width: 360px) {
+  .dashboard-editorial .topbar { padding-inline: 12px; gap: 8px; }
+  .dashboard-editorial .wordmark { font-size: 27px; }
+  .dashboard-editorial .account-area .account-name { display: none; }
+}
