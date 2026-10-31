@@ -86,3 +86,14 @@ test('dashboard shortcuts use real active plans and current calorie totals witho
  const noGoal=render({diary:{entries:[{calories:320}]}}).root.querySelectorAll('.quick-card')[2].textContent;assert.match(noGoal,/320/);assert.doesNotMatch(noGoal,/2,000/);
  const failure=render({diaryFailed:true}).root.querySelectorAll('.quick-card')[2].textContent;assert.doesNotMatch(failure,/0 \/ /);
 });
+test('desktop account menu exposes reviews and diary card shows real macro energy percentages',()=>{
+ const {root}=render({diary:{entries:[{calories:250,proteinGrams:25,carbsGrams:25,fatGrams:0}]}});
+ assert.ok(root.querySelector('.account-menu [data-review-open]'));
+ const card=root.querySelectorAll('.quick-card')[2];
+ assert.match(card.querySelector('.quick-macro-pie').getAttribute('aria-label'),/Protein 50%.*Carbs 50%.*Fats 0%/i);
+ assert.match(card.querySelector('.quick-macro-legend').textContent,/50%/);
+ const empty=render({diary:{entries:[]}}).root.querySelectorAll('.quick-card')[2];
+ assert.ok(empty.querySelector('.quick-macro-pie.is-empty'));assert.equal(empty.querySelector('.quick-macro-legend'),null);
+ const failure=render({diaryFailed:true,diary:{entries:[{proteinGrams:50}]}}).root.querySelectorAll('.quick-card')[2];
+ assert.ok(failure.querySelector('.quick-macro-pie.is-empty'));
+});

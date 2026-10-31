@@ -34,7 +34,7 @@ test('landing exposes three direct tools before secondary features, without a ch
   assert.doesNotMatch(fs.readFileSync(path.join(root,'public/index.html'),'utf8'),/preload" as="image" href="\/assets\/athlete-motion/);
 });
 
-test('landing leads with real builders, then a public illustrative sample, before account entry', () => {
+test('landing leads with real builders followed by account entry', () => {
   for (const language of ['en','he','ar','es','fr','de','zh']) {
     const {document} = render('index.html', language);
     const actions = document.querySelector('.landing-tool-actions');
@@ -42,20 +42,16 @@ test('landing leads with real builders, then a public illustrative sample, befor
     assert.ok(actions.getAttribute('aria-label'));
     assert.deepEqual([...actions.querySelectorAll('a')].map(link => link.getAttribute('href')), ['/workout-builder.html','/nutrition-builder.html']);
     assert.ok([...actions.querySelectorAll('a')].every(link => link.textContent.trim()));
-    const sample = actions.nextElementSibling;
-    assert.equal(sample.className, 'landing-sample-link');
-    assert.equal(sample.getAttribute('href'), '/workout-plan-generator.html#example');
-    assert.equal(sample.nextElementSibling.className, 'landing-entry-actions');
+    assert.equal(actions.nextElementSibling.className, 'landing-entry-actions');
+    assert.equal(document.querySelector('.landing-sample-link'), null);
     assert.equal(document.querySelectorAll('#continueGoogleCta').length, 1);
     if (language === 'en') {
       assert.equal(document.querySelector('#landingHeroTitle').textContent, 'Your workout and meal plans. Built for you. Free.');
       assert.match(document.querySelector('.hero-lede').textContent, /one-day meal plan/);
-      assert.match(sample.textContent, /illustrative/);
     }
     if (language === 'he') {
       assert.match(document.querySelector('#landingHeroTitle').textContent, /בחינם/);
       assert.match(document.querySelector('.hero-lede').textContent, /ליום אחד/);
-      assert.match(sample.textContent, /לדוגמה/);
     }
   }
   const sampleHtml = fs.readFileSync(path.join(root, 'public/workout-plan-generator.html'), 'utf8');

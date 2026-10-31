@@ -1,0 +1,36 @@
+/* Shared navigation: keep the same light-blue treatment on every route. */
+body .fp-global-nav .fp-global-menu {
+  background: #d0e3f0 !important;
+  color: #132e43 !important;
+  border-color: #99bcd2 !important;
+}
+body .fp-global-nav .fp-global-menu-header { border-color: #aac6d8 !important; }
+body .fp-global-nav .fp-global-menu-title { color: #132e43 !important; }
+body .fp-global-nav .fp-global-menu-group-title { color: #356783 !important; }
+body .fp-global-nav .fp-global-menu-link { color: #193a53 !important; }
+body .fp-global-nav .fp-global-menu-link:hover,
+body .fp-global-nav .fp-global-menu-link:focus-visible,
+body .fp-global-nav .fp-global-menu-link[aria-current="page"] {
+  color: #064f90 !important;
+  background: #eff7fc !important;
+  border-color: #91b9d5 !important;
+}
+body .fp-global-nav .fp-global-menu-close {
+  color: #153b58 !important;
+  background: #f5faff !important;
+  border-color: #91b9d5 !important;
+}
+body .fp-global-nav .fp-global-menu-close:focus-visible,
+body .fp-global-nav .fp-global-menu-link:focus-visible { outline: 3px solid #0866bd; outline-offset: 2px; }
+
+/* Exercise progress predates the light product shell and has its own cards. */
+body.fp-route-exercise-progress .progress-page :is(.selector-card, .chart-card, .records-card, .recommendation, .empty-panel, .stats-grid article) {
+  background: #fff !important;
+  border-color: #c4d9e6 !important;
+  color: #162e40 !important;
+}
+body.fp-route-exercise-progress .progress-page :is(.page-nav a, .page-header h1, h2, .stats-grid strong) { color: #162e40 !important; }
+body.fp-route-exercise-progress .progress-page :is(.page-header p, .status:not(.error), .recommendation p, .stats-grid span, .record-row span, .empty-panel p) { color: #465e6f !important; }
+body.fp-route-exercise-progress .progress-page select { background: #fff !important; color: #162e40 !important; }
+body.fp-route-exercise-progress .grid-line { stroke: #d5e2eb; }
+body.fp-route-exercise-progress .axis-label { fill: #465e6f; }

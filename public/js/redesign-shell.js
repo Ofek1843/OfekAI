@@ -8,6 +8,7 @@
     "workout-builder.html", "workout-plan-generator.html", "manual-workout-builder.html",
     "my-workout-plans.html", "nutrition-builder.html",
     "manual-nutrition-builder.html", "my-nutrition-plans.html", "progress.html",
+    "workout-history.html", "exercise-progress.html", "workout-tracker.html",
     "social.html", "faq.html", "contact.html", "about.html",
     "accessibility.html", "community-guidelines.html", "copyright.html",
     "privacy.html", "refund-policy.html", "subprocessors.html",
@@ -37,6 +38,12 @@
     qualityStyles.rel = "stylesheet";
     qualityStyles.href = "/css/site-quality.css?v=20261007-mobile-clarity-2";
     document.head.append(qualityStyles);
+  }
+  if (!document.querySelector('link[href*="navigation-light.css"]')) {
+    const navigationStyles = document.createElement("link");
+    navigationStyles.rel = "stylesheet";
+    navigationStyles.href = "/css/navigation-light.css?v=20261031-1";
+    document.head.append(navigationStyles);
   }
   if ((paperRoutes.has(route) || route === "app.html") && !document.querySelector('link[href*="product-paper-routes.css"]')) {
     const paperStyles = document.createElement("link");

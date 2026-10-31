@@ -231,11 +231,7 @@
       link.textContent = words[index + 2];
       toolActions.append(link);
     });
-    const sampleLink = document.createElement('a');
-    sampleLink.className = 'landing-sample-link';
-    sampleLink.href = '/workout-plan-generator.html#example';
-    sampleLink.textContent = words[4];
-    lede.after(toolActions, sampleLink);
+    lede.after(toolActions);
     const entryCopy = {
       en: ['Continue with Google', 'Sign up with email', 'Continue as a Guest', 'Log in', 'Explore the dashboard and try a tool. Sign up only when you are ready to generate or save.'],
       he: ['ממשיכים עם Google', 'הרשמה עם אימייל', 'המשך כאורח', 'כניסה לחשבון', 'אפשר לראות את הדשבורד ולנסות כלי. נרשמים רק כשרוצים ליצור או לשמור.'],
@@ -272,7 +268,7 @@
     entryHint.className = 'landing-entry-hint';
     entryHint.textContent = entryCopy[4];
     entryActions.append(startLink, emailLink, guestLink, loginLink, entryHint);
-    sampleLink.after(entryActions);
+    toolActions.after(entryActions);
     const editorialMedia = document.createElement('figure');
     editorialMedia.className = 'editorial-landing-media';
     const editorialPhoto = document.createElement('img');
