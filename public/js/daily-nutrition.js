@@ -1,6 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { cacheInterpretedFood, cachedWeighedFood, preparationIdentity, preparationLabels } from './food-preparation.mjs';
-import { withDeadline, nutritionTimestampMillis } from "./daily-nutrition-recovery.mjs";
+import { withDeadline, nutritionTimestampMillis, loadPreviousNutritionLog } from "./daily-nutrition-recovery.mjs?v=20261031-copy-1";
 import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260928-multilingual-food-1";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
@@ -1047,21 +1047,30 @@ function bindEvents() {
   $("#copyYesterdayButton").addEventListener("click", async function copyPreviousDayEntries() {
     if (!state.log) return;
     if (state.guest) return promptGuestDiarySignup();
-    const uid = state.user.uid, dateKey = state.dateKey, request = state.dateLoadRequest;
+    const user = state.user, uid = user.uid, dateKey = state.dateKey, request = state.dateLoadRequest;
     const button = $("#copyYesterdayButton");
     button.disabled = true;
     try {
       // Merge into the current local snapshot and use the same save queue.
       // A separate read/overwrite path would lose pending edits or race saves.
-      const previous = await withDeadline(loadDailyLog(db, uid, shiftDateKey(dateKey, -1)));
+      const previousDateKey = shiftDateKey(dateKey, -1);
+      const previous = await loadPreviousNutritionLog({
+        uid, dateKey: previousDateKey,
+        loadClient: () => loadDailyLog(db, uid, previousDateKey),
+        loadServer: () => loadDailyLogFromServer(previousDateKey, user)
+      });
       if (state.user?.uid !== uid || state.dateKey !== dateKey || state.dateLoadRequest !== request || !state.log) return;
+      if (state.log.entries.length >= 80) {
+        setComposerMessage(language === 'he' ? 'היומן מלא. יש להסיר פריטים לפני העתקה.' : 'This day is full. Remove entries before copying.', true);
+        return;
+      }
       const entries = previous.entries.slice(0, Math.max(0, 80 - state.log.entries.length));
       if (entries.length) addEntries(entries);
       setComposerMessage(entries.length ? format(copy.copied, { count: entries.length }) : copy.nothingToCopy);
     } catch {
       setComposerMessage(copy.saveError, true);
     } finally {
-      button.disabled = false;
+      button.disabled = state.guest;
     }
   });
   $("#finishDayButton").addEventListener("click", () => {
@@ -1160,6 +1169,10 @@ function bindFoodComposer() {
 async function init(user) {
   state.user = user;
   state.guest = false;
+  ['#copyYesterdayButton', '#previousDay', '#nextDay', '#todayButton', '#selectedDate'].forEach((selector) => {
+    const control = $(selector);
+    if (control) control.disabled = false;
+  });
   bindEvents();
   window.addEventListener("online", () => {
     if (state.log && readDailyDraft(state.user.uid, state.dateKey)) queueSave();

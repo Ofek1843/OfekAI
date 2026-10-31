@@ -38,3 +38,21 @@ export async function loadVisibleNutritionLog(loadRemote, uid, dateKey, storage 
   }
   return preferNutritionDraft(remote, readNutritionDraft(uid, dateKey, storage));
 }
+
+// A browser Firestore stream can stall while the authenticated server remains
+// available. Never treat an unread day as empty; preserve a newer local draft.
+export async function loadPreviousNutritionLog({ uid, dateKey, loadClient, loadServer, storage, clientTimeout = 4000 }) {
+  let remote;
+  try {
+    remote = await withDeadline(Promise.resolve().then(loadClient), clientTimeout);
+  } catch (clientError) {
+    try {
+      remote = await loadServer();
+    } catch (serverError) {
+      const draft = readNutritionDraft(uid, dateKey, storage);
+      if (draft) return preferNutritionDraft(null, draft);
+      throw serverError;
+    }
+  }
+  return preferNutritionDraft(remote, readNutritionDraft(uid, dateKey, storage));
+}

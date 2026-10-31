@@ -8,3 +8,13 @@ body.landing-page .product-preview .product-preview-body small{color:#535d66!imp
 .simple-tool-preview[data-tool-index="0"] .preview-exercise small{line-height:1.55}
 .simple-tool-preview[data-tool-index="0"] .preview-volume{border:1px solid #dce5ed;border-radius:10px;padding:12px;background:#f6f9fc}
 @media(max-width:400px){.simple-tool-preview[data-tool-index="0"] .preview-exercise img{width:70px;flex-basis:70px}}
+
+/* Keep the existing three choices; show the product examples inside them. */
+body.landing-page .simple-tool-preview.product-preview{justify-content:flex-start!important;min-height:0!important;gap:10px!important;padding:14px!important;overflow:hidden}body.landing-page .simple-tool-preview .product-preview-body{flex:1;justify-content:center;min-width:0}.phone-card-preview{position:relative;width:100%;height:clamp(270px,29vw,390px);display:flex;justify-content:center;align-items:center}.phone-card-preview img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 7px 9px #102b4530)}.phone-card-preview--pair img{position:absolute;width:68%;height:88%;bottom:3%;inset-inline-start:0}.phone-card-preview--pair img+img{inset-inline-start:auto;inset-inline-end:0;bottom:9%;height:88%}.phone-card-preview--pair img:first-child{z-index:1}@media(max-width:700px){.phone-card-preview{height:clamp(320px,105vw,450px)}.phone-card-preview--pair img{width:60%}}
+/* Let the phone fill the existing example area without a second white frame. */
+body.landing-page .simple-tool-preview.product-preview{padding:8px 0!important;border:0!important;background:transparent!important;border-radius:0!important;overflow:visible}
+.phone-card-preview{overflow:hidden;height:clamp(310px,36vw,460px)}
+.phone-card-preview:not(.phone-card-preview--pair) img{transform:scale(1.2)}
+.phone-card-preview--pair img{width:72%;height:94%;bottom:1%}
+.phone-card-preview--pair img+img{height:94%;bottom:6%}
+@media(max-width:700px){.phone-card-preview{height:clamp(390px,125vw,520px)}.phone-card-preview--pair img{width:63%}}

@@ -40,3 +40,21 @@ test('unresponsive operations time out and successful operations retain results'
   await assert.rejects(withDeadline(new Promise(() => {}), 5), /TIMEOUT/);
   assert.equal(await withDeadline(Promise.resolve(42), 100), 42);
 });
+import { loadPreviousNutritionLog } from '../public/js/daily-nutrition-recovery.mjs';
+test('copy source falls back to authenticated server when browser read fails or stalls',async()=>{
+ const source={dateKey:key,entries:[{name:'eggs',calories:200}],updatedAt:3000};
+ for (const loadClient of [()=>Promise.reject(new Error('offline')),()=>new Promise(()=>{})]) {
+  let serverReads=0;const result=await loadPreviousNutritionLog({uid:'owner',dateKey:key,loadClient,loadServer:async()=>{serverReads++;return source},storage:{getItem:()=>null},clientTimeout:5});
+  assert.deepEqual(result,source);assert.equal(serverReads,1);
+ }
+});
+test('copy source uses only the matching newer unsynced draft, and does not mutate it',async()=>{
+ const remote={dateKey:key,entries:[{calories:100}],updatedAt:1000};const original=structuredClone(draft);
+ const result=await loadPreviousNutritionLog({uid:'owner',dateKey:key,loadClient:async()=>remote,loadServer:async()=>{throw Error('unused')},storage});
+ assert.equal(result.entries[0].calories,4021);assert.equal(result.pendingSync,true);assert.deepEqual(draft,original);
+ const other=await loadPreviousNutritionLog({uid:'other',dateKey:key,loadClient:async()=>remote,loadServer:async()=>{throw Error('unused')},storage});assert.equal(other.entries[0].calories,100);
+});
+test('copy source reports failure instead of claiming yesterday is empty when all reads fail',async()=>{
+ await assert.rejects(loadPreviousNutritionLog({uid:'owner',dateKey:key,loadClient:async()=>{throw Error('client')},loadServer:async()=>{throw Error('server')},storage:{getItem:()=>null}}),/server/);
+ const result=await loadPreviousNutritionLog({uid:'owner',dateKey:key,loadClient:async()=>{throw Error('client')},loadServer:async()=>{throw Error('server')},storage});assert.equal(result.entries[0].calories,4021);
+});

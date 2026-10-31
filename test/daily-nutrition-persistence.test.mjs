@@ -155,3 +155,14 @@ test('duplicate submits during food recognition run once and controls recover af
   gate.reject(Error('unavailable'));await first;
   assert.equal(button.disabled,false);assert.equal(form.dataset.submitting,'false');assert.equal(input.value,'unknown food');
 });
+test('copy-yesterday click uses fallback, appends through save path, and ignores a stale date',async()=>{
+ const start=source.indexOf('  $("#copyYesterdayButton").addEventListener');
+ const end=source.indexOf('  $("#finishDayButton").addEventListener',start);
+ assert.ok(start>=0&&end>start);let handler,sourceDay,added=[],message='';
+ const button={disabled:false,addEventListener:(name,cb)=>{handler=cb}};
+ const user={uid:'u'},state={user,guest:false,dateKey:'2026-10-16',dateLoadRequest:1,log:{entries:[{id:'today'}]}};
+ const ctx={state,language:'en',db:{},$:()=>button,shiftDateKey:()=> '2026-10-15',loadDailyLog:async()=>{throw Error('offline')},loadDailyLogFromServer:async(date,account)=>{sourceDay=date;assert.equal(account,user);return {entries:[{id:'yesterday'}]}},loadPreviousNutritionLog:async({loadClient,loadServer})=>{try{return await loadClient()}catch{return loadServer()}},addEntries:entries=>added.push(...entries),setComposerMessage:s=>{message=s},copy:{copied:'Copied {count}',nothingToCopy:'empty',saveError:'error'},format:(s,v)=>s.replace('{count}',v.count)};
+ vm.createContext(ctx);vm.runInContext(source.slice(start,end),ctx);await handler();
+ assert.equal(sourceDay,'2026-10-15');assert.equal(added.length,1);assert.equal(added[0].id,'yesterday');assert.equal(message,'Copied 1');assert.equal(button.disabled,false);assert.equal(state.log.entries.length,1);
+ const pending=deferred();ctx.loadPreviousNutritionLog=()=>pending.promise;added=[];const click=handler();state.dateKey='2026-10-17';pending.resolve({entries:[{id:'stale'}]});await click;assert.equal(added.length,0);
+});

@@ -92,16 +92,16 @@ test("mobile PWA instructions keep their action button legible and bounded", () 
   assert.match(html, /pwa-install\.js\?v=20261017-dashboard-only-1/);
 });
 
-test("current landing previews show exercise prescriptions, meal quantities and diary progress", () => {
+test("landing previews show phone examples for workout, meals and food diary", () => {
   const titles=new Set();
   for(const language of ['en','he','ar','es','fr','de','zh']) {
     const doc=require('./helpers/current-product.cjs').landing(language);
     titles.add(doc.querySelector('#landingHeroTitle').textContent);
     assert.equal(doc.querySelectorAll('.simple-preview-card').length,3);
-    assert.equal(doc.querySelectorAll('.preview-exercise img').length,2);
-    assert.ok(doc.querySelector('.preview-meal-totals'));
-    assert.ok(doc.querySelector('.preview-calorie-ring'));
-    assert.ok(doc.querySelector('.preview-protein'));
+    assert.equal(doc.querySelectorAll('.simple-tool-preview img[src*=\"phone-previews\"]').length,4);
+    assert.equal(doc.querySelectorAll('.simple-tool-preview[data-tool-index=\"0\"] img').length,2);
+    assert.ok(doc.querySelector('.simple-tool-preview img[src*=\"meal.webp\"]'));
+    assert.ok(doc.querySelector('.simple-tool-preview img[src*=\"diary.webp\"]'));
     assert.equal(doc.querySelectorAll('.preview-example-note').length,3);
   }
   assert.equal(titles.size,7);
