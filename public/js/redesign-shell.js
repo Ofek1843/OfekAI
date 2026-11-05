@@ -6,7 +6,7 @@
   const route = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
   const paperRoutes = new Set([
     "workout-builder.html", "workout-plan-generator.html", "manual-workout-builder.html",
-    "my-workout-plans.html", "nutrition-builder.html",
+    "my-workout-plans.html", "nutrition-builder.html", "results.html",
     "manual-nutrition-builder.html", "my-nutrition-plans.html", "progress.html",
     "workout-history.html", "exercise-progress.html", "workout-tracker.html",
     "social.html", "faq.html", "contact.html", "about.html",
@@ -42,7 +42,7 @@
   if (!document.querySelector('link[href*="navigation-light.css"]')) {
     const navigationStyles = document.createElement("link");
     navigationStyles.rel = "stylesheet";
-    navigationStyles.href = "/css/navigation-light.css?v=20261031-1";
+    navigationStyles.href = "/css/navigation-light.css?v=20261031-brand";
     document.head.append(navigationStyles);
   }
   if ((paperRoutes.has(route) || route === "app.html") && !document.querySelector('link[href*="product-paper-routes.css"]')) {
@@ -66,6 +66,7 @@
     "my-workout-plans.html",
     "nutrition-builder.html",
     "progress.html",
+    "results.html",
     "running.html",
     "social.html",
     "progress.html",
@@ -95,6 +96,7 @@
     "nutrition-builder.html",
     "manual-nutrition-builder.html",
     "my-nutrition-plans.html",
+    "results.html",
     "pricing.html",
     "social.html",
     "app.html",
@@ -105,6 +107,7 @@
     if (name === "dashboard.html" || name === "app.html") return "dashboard";
     if (/workout|exercise|running|log-workout/.test(name)) return "workouts";
     if (/nutrition/.test(name)) return "nutrition";
+    if (name === "results.html") return "results";
     if (/progress|transformation/.test(name)) return "progress";
     if (/social|leaderboard/.test(name)) return "messages";
     return "dashboard";
@@ -118,6 +121,7 @@
       workouts: "Workout Plans",
       nutrition: "Nutrition",
       progress: "Progress",
+      results: "Results",
       messages: "Messages",
       menu: "Open menu",
       menuClose: "Close menu",
@@ -140,6 +144,7 @@
       workouts: "תוכניות אימון",
       nutrition: "תזונה",
       progress: "התקדמות",
+      results: "תוצאות",
       messages: "הודעות",
       menu: "פתיחת תפריט",
       menuClose: "סגירת תפריט",
@@ -162,6 +167,7 @@
       workouts: "Planes de entrenamiento",
       nutrition: "Nutrición",
       progress: "Progreso",
+      results: "Resultados",
       messages: "Mensajes",
       menu: "Abrir menú",
       menuClose: "Cerrar menú",
@@ -184,6 +190,7 @@
       workouts: "Programmes",
       nutrition: "Nutrition",
       progress: "Progrès",
+      results: "Résultats",
       messages: "Messages",
       menu: "Ouvrir le menu",
       menuClose: "Fermer le menu",
@@ -206,6 +213,7 @@
       workouts: "Trainingspläne",
       nutrition: "Ernährung",
       progress: "Fortschritt",
+      results: "Ergebnisse",
       messages: "Nachrichten",
       menu: "Menü öffnen",
       menuClose: "Menü schließen",
@@ -228,6 +236,7 @@
       workouts: "خطط التدريب",
       nutrition: "التغذية",
       progress: "التقدم",
+      results: "النتائج",
       messages: "الرسائل",
       menu: "فتح القائمة",
       menuClose: "إغلاق القائمة",
@@ -250,6 +259,7 @@
       workouts: "训练计划",
       nutrition: "营养",
       progress: "进度",
+      results: "成果",
       messages: "消息",
       menu: "打开菜单",
       menuClose: "关闭菜单",
@@ -373,6 +383,7 @@
           { key: "dailyNutrition", href: "/daily-nutrition.html", label: copy.dailyNutrition },
           { key: "nutrition", href: "/my-nutrition-plans.html", label: copy.nutrition },
           { key: "progress", href: "/progress.html", label: copy.progress },
+          { key: "results", href: "/results.html", label: copy.results },
         ],
       },
       {
@@ -505,7 +516,7 @@
     menuClose?.setAttribute("aria-label", copy.menuClose);
     if (menuClose) menuClose.textContent = copy.menuClose;
     backdrop?.setAttribute("aria-label", copy.menuClose);
-    for (const key of ["dashboard", "buildWorkout", "workouts", "tracker", "buildNutrition", "nutrition", "progress", "messages", "history", "settings", "plans"]) {
+    for (const key of ["dashboard", "buildWorkout", "workouts", "tracker", "buildNutrition", "nutrition", "progress", "results", "messages", "history", "settings", "plans"]) {
       const link = nav.querySelector(`[data-menu-key="${key}"]`);
       if (link) link.textContent = copy[key];
     }
@@ -820,6 +831,16 @@
       addProductNavigation(copy, language);
     }
     exposeIconActions();
+    const mainContent = document.querySelector("main");
+    if (mainContent && !document.querySelector(".skip-link")) {
+      if (!mainContent.id) mainContent.id = "mainContent";
+      mainContent.setAttribute("tabindex", "-1");
+      const skip = document.createElement("a");
+      skip.className = "skip-link";
+      skip.href = `#${mainContent.id}`;
+      skip.textContent = language === "he" ? "דילוג לתוכן" : "Skip to content";
+      document.body.prepend(skip);
+    }
     window.setTimeout(exposeIconActions, 500);
     window.setTimeout(exposeIconActions, 1500);
     prepareTables();

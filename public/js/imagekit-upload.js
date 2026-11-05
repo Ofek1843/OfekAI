@@ -9,9 +9,11 @@ async function authHeaders() {
   };
 }
 
-export async function getImageKitUploadAuth() {
+export async function getImageKitUploadAuth(input) {
   const response = await fetch("/api/imagekit/upload-auth", {
-    headers: await authHeaders()
+    method: "POST",
+    headers: await authHeaders(),
+    body: JSON.stringify(input)
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || "Could not prepare upload credentials.");
@@ -26,30 +28,26 @@ export async function directImageKitUpload({
   tags = [],
   onProgress
 }) {
-  const auth = await getImageKitUploadAuth();
-  const uploadPrefix = String(auth.uploadPrefix || "").replace(/\/$/, "");
+  const uid = auth.currentUser?.uid;
+  const prefix = `/fuelphysique/users/${uid}/`;
   const normalizedFolder = String(folder || "");
-  // Upload credentials are issued for the authenticated member's namespace.
-  // Do not let normal product code accidentally submit a cross-user or
-  // provider-root folder even though ImageKit accepts an arbitrary string.
-  if (!uploadPrefix || !normalizedFolder.startsWith(`${uploadPrefix}/`) || normalizedFolder.includes("..")) {
+  if (!uid || !normalizedFolder.startsWith(prefix)) {
     throw new Error("This upload destination is not available for your account.");
   }
+  const suffix = normalizedFolder.slice(prefix.length);
+  const match = /^progressPhotos\/([a-zA-Z0-9_-]{1,128})$/.exec(suffix);
+  const purpose = match ? "progress" : suffix === "social-profile" ? "profile" : null;
+  if (!purpose || (purpose === "progress" && !isPrivateFile)) throw new Error("Invalid photo upload.");
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file?.type) || file.size > 5242880) throw new Error("Photos must be JPEG, PNG or WebP and no larger than 5 MB.");
+  const authorization = await getImageKitUploadAuth({ purpose, entryId: match?.[1], mimeType: file.type });
   const form = new FormData();
   form.append("file", file, fileName || file.name || "upload.bin");
-  form.append("fileName", fileName || file.name || "upload.bin");
-  form.append("folder", normalizedFolder);
-  form.append("useUniqueFileName", "false");
-  form.append("isPrivateFile", String(Boolean(isPrivateFile)));
-  form.append("publicKey", auth.publicKey);
-  form.append("signature", auth.signature);
-  form.append("token", auth.token);
-  form.append("expire", String(auth.expire));
-  if (tags.length) form.append("tags", JSON.stringify(tags));
+  for (const [key, value] of Object.entries(authorization.uploadParams)) form.append(key, value);
+  form.append("token", authorization.token);
 
   const xhr = new XMLHttpRequest();
   return await new Promise((resolve, reject) => {
-    xhr.open("POST", "https://upload.imagekit.io/api/v1/files/upload");
+    xhr.open("POST", "https://upload.imagekit.io/api/v2/files/upload");
     xhr.upload.onprogress = event => {
       if (typeof onProgress === "function" && event.lengthComputable) {
         onProgress({ loaded: event.loaded, total: event.total });

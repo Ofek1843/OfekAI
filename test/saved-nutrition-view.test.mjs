@@ -38,7 +38,7 @@ test('older saved meals gain a newly added photo by catalog ID without changing 
   copy.plan.meals[0].options[0].mealId='simple-peanut-banana-bread';
   const before=structuredClone(copy);
   const {document}=parseHTML(savedNutritionMarkup(copy));
-  assert.equal(document.querySelector('.saved-meal-image')?.getAttribute('src'),'/images/meals/simple-peanut-banana-bread.webp');
+  assert.equal(new URL(document.querySelector('.saved-meal-image')?.getAttribute('src'),'https://fuelphysique.com').pathname,'/images/meals/simple-peanut-banana-bread.webp');
   assert.deepEqual(copy,before);
 });
 test('Hebrew labels and both owner-facing entry points use the same full saved-menu viewer',()=>{

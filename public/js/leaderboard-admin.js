@@ -32,4 +32,4 @@ async function review(card,item,status){
 }
 $("#reviewList").addEventListener("click",event=>{const card=event.target.closest(".review-card");if(!card)return;const item=submissions.find(s=>s.id===card.dataset.id);if(!item)return;if(event.target.closest(".load-video"))loadVideo(card,item);else if(event.target.closest(".approve"))review(card,item,"approved");else if(event.target.closest(".reject"))review(card,item,"rejected");});
 $("#refreshButton").addEventListener("click",load);
-onAuthStateChanged(auth,current=>{if(!current)return location.replace("/auth.html");if(!ADMIN_EMAILS.includes(String(current.email||"").toLowerCase())){$("#adminStatus").textContent="Access denied. This page is available only to a leaderboard administrator.";return;}user=current;load();});
+onAuthStateChanged(auth,current=>{if(!current)return location.replace("/auth.html");if(current.emailVerified!==true||!ADMIN_EMAILS.includes(String(current.email||"").toLowerCase())){$("#adminStatus").textContent="Access denied. This page is available only to a leaderboard administrator.";return;}user=current;load();});

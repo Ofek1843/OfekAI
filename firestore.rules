@@ -18,6 +18,7 @@ service cloud.firestore {
 
     function isLeaderboardAdmin() {
       return signedIn()
+        && request.auth.token.email_verified == true
         && request.auth.token.email == "ofek1845@gmail.com";
     }
 

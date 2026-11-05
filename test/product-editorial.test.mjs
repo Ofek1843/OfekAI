@@ -37,7 +37,7 @@ test('product editorial layer removes legacy deep ocean treatment', () => {
 
 test('service worker precaches the shared product editorial layer', () => {
   const sw = fs.readFileSync(path.join(root, 'public/sw.js'), 'utf8');
-  assert.match(sw, /fuelphysique-guest-dashboard-20261020-1/);
+  assert.match(sw, /fuelphysique-release-20261105-1/);
   assert.match(sw, /\/css\/product-editorial\.css\?v=20261020-calendar-1/);
   assert.match(sw, /\/css\/product-paper-routes\.css\?v=20261017-nutrition-nav-1/);
   assert.match(sw, /\/css\/simple-ux\.css\?v=20261010-workout-paper-2/);

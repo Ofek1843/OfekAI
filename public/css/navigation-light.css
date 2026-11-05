@@ -1,4 +1,14 @@
 /* Shared navigation: keep the same light-blue treatment on every route. */
+body .fp-global-nav .fp-global-brand::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin-inline-end: 8px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: url('/images/brand/fuelphysique-icon-192.png?v=20261031-brand') center / contain no-repeat;
+}
 body .fp-global-nav .fp-global-menu {
   background: #d0e3f0 !important;
   color: #132e43 !important;

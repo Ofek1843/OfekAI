@@ -1027,6 +1027,7 @@ if (data.program) {
   const requestedFocus = muscleFocusPayload();
   window.currentWorkoutProgram = {
     ...data.program,
+    replacementPreferences: {equipment: payload.equipment, trainingStyle: payload.trainingStyle, goal: payload.goal, experience: payload.experience},
     muscleFocusMode: data.program.muscleFocusMode || requestedFocus.muscleFocusMode,
     selectedMuscles: Array.isArray(data.program.selectedMuscles)
       ? data.program.selectedMuscles

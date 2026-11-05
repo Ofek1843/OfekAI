@@ -1,11 +1,12 @@
 import { openShoppingList } from "./shopping-list.mjs";
-// Read-only rendering of the saved snapshot. Never regenerate or replace meals.
+import { mountSavedReplacement, replaceSavedPlan } from './saved-plan-replacement.mjs';
+// Opening is read-only. Replacement is an explicit owner action, saved atomically.
 import {mealPhotoFor} from './meal-photo.mjs';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const numeric = value => value !== null && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
 const display = value => numeric(value) === null ? '—' : String(Math.round(Number(value) * 10) / 10);
 function text(value, he) { return typeof value === 'object' && value ? value[he?'he':'en'] || value.en || value.he || '' : value || ''; }
-export function savedNutritionMarkup(saved, language = 'en') {
+export function savedNutritionMarkup(saved, language = 'en', editable = false) {
   const he = language === 'he', plan = saved.plan || {}, meals = Array.isArray(plan.meals) ? plan.meals : [];
   const labels = he ? ['קלוריות','חלבון','פחמימות','שומן'] : ['Calories','Protein','Carbohydrates','Fat'];
   const keys = ['calories','proteinGrams','carbsGrams','fatGrams'];
@@ -28,10 +29,10 @@ export function savedNutritionMarkup(saved, language = 'en') {
         <p class="saved-meal-macros">${values.map((value,i)=>`<span class="saved-macro saved-macro-${i}">${labels[i]}: ${display(value)} ${i?'g':'kcal'}</span>`).join('')}</p>
         ${differs?`<p role="status">${he?'הסיכום השמור שונה מסכום הרכיבים. מוצג סכום הרכיבים; הרשומה המקורית לא שונתה.':'The saved summary differs from the ingredient sum. Ingredient totals are shown; the original snapshot is unchanged.'}</p>`:''}
         ${option.keepsPlanValid===false?`<p role="status">${he?'החלופה השמורה הזאת אינה מאוזנת ליעד היומי.':'This saved alternative is not balanced for the daily target.'}</p>`:''}
-        ${foods.length?`<div class="saved-food-table"><table><thead><tr><th>${he?'מזון':'Food'}</th><th>${he?'כמות':'Amount'}</th>${labels.map(label=>`<th>${label}</th>`).join('')}</tr></thead><tbody>${foods.map(food=>`<tr><th scope="row">${esc(text(food.name || food.foodName,he))}</th><td>${esc(food.amount ?? (numeric(food.grams)!==null?`${food.grams} g`:'—'))}${typeof food.amount==='number'&&food.unit?' '+esc(food.unit):''}</td>${keys.map((key,i)=>`<td>${display(food[key])} ${i?'g':'kcal'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<p role="status">${he?'ברשומה הישנה לא נשמר פירוט רכיבים. מוצגים הפרטים שנשמרו בלבד.':'This older snapshot has no ingredient breakdown. Only saved details are shown.'}</p>`}
+        ${foods.length?`<div class="saved-food-table" tabindex="0" role="region" aria-label="${he?'רכיבי הארוחה וערכים תזונתיים':'Meal ingredients and nutrition'}"><table><thead><tr><th>${he?'מזון':'Food'}</th><th>${he?'כמות':'Amount'}</th>${labels.map(label=>`<th>${label}</th>`).join('')}</tr></thead><tbody>${foods.map(food=>`<tr><th scope="row">${esc(text(food.name || food.foodName,he))}</th><td>${esc(food.amount ?? (numeric(food.grams)!==null?`${food.grams} g`:'—'))}${typeof food.amount==='number'&&food.unit?' '+esc(food.unit):''}</td>${keys.map((key,i)=>`<td>${display(food[key])} ${i?'g':'kcal'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<p role="status">${he?'ברשומה הישנה לא נשמר פירוט רכיבים. מוצגים הפרטים שנשמרו בלבד.':'This older snapshot has no ingredient breakdown. Only saved details are shown.'}</p>`}
         ${option.preparation||meal.preparation?`<p>${esc(text(option.preparation||meal.preparation,he))}</p>`:''}`;
     };
-    return `<section class="saved-meal"><h3>${index+1}. ${esc(text(meal.name || meal.title || chosen.mealName || chosen.name || (he?'ארוחה':'Meal'),he))}</h3>${optionMarkup(chosen)}${options.filter(o=>o!==chosen).map((option,i)=>`<details><summary>${he?'חלופה שמורה':'Saved alternative'} ${i+1}</summary>${optionMarkup(option)}</details>`).join('')}</section>`;
+    return `<section class="saved-meal"><h3>${index+1}. ${esc(text(meal.name || meal.title || chosen.mealName || chosen.name || (he?'ארוחה':'Meal'),he))}</h3>${editable && chosen.optionNumber && meal.mealNumber?`<button type="button" class="saved-replace-button" data-replace-meal="${esc(meal.mealNumber)}" data-option-number="${esc(chosen.optionNumber)}">${he?'החלפת ארוחה':'Replace meal'}</button>`:''}${optionMarkup(chosen)}${options.filter(o=>o!==chosen).map((option,i)=>`<details><summary>${he?'חלופה שמורה':'Saved alternative'} ${i+1}</summary>${optionMarkup(option)}</details>`).join('')}</section>`;
   }).join('');
   const target=saved.targetSummary || plan;
   const sameCalories = meals.length > 0 && complete[0] && numeric(target.dailyCalories) !== null && display(target.dailyCalories) === display(totals[0]);
@@ -39,17 +40,28 @@ export function savedNutritionMarkup(saved, language = 'en') {
     <dl class="saved-nutrition-summary">${sameCalories?'':`<div><dt>${he?'יעד קלורי יומי':'Daily calorie target'}</dt><dd>${display(target.dailyCalories)} kcal</dd></div>`}<div><dt>${sameCalories?(he?'יעד יומי וקלוריות בתפריט':'Daily target and saved menu calories'):(he?'קלוריות בארוחות השמורות':'Saved menu calories')}</dt><dd>${meals.length&&complete[0]?display(totals[0]):'—'} kcal</dd></div><div><dt>${he?'חלבון בארוחות השמורות':'Saved menu protein'}</dt><dd>${meals.length&&complete[1]?display(totals[1]):'—'} g</dd></div></dl>
     ${cards||`<p role="status">${he?'ברשומה הזו לא נשמרו ארוחות. לא ניתן לשחזר מאכלים מכותרת וסיכום בלבד.':'This snapshot contains no meals. Foods cannot be reconstructed from a title and totals alone.'}</p>`}`;
 }
-export function openSavedNutrition(saved, language = 'en') {
+export function openSavedNutrition(saved, language = 'en', user = null, options = {}) {
   document.querySelector('#savedNutritionDialog')?.remove();
   const dialog=document.createElement('dialog'), he=language==='he';
   dialog.id='savedNutritionDialog'; dialog.className='saved-nutrition-dialog'; dialog.dir=he?'rtl':'ltr';
   const name=saved.name||saved.plan?.planName||(he?'תוכנית תזונה':'Nutrition plan');
   dialog.setAttribute('aria-label',name);
-  dialog.innerHTML=`<header><h2>${esc(name)}</h2><button type="button" data-close aria-label="${he?'סגירה':'Close'}">×</button></header><div class="saved-nutrition-body"><button type="button" class="saved-shopping-button">${he?"רשימת קניות":"Shopping list"}</button>${savedNutritionMarkup(saved,language)}</div>`;
+  const editable = !!user?.uid && !!saved.id;
+  dialog.innerHTML=`<header><h2>${esc(name)}</h2><button type="button" data-close aria-label="${he?'סגירה':'Close'}">×</button></header><div class="saved-nutrition-body"><button type="button" class="saved-shopping-button">${he?"רשימת קניות":"Shopping list"}</button><div data-meals>${savedNutritionMarkup(saved,language,editable)}</div></div>`;
   document.body.append(dialog);
   dialog.querySelector('.saved-shopping-button').addEventListener('click',()=>openShoppingList(saved.plan || {},language));
+  const replacement = mountSavedReplacement(dialog, { kind: 'nutrition', saved, user, language,
+    replace: async (target, context, signal) => {
+      await replaceSavedPlan({ ...options.replacement, kind: 'nutrition', saved, user, target, context, language, signal });
+      dialog.querySelector('[data-meals]').innerHTML = savedNutritionMarkup(saved, language, editable);
+    }, onSaved: options.onSaved });
+  dialog.addEventListener('click', event => {
+    const button = event.target.closest('[data-replace-meal]');
+    if (button) replacement?.open({ mealNumber: Number(button.dataset.replaceMeal), optionNumber: Number(button.dataset.optionNumber) }, button,
+      button.closest('.saved-meal').querySelector('h4')?.textContent || '');
+  });
   dialog.querySelector('[data-close]').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('close',()=>dialog.remove(),{once:true});
-  dialog.showModal(); dialog.querySelector('[data-close]').focus();
+  const heading=dialog.querySelector('h2'); heading.id=dialog.id+'Title'; dialog.setAttribute('aria-labelledby',heading.id); dialog.showModal(); dialog.querySelector('[data-close]').focus();
   return dialog;
 }

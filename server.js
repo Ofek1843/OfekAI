@@ -1,4 +1,6 @@
 require("dotenv").config();
+const { assertProductionRuntime } = require("./lib/production-runtime-policy");
+assertProductionRuntime();
 
 // Local demo mode is deliberately opt-in and server-controlled. When it is
 // enabled, make the emulator endpoints available before Firebase-dependent
@@ -120,6 +122,9 @@ const {
 } = require("./lib/runtime-guards");
 
 const app = express();
+// Render terminates requests at its nearest reverse proxy. Express reads the
+// nearest forwarded hop; never trust the caller-controlled leftmost address.
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
 const SERVER_HOST = localDemoMode
   ? String(process.env.LOCAL_REVIEW_BIND_HOST || "127.0.0.1").trim()
@@ -130,7 +135,6 @@ const AI_MAX_CONCURRENT = Number(process.env.AI_MAX_CONCURRENT || 2);
 const AI_MAX_QUEUE = Number(process.env.AI_MAX_QUEUE || 4);
 const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS || 180000);
 const mockExternalServices = String(process.env.MOCK_EXTERNAL_SERVICES || "").toLowerCase() === "true";
-const uploadAuthTtlSeconds = Number(process.env.IMAGEKIT_UPLOAD_AUTH_TTL_SECONDS || 1800);
 const imageKitUploadCache = createTtlCache({ maxEntries: 32, ttlMs: 60 * 60 * 1000 });
 const rateLimiters = {
   ai: createRateLimiter({ windowMs: 60_000, max: Number(process.env.AI_PER_UID_PER_MINUTE || 6), keyPrefix: "ai" }),
@@ -814,7 +818,7 @@ async function requireFirebaseUser(req, res) {
         return null;
       }
     }
-    return { uid, email, authTime, createdAt };
+    return { uid, email, emailVerified: data.users[0].emailVerified === true, authTime, createdAt };
   } catch (error) {
     console.error("Firebase token verification failed:", error.message);
     res.status(401).json({ error: "Your session is invalid or expired." });
@@ -949,7 +953,10 @@ app.put("/api/daily-nutrition/day/:dateKey", async (req, res) => {
   }
 });
 
-app.get("/api/imagekit/upload-auth", async (req, res) => {
+app.get("/api/imagekit/upload-auth", (_req, res) => {
+  res.status(410).json({ error: "Please refresh the page before uploading a photo." });
+});
+app.post("/api/imagekit/upload-auth", async (req, res) => {
   const user = await requireFirebaseUser(req, res);
   if (!user) return;
   try {
@@ -957,16 +964,9 @@ app.get("/api/imagekit/upload-auth", async (req, res) => {
     const config = imageKitConfig();
     const client = imageKitClient();
     if (!config || !client) return res.status(503).json({ error: "Photo storage is temporarily unavailable. Please try again shortly." });
-    const token = crypto.randomUUID();
-    const expire = Math.floor(Date.now() / 1000) + uploadAuthTtlSeconds;
-    const auth = client.helper.getAuthenticationParameters(token, expire);
-    res.json({
-      publicKey: config.publicKey,
-      token: auth.token || token,
-      expire: auth.expire || expire,
-      signature: auth.signature,
-      uploadPrefix: `/fuelphysique/users/${user.uid}`
-    });
+    const { createImageUploadAuth } = require("./lib/image-upload-auth");
+    res.setHeader("Cache-Control", "no-store");
+    res.json(createImageUploadAuth(user.uid, req.body, config));
   } catch (error) {
     console.error("ImageKit upload auth error:", error.message);
     res.status(error.status || 500).json({ error: "Could not create upload credentials." });
@@ -1037,9 +1037,8 @@ function userLeaderboardPath(uid, submissionId = "") {
 }
 
 function isLeaderboardAdmin(user) {
-  const allowed = String(process.env.LEADERBOARD_ADMIN_EMAILS || "leaderboard@fuelphysique.com")
-    .split(",").map(value => value.trim().toLowerCase()).filter(Boolean);
-  return allowed.includes(String(user?.email || "").toLowerCase());
+  return require("./lib/admin-authorization").isVerifiedAdmin(user,
+    process.env.LEADERBOARD_ADMIN_EMAILS || "leaderboard@fuelphysique.com");
 }
 
 // Manual, admin-gated connectivity check for the OpenAI integration. Calls

@@ -8,6 +8,7 @@ export const planNavigation = [
   ['diary', '/daily-nutrition.html', 'clipboard'],
   ['exercises', '/exercise-library', 'player-play'],
   ['progress', '/progress.html', 'chart-bar'],
+  ['results', '/results.html', 'chart-bar'],
   ['messages', '/social.html', 'message-circle'],
   ['guides', '/faq.html', 'book'],
   ['settings', '/app.html?settings=open', 'settings'],

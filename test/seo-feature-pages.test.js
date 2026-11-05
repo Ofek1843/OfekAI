@@ -139,12 +139,18 @@ test("all local links, CTA destinations, assets and in-page anchors exist", () =
   }
 });
 
-test("homepage previews are reused without unresolved translation templates", () => {
+test("public previews remain deterministic without homepage JavaScript or unresolved templates", () => {
   for (const name of ["workout", "nutrition", "diary", "tracker", "progress"]) {
     const markup = previewMarkup(name);
     assert.doesNotMatch(markup, /\$\{|<script|<input|<button/);
     assert.ok(markup.length > 300);
   }
+  assert.throws(() => previewMarkup("toString"), /Unknown product preview/);
+  const { mealExample } = require("../lib/seo-feature-examples");
+  const nutrition = previewMarkup("nutrition");
+  assert.ok(nutrition.includes(`${mealExample[0].optionCalories} kcal`));
+  assert.ok(nutrition.includes(`${mealExample[0].optionProteinGrams} g protein`));
+  assert.doesNotMatch(fs.readFileSync(path.join(__dirname, "../lib/seo-feature-pages.js"), "utf8"), /simple-ux\.js/);
 });
 
 test("public routing works without auth; aliases redirect, unknown routes are real 404s", async t => {

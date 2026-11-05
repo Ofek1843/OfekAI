@@ -1,0 +1,41 @@
+/* Keyboard focus and measured contrast corrections, without a visual overlay. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #064c85 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 6px #fff !important;
+  scroll-margin-block: 100px;
+}
+.skip-link { position: fixed; inset-block-start: 8px; inset-inline-start: 8px; z-index: 100000; padding: 12px 18px; background: #fff; color: #083f73; border: 2px solid #083f73; transform: translateY(-180%); }
+.skip-link:focus { transform: none; }
+body.fp-route-index .navbar .logo > span:first-of-type { color: #132e43 !important; }
+body.fp-route-index .navbar .logo > span:last-of-type,
+body.fp-route-index .footer-brand i { color: #064b85 !important; }
+body.fp-route-index .badge { color: #064b85 !important; }
+html body.landing-page.fp-route-index .result-duration { color:#07518b !important; }
+html body.landing-page.fp-v45-deep-ocean.fp-route-index > .navbar .logo span:last-child,
+html body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero .badge { color:#053456 !important; -webkit-text-fill-color:#053456 !important; }
+body #authSeparator { color: #566474 !important; }
+body.fp-route-nutrition-builder #nutrition-builder-form label > span,
+body.fp-route-nutrition-builder label .fp-v47-gender-card,
+body.fp-route-nutrition-builder .fp-v47-gender-card strong { color: #263f50 !important; }
+body.fp-route-nutrition-builder .fp-v47-gender-card small { color: #465d6d !important; }
+body [data-copy="examples"] { color: #465d6d !important; }
+body.fp-route-index .landing-footer i { color: #064b85 !important; }
+.drawer-close { display:none; }
+@media (max-width:650px) { .sidebar .drawer-close { display:block; margin:0 14px 12px; min-height:44px; padding:8px 14px; color:#153247; background:#fff; border:1px solid #91b9d5; } }
+@media (max-width:650px) {
+  .dashboard-editorial .sidebar[inert] { display:none; }
+  .dashboard-editorial .topbar { padding-inline:12px; gap:8px; }
+  .dashboard-editorial .topbar .wordmark { font-size:clamp(20px, 5.5vw, 28px); }
+  .dashboard-editorial .topbar .wordmark::before { width:26px; height:26px; margin-inline-end:6px; }
+  .dashboard-editorial .account-area { min-width:0; flex-shrink:0; }
+}
+@media (max-width:760px) {
+  body .site-feedback-widget { bottom:calc(var(--fp-consent-height, 0px) + 82px) !important; }
+  body:has(#fp-analytics-consent) .fp-global-nav { bottom:calc(var(--fp-consent-height, 240px) + 24px) !important; }
+}
+.visual-choice-card:focus-within, .fp-v47-gender-card:focus-within { outline: 3px solid #0866bd !important; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

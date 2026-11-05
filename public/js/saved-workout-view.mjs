@@ -1,3 +1,4 @@
+import { mountSavedReplacement, replaceSavedPlan } from './saved-plan-replacement.mjs';
 import { muscleAnatomySvg } from './muscle-anatomy.mjs';
 import { exerciseImageUrl, fallbackExerciseImageUrl } from './exercise-image.js';
 import { setExerciseMedia } from './exercise-media.js';
@@ -10,7 +11,7 @@ const genericNotes = new Set([
 ]);
 const visibleExerciseNote = note => typeof note === 'string' && !genericNotes.has(note.trim()) ? note.trim() : '';
 const muscles = { chest:'חזה',back:'גב',delts:'כתפיים',rear_delts:'כתף אחורית',biceps:'יד קדמית',triceps:'יד אחורית',quads:'ארבע ראשי',hamstrings:'ירך אחורית',glutes:'ישבן',calves:'תאומים',core:'ליבה',traps:'טרפז',adductors:'מקרבים',abductors:'מרחיקים' };
-export function workoutReviewMarkup(program, weeklyVolume, language = 'en', selected = 'day-0') {
+export function workoutReviewMarkup(program, weeklyVolume, language = 'en', selected = 'day-0', editable = false) {
   const he = language === 'he';
   const sessions = program.sessions || [];
   const volume = weeklyVolume ? `<section class="saved-volume"><h3>${he?'סטים שבועיים לפי שריר':'Weekly sets by muscle'}</h3>
@@ -28,16 +29,17 @@ export function workoutReviewMarkup(program, weeklyVolume, language = 'en', sele
   const tabs = sessions.map((session,index) => ({key:`day-${index}`,label:session.name||session.title||`${he?'אימון':'Session'} ${index+1}`,detail:`${(session.exercises||[]).length} ${he?'תרגילים':'exercises'}`}));
   tabs.push({key:'volume',label:he?'סטים שבועיים':'Weekly sets',detail:he?'סיכום לפי שריר':'Muscle breakdown'});
   if (!tabs.some(tab=>tab.key===selected)) selected=tabs[0].key;
-  return `<div class="saved-workout-content"><nav class="saved-workout-nav" role="tablist" aria-orientation="vertical" aria-label="${he?'ימי התוכנית וסיכום':'Plan days and summary'}">${tabs.map((tab,index)=>`<button type="button" role="tab" id="saved-tab-${tab.key}" aria-controls="saved-workout-panel" aria-selected="${tab.key===selected}" tabindex="${tab.key===selected?0:-1}" data-workout-tab="${tab.key}"><span class="saved-tab-number">${tab.key==='volume'?'Σ':index+1}</span><span><strong>${esc(tab.label)}</strong><small>${esc(tab.detail)}</small></span></button>`).join('')}</nav><div class="saved-workout-pane" role="tabpanel" id="saved-workout-panel" aria-labelledby="saved-tab-${selected}" tabindex="0">${selected==='volume'?volume:sessions.filter((_,index)=>selected===`day-${index}`).map((session,index) => `<section class="saved-session"><h3>${esc(session.name||session.title||tabs.find(tab=>tab.key===selected)?.label)}</h3><div class="saved-exercises">${(session.exercises||[]).map(exercise => `<article class="saved-exercise"><figure><img src="${esc(exerciseImageUrl(exercise))}" data-fallback-src="${fallbackExerciseImageUrl()}" alt="${esc(exercise.name||exercise.exerciseName||exercise.exercise)} — ${he?'תנוחת התחלה וסיום':'start and end positions'}" loading="lazy"></figure><div><h4>${esc(exercise.name||exercise.exerciseName||exercise.exercise)}</h4><p>${esc(exercise.muscleGroup||'')} ${exercise.equipment?' · '+esc(exercise.equipment):''}</p><dl><div><dt>${he?'סטים':'Sets'}</dt><dd>${esc(exercise.sets)}</dd></div><div><dt>RIR</dt><dd>${esc(exercise.rir??'1–3')}</dd></div><div><dt>${he?'מנוחה':'Rest'}</dt><dd>${esc(exercise.restSeconds||exercise.rest||'—')} ${exercise.restSeconds?'s':''}</dd></div></dl>${visibleExerciseNote(exercise.notes)?'<p>'+esc(visibleExerciseNote(exercise.notes))+'</p>':''}</div></article>`).join('')}</div></section>`).join('')}</div></div>`;
+  return `<div class="saved-workout-content"><nav class="saved-workout-nav" role="tablist" aria-orientation="vertical" aria-label="${he?'ימי התוכנית וסיכום':'Plan days and summary'}">${tabs.map((tab,index)=>`<button type="button" role="tab" id="saved-tab-${tab.key}" aria-controls="saved-workout-panel" aria-selected="${tab.key===selected}" tabindex="${tab.key===selected?0:-1}" data-workout-tab="${tab.key}"><span class="saved-tab-number">${tab.key==='volume'?'Σ':index+1}</span><span><strong>${esc(tab.label)}</strong><small>${esc(tab.detail)}</small></span></button>`).join('')}</nav><div class="saved-workout-pane" role="tabpanel" id="saved-workout-panel" aria-labelledby="saved-tab-${selected}" tabindex="0">${selected==='volume'?volume:sessions.filter((_,index)=>selected===`day-${index}`).map((session,index) => `<section class="saved-session"><h3>${esc(session.name||session.title||tabs.find(tab=>tab.key===selected)?.label)}</h3><div class="saved-exercises">${(session.exercises||[]).map((exercise,exerciseIndex) => `<article class="saved-exercise"><figure><img src="${esc(exerciseImageUrl(exercise))}" data-fallback-src="${fallbackExerciseImageUrl()}" alt="${esc(exercise.name||exercise.exerciseName||exercise.exercise)} — ${he?'תנוחת התחלה וסיום':'start and end positions'}" loading="lazy"></figure><div><h4>${esc(exercise.name||exercise.exerciseName||exercise.exercise)}</h4><p>${esc(exercise.muscleGroup||'')} ${exercise.equipment?' · '+esc(exercise.equipment):''}</p><dl><div><dt>${he?'סטים':'Sets'}</dt><dd>${esc(exercise.sets)}</dd></div><div><dt>RIR</dt><dd>${esc(exercise.rir??'1–3')}</dd></div><div><dt>${he?'מנוחה':'Rest'}</dt><dd>${esc(exercise.restSeconds||exercise.rest||'—')} ${exercise.restSeconds?'s':''}</dd></div></dl>${editable?`<button type="button" class="saved-replace-button" data-replace-exercise="${exerciseIndex}" data-session-index="${Number(selected.replace('day-',''))}">${he?'החלפת תרגיל':'Replace exercise'}</button>`:''}${visibleExerciseNote(exercise.notes)?'<p>'+esc(visibleExerciseNote(exercise.notes))+'</p>':''}</div></article>`).join('')}</div></section>`).join('')}</div></div>`;
 }
-export async function openSavedWorkout(saved, user, language = 'en') {
+export async function openSavedWorkout(saved, user, language = 'en', options = {}) {
   const he = language === 'he';
   document.querySelector('#savedWorkoutDialog')?.remove();
   const dialog = document.createElement('dialog');
   dialog.id = 'savedWorkoutDialog'; dialog.className = 'saved-workout-dialog';
   const name = saved.name || saved.plan?.programName || (he?'תוכנית אימון':'Workout plan');
   dialog.setAttribute('aria-label', name);
-  const local = calculateSavedWeeklySets(saved.plan||{});
+  let local = calculateSavedWeeklySets(saved.plan||{});
+  const editable = !!user?.uid && !!saved.id;
   let selected=local.program.sessions?.length?'day-0':'volume';
   let displayedVolume=local.weeklyVolume;
   const render=()=>{
@@ -45,7 +47,7 @@ export async function openSavedWorkout(saved, user, language = 'en') {
     const focused=document.activeElement?.dataset?.workoutTab;
     const sameTab=content.querySelector('[aria-selected="true"]')?.dataset.workoutTab===selected;
     const scroll=content.querySelector('.saved-workout-pane')?.scrollTop||0;
-    content.innerHTML=workoutReviewMarkup(local.program,displayedVolume,language,selected);
+    content.innerHTML=workoutReviewMarkup(local.program,displayedVolume,language,selected,editable);
     const session = local.program.sessions?.[Number(selected.replace('day-', ''))];
     const recipient = ['male','female'].includes(local.program.recipientGender)
       ? local.program.recipientGender
@@ -58,8 +60,8 @@ export async function openSavedWorkout(saved, user, language = 'en') {
     if(focused)content.querySelector(`[data-workout-tab="${focused}"]`)?.focus();
   };
   dialog.dir=he?'rtl':'ltr';
-  dialog.innerHTML = `<header class="saved-workout-header"><h2>${esc(name)}</h2><button type="button" data-close aria-label="${he?'סגירה':'Close'}">×</button></header><div data-content>${workoutReviewMarkup(local.program,local.weeklyVolume,language)}</div>`;
-  document.body.append(dialog); dialog.showModal();
+  dialog.innerHTML = `<header class="saved-workout-header"><h2>${esc(name)}</h2><button type="button" data-close aria-label="${he?'סגירה':'Close'}">×</button></header><div data-content>${workoutReviewMarkup(local.program,local.weeklyVolume,language,selected,editable)}</div>`;
+  document.body.append(dialog); const heading=dialog.querySelector('h2'); heading.id=dialog.id+'Title'; dialog.setAttribute('aria-labelledby',heading.id); dialog.showModal();
   dialog.querySelector('[data-close]').onclick = () => dialog.close();
   dialog.addEventListener('close', () => { dialog.remove(); }, {once:true});
   dialog.addEventListener('error', event => {
@@ -83,6 +85,20 @@ export async function openSavedWorkout(saved, user, language = 'en') {
     event.preventDefault();tabs[next].click();
   });
   let requestId=0;
+  const replacement = mountSavedReplacement(dialog, { kind: 'workout', saved, user, language,
+    replace: async (target, context, signal) => {
+      const result = await replaceSavedPlan({ ...options.replacement, kind: 'workout', saved, user, target, context, language, program: local.program, signal });
+      ++requestId;
+      local = calculateSavedWeeklySets(result.plan);
+      displayedVolume = result.weeklyVolume || local.weeklyVolume;
+      render();
+    }, onSaved: options.onSaved });
+  dialog.addEventListener('click', event => {
+    const button = event.target.closest('[data-replace-exercise]');
+    if (!button) return;
+    const sessionIndex = Number(button.dataset.sessionIndex), exerciseIndex = Number(button.dataset.replaceExercise);
+    replacement?.open({ sessionIndex, exerciseIndex }, button, local.program.sessions[sessionIndex].exercises[exerciseIndex].name || '');
+  });
   async function loadReview(){
    const id=++requestId;
    try {
@@ -104,4 +120,5 @@ export async function openSavedWorkout(saved, user, language = 'en') {
   }
   }
   await loadReview();
+  return dialog;
 }

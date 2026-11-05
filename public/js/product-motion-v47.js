@@ -66,14 +66,10 @@
         card.classList.add("fp-v47-choice", "fp-v47-reveal");
         card.style.setProperty("--fp-v47-delay", `${Math.min(index * 55, 330)}ms`);
         const input = card.querySelector("input");
-        card.setAttribute("aria-checked", String(Boolean(input?.checked)));
-        card.setAttribute("role", input?.type === "checkbox" ? "checkbox" : "radio");
-        card.tabIndex = input?.checked ? 0 : -1;
-        card.addEventListener("keydown", (event) => {
-          if (event.key !== " " && event.key !== "Enter") return;
-          event.preventDefault();
-          input?.click();
-        });
+        card.setAttribute("data-checked", String(Boolean(input?.checked)));
+        card.removeAttribute("role");
+        card.removeAttribute("tabindex");
+
       });
     });
   }
@@ -85,6 +81,7 @@
     if (!options.length) return;
     select.dataset.fpV47Choices = "true";
     select.classList.add("visually-hidden-select");
+    select.tabIndex = -1;
     const grid = document.createElement("div");
     grid.className = "fp-v47-select-grid";
     grid.setAttribute("role", "radiogroup");
@@ -94,11 +91,11 @@
       return `<button class="fp-v47-select-card" type="button" role="radio" aria-checked="${select.value === option.value}" data-value="${option.value}" style="--fp-v47-delay:${Math.min(index * 45, 270)}ms"><strong>${label}</strong></button>`;
     }).join("");
     select.closest("label")?.append(grid) || select.parentElement?.append(grid);
-    const sync = () => grid.querySelectorAll("[data-value]").forEach((card) => {
+    const sync = () => grid.querySelectorAll("[data-value]").forEach((card, index) => {
       const selected = card.dataset.value === select.value;
       card.setAttribute("aria-checked", String(selected));
       card.classList.toggle("fp-v47-selected", selected);
-      card.tabIndex = 0;
+      card.tabIndex = selected || (!select.value && index === 0) ? 0 : -1;
     });
     grid.addEventListener("click", (event) => {
       const card = event.target.closest("[data-value]");
@@ -108,6 +105,15 @@
       sync();
     });
     select.addEventListener("change", sync);
+    grid.addEventListener("keydown", (event) => {
+      const cards = [...grid.querySelectorAll("[data-value]")];
+      const index = cards.indexOf(event.target);
+      if (index < 0 || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const backwards = event.key === "ArrowUp" || (event.key === "ArrowLeft" && document.documentElement.dir !== "rtl") || (event.key === "ArrowRight" && document.documentElement.dir === "rtl");
+      const next = event.key === "Home" ? 0 : event.key === "End" ? cards.length - 1 : (index + (backwards ? -1 : 1) + cards.length) % cards.length;
+      cards[next].click(); cards[next].focus();
+    });
     sync();
   }
 
@@ -128,7 +134,7 @@
       : (isTrainingContext
         ? [["male", "Male", "Optional plan context"], ["female", "Female", "Optional plan context"]]
         : [["male", "Male", "Use the male calculation profile"], ["female", "Female", "Use the female calculation profile"]]);
-    grid.innerHTML = copy.map(([value, title, detail], index) => `<label class="fp-v47-gender-card" data-gender="${value}" aria-checked="${select.value === value}"><input type="radio" name="visualGender" value="${value}"${select.value === value ? " checked" : ""}><img class="fp-v47-gender-image" src="/assets/athlete-motion/v43/plate/normalized/frame-0${index + 1}.webp" alt="" width="96" height="120"><span><strong>${title}</strong><small>${detail}</small></span></label>`).join("");
+    grid.innerHTML = copy.map(([value, title, detail], index) => `<label class="fp-v47-gender-card" data-gender="${value}" data-checked="${select.value === value}"><input type="radio" name="visualGender" value="${value}"${select.value === value ? " checked" : ""}><img class="fp-v47-gender-image" src="/assets/athlete-motion/v43/plate/normalized/frame-0${index + 1}.webp" alt="" width="96" height="120"><span><strong>${title}</strong><small>${detail}</small></span></label>`).join("");
     // Avoid nested labels: each radio owns its own visible label.
     const host = select.closest("label") || select;
     host.after(grid);
@@ -139,14 +145,14 @@
     }));
     grid.querySelectorAll("input").forEach((input) => input.addEventListener("change", () => {
       select.value = input.value;
-      grid.querySelectorAll(".fp-v47-gender-card").forEach((card) => card.setAttribute("aria-checked", String(card.dataset.gender === input.value)));
+      grid.querySelectorAll(".fp-v47-gender-card").forEach((card) => card.setAttribute("data-checked", String(card.dataset.gender === input.value)));
       grid.querySelectorAll(".fp-v47-gender-card").forEach((card) => card.classList.toggle("fp-v47-selected", card.dataset.gender === input.value));
       select.dispatchEvent(new Event("change", { bubbles: true }));
     }));
     select.addEventListener("change", () => {
       grid.querySelectorAll("input").forEach((input) => {
         input.checked = input.value === select.value;
-        input.closest("label").setAttribute("aria-checked", String(input.checked));
+        input.closest("label").setAttribute("data-checked", String(input.checked));
       });
     });
   }
@@ -172,7 +178,7 @@
       const card = event.target.closest(".visual-choice-card");
       if (card && !card.closest('[data-native-controls]')) {
         const group = card.parentElement;
-        group?.querySelectorAll(":scope > .visual-choice-card").forEach((item) => { const input = item.querySelector("input"); item.setAttribute("aria-checked", String(Boolean(input?.checked))); item.tabIndex = input?.checked ? 0 : -1; });
+        group?.querySelectorAll(":scope > .visual-choice-card").forEach((item) => { const input = item.querySelector("input"); item.setAttribute("data-checked", String(Boolean(input?.checked))); item.removeAttribute("tabindex"); });
         card.classList.remove("fp-v47-selected"); requestAnimationFrame(() => card.classList.add("fp-v47-selected"));
       }
     });

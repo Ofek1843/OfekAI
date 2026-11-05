@@ -130,8 +130,13 @@ test("mobile landing gives distinct entry actions and clearly labels every plan 
   assert.match(auth, /get\("mode"\) === "signup"/);
 });
 
-test("landing contains both verified transformation stories and comparison labels", () => {
-  const html = read("public/index.html");
+test("results page keeps both transformation stories without stretching photos", () => {
+  const landing = read("public/index.html");
+  const html = read("public/results.html");
+  const css = read("public/css/results.css");
+
+  assert.match(landing, /href="\/results\.html"/);
+  assert.doesNotMatch(landing, /data-result-story|results-section/);
 
   assert.match(html, /data-result-story="user-transformation"/);
   assert.match(html, /data-result-story="two-month-transformation"/);
@@ -145,11 +150,10 @@ test("landing contains both verified transformation stories and comparison label
   assert.match(html, /landingResultTwoMonths/);
   assert.match(html, /landingResultTwoTitle/);
   assert.match(html, /Individual results vary/);
-  assert.equal((html.match(/data-comparison-slider/g) || []).length, 2);
-  assert.equal((html.match(/class="comparison-range"/g) || []).length, 2);
-  assert.equal((html.match(/value="50"/g) || []).length, 2);
-  assert.equal((html.match(/comparison-hint/g) || []).length, 2);
-  assert.match(html, /landingCompareHint/);
+  assert.match(html, /src="\/js\/results\.mjs"/);
+  assert.match(read("public/js/results.mjs"), /applyDocumentTranslations\(initializeLanguage\(\)\)/);
+  assert.match(css, /object-fit: contain/);
+  assert.doesNotMatch(css, /transform:\s*scale/);
 });
 
 test("dashboard public progress teaser markup was removed", () => {
@@ -184,12 +188,12 @@ test("new landing translation keys exist in English and Hebrew fallbacks", () =>
   assert.match(landingJs, /שינוי במשך חודשיים/);
 });
 
-test("landing transformation community CTA exists in English and Hebrew", () => {
-  const html = read("public/index.html");
+test("results page transformation community CTA exists in English and Hebrew", () => {
+  const html = read("public/results.html");
   const landingJs = read("public/js/landing.js");
   const i18n = read("public/js/i18n.js");
 
-  assert.match(html, /class="transformation-invite"/);
+  assert.match(html, /class="results-invite"/);
   assert.match(html, /href="\/transformation-submit\.html"/);
   assert.match(html, /landingTransformationInviteTitle/);
   assert.match(html, /landingTransformationInviteButton/);

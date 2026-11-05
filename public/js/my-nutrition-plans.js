@@ -3,7 +3,7 @@ import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { guardProtectedPage } from "./verification-gate.js";
-import { openSavedNutrition } from './saved-nutrition-view.mjs?v=20261030-macros-1';
+import { openSavedNutrition } from './saved-nutrition-view.mjs?v=20261105-replace-1';
 
 const grid = document.querySelector("#plansGrid");
 const status = document.querySelector("#plansStatus");
@@ -74,7 +74,7 @@ function render() {
     actions?.insertAdjacentHTML("afterbegin", `<a class="edit-button" href="/manual-nutrition-builder.html?edit=${encodeURIComponent(saved.id)}">${ui.edit}</a><a class="duplicate-button" href="/manual-nutrition-builder.html?duplicate=${encodeURIComponent(saved.id)}">${ui.duplicate}</a>`);
   });
   grid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => button.addEventListener("click", () => activate(button.closest(".plan-card").dataset.id)));
-  grid.querySelectorAll('.view-nutrition-button').forEach(button=>button.addEventListener('click',()=>openSavedNutrition(plans.find(plan=>plan.id===button.closest('.plan-card').dataset.id),isHebrew?'he':'en')));
+  grid.querySelectorAll('.view-nutrition-button').forEach(button=>button.addEventListener('click',()=>openSavedNutrition(plans.find(plan=>plan.id===button.closest('.plan-card').dataset.id),isHebrew?'he':'en',user,{onSaved:render})));
   grid.querySelectorAll(".rename-button").forEach((button) => button.addEventListener("click", () => rename(button.closest(".plan-card"))));
   grid.querySelectorAll(".delete-button").forEach((button) => button.addEventListener("click", () => remove(button.closest(".plan-card").dataset.id)));
 }

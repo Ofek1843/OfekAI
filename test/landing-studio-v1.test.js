@@ -23,8 +23,8 @@ test("local landing preview serves the real homepage with its existing features"
   assert.match(html, /id="builderChooser"/);
   assert.match(html, /id="features"/);
   assert.match(html, /id="productLoopTitle"/);
-  assert.match(html, /id="results"/);
-  assert.match(html, /id="transformationInviteTitle"/);
+  assert.match(html, /href="\/results\.html"/);
+  assert.doesNotMatch(html, /id="transformationInviteTitle"/);
   assert.match(html, /id="howSectionTitle"/);
   assert.match(html, /id="finalCtaTitle"/);
   for (const capability of ["training", "nutrition", "progress", "social", "coach"]) {
@@ -36,16 +36,17 @@ test("local landing preview serves the real homepage with its existing features"
   assert.match(html, /href="\/faq\.html"/);
 });
 
-test("landing preview retains the real social profiles and before-and-after comparison images", () => {
+test("landing preview retains social profiles and links to the separate results page", () => {
+  const results = fs.readFileSync(path.join(root, "public", "results.html"), "utf8");
   assert.match(html, /instagram\.com\/fuel_physique/);
   assert.match(html, /youtube\.com\/@fuelphysique/);
   assert.match(html, /tiktok\.com\/@fuelphysique1/);
-  assert.match(html, /src="\/images\/demo\/progress-bulk\.jpg"/);
-  assert.match(html, /src="\/images\/demo\/progress-cutting\.jpg"/);
-  assert.match(html, /src="\/images\/demo\/before2\.jpeg"/);
-  assert.match(html, /src="\/images\/demo\/after2\.jpeg"/);
-  assert.equal((html.match(/data-comparison-slider/g) || []).length, 2);
-  assert.match(html, /comparison-range/);
+  assert.match(html, /href="\/results\.html"/);
+  assert.match(results, /src="\/images\/demo\/progress-bulk\.jpg"/);
+  assert.match(results, /src="\/images\/demo\/progress-cutting\.jpg"/);
+  assert.match(results, /src="\/images\/demo\/before2\.jpeg"/);
+  assert.match(results, /src="\/images\/demo\/after2\.jpeg"/);
+  assert.doesNotMatch(html, /data-comparison-slider/);
   assert.match(html, /landing\.js/);
 });
 

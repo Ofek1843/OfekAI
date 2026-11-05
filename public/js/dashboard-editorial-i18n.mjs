@@ -24,5 +24,6 @@ export function dashboardCopy(language='en') {
  const messages={en:'Messages',he:'הודעות',es:'Mensajes',fr:'Messages',de:'Nachrichten',ar:'الرسائل',zh:'消息'};
  const failurePrefixes={en:'Could not load',he:'לא ניתן לטעון',es:'No se pudo cargar',fr:'Chargement impossible',de:'Laden fehlgeschlagen',ar:'تعذر تحميل',zh:'无法加载'};
  const focusValues=(focusRows[language]||focusRows.en).split('|');
- return {...Object.fromEntries(keys.map((key,index)=>[key,values[index]])),...Object.fromEntries(focusKeys.map((key,index)=>[key,focusValues[index]])),messages:messages[language]||messages.en,loadFailurePrefix:failurePrefixes[language]||failurePrefixes.en};
+ const results={en:'Results',he:'תוצאות',es:'Resultados',fr:'Résultats',de:'Ergebnisse',ar:'النتائج',zh:'成果'};
+ return {...Object.fromEntries(keys.map((key,index)=>[key,values[index]])),...Object.fromEntries(focusKeys.map((key,index)=>[key,focusValues[index]])),results:results[language]||results.en,messages:messages[language]||messages.en,loadFailurePrefix:failurePrefixes[language]||failurePrefixes.en};
 }

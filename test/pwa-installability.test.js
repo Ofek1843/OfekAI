@@ -59,7 +59,7 @@ test("manifest.json is valid and satisfies install-criteria fields", () => {
 
   const hasMaskable = manifest.icons.some(icon => (icon.purpose || "").includes("maskable"));
   assert.ok(hasMaskable, "manifest should declare at least one maskable icon for adaptive Android icon shapes");
-  assert.ok(manifest.icons.every(icon => /^\/images\/brand\/fuelphysique-icon-(?:192|512)\.png$/.test(icon.src)));
+  assert.ok(manifest.icons.every(icon => /^\/images\/brand\/fuelphysique-(?:icon|maskable)-(?:192|512)\.png$/.test(icon.src)));
   assert.ok(manifest.icons.every(icon => icon.type === "image/png"));
   assert.equal(manifest.screenshots, undefined, "manifest must not advertise mock screenshots");
 
@@ -194,7 +194,7 @@ test("install guidance waits for an authenticated dashboard and never schedules 
   assert.equal(dashboard.timers[0].delay, 6000);
 
   const dashboardSource = fs.readFileSync(path.join(PUBLIC, "js", "dashboard-editorial.js"), "utf8");
-  assert.match(dashboardSource, /guardProtectedPage\(\{onAuthenticated:[\s\S]*?pwaInstallAllowed='true';[\s\S]*?dispatchEvent\(new Event\('fuelphysique:dashboard-authenticated'\)\)/);
+  assert.match(dashboardSource, /guardProtectedPage\(\{(?:onSignedOut:\w+,)?onAuthenticated:[\s\S]*?pwaInstallAllowed='true';[\s\S]*?dispatchEvent\(new Event\('fuelphysique:dashboard-authenticated'\)\)/);
 });
 
 test("Chromium install event is held until dashboard authentication, not shown to visitors", () => {

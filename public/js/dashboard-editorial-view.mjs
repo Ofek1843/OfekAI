@@ -57,7 +57,7 @@ export function mountDashboard(root, initial={}, options={}) {
  const navItems=()=>[
   ['dashboard','/dashboard.html','home'],['workouts','/my-workout-plans.html','barbell'],
   ['meals','/my-nutrition-plans.html','tools-kitchen-2'],['diary','/daily-nutrition.html','clipboard'],
-  ['exercises','/exercise-library','player-play'],['progress','/progress.html','chart-bar'],['messages','/social.html','message-circle'],['guides','/faq.html','book']
+  ['exercises','/exercise-library','player-play'],['progress','/progress.html','chart-bar'],['results','/results.html','chart-bar'],['messages','/social.html','message-circle'],['guides','/faq.html','book']
  ];
  function planName(saved,kind) {return saved.name||saved.plan?.programName||saved.plan?.planName||t[kind==='workout'?'workouts':'meals'];}
  function level(value) {return t[String(value).toLowerCase()]||value||'';}
@@ -138,9 +138,9 @@ export function mountDashboard(root, initial={}, options={}) {
   const avatar='<span class="avatar avatar-placeholder">'+escapeHTML(addPhoto)+'</span>';
   const failedSections=(model.loadFailures||[]).map(f=>({workouts:t.workouts,meals:t.meals,logs:t.recent,diary:t.diary,profile:t.settings,settings:t.settings}[f.section]||t.dashboard));
   const failureMessage=failedSections.length?`${t.loadFailurePrefix}: ${[...new Set(failedSections)].join(', ')}.`:model.error||'';
-  root.innerHTML='<header class="topbar">'+btn('menu',t.more,'menu-2','menu-toggle')+link('/dashboard.html','Fuel<span>Physique</span>','wordmark')+'<nav class="top-links" aria-label="'+t.home+'">'+[['home','/dashboard.html'],['plans','#plans'],['exercises','/exercise-library'],['nutrition','/daily-nutrition.html'],['guides','/faq.html']].map(([key,url])=>link(url,t[key])).join('')+btn('search',t.search,'search')+'</nav><div class="account-area">'+(guest?link('/auth.html?mode=signup',guestLabels().signup,'guest-account-link')+link('/auth.html',guestLabels().login,'guest-login-link'):link('/app.html?settings=open',safePhoto?'<img class="avatar" src="'+safePhoto+'" alt="'+escapeHTML(addPhoto)+'" data-profile-photo>':avatar,'avatar-link')+'<details class="account"><summary><span class="account-name">'+escapeHTML(name)+'</span>'+icon('chevron-right','chevron')+'</summary><div class="account-menu">'+link('/app.html?settings=open',t.settings)+link('/social.html',t.more)+'<button type="button" data-review-open>'+(language==='he'?'כתיבת ביקורת':'Write a review')+'</button><button data-action="language">Language</button><button data-action="logout">'+t.logout+'</button></div></details>')+'</div></header>'+
-  '<button class="mobile-backdrop" data-action="menu-close" tabindex="-1" aria-label="'+t.close+'"></button><aside class="sidebar" id="dashboardSidebar"><nav aria-label="'+t.dashboard+'">'+navItems().map(([key,url,ic])=>link(url,icon(ic)+t[key],'side-link '+(key==='dashboard'?'active':''))).join('')+'<div class="side-divider"></div>'+link('/app.html?settings=open',icon('settings')+t.settings,'side-link')+'</nav><p class="side-motto">'+escapeHTML(t.motto).replaceAll(' ','<br>')+'</p></aside>'+
-  '<main class="dashboard-main">'+(guest?'<section class="guest-dashboard-banner" role="note"><div><strong>'+escapeHTML(guestLabels().title)+'</strong><p>'+escapeHTML(guestLabels().body)+'</p></div>'+link('/auth.html?mode=signup',guestLabels().signup,'button primary')+'</section>':'')+'<div class="status" role="status">'+escapeHTML(failureMessage)+(failureMessage?'<button class="button" data-action="retry-dashboard">'+t.retry+'</button>':'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header>'+quickCards()+
+  root.innerHTML='<a class="skip-link" href="#dashboardContent">'+(language==='he'?'דילוג לתוכן':'Skip to content')+'</a><header class="topbar">'+btn('menu',t.more,'menu-2','menu-toggle')+link('/dashboard.html','Fuel<span>Physique</span>','wordmark')+'<nav class="top-links" aria-label="'+t.home+'">'+[['home','/dashboard.html'],['plans','#plans'],['exercises','/exercise-library'],['nutrition','/daily-nutrition.html'],['guides','/faq.html']].map(([key,url])=>link(url,t[key])).join('')+btn('search',t.search,'search')+'</nav><div class="account-area">'+(guest?link('/auth.html?mode=signup',guestLabels().signup,'guest-account-link')+link('/auth.html',guestLabels().login,'guest-login-link'):link('/app.html?settings=open',safePhoto?'<img class="avatar" src="'+safePhoto+'" alt="'+escapeHTML(addPhoto)+'" data-profile-photo>':avatar,'avatar-link')+'<details class="account"><summary aria-label="'+escapeHTML(t.settings+' '+name)+'"><span class="account-name">'+escapeHTML(name)+'</span>'+icon('chevron-right','chevron')+'</summary><div class="account-menu">'+link('/app.html?settings=open',t.settings)+link('/social.html',t.more)+'<button type="button" data-review-open>'+(language==='he'?'כתיבת ביקורת':'Write a review')+'</button><button data-action="language">Language</button><button data-action="logout">'+t.logout+'</button></div></details>')+'</div></header>'+
+  '<button class="mobile-backdrop" data-action="menu-close" tabindex="-1" aria-label="'+t.close+'"></button><aside class="sidebar" id="dashboardSidebar"><button type="button" class="drawer-close" data-action="menu-close">'+t.close+'</button><nav aria-label="'+t.dashboard+'">'+navItems().map(([key,url,ic])=>link(url,icon(ic)+t[key],'side-link '+(key==='dashboard'?'active':''))).join('')+'<div class="side-divider"></div>'+link('/app.html?settings=open',icon('settings')+t.settings,'side-link')+'</nav><p class="side-motto">'+escapeHTML(t.motto).replaceAll(' ','<br>')+'</p></aside>'+
+  '<main class="dashboard-main" id="dashboardContent" tabindex="-1">'+(guest?'<section class="guest-dashboard-banner" role="note"><div><strong>'+escapeHTML(guestLabels().title)+'</strong><p>'+escapeHTML(guestLabels().body)+'</p></div>'+link('/auth.html?mode=signup',guestLabels().signup,'button primary')+'</section>':'')+'<div class="status" role="status">'+escapeHTML(failureMessage)+(failureMessage?'<button class="button" data-action="retry-dashboard">'+t.retry+'</button>':'')+'</div><div class="overview"><header class="greeting"><h1>'+greeting+(name?', '+escapeHTML(name):'')+'</h1><p>'+t.tagline+'</p></header>'+quickCards()+
   '<article class="session '+(!next?'empty':'')+'" data-session-state="'+focus.state+'"><img class="session-photo" src="'+asset('training')+'" alt="" width="305" height="324" fetchpriority="high"><div class="session-copy"><div class="session-topline"><span class="eyebrow">'+focusLabel+'</span>'+(plan.durationWeeks?link('/my-workout-plans.html',escapeHTML(plan.durationWeeks)+' '+t.weeks+icon('chevron-right'),'session-week'):'')+'</div><h2>'+escapeHTML(title)+'</h2><p class="session-description">'+escapeHTML(detail)+'</p><div class="session-meta">'+(duration?'<span>'+icon('clock')+escapeHTML(duration)+' '+t.minutes+'</span>':'')+(plan.experienceLevel||plan.level?'<span>'+icon('chart-bar')+escapeHTML(level(plan.experienceLevel||plan.level))+'</span>':'')+(session?'<span>'+icon('barbell')+(session.exercises||[]).length+' '+t.exerciseCount+'</span>':'')+'</div><div class="session-actions">'+(focus.state==='saved'||focus.state==='rest'?'<button class="button primary" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':focus.state==='error'?'<button class="button primary" data-action="retry-dashboard">'+t.retry+'</button>':focus.state==='completed'?link('/workout-history.html',t.viewLog,'button primary'):link(tracking,t[next?'start':'createNow']+icon('arrow-right'),'button primary'))+(next?'<button class="button" data-plan-kind="workout" data-plan-id="'+escapeHTML(workout.id)+'">'+t.details+'</button>':focus.state==='empty'?link('/nutrition-builder.html',t.meals,'button'):'')+'</div></div></article>'+
   '<section class="diary" aria-label="'+t.diary+'">'+diaryHTML()+'</section></div>'+
   '<section class="plans" id="plans" tabindex="-1"><header class="section-heading"><h2>'+t.yourPlans+'</h2>'+link('/my-workout-plans.html',t.viewAll+icon('arrow-right'),'text-link')+'</header><div class="plan-columns">'+panel('workout')+panel('meal')+'</div></section>'+
@@ -150,24 +150,35 @@ export function mountDashboard(root, initial={}, options={}) {
    const minutes=Number(log.durationMinutes)||Math.round((Number(log.durationSeconds)||0)/60);
    return '<div class="activity-row"><span class="muted">'+(date?new Intl.DateTimeFormat(locale(),{month:'short',day:'numeric',year:'numeric'}).format(date):'—')+'</span><span>'+escapeHTML(log.sessionName||log.workoutPlanName||t.workouts)+'</span><span class="muted exercise-count">'+exerciseCount+' '+t.exerciseCount+'</span><span class="muted duration">'+(minutes||'—')+' '+t.minutes+'</span>'+icon('check')+'</div>';
   }).join(''):'<p class="activity-empty">'+(model.logsFailed?t.error:t.emptyActivity)+'</p>')+'</section></main><dialog class="search-dialog" id="dashboardDialog"></dialog>';
+  syncDrawer();
   paintRing();
   const photo=root.querySelector('[data-profile-photo]');
   if(photo) photo.addEventListener('error',()=>{photo.parentElement.innerHTML=avatar;},{once:true});
  }
- function closeMenu() {root.querySelector('.sidebar')?.classList.remove('open');root.querySelector('.mobile-backdrop')?.classList.remove('open');root.querySelector('[data-action="menu"]')?.setAttribute('aria-expanded','false');}
+ function syncDrawer() {
+  const mobile=globalThis.matchMedia?.('(max-width:650px)').matches===true;
+  const side=root.querySelector('.sidebar'),open=mobile&&side?.classList.contains('open');
+  if(!side)return;
+  side.inert=mobile&&!open;
+  if(open){side.setAttribute('role','dialog');side.setAttribute('aria-modal','true');side.setAttribute('aria-label',t.more);}
+  else {side.removeAttribute('role');side.removeAttribute('aria-modal');}
+  root.querySelector('.topbar').inert=!!open;root.querySelector('.dashboard-main').inert=!!open;
+ }
+ function closeMenu() {const side=root.querySelector('.sidebar'),wasOpen=side?.classList.contains('open');side?.classList.remove('open');root.querySelector('.mobile-backdrop')?.classList.remove('open');root.querySelector('[data-action="menu"]')?.setAttribute('aria-expanded','false');syncDrawer();if(wasOpen)root.querySelector('[data-action="menu"]')?.focus();}
  function dialog(content) {
   const el=root.querySelector('dialog');el.innerHTML='<div class="section-heading"><span></span>'+btn('dialog-close',t.close,'plus')+'</div>'+content;
+  const title=el.querySelector('h2');if(title){title.id='dashboardDialogTitle';el.setAttribute('aria-labelledby',title.id);}
   el.showModal();el.querySelector('input,select,button')?.focus();
  }
  async function showPlan(kind,id) {
   const saved=(model[kind==='workout'?'workouts':'meals']||[]).find(p=>p.id===id);if(!saved)return;
   if(kind==='workout'){
-   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261030-fullscreen-1');
-   await openSavedWorkout(saved,options.workoutUser,language);
+   const {openSavedWorkout}=await import('./saved-workout-view.mjs?v=20261105-replace-1');
+   await openSavedWorkout(saved,options.workoutUser,language,{onSaved:render});
    return;
   }
-  const {openSavedNutrition}=await import('./saved-nutrition-view.mjs?v=20261030-macros-1');
-  openSavedNutrition(saved,language);
+  const {openSavedNutrition}=await import('./saved-nutrition-view.mjs?v=20261105-replace-1');
+  openSavedNutrition(saved,language,options.workoutUser,{onSaved:render});
  }
  root.addEventListener('click',async event=>{
   const plansNav=event.target.closest('.top-links a[href="#plans"]');
@@ -178,7 +189,7 @@ export function mountDashboard(root, initial={}, options={}) {
   }
   const planButton=event.target.closest('[data-plan-id]');if(planButton){try{await showPlan(planButton.dataset.planKind,planButton.dataset.planId);}catch{root.querySelector('.status').textContent=t.error;}return;}
   const action=event.target.closest('[data-action]')?.dataset.action;if(!action)return;
-  if(action==='menu'){const opened=root.querySelector('.sidebar').classList.toggle('open');root.querySelector('.mobile-backdrop').classList.toggle('open',opened);event.target.closest('button').setAttribute('aria-expanded',String(opened));}
+  if(action==='menu'){const opened=root.querySelector('.sidebar').classList.toggle('open');root.querySelector('.mobile-backdrop').classList.toggle('open',opened);event.target.closest('button').setAttribute('aria-expanded',String(opened));syncDrawer();if(opened)root.querySelector('.drawer-close').focus();}
   if(action==='menu-close')closeMenu();
   if(action==='retry-dashboard'){
    const button=event.target.closest('button');button.disabled=true;button.textContent=t.loading;
@@ -199,7 +210,15 @@ export function mountDashboard(root, initial={}, options={}) {
    root.querySelector('.diary').innerHTML=diaryHTML();paintRing();
   }
  });
- root.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
+ root.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();
+  if(e.key==='Tab'&&root.querySelector('.sidebar[aria-modal="true"]')){
+   const items=[...root.querySelectorAll('.sidebar a[href],.sidebar button:not([disabled])')].filter(el=>el.getClientRects().length);
+   const first=items[0],last=items.at(-1);if(!first)return;
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+ });
+ globalThis.addEventListener?.('resize',()=>{if(!globalThis.matchMedia?.('(max-width:650px)').matches)closeMenu();syncDrawer();});
  render();
  return {update(next){model=next;diary=next.diary||null;diaryFailed=!!next.diaryFailed;render();},setLanguage(code){language=code;t=dashboardCopy(language);render();}};
 }

@@ -96,11 +96,14 @@
     catch { return COPY.en; }
   }
 
+  let bannerObserver;
   function setChoice(nextChoice) {
     choice = nextChoice;
     window.fpAnalyticsConsent = nextChoice;
     try { localStorage.setItem(STORAGE_KEY, nextChoice); } catch { /* session-only consent */ }
     document.getElementById("fp-analytics-consent")?.remove();
+    bannerObserver?.disconnect();
+    document.documentElement.style.removeProperty("--fp-consent-height");
     if (nextChoice === "granted") {
       startAnalytics();
     } else if (tagLoaded) {
@@ -140,6 +143,9 @@
     actions.append(accept, decline, privacy);
     aside.append(title, description, actions);
     document.body.append(aside);
+    const reserveSpace = () => document.documentElement.style.setProperty("--fp-consent-height", `${Math.ceil(aside.getBoundingClientRect().height)}px`);
+    reserveSpace();
+    if (typeof ResizeObserver === "function") { bannerObserver = new ResizeObserver(reserveSpace); bannerObserver.observe(aside); }
   }
 
   function renderSettings() {

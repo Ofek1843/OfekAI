@@ -52,7 +52,8 @@ test("mobile landing and lower-page content remain part of the responsive page c
   const html = read("public/index.html");
   const css = read("public/css/v45-deep-ocean.css");
   assert.match(html, /id="landingHeroTitle"/);
-  assert.match(html, /id="results"/);
+  assert.match(html, /href="\/results\.html"/);
+  assert.match(read("public/results.html"), /data-result-story=/);
   assert.match(html, /landingSystemTitle/);
   assert.match(html, /class="landing-footer"/);
   assert.match(css, /@media\s*\(max-width:\s*640px\)/);

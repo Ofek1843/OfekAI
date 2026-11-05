@@ -1,5 +1,5 @@
 import { auth, db } from "./firebase-config.js";
-import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261030-fullscreen-1";
+import { openSavedWorkout } from "./saved-workout-view.mjs?v=20261105-replace-1";
 import { normalizeSubscription } from "./subscription-plans.js";
 import { trackPageView } from "./analytics.js";
 import {
@@ -284,7 +284,7 @@ function attachPlanEventListeners() {
   plansGrid.querySelectorAll(".view-plan-button").forEach(button => {
     button.addEventListener("click", () => {
       const saved = workoutPlans.find(plan => plan.id === button.closest(".plan-card").dataset.planId);
-      if (saved) openSavedWorkout(saved, currentUser, currentLanguage);
+      if (saved) openSavedWorkout(saved, currentUser, currentLanguage, {onSaved: renderPlans});
     });
   });
   plansGrid.querySelectorAll(".activate-button:not(:disabled)").forEach((button) => {

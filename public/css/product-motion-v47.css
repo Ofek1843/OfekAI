@@ -39,8 +39,8 @@
 .fp-v47-gender-card input { position: absolute; opacity: 0; pointer-events: none; }
 .fp-v47-gender-card strong { display: block; font-size: 1rem; }
 .fp-v47-gender-card small { display: block; margin-top: 4px; color: var(--fp-text-muted, #9db4ca); line-height: 1.3; }
-.fp-v47-gender-card[aria-checked="true"] { border-color: var(--fp-brand-primary, #4ba9ff); box-shadow: 0 0 0 3px color-mix(in srgb, var(--fp-brand-primary, #4ba9ff) 18%, transparent); }
-.fp-v47-gender-card[aria-checked="true"] strong::after { content: " ✓"; color: #70dfb4; }
+.fp-v47-gender-card[data-checked="true"] { border-color: var(--fp-brand-primary, #4ba9ff); box-shadow: 0 0 0 3px color-mix(in srgb, var(--fp-brand-primary, #4ba9ff) 18%, transparent); }
+.fp-v47-gender-card[data-checked="true"] strong::after { content: " ✓"; color: #70dfb4; }
 .fp-v47-gender-card:hover { border-color: var(--fp-focus-ring, #4bd9e6); }
 .fp-v45-deep-ocean :where(.visual-choice-card, .fp-v47-select-card, .fp-v47-gender-card) { border-radius: 12px; }
 .fp-v45-deep-ocean .fp-v47-select-card { line-height: 1.5; }

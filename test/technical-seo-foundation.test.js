@@ -113,7 +113,7 @@ test("robots.txt exists and declares exactly one absolute sitemap", () => {
 
 test("homepage declares a crawlable, Google-supported PNG favicon", () => {
   for (const page of ["index.html", "workout-plan-generator.html"]) {
-    assert.match(read(page), /<link rel="icon" href="\/images\/brand\/fuelphysique-icon-192\.png" type="image\/png">/, page);
+    assert.match(read(page), /<link rel="icon" href="\/images\/brand\/fuelphysique-icon-192\.png(?:\?v=[a-zA-Z0-9-]+)?" type="image\/png">/, page);
   }
   const png = fs.readFileSync(path.join(PUBLIC_DIR, "images/brand/fuelphysique-icon-192.png"));
   assert.equal(png.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");

@@ -1,0 +1,25 @@
+:root { color-scheme: light; }
+body { margin: 0; background: #dbeaf4; color: #132e43; font-family: Arial, Helvetica, sans-serif; }
+.results-page { width: min(1100px, calc(100% - 32px)); margin: 48px auto 80px; }
+.results-intro { max-width: 770px; margin-bottom: 28px; }
+.results-eyebrow, .results-duration { color: #075eae; font-size: .8rem; font-weight: 800; letter-spacing: .12em; }
+.results-intro h1 { margin: 10px 0 12px; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; }
+.results-intro p, .results-card header p, .results-invite p, .results-disclaimer { color: #405569; line-height: 1.6; }
+.results-list { display: grid; gap: 24px; }
+.results-card, .results-invite { overflow: hidden; border: 1px solid #aac6d9; border-radius: 20px; background: #f9fcff; box-shadow: 0 12px 30px rgba(19, 46, 67, .07); }
+.results-card header { padding: 24px 26px 16px; }
+.results-card h2 { margin: 6px 0; font-size: clamp(1.5rem, 3vw, 2rem); }
+.results-card header p { margin: 0; }
+.results-photos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 0 20px 20px; }
+.results-photos figure { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; margin: 0; overflow: hidden; border-radius: 12px; background: #e8f1f7; }
+.results-photos img { display: block; width: auto; max-width: 100%; height: auto; max-height: 640px; object-fit: contain; }
+.results-photos--landscape img { max-height: 470px; }
+.results-photos figcaption { width: 100%; box-sizing: border-box; padding: 10px 14px; background: #e8f1f7; color: #075eae; font-size: .8rem; font-weight: 800; text-align: center; letter-spacing: .08em; }
+.results-disclaimer { margin: 24px 2px; font-size: .92rem; }
+.results-invite { display: grid; justify-items: start; gap: 12px; padding: 26px; }
+.results-invite h2, .results-invite p { margin: 0; }
+.results-invite small { color: #405569; line-height: 1.5; }
+.results-submit { display: inline-block; padding: 13px 19px; border-radius: 8px; background: #0866bd; color: #fff; font-weight: 700; text-decoration: none; }
+.results-submit:hover { background: #07559f; }
+.results-submit:focus-visible { outline: 3px solid #132e43; outline-offset: 3px; }
+@media (max-width: 680px) { .results-page { margin: 26px auto 56px; } .results-card header { padding: 20px 18px 14px; } .results-photos { gap: 8px; padding: 0 10px 12px; } .results-photos img { max-height: 420px; } .results-invite { padding: 20px; } }

@@ -58,7 +58,7 @@ function carol() {
 }
 
 function admin() {
-  return testEnv.authenticatedContext("admin", { email: "ofek1845@gmail.com" }).firestore();
+  return testEnv.authenticatedContext("admin", { email: "ofek1845@gmail.com", email_verified: true }).firestore();
 }
 
 function unauthenticated() {
@@ -185,6 +185,9 @@ test("leaderboard and legacy share behavior matches the baseline", async () => {
   await assertSucceeds(getDoc(doc(alice(), "leaderboardEntries/entry-a")));
   await assertFails(getDoc(doc(unauthenticated(), "leaderboardEntries/entry-a")));
   await assertSucceeds(setDoc(doc(admin(), "leaderboardEntries/entry-admin"), { status: "approved" }));
+  const unverifiedAdmin = testEnv.authenticatedContext("spoofed-admin", { email: "ofek1845@gmail.com", email_verified: false }).firestore();
+  await assertFails(setDoc(doc(unverifiedAdmin, "leaderboardEntries/entry-spoofed"), { status: "approved" }));
+  await assertFails(getDoc(doc(unverifiedAdmin, "users/alice/leaderboardSubmissions/submission-a")));
   await assertFails(setDoc(doc(alice(), "leaderboardEntries/entry-forged"), { status: "approved" }));
   await assertSucceeds(getDoc(doc(admin(), "users/alice/leaderboardSubmissions/submission-a")));
   await assertSucceeds(updateDoc(doc(admin(), "users/alice/leaderboardSubmissions/submission-a"), { status: "approved" }));

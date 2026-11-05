@@ -26,7 +26,8 @@ test("server uses the maintained ImageKit Node SDK surface", () => {
   assert.match(SERVER, /client\.files\.upload\(options\)/);
   assert.match(SERVER, /client\.files\.get\(fileId\)/);
   assert.match(SERVER, /client\.files\.delete\(fileId\)/);
-  assert.match(SERVER, /client\.helper\.getAuthenticationParameters\(token, expire\)/);
+  assert.doesNotMatch(SERVER, /helper\.getAuthenticationParameters/);
+  assert.match(SERVER, /createImageUploadAuth\(user.uid, req.body, config\)/);
 });
 
 test("no user-facing error names the storage provider", () => {
@@ -81,11 +82,7 @@ test("photo storage endpoints require authentication", () => {
 test("uploads are scoped to the signed-in user's own folder", () => {
   // The upload prefix must be derived from the authenticated uid, never from
   // client-supplied input.
-  assert.match(
-    SERVER,
-    /uploadPrefix:\s*`\/fuelphysique\/users\/\$\{user\.uid\}`/,
-    "the upload prefix must come from the authenticated uid"
-  );
+  assert.match(fs.readFileSync(path.join(ROOT, 'lib/image-upload-auth.js'), 'utf8'), /folder:.*uid/);
 });
 
 test("the client uploads into a private, user-scoped path", () => {

@@ -22,13 +22,13 @@
       "purpose": "any"
     },
     {
-      "src": "/images/brand/fuelphysique-icon-192.png",
+      "src": "/images/brand/fuelphysique-maskable-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/images/brand/fuelphysique-icon-512.png",
+      "src": "/images/brand/fuelphysique-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

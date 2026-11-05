@@ -33,14 +33,14 @@
     </header>
 
     <section class="date-toolbar daily-surface" aria-label="Nutrition log date" data-copy-aria="nutritionLogDate">
-      <button id="previousDay" class="icon-action icon-action--previous" type="button" data-copy-aria="previousDay"><img src="/icons/tabler/chevron-right.svg" alt=""><span data-copy="previousDay">Previous day</span></button>
+      <button aria-label="Previous day" id="previousDay" class="icon-action icon-action--previous" type="button" data-copy-aria="previousDay"><img src="/icons/tabler/chevron-right.svg" alt=""><span data-copy="previousDay">Previous day</span></button>
       <div class="date-toolbar-center">
         <button id="datePickerButton" class="date-picker-label" type="button" aria-controls="calendarPanel" aria-expanded="false"><span id="selectedDateLabel" dir="ltr">10.19</span><span aria-hidden="true">▾</span><span class="sr-only" data-copy="chooseDate">Choose date</span></button>
         <input id="selectedDate" type="date" hidden aria-label="Choose date">
       </div>
       <div class="date-toolbar-actions">
         <button id="todayButton" type="button" data-copy="today">Today</button>
-        <button id="nextDay" class="icon-action icon-action--next" type="button" data-copy-aria="nextDay"><span data-copy="nextDay">Next day</span><img src="/icons/tabler/chevron-right.svg" alt=""></button>
+        <button aria-label="Next day" id="nextDay" class="icon-action icon-action--next" type="button" data-copy-aria="nextDay"><span data-copy="nextDay">Next day</span><img src="/icons/tabler/chevron-right.svg" alt=""></button>
       </div>
       <div class="daily-surface calendar-panel" id="calendarPanel" role="region" aria-label="Calendar" hidden>
         <div class="calendar-panel-heading"><b data-copy="calendarTitle">Calendar</b><small data-copy="calendarHint">Choose a day. Numbers show calories eaten (kcal).</small></div>
@@ -66,9 +66,9 @@
             <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
           </div>
           <div class="goal-stat goal-stat--protein">
-            <span class="metric-eyebrow" data-copy="protein">Protein</span>
+            <span id="proteinLabel" class="metric-eyebrow" data-copy="protein">Protein</span>
             <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
-            <div class="protein-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
+            <div class="protein-progress" role="progressbar" aria-labelledby="proteinLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
             <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
           </div>
           <div id="targetSetup" class="target-setup" role="note">
