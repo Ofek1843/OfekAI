@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import './product-feedback.mjs?v=20261106-1';
 import { cacheInterpretedFood, cachedWeighedFood, preparationIdentity, preparationLabels } from './food-preparation.mjs';
 import { withDeadline, nutritionTimestampMillis, loadPreviousNutritionLog } from "./daily-nutrition-recovery.mjs?v=20261031-copy-1";
 import { foodThumbnailMarkup, FOOD_THUMBNAIL_FALLBACK } from "./daily-food-visuals.mjs?v=20260928-multilingual-food-1";
@@ -363,12 +364,7 @@ function renderTargets(totals) {
   const calorieTarget = Number(targets.dailyCalories || 0);
   const proteinTarget = Number(targets.proteinGrams || 0);
   $("#calorieConsumed").textContent = number(totals.calories);
-  [$("#calorieConsumed"), $("#proteinConsumed")].forEach((element) => {
-    if (!element) return;
-    element.classList.remove("fp-v47-number-update");
-    void element.offsetWidth;
-    element.classList.add("fp-v47-number-update");
-  });
+  window.fpFeedback?.animateValue($("#calorieConsumed"), totals.calories, {format:n=>number(n),context:state.dateKey});
   if (calorieTarget) setAmount($("#calorieTarget"), calorieTarget, "kcal", 0);
   else $("#calorieTarget").textContent = "—";
   const caloriePercent = calorieTarget > 0 ? Math.max(0, Math.min(100, (totals.calories / calorieTarget) * 100)) : 0;
@@ -380,6 +376,7 @@ function renderTargets(totals) {
     if (remaining.calories < 0) $("#calorieRemaining").append(` ${copy.over}`);
   } else $("#calorieRemaining").textContent = "—";
   $("#proteinConsumed").textContent = number(totals.proteinGrams, 1);
+  window.fpFeedback?.animateValue($("#proteinConsumed"), totals.proteinGrams, {format:n=>number(n,1),context:state.dateKey});
   $("#proteinConsumedUnit").textContent = nutritionUnitLabel("g", language, totals.proteinGrams);
   if (proteinTarget) setAmount($("#proteinTarget"), proteinTarget, "g", 0);
   else $("#proteinTarget").textContent = "—";
@@ -399,7 +396,9 @@ function renderMacroDistribution(totals) {
   $("#proteinPercent").textContent = `${number(macro.protein, 1)}%`;
   $("#carbsPercent").textContent = `${number(macro.carbs, 1)}%`;
   $("#fatPercent").textContent = `${number(macro.fat, 1)}%`;
-  {
+  if (window.fpFeedback?.animateMacroRing) {
+    window.fpFeedback.animateMacroRing($("#macroRing"), macro, {context:state.dateKey});
+  } else {
     const proteinEnd = macro.protein;
     const carbEnd = macro.protein + macro.carbs;
     const background = macro.macroCalories
@@ -683,6 +682,7 @@ function addEntries(entries) {
   state.pendingClarification = null;
   $("#clarificationPanel").hidden = true;
   render();
+  window.fpFeedback?.acknowledgeFood($("#foodEntries"), added.map(entry=>entry.id), $("#macroRing"));
   window.fpV47Success?.($("#autosaveState"));
   if (state.guest) persistGuestDiary();
   if (state.guest && (entries.length > added.length || state.log.entries.length >= 3)) promptGuestDiarySignup();

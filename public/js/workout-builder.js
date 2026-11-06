@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import './product-feedback.mjs?v=20261106-1';
 import { mountHealthScreening, healthScreeningPayload } from "./health-screening.mjs";
 import { trackEvent, trackPageView, generationFailureCategory } from "./analytics.js";
 import { setupPlanSharing } from "./plan-sharing.js?v=20261014-rir-1";
@@ -1046,6 +1047,7 @@ if (data.program) {
   });
 
   renderProgram(data.program, data.weeklyVolume);
+  window.fpFeedback?.revealResult(resultElement);
   if (resumedGuestDraft) { clearGuestDraft("workout"); resumedGuestDraft = false; }
   return;
 }
@@ -1087,6 +1089,7 @@ function setLoading(isLoading) {
   button.textContent = isLoading
     ? ui.generating
     : ui.generate;
+  window.fpFeedback?.setGenerating({anchor:statusElement,kind:'workout',language:currentLanguage,loading:isLoading});
 }
 async function saveWorkoutPlan(plan) {
   const user = auth.currentUser;

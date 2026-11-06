@@ -8,6 +8,7 @@ const read = file => fs.readFileSync(require('node:path').join(__dirname, '..', 
 async function harness({ signedIn = false, storageFails = false } = {}) {
   const helpers = await import('../public/js/workout-builder-journey.mjs');
   const { document, window } = parseHTML(read('public/workout-builder.html'));
+  window.fpFeedback = await import('../public/js/product-feedback.mjs');
   // linkedom does not implement browser form value/checked semantics.
   Object.defineProperty(window.HTMLInputElement.prototype, 'checked', { configurable:true, get() { return this.hasAttribute('checked'); }, set(v) { this.toggleAttribute('checked', v); } });
   Object.defineProperty(window.HTMLSelectElement.prototype, 'value', { configurable:true, get() { return this.querySelector('option[selected]')?.value || this.querySelector('option')?.value || ''; }, set(v) { this.querySelectorAll('option').forEach(o => o.toggleAttribute('selected',o.value === v)); } });
@@ -166,6 +167,7 @@ test('authenticated generation keeps payload intact, emits one success and clear
   assert.equal(h.events.filter(([name])=>name==='workout_generated').length,1);
   assert.equal(h.context.window.currentWorkoutProgram.demonstrationModel,'female');
   assert.equal(h.form.getAttribute('aria-busy'),'false');
+  assert.equal(h.document.querySelector('.fp-generation-feedback').hidden,true);
   assert.equal(h.document.querySelector('#age').disabled,false);
 });
 
@@ -177,7 +179,9 @@ test('failed generation retains answers/draft and retry works; concurrent submit
   const pending=h.submit(); await new Promise(resolve=>setImmediate(resolve));
   await h.submit(); assert.equal(h.requests.length,1);
   assert.equal(h.form.getAttribute('aria-busy'),'true');
+  assert.equal(h.document.querySelector('.fp-generation-feedback').hidden,false);
   release(); await pending;
+  assert.equal(h.document.querySelector('.fp-generation-feedback').hidden,true);
   assert.equal(h.events.filter(([name])=>name==='generation_failed').length,1);
   assert.equal(h.document.querySelector('#goal').value,'buildMuscle');
   h.context.response={ok:true,json:async()=>({program:{sessions:[]}})};

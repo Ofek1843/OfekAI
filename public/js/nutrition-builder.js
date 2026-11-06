@@ -1,4 +1,5 @@
 import { localizeGramAmount } from './nutrition-units.mjs';
+import './product-feedback.mjs?v=20261106-1';
 import { openShoppingList } from "./shopping-list.mjs";
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView, generationFailureCategory } from "./analytics.js";
@@ -413,6 +414,7 @@ setStatus("");
 if (data.plan) {
   window.currentNutritionPlan = data.plan;
   renderNutritionPlan(data.plan);
+  window.fpFeedback?.revealResult(resultElement);
   trackEvent("nutrition_generated", { builder: "nutrition" });
   if (resumedGuestDraft) { clearGuestDraft("nutrition"); resumedGuestDraft = false; }
   window.fpV47Success?.(button);
@@ -434,9 +436,11 @@ throw new Error(isHebrew ? "לא התקבלה תוכנית. התשובות נש�
 form.dataset.generatorReady = "true";
 function setLoading(isLoading) {
   button.disabled = isLoading;
+  form.setAttribute('aria-busy', String(isLoading));
   button.textContent = isLoading
     ? ui.generating
     : ui.generate;
+  window.fpFeedback?.setGenerating({anchor:statusElement,kind:'nutrition',language:currentLanguage,loading:isLoading});
 }
 function setStatus(message, isError = false) {
   statusElement.textContent = message;
