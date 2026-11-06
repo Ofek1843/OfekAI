@@ -177,7 +177,7 @@ export function mountDashboard(root, initial={}, options={}) {
    await openSavedWorkout(saved,options.workoutUser,language,{onSaved:render});
    return;
   }
-  const {openSavedNutrition}=await import('./saved-nutrition-view.mjs?v=20261105-replace-1');
+  const {openSavedNutrition}=await import('./saved-nutrition-view.mjs?v=20261106-meal-view-1');
   openSavedNutrition(saved,language,options.workoutUser,{onSaved:render});
  }
  root.addEventListener('click',async event=>{
