@@ -1,3 +1,4 @@
+import { localizeGramAmount } from './nutrition-units.mjs';
 import { openShoppingList } from "./shopping-list.mjs";
 import { auth, db } from "./firebase-config.js";
 import { trackEvent, trackPageView, generationFailureCategory } from "./analytics.js";
@@ -535,7 +536,7 @@ function renderNutritionPlan(plan, activeOptions = null) {
                     <img class="food-image" ${imageAttributes(food.imageUrl)} alt="" />
                     <span>${escapeHtml(food.name || "")}</span>
                   </td>
-                  <td class="food-amount">${escapeHtml(food.amount || "")}</td>
+                  <td class="food-amount">${escapeHtml(localizeGramAmount(food.amount || "", currentLanguage))}</td>
                 </tr>
               `
             )
@@ -578,9 +579,9 @@ function renderNutritionPlan(plan, activeOptions = null) {
 
                 <div class="meal-option-macros">
                   <span><strong>${escapeHtml(option.optionCalories ?? "-")}</strong> ${ui.calories}</span>
-                  <span><strong>${escapeHtml(option.optionProteinGrams ?? "-")}g</strong> ${ui.protein}</span>
-                  <span><strong>${escapeHtml(option.optionCarbsGrams ?? "-")}g</strong> ${ui.carbs}</span>
-                  <span><strong>${escapeHtml(option.optionFatGrams ?? "-")}g</strong> ${ui.fat}</span>
+                  <span><strong>${escapeHtml(option.optionProteinGrams ?? "-")}${isHebrew?" גרם":"g"}</strong> ${ui.protein}</span>
+                  <span><strong>${escapeHtml(option.optionCarbsGrams ?? "-")}${isHebrew?" גרם":"g"}</strong> ${ui.carbs}</span>
+                  <span><strong>${escapeHtml(option.optionFatGrams ?? "-")}${isHebrew?" גרם":"g"}</strong> ${ui.fat}</span>
                 </div>
 
                 <table class="nutrition-food-table">
@@ -699,26 +700,26 @@ function renderNutritionPlan(plan, activeOptions = null) {
 
         <div>
           <strong data-total="proteinGrams">
-            ${escapeHtml(visibleTotals.proteinGrams)}g
+            ${escapeHtml(visibleTotals.proteinGrams)}${isHebrew?" גרם":"g"}
           </strong>
           <span>${ui.protein}</span>
-          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.proteinGrams ?? "-")}g</small>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.proteinGrams ?? "-")}${isHebrew?" גרם":"g"}</small>
         </div>
 
         <div>
           <strong data-total="carbsGrams">
-            ${escapeHtml(visibleTotals.carbsGrams)}g
+            ${escapeHtml(visibleTotals.carbsGrams)}${isHebrew?" גרם":"g"}
           </strong>
           <span>${ui.carbs}</span>
-          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.carbsGrams ?? "-")}g</small>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.carbsGrams ?? "-")}${isHebrew?" גרם":"g"}</small>
         </div>
 
         <div>
           <strong data-total="fatGrams">
-            ${escapeHtml(visibleTotals.fatGrams)}g
+            ${escapeHtml(visibleTotals.fatGrams)}${isHebrew?" גרם":"g"}
           </strong>
           <span>${ui.fat}</span>
-          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.fatGrams ?? "-")}g</small>
+          <small class="nutrition-summary-target">${isHebrew ? "יעד" : "Target"} ${escapeHtml(plan.fatGrams ?? "-")}${isHebrew?" גרם":"g"}</small>
         </div>
 
         <div>
@@ -857,7 +858,7 @@ const refreshVisibleTotals = () => {
   if (!summary) return;
   for (const [key, value] of Object.entries(totals)) {
     const node = summary.querySelector(`[data-total="${key}"]`);
-    if (node) node.textContent = key === "calories" ? String(value) : `${value}g`;
+    if (node) node.textContent = key === "calories" ? String(value) : `${value}${isHebrew?" גרם":"g"}`;
   }
 };
 
