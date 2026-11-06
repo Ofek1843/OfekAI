@@ -1312,9 +1312,10 @@ function formatVolumeNumber(value) {
 
 function renderWeeklyVolumeSummary(weeklyVolume) {
   const perMuscle = weeklyVolume?.perMuscle || {};
-  const muscles = Object.keys(perMuscle).filter((key) => MUSCLE_DISPLAY_NAMES[key]);
+  // Hide unused muscle cards only; keep the full volume data for validation.
+  const muscles = Object.keys(perMuscle).filter((key) => MUSCLE_DISPLAY_NAMES[key] && Number(perMuscle[key]?.total) > 0);
 
-  if (!muscles.length) return "";
+  if (!muscles.length && !Number(weeklyVolume?.unknownExercises)) return "";
 
   const rows = muscles
     .map((muscleKey) => {
@@ -1649,7 +1650,7 @@ function renderProgram(program, weeklyVolume, { scrollToTop = true } = {}) {
                   </div>
                   <div class="exercise-stat">
                     <span class="exercise-stat-label">${ui.rest}</span>
-                    <span class="exercise-stat-value">${escapeHtml(String(exercise.restSeconds))}s</span>
+                    <span class="exercise-stat-value">${escapeHtml(String(exercise.restSeconds))}${isHebrew?' שניות':'s'}</span>
                   </div>
                   <div class="exercise-stat exercise-stat--effort">
                     <span class="exercise-stat-label">
@@ -2041,7 +2042,7 @@ try {
 
     const stats = card.querySelectorAll(".exercise-stat-value");
     if (stats[0]) stats[0].textContent = String(data.exercise.sets);
-    if (stats[1]) stats[1].textContent = `${data.exercise.restSeconds}s`;
+    if (stats[1]) stats[1].textContent = `${data.exercise.restSeconds}${isHebrew?' שניות':'s'}`;
     if (stats[2]) stats[2].textContent = ui.rirUnit(String(data.exercise.rir ?? "1–3"));
 
     let note = card.querySelector(".exercise-note");
