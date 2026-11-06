@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the guest signup/resume flow and must
 // not be served from a stale cached builder or diary page after deploy.
-const CACHE_NAME = 'fuelphysique-release-20261106-meal-view-1';
+const CACHE_NAME = 'fuelphysique-release-20261106-diary-view-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -32,6 +32,9 @@ const urlsToCache = [
   '/manifest.json',
   '/dashboard.html',
   '/daily-nutrition.html',
+  '/css/daily-nutrition-presentation.css?v=20261106-1',
+  '/js/daily-nutrition.js?v=20261106-presentation-1',
+  '/js/daily-nutrition-i18n.mjs?v=20261106-presentation-1',
   '/workout-builder.html',
   '/nutrition-builder.html',
   '/workout-tracker.html',

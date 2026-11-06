@@ -20,17 +20,6 @@
 </head>
 <body class="daily-nutrition-route">
   <main class="daily-nutrition-shell" id="dailyNutritionApp">
-    <header class="daily-hero">
-      <div>
-        <span class="daily-kicker" data-copy="kicker">ATHLETE CORE · DAILY NUTRITION</span>
-        <h1 data-copy="title">Today’s food log</h1>
-        <p data-copy="intro">Add what you ate and see calories, protein, and macros update instantly.</p>
-      </div>
-      <nav class="daily-context-links" aria-label="Nutrition tools" data-copy-aria="nutritionTools">
-        <a href="/dashboard.html" data-copy="dashboard">Dashboard</a>
-        <a href="/my-nutrition-plans.html" data-copy="nutritionPlans">Nutrition plans</a>
-      </nav>
-    </header>
 
     <section class="date-toolbar daily-surface" aria-label="Nutrition log date" data-copy-aria="nutritionLogDate">
       <button aria-label="Previous day" id="previousDay" class="icon-action icon-action--previous" type="button" data-copy-aria="previousDay"><img src="/icons/tabler/chevron-right.svg" alt=""><span data-copy="previousDay">Previous day</span></button>
@@ -60,14 +49,18 @@
     <section class="daily-goals-summary" aria-label="Daily targets">
         <article class="daily-surface daily-goals-card" id="calorieCard">
           <div class="goal-stat goal-stat--calories">
-            <span class="metric-eyebrow" data-copy="calories">Calories</span>
+            <img class="goal-stat-icon" src="/icons/tabler/flame.svg" alt="" width="24" height="24">
+            <span id="calorieLabel" class="metric-eyebrow" data-copy="calories">Calories</span>
             <strong class="goal-stat-value" id="calorieConsumed">0</strong>
             <p><span data-copy="goalTarget">Goal calorie target</span> <b id="calorieTarget">—</b></p>
+            <div id="calorieProgressTrack" class="calorie-progress" role="progressbar" aria-labelledby="calorieLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><span id="calorieProgress"></span></div>
             <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="calorieRemaining">—</strong></div>
           </div>
           <div class="goal-stat goal-stat--protein">
+            <img class="goal-stat-icon" src="/icons/tabler/barbell.svg" alt="" width="24" height="24">
             <span id="proteinLabel" class="metric-eyebrow" data-copy="protein">Protein</span>
             <strong class="nutrition-amount goal-stat-value" dir="ltr"><span id="proteinConsumed" class="nutrition-number">0</span><small id="proteinConsumedUnit" class="nutrition-unit">g</small></strong>
+            <p><span data-copy="proteinTargetLabel">Daily protein target</span> <b id="proteinTarget">—</b></p>
             <div class="protein-progress" role="progressbar" aria-labelledby="proteinLabel" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="proteinProgress"></span></div>
             <div class="goal-stat-remaining"><span data-copy="remaining">Remaining</span><strong id="proteinRemaining">—</strong></div>
           </div>
@@ -82,6 +75,18 @@
         </article>
     </section>
 
+    <header class="daily-hero">
+      <div>
+        <span class="daily-kicker" data-copy="kicker">ATHLETE CORE · DAILY NUTRITION</span>
+        <h1 data-copy="title">Today’s food log</h1>
+        <p data-copy="intro">Add what you ate and see calories, protein, and macros update instantly.</p>
+      </div>
+      <nav class="daily-context-links" aria-label="Nutrition tools" data-copy-aria="nutritionTools">
+        <a href="/dashboard.html" data-copy="dashboard">Dashboard</a>
+        <a href="/my-nutrition-plans.html" data-copy="nutritionPlans">Nutrition plans</a>
+      </nav>
+    </header>
+
     <section class="food-composer daily-surface" aria-labelledby="foodComposerTitle">
       <div class="section-heading-row">
         <div><span class="daily-kicker" data-copy="stepLog">1 · LOG FOOD</span><h2 id="foodComposerTitle" data-copy="inputLabel">What did you eat?</h2><p class="section-helper" data-copy="inputHint">Enter a food or meal. Include an amount for a more accurate estimate.</p></div>
@@ -92,6 +97,7 @@
         <input id="foodInput" type="text" maxlength="240" autocomplete="off" dir="auto" data-copy-placeholder="inputPlaceholder" placeholder="Try: medium sweet potato and 2 pizza slices">
         <button id="addFoodButton" type="submit"><img src="/icons/tabler/plus.svg" alt=""><span data-copy="add">Add</span></button>
       </form>
+      <details class="food-example-help"><summary data-copy="examples">Examples</summary>
       <div class="food-examples" aria-label="Food input examples" data-copy-aria="foodExamples">
         <span data-copy="examples">Examples</span>
         <button type="button" data-example="50g oats">50g oats</button>
@@ -100,12 +106,13 @@
         <button type="button" data-example="2 pizza slices">2 pizza slices</button>
         <button type="button" data-example="one protein drink">one protein drink</button>
       </div>
+      </details>
       <div id="clarificationPanel" class="clarification-panel" hidden></div>
       <p id="composerMessage" class="composer-message" role="alert" aria-live="assertive"></p>
       <div class="composer-actions">
         <button id="copyYesterdayButton" type="button" class="secondary-button" data-copy="copyYesterday">Copy yesterday</button>
         <button id="finishDayButton" type="button" class="finish-button" data-copy="finishDay">Finish day</button>
-        <button id="saveDailyLogButton" type="button" class="save-now-button" data-copy="saveNow">Save now</button>
+        <button id="saveDailyLogButton" type="button" class="save-now-button"><img src="/icons/tabler/check.svg" alt="" width="20" height="20"><span data-copy="saveNow">Save this food log</span></button>
       </div>
       <p class="save-guide" data-copy="saveGuide">Your entries save automatically.</p>
     </section>
@@ -165,8 +172,9 @@
     </div>
   </main>
   <link rel="stylesheet" href="/css/simple-ux.css?v=20261007-motion-1">
+  <link rel="stylesheet" href="/css/daily-nutrition-presentation.css?v=20261106-1">
   <script src="/js/simple-ux.js?v=20261007-motion-1"></script>
-  <script type="module" src="/js/daily-nutrition.js?v=20261031-copy-1"></script>
+  <script type="module" src="/js/daily-nutrition.js?v=20261106-presentation-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 </body>
 </html>

@@ -26,7 +26,7 @@ import {
   saveDailyLog,
   saveFoodCombination
 } from "./daily-nutrition-store.mjs?v=20261020-calendar-1";
-import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20261020-calendar-1";
+import { dailyNutritionCopy } from "./daily-nutrition-i18n.mjs?v=20261106-presentation-1";
 import { clearGuestDraft, readGuestDraft, showSignupPrompt } from "./guest-trial.mjs?v=20261020-guest-dashboard-1";
 import {
   formatNutritionAmount,
@@ -371,12 +371,18 @@ function renderTargets(totals) {
   });
   if (calorieTarget) setAmount($("#calorieTarget"), calorieTarget, "kcal", 0);
   else $("#calorieTarget").textContent = "—";
+  const caloriePercent = calorieTarget > 0 ? Math.max(0, Math.min(100, (totals.calories / calorieTarget) * 100)) : 0;
+  $("#calorieProgress").style.width = `${caloriePercent}%`;
+  $("#calorieProgressTrack").hidden = calorieTarget <= 0;
+  $("#calorieProgressTrack").setAttribute("aria-valuenow", String(Math.round(caloriePercent)));
   if (calorieTarget) {
     setAmount($("#calorieRemaining"), Math.abs(remaining.calories), "kcal", 0);
     if (remaining.calories < 0) $("#calorieRemaining").append(` ${copy.over}`);
   } else $("#calorieRemaining").textContent = "—";
   $("#proteinConsumed").textContent = number(totals.proteinGrams, 1);
   $("#proteinConsumedUnit").textContent = nutritionUnitLabel("g", language, totals.proteinGrams);
+  if (proteinTarget) setAmount($("#proteinTarget"), proteinTarget, "g", 0);
+  else $("#proteinTarget").textContent = "—";
   if (proteinTarget) {
     setAmount($("#proteinRemaining"), Math.abs(remaining.proteinGrams), "g", 1);
     if (remaining.proteinGrams < 0) $("#proteinRemaining").append(` ${copy.over}`);
@@ -384,6 +390,7 @@ function renderTargets(totals) {
   const proteinPercent = proteinTarget ? Math.min(100, (totals.proteinGrams / proteinTarget) * 100) : 0;
   $("#proteinProgress").style.width = `${proteinPercent}%`;
   $(".protein-progress").setAttribute("aria-valuenow", String(Math.round(proteinPercent)));
+  $(".protein-progress").hidden = proteinTarget <= 0;
   $("#targetSetup").hidden = targets.complete;
 }
 

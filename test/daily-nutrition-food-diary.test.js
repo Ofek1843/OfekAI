@@ -36,13 +36,15 @@ async function diaryHarness(language = "en") {
       removeItem: (key) => values.delete(key)
     },
     guardProtectedPage() {},
+    // Isolated storage boundary; guest initialization still runs the real UI controller.
+    normalizeLog: (dateKey, data = {}) => ({ dateKey, entries: [], targetSnapshot: domain.targetSnapshot(), completed: false, ...data }),
     saved
   });
   // Exercise the real renderer and delegated controller, without Firebase or
   // network writes. Existing persistence tests cover the save queue itself.
   const source = client.replace(/^import[\s\S]*?;\r?\n/gm, "");
   vm.runInContext(source + "\nqueueSave = () => { saved.push(structuredClone(state.log)); return Promise.resolve(true); };\n"
-    + "globalThis.diary = { state, render, renderEntries, bindEvents };", context);
+    + "globalThis.diary = { state, render, renderEntries, bindEvents, initGuestPreview };", context);
   const diary = context.diary;
   const dateKey = domain.localDateKey();
   diary.state.log = {
@@ -81,6 +83,44 @@ test("diary rows expose image, name, portion and calories in native disclosures"
     assert.ok(row.querySelector('.food-entry-details [data-entry-action="' + action + '"]'));
     assert.equal(summary.querySelector('[data-entry-action="' + action + '"]'), null);
   }
+});
+
+test("calorie and protein targets use the saved day, with bounded progress and real totals", async () => {
+  const { diary, document } = await diaryHarness();
+  const total = diary.state.log.totals.calories;
+  assert.equal(document.querySelector('#calorieProgressTrack').hidden, false);
+  assert.equal(document.querySelector('#calorieProgressTrack').getAttribute('aria-valuenow'), String(Math.round(total / 2950 * 100)));
+  assert.match(document.querySelector('#proteinTarget').textContent, /150/);
+  diary.state.log.entries[0].calories = 6000;
+  diary.render();
+  assert.equal(document.querySelector('#calorieProgress').style.width, '100%');
+  assert.equal(document.querySelector('#calorieProgressTrack').getAttribute('aria-valuenow'), '100');
+  assert.ok(diary.state.log.totals.calories > 6000, 'The visual bar must not clamp the food data');
+  assert.match(document.querySelector('#calorieRemaining').textContent, /over/i);
+});
+
+test("missing targets show setup instead of inventing a calorie or protein goal", async () => {
+  const { diary, document, domain } = await diaryHarness('he');
+  diary.state.log.targetSnapshot = domain.targetSnapshot();
+  diary.render();
+  assert.equal(document.querySelector('#calorieProgressTrack').hidden, true);
+  assert.equal(document.querySelector('.protein-progress').hidden, true);
+  assert.equal(document.querySelector('#calorieTarget').textContent, '—');
+  assert.equal(document.querySelector('#proteinTarget').textContent, '—');
+  assert.equal(document.querySelector('#targetSetup').hidden, false);
+});
+
+test("guest initialization retains local-only messaging and does not invent nutrition targets", async () => {
+  const { diary, document } = await diaryHarness('he');
+  diary.initGuestPreview();
+  assert.equal(diary.state.user, null);
+  assert.equal(diary.state.guest, true);
+  assert.equal(document.querySelector('#calorieConsumed').textContent, '0');
+  assert.equal(document.querySelector('#calorieProgressTrack').hidden, true);
+  assert.equal(document.querySelector('.protein-progress').hidden, true);
+  assert.equal(document.querySelector('#proteinTarget').textContent, '—');
+  assert.match(document.querySelector('#pageStatus').textContent, /3/);
+  assert.match(document.querySelector('#autosaveState').textContent, /במכשיר/);
 });
 
 test("duplicating a food saves a separate entry and refreshes totals without collapsing its actions", async () => {
