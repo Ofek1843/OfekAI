@@ -5,8 +5,9 @@ const vm = require('node:vm');
 const { parseHTML } = require('linkedom');
 const read = file => fs.readFileSync(require('node:path').join(__dirname, '..', file), 'utf8');
 
-async function harness({ signedIn = false, storageFails = false } = {}) {
+async function harness({ signedIn = false, storageFails = false, language = 'en' } = {}) {
   const helpers = await import('../public/js/workout-builder-journey.mjs');
+  const { getEquipmentLabel } = await import('../public/js/equipment-i18n.mjs');
   const { document, window } = parseHTML(read('public/workout-builder.html'));
   window.fpFeedback = await import('../public/js/product-feedback.mjs');
   // linkedom does not implement browser form value/checked semantics.
@@ -26,13 +27,13 @@ async function harness({ signedIn = false, storageFails = false } = {}) {
     get(key) { return this.values.find(([k]) => k === key)?.[1] ?? null; }
     getAll(key) { return this.values.filter(([k]) => k === key).map(([,v]) => v); }
   }
-  const context = vm.createContext({ document, window, FormData, Event:window.Event, console:{ log(){},warn(){},error(){} }, URL, URLSearchParams, CSS:{escape:String},
-    localStorage:{getItem:() => null}, location:{ pathname:'/workout-builder.html', search:'',href:'http://localhost/workout-builder.html'},
+  const context = vm.createContext({ document, window, FormData, Event:window.Event, Node:window.Node, console:{ log(){},warn(){},error(){} }, URL, URLSearchParams, CSS:{escape:String},
+    localStorage:{getItem:key => key === 'ofek-ai-language' ? language : null}, location:{ pathname:'/workout-builder.html', search:'',href:'http://localhost/workout-builder.html'},
     sessionStorage:{setItem(k,v) { if(storageFails) throw Error('denied'); storage.set(k,v); }},
     history:{replaceState(){}}, setTimeout:fn => timers.push(fn),
     auth:{currentUser:signedIn ? {getIdToken:async () => 'test-token'} : null}, db:{},
     guardProtectedPage:callbacks => { context.guard = callbacks; }, trackPageView(){}, trackEvent:(name,fields)=>events.push([name,fields]),
-    generationFailureCategory:()=> 'upstream', getEquipmentLabel:(_,v)=>v, buildEquipmentSummaryText:(_,values)=>values.join(', '),
+    generationFailureCategory:()=> 'upstream', getEquipmentLabel, buildEquipmentSummaryText:(_,values)=>values.join(', '),
     derivePriorityFromGoal:()=> 'hypertrophy', t:(_,key)=>key, escapeHtml:s=>String(s).replaceAll('<','&lt;'),
     fetchWithDeadline:async (url,options)=>{ requests.push({url,payload:JSON.parse(options.body)}); return context.response; },
     renderProgram:()=> { context.rendered = true; }, hideResult(){}, setStatus:(text)=>{ document.querySelector('#builder-status').textContent = text; },
@@ -64,6 +65,16 @@ async function harness({ signedIn = false, storageFails = false } = {}) {
   };
   return { context,document,form,events,requests,storage,run,change,submit,valid,timers };
 }
+
+test('Hebrew equipment names appear once and decorative thumbnails stay text-free', async () => {
+  const { document } = await harness({ language: 'he' });
+  const cards = [...document.querySelectorAll('.visual-choice-grid--equipment label')];
+  assert.equal(cards.length, 10);
+  for (const card of cards) {
+    assert.equal(card.querySelector('.visual-choice-image').textContent, '');
+    assert.match(card.querySelector('.visual-choice-content strong').textContent, /[א-ת]/);
+  }
+});
 
 test('three stages keep every canonical option and required screening in the final stage', async () => {
   const h=await harness();

@@ -417,7 +417,7 @@ function translateFormOptions() {
         textNode.textContent = ` ${translation} `;
       } else {
         const textElement = label.querySelector(
-          "span, strong, .equipment-name"
+          ".visual-choice-content strong, .equipment-name"
         );
 
         if (textElement) {

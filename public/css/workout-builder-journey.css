@@ -138,6 +138,11 @@ body.fp-workout-journey .site-feedback-widget { position:relative!important; ins
   body.fp-workout-journey .builder-page .builder-health-screening { padding:12px!important; }
   body.fp-workout-journey .builder-page .guest-signup-actions { flex-direction:column; }
 }
+@media (max-width: 360px) {
+  body.fp-workout-journey .builder-page .visual-choice-grid--equipment {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
 @media(prefers-reduced-motion:reduce) {
   body.fp-workout-journey .builder-page *,body.fp-workout-journey .builder-page *::before,body.fp-workout-journey .builder-page *::after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
 }
