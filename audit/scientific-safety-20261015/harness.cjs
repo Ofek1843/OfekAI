@@ -53,7 +53,7 @@ function createHarness({ aiOutput = "{}", localDemoMode = false } = {}) {
   vm.runInContext(block("function hardVolumeLedgerIssues(", "// The single AI correction"), sandbox);
   vm.runInContext(block("function volumeFailureMessage(", 'app.post("/api/workout-plans/review"'), sandbox);
   for (const [start,end] of [
-    ['app.post("/api/nutrition/manual/targets",','app.get("/api/nutrition/manual/meals",'],
+    ['app.post("/api/nutrition/manual/targets",','app.post("/api/nutrition/manual/meals",'],
     ['app.post("/api/nutrition-builder",','app.use((error, req, res, next)'],
     ['app.post("/api/workout-builder",','app.post("/api/workout-builder/adjust-volume",']
     ,['app.post("/api/workout-builder/adjust-volume",','app.post("/api/workout-builder/reroll-exercise",']

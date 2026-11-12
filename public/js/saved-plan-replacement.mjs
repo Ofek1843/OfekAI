@@ -66,6 +66,7 @@ export async function replaceSavedPlan({ kind, saved, user, target, context, lan
     }
     delete current.selectedOptionNumbers;
     payload = { screeningStatus: context.screeningStatus, mealNumber: target.mealNumber, optionNumber: 1, plan: current, language };
+    if (context.allergies?.trim()) payload.allergies = context.allergies.trim();
   } else throw new Error('INVALID_PLAN_KIND');
   const data = await request({ kind, payload: clone(payload), user, language, signal });
   if (signal?.aborted) throw new DOMException('Closed', 'AbortError');
@@ -119,7 +120,9 @@ export function mountSavedReplacement(dialog, { kind, saved, user, language = 'e
       ${select('goal',he?'מטרה':'Goal',[['buildMuscle','Build muscle','בניית שריר'],['loseFat','Lose fat','חיטוב'],['maintainPerformance','Maintain muscle','שימור שריר'],['increaseStrength','Strength','כוח'],['improveSkills','Calisthenics','קליסטניקס']],prefs.goal)}
       ${select('experience',he?'רמת ניסיון':'Experience',[['beginner','Beginner','מתחילים'],['intermediate','Intermediate','בינוני'],['advanced','Advanced','מתקדמים'],['professional','Professional athlete','ספורטאים מקצועיים']],prefs.experience)}</div>
       <fieldset class="saved-replacement-equipment"><legend>${he?'ציוד שזמין כעת — אפשר להסיר מכשיר תפוס':'Equipment available now — uncheck a busy machine'}</legend>${equipment.map(([value,en,iw])=>`<label><input type="checkbox" name="equipment" value="${value}"${selectedEquipment.has(value)?' checked':''}> ${he?iw:en}</label>`).join('')}</fieldset>
-      <label>${he?'מגבלות תנועה (אם יש)':'Movement limitations (if any)'}<input name="limitations" value="${esc(saved.plan.limitations || '')}" maxlength="1000"></label>` : `<p>${he?'הארוחות והכמויות עשויות להתאזן מחדש כדי לשמור על היעדים וההעדפות השמורים.':'Meals and portions may be rebalanced to keep your saved targets and dietary preferences.'}</p>`}
+      <label>${he?'מגבלות תנועה (אם יש)':'Movement limitations (if any)'}<input name="limitations" value="${esc(saved.plan.limitations || '')}" maxlength="1000"></label>` : `<p>${he?'הארוחות והכמויות עשויות להתאזן מחדש כדי לשמור על היעדים וההעדפות השמורים.':'Meals and portions may be rebalanced to keep your saved targets and dietary preferences.'}</p>
+      <label>${he?'אלרגנים נוספים (אם יש)':'Additional allergens (optional)'}<input name="allergies" maxlength="500" aria-describedby="saved-replacement-allergens-help"></label>
+      <p id="saved-replacement-allergens-help">${he?'הפרידו אלרגנים בפסיקים. אם התפריט השמור מתנגש עם המגבלות החדשות, צריך ליצור תפריט חדש.':'Separate allergens with commas. If the saved plan conflicts with new restrictions, create a new plan.'}</p>`}
     <div class="saved-replacement-actions"><button type="submit">${he?'החלפה ושמירה':'Replace and save'}</button><button type="button" data-cancel-replacement>${he?'ביטול':'Cancel'}</button></div></form>`;
   mountHealthScreening(panel.querySelector('form'), language);
   const content = dialog.querySelector('[data-content], .saved-nutrition-body');
@@ -151,6 +154,7 @@ export function mountSavedReplacement(dialog, { kind, saved, user, language = 'e
     const context = { screeningStatus: fields.get('screeningStatus') };
     if (kind === 'workout') Object.assign(context, { age: Number(fields.get('age')), goal: fields.get('goal'),
       experience: fields.get('experience'), equipment: chosen, trainingStyle: 'hybrid', limitations: fields.get('limitations') || '' });
+    else context.allergies = fields.get('allergies') || '';
     busy = true; form.querySelectorAll('button,input,select').forEach(element => { element.disabled = true; });
     setStatus(he?'מחליף ושומר…':'Replacing and saving…');
     try {

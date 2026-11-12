@@ -18,6 +18,13 @@ test("current urgent symptoms receive an urgent, category-specific restriction",
   assert.match(result.message, /urgent|emergency/i);
 });
 
+test("denying one symptom does not suppress a different current symptom", () => {
+  for (const text of ["No chest pain, I have trouble breathing.", "No chest pain and trouble breathing.", "אין לי כאב בחזה, יש לי קוצר נשימה."]) {
+    assert.equal(assessSafety({ text }).action, "URGENT_SAFETY_RESPONSE", text);
+  }
+  assert.equal(assessSafety({ text: "No chest pain or fainting." }).allowed, true);
+});
+
 test("historical, educational, and third-person contexts are not emergency blocked", () => {
   for (const [text, category] of [
     ["I fainted once years ago and was medically cleared.", null],

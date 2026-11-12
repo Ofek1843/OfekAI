@@ -23,6 +23,7 @@ test("account export includes bounded voice metadata for participant conversatio
     doc(path) {
       if (path === "users/alice") return root;
       if (path === "socialProfiles/alice") return { async get() { return snapshot({ username: "alice" }); } };
+      if (path === "userReviews/alice") return { async get() { return snapshot({ rating: 4, message: "Helpful", publicationConsent: false, moderationNote: "Internal" }); } };
       throw new Error(`unexpected doc ${path}`);
     },
     collection(path) {
@@ -34,6 +35,7 @@ test("account export includes bounded voice metadata for participant conversatio
     }
   };
   const result = await new AccountService({ db, now: () => new Date("2026-08-08T11:00:00Z") }).exportAccount("alice");
+  assert.deepEqual(result.review, { rating: 4, message: "Helpful", publicationConsent: false });
   assert.deepEqual(result.voiceMessages, [
     { id: "sent-voice", conversationId: "alice_bob", senderUid: "alice", direction: "sent", createdAt: "2026-08-08T10:00:00.000Z", durationMs: 2000, mimeType: "audio/webm", sizeBytes: 5000, available: true },
     { id: "received-voice", conversationId: "alice_bob", senderUid: "bob", direction: "received", createdAt: "2026-08-08T10:01:00.000Z", durationMs: 3000, mimeType: "audio/mp4", sizeBytes: 6000, available: false }

@@ -191,12 +191,12 @@ test("The API key is never logged (startup diagnostics or error logs)", async ()
   assert.ok(!stderr.includes(fullKey), "Full API key must not appear in stderr");
 });
 
-test("Startup diagnostics log key presence/length without the full key", async () => {
+test("Startup diagnostics log key presence/length without disclosing key fragments", async () => {
   const stdout = upstreamFailureServer.getStdout();
   assert.ok(stdout.includes("[openai-diagnostics] startup:"), "Startup diagnostic line should be present");
   assert.ok(stdout.includes("\"apiKeyPresent\":true"), "Should report key presence");
-  assert.ok(stdout.includes("\"apiKeyFirst4\":\"sk-t\""), "Should report only first 4 characters");
-  assert.ok(stdout.includes("\"apiKeyLast4\":\"0000\""), "Should report only last 4 characters");
+  assert.match(stdout, /"apiKeyTrimmedLength":\d+/);
+  assert.doesNotMatch(stdout, /apiKeyFirst4|apiKeyLast4|sk-test/);
 });
 
 // --- Server WITHOUT upstream failure simulation (normal mock success) ---

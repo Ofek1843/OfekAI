@@ -158,7 +158,7 @@ body.landing-page .hero-social-links.editorial-social-rail {
   font-size: 11px !important;
   letter-spacing: .17em !important;
 }
-body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero .badge { color: var(--ed-blue) !important; -webkit-text-fill-color: var(--ed-blue) !important; opacity: 1 !important; }
+body.landing-page.fp-v45-deep-ocean.fp-route-index .hero-shell.simple-hero .badge { color: #053456 !important; -webkit-text-fill-color: #053456 !important; opacity: 1 !important; }
 .hero-meta { display: none !important; }
 .eyebrow,
 .section-kicker {

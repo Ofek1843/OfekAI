@@ -2,7 +2,7 @@
 // dropped (the activate handler below deletes any cache whose name !==
 // CACHE_NAME) -- e.g. this bump ships the guest signup/resume flow and must
 // not be served from a stale cached builder or diary page after deploy.
-const CACHE_NAME = 'fuelphysique-release-20261109-equipment-1';
+const CACHE_NAME = 'fuelphysique-release-20261112-safety-1';
 
 // Firebase Auth's OAuth helper, proxied same-origin at /__/auth/* (see
 // lib/auth-proxy.js) so the Google consent screen shows the public domain
@@ -67,14 +67,14 @@ const urlsToCache = [
   '/my-nutrition-plans.html',
   '/manual-nutrition-builder.html',
   '/js/my-nutrition-plans.js',
-  '/js/manual-nutrition-builder.js',
-  '/css/manual-nutrition-builder.css',
+  '/js/manual-nutrition-builder.js?v=20261112-1',
+  '/css/manual-nutrition-builder.css?v=20261112-1',
   '/assets/dashboard/training.webp',
   '/assets/dashboard/landing-training.webp',
   '/css/simple-ux.css?v=20261007-motion-1',
   '/css/simple-ux.css?v=20261010-workout-paper-2',
   '/css/landing.css?v=20261020-google-entry-1',
-  '/css/landing-editorial.css?v=20261020-google-entry-1',
+  '/css/landing-editorial.css?v=20261112-contrast-1',
   '/css/landing-mobile-clarity.css?v=20261020-guest-dashboard-1',
   '/css/landing-product-previews.css?v=20261013-product-preview-1',
   '/css/saved-workout-view.css?v=20261015-plan-tabs-1',
@@ -86,7 +86,7 @@ const urlsToCache = [
   '/js/simple-ux.js?v=20261020-guest-dashboard-1',
   '/js/guest-trial.mjs?v=20261020-guest-dashboard-1',
   '/js/workout-builder.js?v=20261109-equipment-1',
-  '/js/nutrition-builder.js?v=20261020-guest-resume-1',
+  '/js/nutrition-builder.js?v=20261112-1',
   '/js/daily-nutrition.js?v=20261020-calendar-1',
   '/js/landing-navigation.mjs',
   '/js/request-deadline.mjs',

@@ -49,9 +49,17 @@ function renderCategoryChips() {
   $("#categoryChips").innerHTML = CATEGORY_OPTIONS.map(item => '<button type="button" class="category-chip' + (state.activeCategories.includes(item[0]) ? " active" : "") + '" aria-pressed="' + state.activeCategories.includes(item[0]) + '" data-category="' + item[0] + '">' + esc(hebrew ? item[2] : item[1]) + '</button>').join("");
 }
 function mealQuery(offset = 0) {
-  const params = new URLSearchParams({ q: $("#mealQuery").value.trim(), diet: $("#diet").value, allergies: parseList($("#allergies").value).join(","), exclusions: parseList($("#exclusions").value).join(","), categories: state.activeCategories.join(","), language: state.language, limit: "8", offset: String(offset) });
-  if ($("#mealSlot").value) params.set("slot", $("#mealSlot").value);
-  return params;
+  return {
+    q: $("#mealQuery").value.trim(),
+    diet: $("#diet").value,
+    allergies: parseList($("#allergies").value),
+    exclusions: parseList($("#exclusions").value),
+    categories: state.activeCategories,
+    slot: $("#mealSlot").value,
+    language: state.language,
+    limit: 8,
+    offset
+  };
 }
 function renderResults() {
   const selectedIds = new Set(state.selected.map(item => item.id));
@@ -63,15 +71,24 @@ function renderResults() {
   }).join("") : '<p class="manual-status">No compatible meals found. Try another search or category.</p>';
 }
 async function searchMeals({ append = false, immediate = false } = {}) {
-  if (!discoveryHasInput()) { state.discovery.offset = 0; state.discovery.hasMore = false; state.discovery.results = []; renderDiscoveryPrompt(); return; }
-  if (!immediate && $("#mealQuery").value.trim().length === 1) { renderDiscoveryPrompt(); return; }
   const requestId = ++state.discovery.requestId;
   state.discovery.controller?.abort();
+  if (!discoveryHasInput()) { state.discovery.offset = 0; state.discovery.hasMore = false; state.discovery.results = []; renderDiscoveryPrompt(); return; }
+  if (!immediate && $("#mealQuery").value.trim().length === 1) { renderDiscoveryPrompt(); return; }
   state.discovery.controller = new AbortController();
   const offset = append ? state.discovery.offset : 0;
-  if (!append) state.discovery.results = [];
+  if (!append) {
+    state.discovery.results = [];
+    $("#mealResults").textContent = "";
+    $("#loadMoreMeals").hidden = true;
+  }
   try {
-    const data = await api("/api/nutrition/manual/meals?" + mealQuery(offset), { signal: state.discovery.controller.signal });
+    const data = await api("/api/nutrition/manual/meals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(mealQuery(offset)),
+      signal: state.discovery.controller.signal
+    });
     if (requestId !== state.discovery.requestId) return;
     const seen = new Set(state.discovery.results.map(meal => meal.id));
     const incoming = (data.meals || []).filter(meal => !seen.has(meal.id));
@@ -128,7 +145,11 @@ function renderSelected() {
 }
 function addMeal(mealId) {
   if (state.selected.some(item => item.id === mealId)) return;
-  api("/api/nutrition/manual/meals/" + encodeURIComponent(mealId) + "?language=" + state.language).then(({ meal }) => { state.selected.push({ ...meal, servings: 1 }); renderSelected(); renderResults(); }).catch(error => status(error.message, true));
+  const meal = state.discovery.results.find(result => result.id === mealId);
+  if (!meal) return;
+  state.selected.push({ ...meal, servings: 1 });
+  renderSelected();
+  renderResults();
 }
 function readExistingMeal(meal) {
   const option = meal.options?.[0] || meal;
@@ -194,9 +215,15 @@ for (const id of ["goal", "age", "gender", "height", "weight", "activityLevel"])
 }
 $("#mealSearchForm").addEventListener("submit", event => { event.preventDefault(); clearTimeout(state.discovery.timer); searchMeals({ immediate: true }); });
 $("#mealQuery").addEventListener("input", queueSearch);
+for (const id of ["allergies", "exclusions", "diet"]) {
+  $("#" + id).addEventListener("input", () => {
+    clearTimeout(state.discovery.timer);
+    searchMeals({ immediate: true });
+  });
+}
 $("#mealSlot").addEventListener("change", () => searchMeals({ immediate: true }));
 $("#categoryChips").addEventListener("click", event => { const button = event.target.closest("[data-category]"); if (!button) return; const key = button.dataset.category; state.activeCategories = state.activeCategories.includes(key) ? state.activeCategories.filter(item => item !== key) : state.activeCategories.concat(key); renderCategoryChips(); searchMeals({ immediate: true }); });
-$("#clearMealFilters").addEventListener("click", () => { $("#mealQuery").value = ""; $("#mealSlot").value = ""; state.activeCategories = []; renderCategoryChips(); renderDiscoveryPrompt(); });
+$("#clearMealFilters").addEventListener("click", () => { $("#mealQuery").value = ""; $("#mealSlot").value = ""; state.activeCategories = []; renderCategoryChips(); searchMeals(); });
 $("#loadMoreMeals").addEventListener("click", () => searchMeals({ append: true, immediate: true }));
 $("#mealResults").addEventListener("click", event => { const button = event.target.closest("[data-add-meal]"); if (button) addMeal(button.dataset.addMeal); });
 $("#selectedMeals").addEventListener("input", event => { if (!event.target.matches("[data-portion]")) return; const item = state.selected[Number(event.target.closest("[data-index]").dataset.index)]; item.servings = Math.max(.25, Math.min(8, number(event.target.value) || 1)); renderSelected(); });

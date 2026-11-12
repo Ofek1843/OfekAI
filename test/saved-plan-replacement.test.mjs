@@ -78,6 +78,26 @@ const requestFrom = harness => async ({kind,payload}) => {
   const response=await harness.request(`/api/${kind}-builder/reroll-${kind==='workout'?'exercise':'meal'}`,payload);
   assert.equal(response.status,200,JSON.stringify(response.body)); return response.body;
 };
+test('a newly declared allergen prevents a saved-plan replacement that conflicts with it', async () => {
+  const harness = createHarness();
+  const [dairy] = Object.entries(lib('meal-catalog').FOODS).find(([, food]) => food.alg?.includes('dairy'));
+  const saved = { id: 'legacy-menu', plan: { meals: [{ mealNumber: 1, options: [{ optionNumber: 1, foods: [{ catalogKey: dairy }] }] }] } };
+  const before = structuredClone(saved);
+  let writes = 0;
+  await assert.rejects(replaceSavedPlan({
+    kind: 'nutrition', saved, user, target: { mealNumber: 1, optionNumber: 1 },
+    context: { screeningStatus: 'none', allergies: ' milk ' },
+    request: async ({ payload }) => {
+      assert.equal(payload.allergies, 'milk');
+      const result = await harness.request('/api/nutrition-builder/reroll-meal', payload);
+      assert.equal(result.status, 422);
+      throw new Error(result.body.error);
+    },
+    persist: async () => { writes++; }
+  }), /Create a new plan/);
+  assert.equal(writes, 0);
+  assert.deepEqual(saved, before);
+});
 test('saved meals can be replaced repeatedly using the real balancing route, keeping allergy exclusions, exact totals and reopen state', async () => {
   const harness=createHarness(), generated=await harness.request('/api/nutrition-builder',nutritionProfile);
   assert.equal(generated.status,200);

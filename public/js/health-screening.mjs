@@ -10,6 +10,8 @@ export function mountHealthScreening(form, language = "en") {
     const option=document.createElement("option");option.value=value;option.textContent=text;select.append(option);
   }
   help.textContent=he?"זו אינה אבחנה או בדיקה רפואית. מצב שאינו נתמך דורש ליווי של איש מקצוע מוסמך, לא תוכנית רגילה אוטומטית.":"This is not a diagnosis or medical clearance. Unsupported situations require qualified individual review, not an ordinary automated plan.";
+  help.id = `${form.id || "builder"}-health-screening-help`;
+  select.setAttribute("aria-describedby", help.id);
   label.append(select);box.append(legend,label,help);form.prepend(box);
 }
 export function healthScreeningPayload(form) { return {screeningStatus:form.querySelector('[name="screeningStatus"]')?.value||""}; }

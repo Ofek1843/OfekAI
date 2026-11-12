@@ -338,6 +338,11 @@ function openPanel(panel) {
   for (const element of ALL_PANELS) element?.classList.remove("visible");
   panel?.classList.add("visible");
   revealPage();
+  const heading = panel?.querySelector("h2");
+  if (heading) {
+    heading.tabIndex = -1;
+    heading.focus();
+  }
 }
 
 function closePanels() {
@@ -718,6 +723,7 @@ async function submitForgotPassword() {
 function cancelForgotPassword() {
   closePanels();
   clearMessage();
+  document.getElementById("forgotPasswordLink")?.focus();
 }
 
 // --- Wiring --------------------------------------------------------------

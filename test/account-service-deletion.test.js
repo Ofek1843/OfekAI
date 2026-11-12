@@ -96,6 +96,8 @@ test("account deletion verifies nested media, preserves a survivor's history, th
   assert.equal(fixture.state.get("users/bob/conversationSummaries/alice_bob").status, "deleted_participant");
   assert.equal(fixture.deleted.has("users/alice"), true);
   assert.equal(fixture.deleted.has("socialProfiles/alice"), true);
+  assert.equal(fixture.deleted.has("userReviews/alice"), true);
+  assert.equal(fixture.deleted.has("userReviews/bob"), false);
   assert.equal(fixture.state.get(fixture.jobPath).status, "completed");
 });
 

@@ -34,6 +34,51 @@ test('HTTP manual and generated menus honor different goals for the same adult f
 test("HTTP blocks underweight cutting and unsupported current contexts",async()=>{
   for(const change of [{age:30,weight:45,goal:"loseFat"},{additionalNotes:"אני בהריון"},{breastfeeding:true},{screeningStatus:"review"}])assert.equal((await post("/api/nutrition-builder",{...N,...change})).status,422);
 });
+test("HTTP nutrition rejects incomplete allergy declarations even in the notes", async () => {
+  const result = await post("/api/nutrition-builder", { ...N, additionalNotes: "I have a milk and kiwi allergy" });
+  assert.equal(result.status, 422);
+});
+test("HTTP manual meal filtering uses a private request and rejects unknown allergies", async () => {
+  const endpoint = "/api/nutrition/manual/meals";
+  const response = await fetch(base + endpoint, {
+    method: "POST",
+    headers: { Authorization: "Bearer audit-manual-meal", "Content-Type": "application/json" },
+    body: JSON.stringify({ categories: ["breakfast"], allergies: ["milk"] })
+  });
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("cache-control"), /no-store/);
+  const { meals } = await response.json();
+  const { FOODS } = require("../lib/meal-catalog");
+  assert.ok(meals.length);
+  assert.ok(meals.every(meal => meal.foods.every(row => FOODS[row.catalogKey] && !(FOODS[row.catalogKey].alg || []).includes("dairy"))));
+  assert.equal((await post(endpoint, { categories: ["breakfast"], allergies: ["kiwi"] })).status, 422);
+  assert.equal((await post(endpoint, { categories: ["breakfast"], allergies: { value: "milk" } })).status, 400);
+});
+test("HTTP Coach keeps an earlier urgent disclosure ahead of routine follow-up", async () => {
+  const result = await post("/api/chat", {
+    language: "he",
+    messages: [
+      { role: "user", content: "אין לי כאב בחזה, יש לי קוצר נשימה" },
+      { role: "assistant", content: "Continue as usual" },
+      { role: "user", content: "מה לעשות באימון?" }
+    ]
+  });
+  assert.equal(result.status, 200);
+  assert.equal(result.body.code, "urgent_symptoms");
+  assert.match(result.body.reply, /עזרה דחופה/);
+  const title = await post("/api/generate-title", { language: "he", message: "יש לי קוצר נשימה עכשיו" });
+  assert.deepEqual(title.body, { title: "שיחה עם המאמן" });
+});
+test("HTTP Coach distinguishes current risk from education and disabled profile personalization", async () => {
+  const settings = { athleteCore: { pregnant: true }, aiPreferences: { useAthleteCore: true } };
+  const messages = [{ role: "user", content: "Build me a personalized workout" }];
+  assert.equal((await post("/api/chat", { settings, messages })).body.code, "pregnancy");
+  settings.aiPreferences.useAthleteCore = false;
+  const off = await post("/api/chat", { settings, messages });
+  assert.equal(off.body.reply, "Mock reply for load testing.");
+  const education = await post("/api/chat", { messages: [{ role: "user", content: "Explain pregnancy fitness generally." }] });
+  assert.equal(education.body.reply, "Mock reply for load testing.");
+});
 test("HTTP can still generate an ordinary menu with exact visible totals",async()=>{
   const r=await post("/api/nutrition-builder",N);assert.equal(r.status,200,JSON.stringify(r.body));
   assert.equal(r.body.plan.totalsSummary.withinTolerance,true);assert.equal(r.body.plan.totalsSummary.displayedArithmeticExact,true);

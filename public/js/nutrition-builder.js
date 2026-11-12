@@ -802,6 +802,9 @@ resultElement.querySelectorAll(".nutrition-reroll-meal-button").forEach((rerollB
           mealNumber,
           optionNumber,
           ...healthScreeningPayload(form),
+          allergies: form.elements.allergies?.value || "",
+          foodsToAvoid: form.elements.foodsToAvoid?.value || "",
+          additionalNotes: form.elements.additionalNotes?.value || "",
           language: currentLanguage,
           plan: window.currentNutritionPlan
         })

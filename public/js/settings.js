@@ -649,32 +649,27 @@ function applyStoredThemeImmediately() {
 }
 
 function openSettings() {
-    if (!elements.overlay) {
+    if (!elements.overlay || elements.overlay.open) {
         return;
     }
 
     elements.overlay.classList.add("show");
 
-    elements.overlay.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+    elements.overlay.showModal();
+    elements.closeBtn?.focus();
 
     document.body.style.overflow =
         "hidden";
 }
 
 function closeSettings() {
-    if (!elements.overlay) {
+    if (!elements.overlay?.open) {
         return;
     }
 
     elements.overlay.classList.remove("show");
 
-    elements.overlay.setAttribute(
-        "aria-hidden",
-        "true"
-    );
+    elements.overlay.close();
 
     document.body.style.overflow = "";
 
@@ -1267,6 +1262,10 @@ async function saveSettings() {
 }
 
 function bindEvents() {
+    elements.overlay?.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        closeSettings();
+    });
     elements.openBtn?.addEventListener(
         "click",
         openSettings
@@ -1308,13 +1307,6 @@ function bindEvents() {
     document.addEventListener(
         "keydown",
         (event) => {
-            if (
-                event.key ===
-                "Escape"
-            ) {
-                closeSettings();
-            }
-
             if (
                 (
                     event.ctrlKey ||

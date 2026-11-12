@@ -649,7 +649,8 @@ async function generateConversationTitle(
       method: "POST",
       headers: await authHeaders(),
       body: JSON.stringify({
-        message
+        message,
+        language: currentLang
       })
     }
   );
@@ -903,7 +904,9 @@ async function sendMessage() {
         body: JSON.stringify({
           messages,
           language: currentLang,
-          settings: currentUserSettings,
+          settings: currentUserSettings.aiPreferences?.useAthleteCore === false
+            ? { aiPreferences: currentUserSettings.aiPreferences }
+            : currentUserSettings,
           activeWorkoutPlan,
           activeNutritionPlan
         })

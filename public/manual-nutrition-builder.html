@@ -6,7 +6,7 @@
   <title>Build a nutrition plan manually · FuelPhysique</title>
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="/css/theme.css">
-  <link rel="stylesheet" href="/css/manual-nutrition-builder.css">
+  <link rel="stylesheet" href="/css/manual-nutrition-builder.css?v=20261112-1">
   <link rel="stylesheet" href="/css/redesign-v1.css?v=20261019-paper-contrast-2">
   <link rel="stylesheet" href="/css/product-editorial.css?v=20261010-product-editorial-3">
   <script defer src="/js/redesign-shell.js?v=20261011-paper-1"></script>
@@ -45,7 +45,7 @@
           <select id="mealSlot" aria-label="Meal time"><option value="">All meal times</option><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option></select>
           <button class="secondary-action" type="submit">Search</button>
         </form>
-        <div class="category-toolbar"><div id="categoryChips" class="category-chips" aria-label="Meal categories"></div><button id="clearMealFilters" type="button" class="text-action">Clear filters</button></div>
+        <div class="category-toolbar"><div id="categoryChips" class="category-chips" role="group" aria-label="Meal categories"></div><button id="clearMealFilters" type="button" class="text-action">Clear filters</button></div>
         <div id="mealResults" class="meal-results" aria-live="polite"></div>
         <button id="loadMoreMeals" type="button" class="secondary-action load-more" hidden>Load more</button>
       </section>
@@ -61,7 +61,7 @@
     </div>
   </main>
   <button id="mobileMenuToggle" class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="dailyMenuPanel" hidden><span id="mobileMenuCount">0 meals</span><strong id="mobileMenuCalories">0 kcal</strong><span>View menu</span></button>
-  <script type="module" src="/js/manual-nutrition-builder.js"></script>
+  <script type="module" src="/js/manual-nutrition-builder.js?v=20261112-1"></script>
   <script type="module" src="/js/site-feedback.js"></script>
 <script type="module" src="/js/account-personalization.js"></script>
 </body>

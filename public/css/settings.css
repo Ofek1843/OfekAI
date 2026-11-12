@@ -3,6 +3,14 @@
 .settings-overlay {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: inherit;
   background: rgba(0,0,0,.65);
   backdrop-filter: blur(8px);
   display: flex;
@@ -13,6 +21,9 @@
   transition: .25s;
   z-index: 9999;
 }
+
+.settings-overlay:not([open]) { display: none; }
+.settings-overlay::backdrop { background: transparent; }
 
 .settings-overlay.show{
   opacity:1;

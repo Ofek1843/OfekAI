@@ -26,7 +26,7 @@
     } catch {}
   </script>
 
-  <link rel="stylesheet" href="/css/settings.css" />
+  <link rel="stylesheet" href="/css/settings.css?v=20261112-1" />
   <link rel="stylesheet" href="/css/theme-toggle.css" />
   <link rel="stylesheet" href="/css/push-notifications.css" />
 
@@ -1086,8 +1086,8 @@ html[data-theme="light"] .coach-back-link {
       </section>
     </div>
   </main>
-  <div id="settingsOverlay" class="settings-overlay" aria-hidden="true">
-    <section class="settings-window" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <dialog id="settingsOverlay" class="settings-overlay" aria-labelledby="settingsTitle">
+    <section class="settings-window">
       <aside class="settings-sidebar">
         <div class="settings-sidebar-header">
           <h2 id="settingsTitle">Settings</h2>
@@ -1587,7 +1587,7 @@ html[data-theme="light"] .coach-back-link {
 </footer>
       </div>
     </section>
-  </div>
+  </dialog>
 
   <dialog id="deleteAccountDialog" class="account-delete-dialog" aria-labelledby="deleteAccountDialogTitle" aria-describedby="deleteAccountDialogDescription">
     <form id="deleteAccountForm" method="dialog">
@@ -1600,12 +1600,12 @@ html[data-theme="light"] .coach-back-link {
     </form>
   </dialog>
 
-  <script type="module" src="/js/chat.js"></script>
+  <script type="module" src="/js/chat.js?v=20261112-1"></script>
   <script type="module" src="/js/session-trail.js"></script>
   <script type="module" src="/js/app-auth.js"></script>
   <script type="module" src="/js/user-profile.js"></script>
   <script type="module" src="/js/theme-toggle.js"></script>
-  <script type="module" src="/js/settings.js"></script>
+  <script type="module" src="/js/settings.js?v=20261112-1"></script>
   <script type="module" src="/js/push-notifications.js"></script>
 <script>
   const mobileHistoryToggle = document.getElementById("mobileHistoryToggle");
