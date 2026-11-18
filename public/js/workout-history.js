@@ -1,17 +1,72 @@
-import { auth, db } from "./firebase-config.js";
-import { collection, deleteDoc, doc, getDocs, limit, orderBy, query } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
-import { guardProtectedPage } from "./verification-gate.js";
+import { db } from './firebase-config.js';
+import { collection, deleteDoc, doc, getDocs, limit, orderBy, query } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js';
+import { guardProtectedPage } from './verification-gate.js';
+import { exerciseImageUrl } from './exercise-image.js';
+import { installWorkoutExercisePreview } from './workout-exercise-preview.mjs';
 
-const $=selector=>document.querySelector(selector),he=(localStorage.getItem("ofek-ai-language")||"en")==="he";
-const ui=he?{title:"היסטוריית אימונים",description:"צפה בכל אימון ובכל סט שתיעדת.",back:"חזרה ל־FuelPhysique ←",start:"+ התחלת אימון",workouts:"אימונים",sets:"סטים שהושלמו",time:"זמן אימונים",loading:"טוען את היסטוריית האימונים...",empty:"עדיין אין אימונים שמורים",emptyText:"סיים את האימון הראשון שלך והוא יופיע כאן.",details:"הצגת פרטים",hide:"הסתרת פרטים",remove:"מחיקה",confirm:"למחוק את האימון הזה? לא ניתן לבטל פעולה זו.",loadError:"לא ניתן לטעון את היסטוריית האימונים.",deleteError:"לא ניתן למחוק את האימון.",minutes:"דקות",completed:"סטים",weight:"משקל",reps:"חזרות",rpe:"RPE",done:"בוצע",target:"יעד",notes:"הערות",unknownDate:"תאריך לא זמין"}:{title:"Workout History",description:"Review every workout and every set you recorded.",back:"← Back to FuelPhysique",start:"+ Start Workout",workouts:"Workouts",sets:"Completed sets",time:"Training time",loading:"Loading workout history...",empty:"No saved workouts yet",emptyText:"Finish your first workout and it will appear here.",details:"View details",hide:"Hide details",remove:"Delete",confirm:"Delete this workout? This cannot be undone.",loadError:"Could not load workout history.",deleteError:"Could not delete this workout.",minutes:"minutes",completed:"sets",weight:"Weight",reps:"Reps",rpe:"RPE",done:"Done",target:"Target",notes:"Notes",unknownDate:"Date unavailable"};
-let user,logs=[];
-const esc=(value="")=>String(value).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
-function localize(){document.documentElement.lang=he?"he":"en";document.documentElement.dir=he?"rtl":"ltr";for(const[id,key]of [["pageTitle","title"],["pageDescription","description"],["backLink","back"],["trackerLink","start"],["workoutsLabel","workouts"],["setsLabel","sets"],["timeLabel","time"]])$("#"+id).textContent=ui[key];$("#historyStatus").textContent=ui.loading;}
-function dateOf(log){const date=log.completedAt?.toDate?.()||log.startedAt?.toDate?.()||(log.startedAt instanceof Date?log.startedAt:null);return date?new Intl.DateTimeFormat(he?"he-IL":"en-US",{dateStyle:"medium",timeStyle:"short"}).format(date):ui.unknownDate;}
-function value(value,suffix=""){return value===null||value===undefined||value===""?"—":`${esc(value)}${suffix}`;}
-function exerciseHtml(exercise){return `<section class="exercise-block"><h3>${esc(exercise.name||"Exercise")}</h3><table class="sets-table"><thead><tr><th>#</th><th>RIR</th><th>${ui.weight}</th><th>${ui.reps}</th><th>${ui.rpe}</th><th>${ui.done}</th></tr></thead><tbody>${(exercise.sets||[]).map(set=>`<tr><td>${value(set.setNumber)}</td><td>${value(set.targetRir??exercise.rir)}</td><td>${value(set.weightKg," kg")}</td><td>${value(set.reps)}</td><td>${value(set.rpe)}</td><td class="${set.completed?"set-done":"set-missed"}">${set.completed?"✓":"—"}</td></tr>`).join("")}</tbody></table></section>`;}
-function cardHtml(log){const minutes=Math.max(1,Math.round((Number(log.durationSeconds)||0)/60));return `<article class="history-card" data-log-id="${esc(log.id)}"><div class="workout-summary"><div><span class="workout-date">${esc(dateOf(log))}</span><h2>${esc(log.sessionName||"Workout")}</h2><p class="plan-name">${esc(log.workoutPlanName||"")}</p></div><div class="summary-meta">${log.manuallyEntered?`<span class="manual-entry">${he?"אימון שדווח ידנית":"Missed workout"}</span>`:""}<span>${minutes} ${ui.minutes}</span><span>${Number(log.completedSets)||0}/${Number(log.totalSets)||0} ${ui.completed}</span></div></div><div class="card-actions"><button class="details-button" type="button" aria-expanded="false">${ui.details}</button><button class="delete-button" type="button">${ui.remove}</button></div><div class="workout-details" hidden>${(log.exercises||[]).map(exerciseHtml).join("")}${log.notes?`<p class="workout-notes"><strong>${ui.notes}:</strong> ${esc(log.notes)}</p>`:""}</div></article>`;}
-function render(){const totalSets=logs.reduce((sum,log)=>sum+(Number(log.completedSets)||0),0),seconds=logs.reduce((sum,log)=>sum+(Number(log.durationSeconds)||0),0);$("#workoutCount").textContent=logs.length;$("#completedSets").textContent=totalSets;$("#trainingTime").textContent=seconds>=3600?`${(seconds/3600).toFixed(1)}h`:`${Math.round(seconds/60)}m`;$("#historyStatus").textContent="";if(!logs.length){$("#historyList").innerHTML=`<div class="empty-state"><h2>${ui.empty}</h2><p>${ui.emptyText}</p></div>`;return;}$("#historyList").innerHTML=logs.map(cardHtml).join("");}
-$("#historyList").addEventListener("click",async event=>{const card=event.target.closest(".history-card");if(!card)return;if(event.target.closest(".details-button")){const button=event.target.closest(".details-button"),details=card.querySelector(".workout-details"),opening=details.hidden;details.hidden=!opening;button.textContent=opening?ui.hide:ui.details;button.setAttribute("aria-expanded",String(opening));return;}const deleteButton=event.target.closest(".delete-button");if(!deleteButton||!confirm(ui.confirm))return;deleteButton.disabled=true;try{await deleteDoc(doc(db,"users",user.uid,"workoutLogs",card.dataset.logId));logs=logs.filter(log=>log.id!==card.dataset.logId);render();}catch(error){console.error(error);$("#historyStatus").textContent=ui.deleteError;$("#historyStatus").classList.add("error");deleteButton.disabled=false;}});
-async function load(){const snapshot=await getDocs(query(collection(db,"users",user.uid,"workoutLogs"),orderBy("completedAt","desc"),limit(100)));logs=snapshot.docs.map(item=>({id:item.id,...item.data()}));render();}
-localize();guardProtectedPage({onAuthenticated:async current=>{user=current;try{await load();}catch(error){console.error(error);$("#historyStatus").textContent=ui.loadError;$("#historyStatus").classList.add("error");}}});
+const $ = selector => document.querySelector(selector);
+const he = (localStorage.getItem('ofek-ai-language') || 'en') === 'he';
+const ui = he ? {
+  title:'היסטוריית אימונים', description:'מה עשית בפעם הקודמת? כל התרגילים, המשקלים והסטים במקום אחד.',
+  back:'חזרה ל־FuelPhysique ←', start:'+ התחלת אימון', workouts:'אימונים', sets:'סטים שבוצעו', time:'זמן אימונים',
+  loading:'טוען את האימונים שלך…', empty:'האימון הבא שלך מתחיל כאן', emptyText:'שמור אימון ראשון כדי לחזור למשקלים ולסטים שלך בפעם הבאה.',
+  details:'פתיחת האימון', hide:'סגירת האימון', remove:'מחיקה', confirm:'למחוק את האימון הזה? לא ניתן לבטל פעולה זו.',
+  loadError:'לא ניתן לטעון את היסטוריית האימונים.', deleteError:'לא ניתן למחוק את האימון.', minutes:'דקות',
+  weight:'משקל', reps:'חזרות', done:'בוצע', notes:'הערות', unknownDate:'תאריך לא זמין', kg:'ק״ג', set:'סט', manual:'תיעוד ידני', missing:'לא תועד', completed:'סטים שבוצעו', exercise:'תרגיל'
+} : {
+  title:'Workout history', description:'What did you lift last time? Your exercises, weights and sets in one place.',
+  back:'← Back to FuelPhysique', start:'+ Start workout', workouts:'Workouts', sets:'Completed sets', time:'Training time',
+  loading:'Loading your workouts…', empty:'Your next workout starts here', emptyText:'Save your first workout to find your weights and sets here next time.',
+  details:'Open workout', hide:'Close workout', remove:'Delete', confirm:'Delete this workout? This cannot be undone.',
+  loadError:'Could not load workout history.', deleteError:'Could not delete the workout.', minutes:'min',
+  weight:'Weight', reps:'Reps', done:'Done', notes:'Notes', unknownDate:'Date unavailable', kg:'kg', set:'Set', manual:'Manual entry', missing:'Not recorded', completed:'completed sets', exercise:'Exercise'
+};
+let user, logs = [];
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const numeric = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value));
+const number = value => numeric(value) ? new Intl.NumberFormat(he ? 'he-IL' : 'en-US', {maximumFractionDigits:2}).format(Number(value)) : '—';
+
+function localize() {
+  document.documentElement.classList.add('workout-log-route');
+  document.documentElement.lang = he ? 'he' : 'en'; document.documentElement.dir = he ? 'rtl' : 'ltr';
+  for (const [id,key] of [['pageTitle','title'],['pageDescription','description'],['backLink','back'],['trackerLink','start'],['workoutsLabel','workouts'],['setsLabel','sets'],['timeLabel','time']]) $('#'+id).textContent = ui[key];
+  $('#historyStatus').textContent = ui.loading;
+}
+function dateOf(log) {
+  const date = log.completedAt?.toDate?.() || log.startedAt?.toDate?.() || (log.startedAt instanceof Date ? log.startedAt : null);
+  return date && Number.isFinite(date.getTime()) ? new Intl.DateTimeFormat(he?'he-IL':'en-US',{dateStyle:'medium',timeStyle:'short'}).format(date) : ui.unknownDate;
+}
+function exerciseHtml(exercise, index) {
+  const sets = exercise.sets || [], completed = sets.filter(set => set.completed);
+  const weights = completed.filter(set => numeric(set.weightKg)).map(set => Number(set.weightKg));
+  const best = weights.length ? Math.max(...weights) : null;
+  const image = exerciseImageUrl(exercise), name = exercise.name || ui.exercise;
+  return `<details class="history-exercise" ${index===0?'open':''}><summary><img class="history-exercise-thumbnail" src="${esc(image)}" alt="" loading="lazy"><span class="history-exercise-heading"><strong dir="auto">${esc(name)}</strong><small><bdi>${completed.length} / ${sets.length}</bdi> ${ui.completed}</small></span><span class="history-best-weight">${best!==null?`<bdi>${number(best)} ${ui.kg}</bdi>`:'—'}</span><span class="exercise-chevron" aria-hidden="true">⌄</span></summary>
+    <div class="history-exercise-workspace"><figure class="exercise-guide"><button class="exercise-guide-preview" type="button" data-exercise-preview data-exercise-name="${esc(name)}" aria-label="${esc((he?'הגדלת ההמחשה: ':'Enlarge demonstration: ')+name)}"><img src="${esc(image)}" alt="${esc(name)}" loading="lazy"><span class="exercise-image-expand" aria-hidden="true">↗</span></button><figcaption><strong>${he?'המחשת התרגיל':'Exercise demonstration'}</strong><span>${he?'לחצו על התמונה לתצוגה גדולה':'Select the image for a closer look'}</span></figcaption></figure><div class="history-record-table"><h4>${he?'מה עשית באימון':'Your recorded sets'}</h4>
+    <table class="sets-table" aria-label="${esc(exercise.name || ui.exercise)}"><thead><tr><th scope="col">${ui.set}</th><th scope="col">${ui.weight}</th><th scope="col">${ui.reps}</th><th scope="col">${ui.done}</th></tr></thead>
+    <tbody>${sets.map((set,i)=>`<tr class="${set.completed?'completed':''}"><th scope="row">${number(set.setNumber ?? i+1)}${set.targetRir!=null?`<small class="history-set-effort">RIR <bdi>${esc(set.targetRir)}</bdi></small>`:''}</th><td><bdi>${numeric(set.weightKg)?`${number(set.weightKg)} ${ui.kg}`:'—'}</bdi></td><td>${number(set.reps)}${numeric(set.rpe)?`<small class="history-set-effort">RPE ${number(set.rpe)}</small>`:''}</td><td class="${set.completed?'set-done':'set-missed'}"><span aria-label="${set.completed?ui.done:ui.missing}">${set.completed?'✓':'—'}</span></td></tr>`).join('')}</tbody></table></div></div></details>`;
+}
+function cardHtml(log, index) {
+  const minutes=Math.max(1,Math.round((Number(log.durationSeconds)||0)/60)),open=index===0;
+  return `<article class="history-card" data-log-id="${esc(log.id)}"><div class="workout-summary"><div><span class="workout-date">${esc(dateOf(log))}</span><h2 dir="auto">${esc(log.sessionName || 'Workout')}</h2><p class="plan-name" dir="auto">${esc(log.workoutPlanName || '')}</p></div><div class="summary-meta">${log.manuallyEntered?`<span class="manual-entry">${ui.manual}</span>`:''}<span>${minutes} ${ui.minutes}</span><span>${Number(log.completedSets)||0}/${Number(log.totalSets)||0} ${ui.completed}</span></div></div>
+    <div class="card-actions"><button class="details-button" type="button" aria-expanded="${open}" aria-controls="history-details-${index}">${open?ui.hide:ui.details}</button><button class="delete-button" type="button">${ui.remove}</button></div>
+    <div id="history-details-${index}" class="workout-details" ${open?'':'hidden'}>${(log.exercises||[]).map(exerciseHtml).join('')}${log.notes?`<p class="workout-notes"><strong>${ui.notes}:</strong> ${esc(log.notes)}</p>`:''}</div></article>`;
+}
+function render() {
+  $('#workoutCount').textContent=logs.length; $('#completedSets').textContent=logs.reduce((sum,log)=>sum+(Number(log.completedSets)||0),0);
+  const seconds=logs.reduce((sum,log)=>sum+(Number(log.durationSeconds)||0),0); $('#trainingTime').textContent=seconds>=3600?`${(seconds/3600).toFixed(1)}h`:`${Math.round(seconds/60)}m`;
+  $('#historyStatus').textContent=''; $('#historyList').innerHTML=logs.length?logs.map(cardHtml).join(''):`<div class="empty-state"><h2>${ui.empty}</h2><p>${ui.emptyText}</p><a class="primary-link" href="/workout-tracker.html">${ui.start}</a></div>`;
+}
+$('#historyList').addEventListener('click',async event=>{
+  const card=event.target.closest('.history-card');if(!card)return;
+  const toggle=event.target.closest('.details-button');
+  if(toggle){const details=card.querySelector('.workout-details'),open=details.hidden;details.hidden=!open;toggle.textContent=open?ui.hide:ui.details;toggle.setAttribute('aria-expanded',String(open));return;}
+  const button=event.target.closest('.delete-button');if(!button||!confirm(ui.confirm))return;button.disabled=true;
+  try{await deleteDoc(doc(db,'users',user.uid,'workoutLogs',card.dataset.logId));logs=logs.filter(log=>log.id!==card.dataset.logId);render();}
+  catch(error){console.error(error);$('#historyStatus').textContent=ui.deleteError;$('#historyStatus').classList.add('error');button.disabled=false;}
+});
+localize();installWorkoutExercisePreview();guardProtectedPage({onAuthenticated:async current=>{
+  user=current;
+  try{const result=await getDocs(query(collection(db,'users',user.uid,'workoutLogs'),orderBy('completedAt','desc'),limit(100)));logs=result.docs.map(item=>({id:item.id,...item.data()}));render();}
+  catch(error){console.error(error);$('#historyStatus').textContent=ui.loadError;$('#historyStatus').classList.add('error');}
+}});

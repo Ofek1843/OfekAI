@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/css/exercise-demo.css">
   <link rel="stylesheet" href="/css/exercise-demo-theme.css">
   <link rel="stylesheet" href="/css/push-notifications.css">
-  <meta name="theme-color" content="#10131A">
+  <meta name="theme-color" content="#f7f5f1">
   <link rel="manifest" href="/manifest.json">
   <script>
     if ('serviceWorker' in navigator) {
@@ -27,8 +27,9 @@
   <link rel="stylesheet" href="/css/product-editorial.css?v=20261010-product-editorial-3">
   <script defer src="/js/redesign-shell.js?v=20261002-brand-quality-1"></script>
 <script defer src="/js/google-analytics-consent.js?v=20261017-1"></script>
+  <link rel="stylesheet" href="/css/workout-log-tables.css?v=20261118-2">
 </head>
-<body>
+<body class="workout-table-route">
   <div class="ocean-depth-layer" aria-hidden="true"></div>
   <div class="ocean-depth-glow" aria-hidden="true"></div>
 <main class="tracker-page">
@@ -101,7 +102,16 @@
       </div>
     </header>
 
-    <section id="focusPanel" class="focus-panel panel quick-mode">
+    <section class="table-workout-overview panel" aria-label="Workout progress">
+      <div><strong id="tableProgressText" aria-live="polite"></strong><p id="tableEntryHint"></p></div>
+      <progress id="tableProgress" max="100" value="0"></progress>
+      <div class="table-workout-tools">
+        <button id="tableExpandAll" type="button"></button>
+        <button id="tablePauseButton" type="button"></button>
+        <span class="table-rest"><span id="tableRestLabel"></span> <strong id="tableRestTimer" dir="ltr">00:00</strong><button id="tableRestSkip" type="button" hidden></button></span>
+      </div>
+    </section>
+    <section id="focusPanel" class="focus-panel panel quick-mode" hidden aria-hidden="true">
       <div class="focus-topline">
         <span id="focusLabel" class="focus-label">Focused set</span>
         <span id="focusModeBadge" class="focus-badge">Working set</span>
@@ -176,7 +186,7 @@
     </div>
   </section>
 </main>
-<script type="module" src="/js/workout-tracker.js?v=20261014-rir-1"></script>
+<script type="module" src="/js/workout-tracker.js?v=20261118-tables-2"></script>
   <script type="module" src="/js/push-notifications.js"></script>
   <script type="module" src="/js/site-feedback.js"></script>
   <script src="/js/pwa-install.js?v=20261017-dashboard-only-1"></script>

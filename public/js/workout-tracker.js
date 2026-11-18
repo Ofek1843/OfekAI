@@ -1,16 +1,17 @@
 import { auth, db } from "./firebase-config.js";
-import { addDoc, collection, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { exerciseImageUrl } from "./exercise-image.js";
 import { resolveExerciseMedia, setExerciseMedia } from './exercise-media.js';
 import { demonstrationModel, startDemonstrationPreference, onDemonstrationChange } from './exercise-demo-preference.js';
 import { guardProtectedPage } from "./verification-gate.js";
+import { installWorkoutExercisePreview } from './workout-exercise-preview.mjs';
 
 const $ = selector => document.querySelector(selector);
 const he = (localStorage.getItem("ofek-ai-language") || "en") === "he";
 
 const rawUi = he ? {
   title: "מעקב אימון",
-  description: "תעד את האימון שלך, סט אחד בכל פעם.",
+  description: "כל הסטים מולך. מזינים משקל וחזרות ומסמנים מה בוצע.",
   back: "← חזרה ל-FuelPhysique",
   plans: "התוכניות שלי",
   loading: "טוען את התוכנית הפעילה...",
@@ -88,7 +89,7 @@ const rawUi = he ? {
 
 } : {
   title: "Workout Tracker",
-  description: "Track your workout one set at a time.",
+  description: "Your sets, together. Enter weight and reps, then check off what you complete.",
   back: "← Back to FuelPhysique",
   plans: "My Workout Plans",
   loading: "Loading your active plan...",
@@ -203,15 +204,24 @@ let timeBudgetMinutes = null;
 let timeFitSummary = null;
 let transitionTimerId = 0;
 let completionTimerId = 0;
+let previousPerformance = new Map();
+let workoutSaving = false;
 
 const read = input => input.value === "" ? null : Number(input.value);
 const setValue = (selector, value) => { const el = $(selector); if (el) el.value = value ?? ""; };
 const numberValue = (selector) => { const value = Number($(selector)?.value); return Number.isFinite(value) ? value : null; };
 
 function localize() {
+  document.documentElement.classList.add('workout-log-route');
   document.documentElement.lang = he ? "he" : "en";
   document.documentElement.dir = he ? "rtl" : "ltr";
   document.body.classList.toggle("quick-mode-enabled", quickModeEnabled);
+  $('.table-workout-overview').setAttribute('aria-label', he ? 'התקדמות האימון' : 'Workout progress');
+  $("#tableEntryHint").textContent = he ? "ממלאים את הטבלה ומסמנים כל סט שבוצע. אפשר לערוך בכל רגע." : "Fill in the table and check off each set. You can edit any row at any time.";
+  $("#tableExpandAll").textContent = he ? "פתיחת כל התרגילים" : "Expand all exercises";
+  $("#tablePauseButton").textContent = ui.pause;
+  $("#tableRestLabel").textContent = he ? "מנוחה" : "Rest";
+  $("#tableRestSkip").textContent = he ? "איפוס" : "Reset";
   const map = [
     ["pageTitle", "title"],
     ["pageDescription", "description"],
@@ -281,6 +291,7 @@ if (exitLink) {
 }
 
 function show(id) {
+  document.body.classList.toggle('workout-in-progress', id === '#workoutPanel');
   ["#setupPanel", "#emptyPanel", "#workoutPanel", "#successPanel"].forEach(selector => {
     $(selector).classList.toggle("hidden", selector !== id);
   });
@@ -393,6 +404,8 @@ function stopRestTimer() {
   $("#focusPanel").classList.remove("resting");
   clearInterval(focusTimerId);
   $("#focusRestTimer").textContent = "00:00";
+  $("#tableRestTimer").textContent = "00:00";
+  $("#tableRestSkip").hidden = true;
   const nextButton = $("#focusNextButton");
   if (nextButton) {
     nextButton.disabled = false;
@@ -413,6 +426,7 @@ function pauseTimers() {
     clearInterval(focusTimerId);
   }
   $("#focusPauseButton").textContent = ui.resume;
+  $("#tablePauseButton").textContent = ui.resume;
 }
 
 function resumeTimers() {
@@ -427,6 +441,7 @@ function resumeTimers() {
     focusTimerId = setInterval(updateRestTimer, 250);
   }
   $("#focusPauseButton").textContent = ui.pause;
+  $("#tablePauseButton").textContent = ui.pause;
 }
 
 function renderSetup() {
@@ -602,46 +617,136 @@ function activeSessionForIndex(index) {
 function renderExercise(exercise, index) {
   const name = exercise.name || `${ui.exercise} ${index + 1}`;
   const count = Math.max(1, Math.min(20, parseInt(exercise.sets, 10) || 1));
+  const previous = previousPerformance.get(String(name).trim().toLocaleLowerCase()) || [];
   const rows = Array.from({ length: count }, (_, setIndex) => `
     <tr class="set-row" data-exercise-index="${index}" data-set-index="${setIndex}">
-      <td><strong>${setIndex + 1}</strong></td>
-      <td>${esc(exercise.rir ?? "1–3")}</td>
-      <td><input class="weight-input" type="number" min="0" max="1000" step="0.25" inputmode="decimal" aria-label="${ui.weight}"></td>
-      <td><input class="reps-input" type="number" min="0" max="999" step="1" inputmode="numeric" aria-label="${ui.actualReps}"></td>
-      <td><input class="rpe-input" type="number" min="1" max="10" step="0.5" inputmode="decimal" aria-label="${ui.rpe}"></td>
-      <td><label class="mini-check"><input class="set-complete" type="checkbox" aria-label="${ui.done}"><span>${ui.done}</span></label></td>
+      <th scope="row"><span class="set-number">${setIndex + 1}</span><input class="rpe-input" type="hidden" value=""></th>
+      <td><input class="weight-input" type="number" min="0" max="1000" step="0.25" inputmode="decimal" placeholder="—" aria-label="${esc(`${name}, ${he ? 'סט' : 'set'} ${setIndex + 1}, ${ui.weight}`)}">${previous[setIndex]?.weightKg != null ? `<small class="previous-value">${he ? 'קודם:' : 'Last:'} <bdi>${esc(previous[setIndex].weightKg)}</bdi></small>` : ''}</td>
+      <td><input class="reps-input" type="number" min="1" max="999" step="1" inputmode="numeric" placeholder="${esc(exercise.reps || '—')}" aria-label="${esc(`${name}, ${he ? 'סט' : 'set'} ${setIndex + 1}, ${ui.actualReps}`)}">${previous[setIndex]?.reps != null ? `<small class="previous-value">${he ? 'קודם:' : 'Last:'} <bdi>${esc(previous[setIndex].reps)}</bdi></small>` : ''}</td>
+      <td><label class="table-set-check"><input class="set-complete" type="checkbox" aria-label="${esc(`${name}, ${he ? 'סט' : 'set'} ${setIndex + 1}, ${ui.done}`)}"><span aria-hidden="true">✓</span></label></td>
     </tr>
   `).join("");
   return `
-    <article class="exercise-card" data-exercise-index="${index}">
-      <header class="exercise-header">
-        <div>
+    <details class="exercise-card" data-exercise-index="${index}" ${index === 0 ? 'open' : ''}>
+      <summary class="exercise-header">
+        <img class="table-exercise-image" src="${esc(resolveExerciseMedia(exercise, demonstrationModel(savedPlan?.plan?.demonstrationModel)).url)}" alt="" loading="lazy">
+        <div class="table-exercise-title">
           <h3>${esc(name)}</h3>
           <div class="prescription">
             <span>${count} ${ui.sets}</span>
-            <span>${esc(exercise.restSeconds || 0)}s ${ui.rest}</span>
-            <span>${esc(ui.effortRir(exercise.rir ?? "1–3"))}</span>
+            <span><bdi>${esc(exercise.reps || '—')}</bdi> ${he ? 'חזרות' : 'reps'}</span>
           </div>
-          ${exercise.rir !== undefined ? `<p class="exercise-effort-guidance">${esc(ui.rirGuidance)}</p>` : ""}
-          ${exercise.notes ? `<p class="exercise-note">${esc(exercise.notes)}</p>` : ""}
         </div>
-        <span class="exercise-number">${index + 1}</span>
-      </header>
-      <table class="sets-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>RIR</th>
-            <th>${ui.weight}</th>
-            <th>${ui.actualReps}</th>
-            <th>${ui.rpe}</th>
-            <th>${ui.done}</th>
-          </tr>
-        </thead>
+        <span class="exercise-set-status"><span class="exercise-dots" aria-hidden="true">${'<i></i>'.repeat(count)}</span><span class="exercise-completed-count">0 / ${count}</span><small>${he ? 'הושלמו' : 'complete'}</small></span>
+        <span class="exercise-chevron" aria-hidden="true">⌄</span>
+      </summary>
+      <div class="table-exercise-body">
+      <div class="exercise-workspace">
+      <figure class="exercise-guide">
+        <button class="exercise-guide-preview" type="button" data-exercise-preview data-exercise-name="${esc(name)}" aria-label="${esc((he ? 'הגדלת ההמחשה: ' : 'Enlarge demonstration: ') + name)}"><img src="${esc(resolveExerciseMedia(exercise, demonstrationModel(savedPlan?.plan?.demonstrationModel)).url)}" alt="${esc(name)}" loading="lazy"><span class="exercise-image-expand" aria-hidden="true">↗</span></button>
+        <figcaption><strong>${he ? 'המחשת התרגיל' : 'Exercise demonstration'}</strong><span>${he ? 'לחצו על התמונה לתצוגה גדולה' : 'Select the image for a closer look'}</span></figcaption>
+        <div class="exercise-guide-prescription"><span>${he ? 'מנוחה בין סטים' : 'Rest between sets'}<strong><bdi>${esc(exercise.restSeconds || 0)}</bdi> ${he ? 'שניות' : 'sec'}</strong></span><span>RIR<strong><bdi>${esc(exercise.rir ?? '1–3')}</bdi></strong></span></div>
+      </figure>
+      <div class="exercise-entry">
+      <div class="exercise-entry-heading"><div><h4>${he ? 'הסטים שלך' : 'Your sets'}</h4><p>${he ? 'מזינים נתונים ומסמנים בסיום כל סט' : 'Enter your numbers and check off each set'}</p></div>
+      <details class="table-fill-options"><summary>${he ? 'מילוי מהיר' : 'Quick fill'} <span aria-hidden="true">⌄</span></summary><div class="table-exercise-actions"><button type="button" data-fill-empty>${he ? 'העתקה מהסט הראשון' : 'Copy first set'}</button>${previous.length ? `<button type="button" data-copy-previous>${he ? 'מהאימון הקודם' : 'Use last workout'}</button>` : ''}</div></details></div>
+      <table class="sets-table" aria-label="${esc(name)}">
+        <thead><tr><th scope="col">${he ? 'סט' : 'Set'}</th><th scope="col">${he ? 'משקל (ק״ג)' : 'Weight (kg)'}</th><th scope="col">${he ? 'חזרות' : 'Reps'}</th><th scope="col">${ui.done}</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    </article>
+      <p class="exercise-entry-status" role="status"></p>
+      ${exercise.notes ? `<p class="exercise-note">${esc(exercise.notes)}</p>` : ''}
+      </div></div>
+      </div>
+    </details>
   `;
+}
+
+function updateTableProgress() {
+  const cards = [...document.querySelectorAll('.exercise-card')];
+  let done = 0, total = 0;
+  cards.forEach(card => {
+    const rows = [...card.querySelectorAll('.set-row')];
+    const completed = rows.filter(row => row.querySelector('.set-complete').checked).length;
+    card.querySelector('.exercise-completed-count').textContent = `${completed} / ${rows.length}`;
+    card.classList.toggle('all-sets-completed', completed === rows.length);
+    card.querySelectorAll('.exercise-dots i').forEach((dot, i) => dot.classList.toggle('done', rows[i].querySelector('.set-complete').checked));
+    rows.filter(row => !row.classList.contains('warmup-set')).forEach(row => { total++; if (row.querySelector('.set-complete').checked) done++; });
+  });
+  $('#tableProgressText').textContent = he ? `${done} מתוך ${total} סטים הושלמו` : `${done} of ${total} sets complete`;
+  $('#tableProgress').value = total ? Math.round(done / total * 100) : 0;
+  $('#finishWorkoutButton').disabled = workoutSaving || !cards.some(card => [...card.querySelectorAll('.set-complete')].some(input => input.checked));
+  $('#tablePauseButton').textContent = paused ? ui.resume : ui.pause;
+}
+
+function validTableRow(row, requireWeight = false) {
+  const weight = row.querySelector('.weight-input'), reps = row.querySelector('.reps-input');
+  weight.setCustomValidity('');
+  if (requireWeight && weight.value === '') weight.setCustomValidity(he ? 'הזן משקל. לאימון במשקל גוף אפשר להזין 0.' : 'Enter a weight. Use 0 for bodyweight.');
+  const invalid = [weight, reps].find(input => !input.checkValidity());
+  if (invalid) { row.closest('details').open = true; invalid.reportValidity(); invalid.focus(); return false; }
+  return true;
+}
+
+function onTableInput(event) {
+  const row = event.target.closest('.set-row');
+  if (!row) return;
+  row.querySelector('.weight-input').setCustomValidity('');
+  const completed = row.querySelector('.set-complete');
+  if (completed.checked && (row.querySelector('.weight-input').value === '' || !row.querySelector('.weight-input').validity.valid || !row.querySelector('.reps-input').validity.valid)) {
+    completed.checked = false;
+    row.classList.remove('completed');
+    updateTableProgress();
+  }
+  focus = { exerciseIndex: Number(row.dataset.exerciseIndex), setIndex: Number(row.dataset.setIndex) };
+  saveCurrentDraft();
+}
+
+function onTableChange(event) {
+  const row = event.target.closest('.set-row');
+  if (!row) return;
+  const checkbox = row.querySelector('.set-complete');
+  if (checkbox.checked && !validTableRow(row, true)) checkbox.checked = false;
+  row.classList.toggle('completed', checkbox.checked);
+  focus = { exerciseIndex: Number(row.dataset.exerciseIndex), setIndex: Number(row.dataset.setIndex) };
+  if (event.target === checkbox && checkbox.checked) startRestTimer(restSecondsForCurrentSet());
+  updateTableProgress();
+  saveCurrentDraft();
+}
+
+function fillTableRows(event) {
+  const button = event.target.closest('[data-fill-empty], [data-copy-previous]');
+  if (!button) return;
+  const card = button.closest('.exercise-card'), rows = [...card.querySelectorAll('.set-row')];
+  const name = card.querySelector('h3').textContent.trim().toLocaleLowerCase();
+  const previous = previousPerformance.get(name) || [];
+  const first = rows[0];
+  if (button.hasAttribute('data-fill-empty') && (first.querySelector('.weight-input').value === '' || !validTableRow(first))) {
+    card.querySelector('.exercise-entry-status').textContent = he ? 'מלא קודם את המשקל בסט הראשון.' : 'Enter the first set’s weight first.';
+    first.querySelector('.weight-input').focus(); return;
+  }
+  rows.forEach((row, i) => {
+    if (row.querySelector('.set-complete').checked) return;
+    for (const [selector, field] of [['.weight-input', 'weightKg'], ['.reps-input', 'reps']]) {
+      const source = button.hasAttribute('data-copy-previous') ? previous[i]?.[field] : first.querySelector(selector).value;
+      const input = row.querySelector(selector);
+      if (input.value === '' && source != null && source !== '') input.value = source;
+    }
+  });
+  card.querySelector('.exercise-entry-status').textContent = he ? 'השדות הריקים מולאו. סמן כל סט לאחר שביצעת אותו.' : 'Empty fields filled. Check each set after you perform it.';
+  saveCurrentDraft();
+}
+
+async function loadPreviousPerformance() {
+  previousPerformance = new Map();
+  try {
+    const snapshot = await getDocs(query(collection(db, 'users', user.uid, 'workoutLogs'), orderBy('completedAt', 'desc'), limit(30)));
+    snapshot.docs.forEach(log => (log.data().exercises || []).forEach(exercise => {
+      const key = String(exercise.name || '').trim().toLocaleLowerCase();
+      const sets = (exercise.sets || []).map(set => set.completed && set.weightKg != null && Number.isFinite(Number(set.weightKg)) && Number(set.weightKg) >= 0 ? set : null);
+      if (sets.some(Boolean) && !previousPerformance.has(key)) previousPerformance.set(key, sets);
+    }));
+  } catch (error) { console.warn('Previous workout unavailable', error); }
 }
 
 function setHighlightedRow(exerciseIndex, setIndex) {
@@ -1280,12 +1385,13 @@ function openWorkout(index, startTime = Date.now()) {
   $("#exerciseList").innerHTML = (session.exercises || []).map(renderExercise).join("");
   $("#workoutPanel").dataset.sessionIndex = index;
   $("#focusPanel")?.classList.remove("hidden");
-  $("#finishBar")?.classList.add("hidden");
+  $("#finishBar")?.classList.remove("hidden");
   show("#workoutPanel");
   startWorkoutTimer();
   focus = { exerciseIndex: 0, setIndex: 0 };
   syncFocusFromRow();
   stopRestTimer();
+  updateTableProgress();
   return session;
 }
 
@@ -1392,6 +1498,9 @@ function restoreDraft() {
     });
   });
   syncFocusFromRow();
+  const restoredCard = cards[Number(focus.exerciseIndex)];
+  if (restoredCard) restoredCard.open = true;
+  updateTableProgress();
   if (draft.rest && draft.rest.active) {
     startRestTimer(Number(draft.rest.remainingMs || 0) / 1000);
     if (draft.rest.paused) {
@@ -1404,13 +1513,21 @@ function restoreDraft() {
 }
 
 async function finishWorkout() {
+  if (workoutSaving) return;
   const button = $("#finishWorkoutButton");
+  const rows = [...document.querySelectorAll('.set-row')];
+  if (!rows.some(row => row.querySelector('.set-complete').checked)) return;
+  if (rows.some(row => !validTableRow(row, row.querySelector('.set-complete').checked))) return;
   const sessionIndex = Number($("#workoutPanel").dataset.sessionIndex);
   const session = activeSessionForIndex(sessionIndex);
   const exercises = collect(session);
   const sets = exercises.flatMap(item => item.sets);
   const workingSets = sets.filter(set => !set.warmup);
   const durationSeconds = Math.max(1, Math.floor(workoutElapsedMs() / 1000));
+  workoutSaving = true;
+  const controls = [...document.querySelectorAll('#exerciseList input, #exerciseList button, #workoutNotes, #discardWorkoutToolbarButton, #discardWorkoutButton')];
+  const disabledBeforeSave = controls.map(control => control.disabled);
+  controls.forEach(control => { control.disabled = true; });
   button.disabled = true;
   button.textContent = ui.saving;
   try {
@@ -1427,9 +1544,14 @@ async function finishWorkout() {
       notes: $("#workoutNotes").value.trim(),
       exercises
     });
+    exercises.forEach(exercise => {
+      const completed = exercise.sets.map(set => set.completed && set.weightKg != null ? set : null);
+      if (completed.some(Boolean)) previousPerformance.set(String(exercise.name).trim().toLocaleLowerCase(), completed);
+    });
     clearInterval(workoutTimerId);
     clearInterval(focusTimerId);
     clearDraft();
+    stopRestTimer();
     $("#successSummary").textContent = ui.completed(workingSets.filter(set => set.completed).length, workingSets.length, Math.max(1, Math.round(durationSeconds / 60)));
     window.fpV47Success?.($("#finishWorkoutButton"));
     show("#successPanel");
@@ -1461,6 +1583,8 @@ async function finishWorkout() {
     if (error?.code) console.error("Firebase error code:", error.code);
     if (error?.details) console.error("Error details:", error.details);
   } finally {
+    workoutSaving = false;
+    controls.forEach((control, i) => { control.disabled = disabledBeforeSave[i]; });
     button.disabled = false;
     button.textContent = ui.finish;
   }
@@ -1472,6 +1596,8 @@ function updateRestTimer() {
   const total = Math.max(1, Math.ceil(rest.remainingMs / 1000));
   const progress = Math.max(0, Math.min(100, (remaining / total) * 100));
   $("#focusRestTimer").textContent = formatTime(remaining);
+  $("#tableRestTimer").textContent = formatTime(remaining);
+  $("#tableRestSkip").hidden = remaining <= 0;
   const nextButton = $("#focusNextButton");
 if (nextButton) {
   nextButton.disabled = false;
@@ -1551,6 +1677,7 @@ async function load() {
   const planSnap = await getDoc(doc(db, "users", user.uid, "workoutPlans", activePlanId));
   if (!planSnap.exists()) return show("#emptyPanel");
   savedPlan = { id: planSnap.id, ...planSnap.data() };
+  await loadPreviousPerformance();
   startDemonstrationPreference();
   // The time-fit controls are no longer offered. Do not silently shorten a
   // workout using a previously saved budget when the controls are hidden.
@@ -1576,6 +1703,7 @@ async function load() {
 populateWeightOptions();
 localize();
 bindFocusInputs();
+installWorkoutExercisePreview();
 
 $("#startWorkoutButton").addEventListener("click", beginWorkout);
 $("#timeBudgetButton").addEventListener("click", applyTimeBudget);
@@ -1613,12 +1741,17 @@ $("#weightMinusButton").addEventListener("click", () => adjustFocusNumber("#focu
 $("#weightPlusButton").addEventListener("click", () => adjustFocusNumber("#focusWeight", 1, 0, 1000, 2.5));
 $("#repsMinusButton").addEventListener("click", () => adjustFocusNumber("#focusReps", -1, 0, 999, 1));
 $("#repsPlusButton").addEventListener("click", () => adjustFocusNumber("#focusReps", 1, 0, 999, 1));
-$("#exerciseList").addEventListener("input", saveCurrentDraft);
-$("#exerciseList").addEventListener("change", event => {
-  if (event.target.classList.contains("set-complete")) {
-    event.target.closest(".set-row").classList.toggle("completed", event.target.checked);
-  }
-  saveCurrentDraft();
+$("#exerciseList").addEventListener("input", onTableInput);
+$("#exerciseList").addEventListener("change", onTableChange);
+$("#exerciseList").addEventListener("click", fillTableRows);
+$("#tablePauseButton").addEventListener("click", togglePause);
+$("#tableRestSkip").addEventListener("click", stopRestTimer);
+$("#tableExpandAll").addEventListener("click", () => {
+  const cards = [...document.querySelectorAll('.exercise-card')];
+  const open = !cards.every(card => card.open);
+  cards.forEach(card => { card.open = open; });
+  $("#tableExpandAll").textContent = open ? (he ? 'סגירת כל התרגילים' : 'Collapse all exercises') : (he ? 'פתיחת כל התרגילים' : 'Expand all exercises');
+  $("#tableExpandAll").setAttribute('aria-expanded', String(open));
 });
 $("#workoutNotes").addEventListener("input", saveCurrentDraft);
 window.addEventListener("pagehide", saveCurrentDraft);
